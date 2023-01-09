@@ -1,0 +1,44 @@
+.container {
+    min-height: 100vh;
+    height: auto;
+}
+
+.justified {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.button {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.team-name {
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+    color: green;
+}
+
+.header-item {
+    justify-content: center;
+    text-align: center;
+}
+
+.footer-item {
+    text-align: center;
+}
+
+.footer-item p :nth-child(even) {
+    color: orange;
+}
+.footer-item p :nth-child(odd) {
+    color: blue;
+}
+
+.server-message {
+    justify-content: center;
+    width: 20%;
+    min-width: min-content;
+}
