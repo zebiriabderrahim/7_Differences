@@ -1,25 +1,25 @@
 {
-    "compilerOptions": {
-        "baseUrl": "./",
-        "target": "es6",
-        "types": ["reflect-metadata", "@types/mocha", "mocha"],
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "sourceMap": true,
-        "outDir": "out",
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "noImplicitAny": true,
-        "noImplicitThis": true,
-        "noFallthroughCasesInSwitch": true,
-        "noUnusedLocals": true,
-        "noImplicitReturns": true,
-        "suppressImplicitAnyIndexErrors": true,
-        "strictNullChecks": true,
-        "resolveJsonModule": false, // DO NOT CHANGE
-        "paths": {
-            "@app/*": ["./app/*"],
-            "@common/*": ["../common/*"],
-        }
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "out",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@common/*": ["../common/*"],
+      "@app/*": ["./app/*"]
     }
+  }
 }
