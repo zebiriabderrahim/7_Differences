@@ -12,5 +12,9 @@
         "Express": true,
         "Mocha": true
     },
-    "overrides": []
+    "overrides": [],
+    "env": {
+        "node": true,
+        "jest": true
+    }
 }
