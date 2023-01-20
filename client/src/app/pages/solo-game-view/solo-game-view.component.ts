@@ -9,5 +9,5 @@ export class SoloGameViewComponent {
     isFinished: boolean = false;
     finish(): void {
         this.isFinished = true;
-    }
+    } 
 }
