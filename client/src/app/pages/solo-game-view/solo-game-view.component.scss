@@ -1,0 +1,30 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+.game.section {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10%;
+    margin: 20px;
+  }
+.gameCanvas{
+    border-style: solid;
+    width: 100%;
+  }
+
+img {
+    width: 100%;
+  }
+  .topBar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 10%;
+    margin: 20px;
+
+  }

@@ -1,0 +1,13 @@
+<p>Game name</p>
+<div class="topBar">
+    <app-chronometer [isRunning] = "!isFinished"></app-chronometer>
+</div>
+<div class="game section">
+    <div class="gameCanvas">
+        <img src="../../../assets/img/Pinocchior.jpg" alt="track" >
+    </div>
+    <div class="gameCanvas">
+        <img src="../../../assets/img/Pinocchior.jpg" alt="track" class="track">
+    </div>
+</div>
+<button class="button" (click)="finish()">stop</button>
