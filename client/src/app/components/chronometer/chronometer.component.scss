@@ -1,0 +1,26 @@
+.chronometer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #bababa3e;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0 rgb(67, 64, 66);
+    padding: 10px;
+    margin: 10px;
+}
+.digit {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 0;
+}
+h1{
+    font-weight: bold;
+    margin: 3px;
+}
+.end {
+    font-size: 2em;
+    font-weight: bold;
+    transition: color 0.5s;
+    color: red;
+}
