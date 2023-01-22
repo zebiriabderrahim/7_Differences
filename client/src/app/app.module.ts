@@ -20,7 +20,15 @@ import { SelectionPageComponent } from './pages/selection-page/selection-page.co
  * Otherwise Angular Cli will not know in which module to put new component
  */
 @NgModule({
-    declarations: [AppComponent, GamePageComponent, MainPageComponent, MaterialPageComponent, PlayAreaComponent, SidebarComponent, SelectionPageComponent],
+    declarations: [
+        AppComponent,
+        GamePageComponent,
+        MainPageComponent,
+        MaterialPageComponent,
+        PlayAreaComponent,
+        SidebarComponent,
+        SelectionPageComponent,
+    ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
     bootstrap: [AppComponent],
