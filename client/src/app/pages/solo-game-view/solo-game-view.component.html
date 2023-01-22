@@ -1,4 +1,6 @@
-
+<div>
+    <button class="button" routerLink="/home">Return to menu</button>
+</div>
 <div class="infomations section">
     <h1>{{game.name}}</h1>
     <app-chronometer [isRunning]="!isFinished"></app-chronometer>
@@ -14,6 +16,3 @@
     <app-game-infos [game] = "game"></app-game-infos>
 </div>
 <button class="button" (click)="finish()">stop</button>
-<div>
-<button class="button" routerLink="/home">Return to menu</button>
-</div>
