@@ -1,25 +1,13 @@
 <div>
     <h1>{{ titre }}</h1>
     <div class="game-selection">
-        <div class="game">
-            <h2>{{ gameList[gameIterator].name }}</h2>
-            <img src="{{ gameList[gameIterator].picture }}" (click)="selectedGame()" alt="track" class="track" />
-        </div>
-        <div class="game">
-            <h2>{{ gameList[gameIterator + 1].name }}</h2>
-            <img src="{{ gameList[gameIterator + 1].picture }}" (click)="selectedGame()" alt="track" class="track" />
-        </div>
-        <div class="game">
-            <h2>{{ gameList[gameIterator + 2].name }}</h2>
-            <img src="{{ gameList[gameIterator + 2].picture }}" (click)="selectedGame()" alt="track" class="track" />
-        </div>
-        <div class="game">
-            <h2>{{ gameList[gameIterator + 3].name }}</h2>
-            <img src="{{ gameList[gameIterator + 3].picture }}" (click)="selectedGame()" alt="track" class="track" />
+        <div *ngFor="let gamecard of gameList.slice(gameIterator, gameIterator + 4)" class="game">
+            <h2>{{ gamecard.name }}</h2>
+            <img src="{{ gamecard.picture }}" (click)="selectedGamecard()" alt="track" class="track" />
         </div>
     </div>
     <div class="change-game">
-        <button class="previous_button" (click)="previewAction()"><< Precedent</button>
-        <button class="next_button" (click)="nextAction()">Suivant >></button>
+        <button class="previous_button" (click)="lastFour()"><< Précedent</button>
+        <button class="next_button" (click)="nextFour()">Suivant >></button>
     </div>
 </div>

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Gamecard } from '@app/interfaces/gamecard';
 
 @Component({
     selector: 'app-selection-page',
@@ -6,12 +7,11 @@ import { Component } from '@angular/core';
     styleUrls: ['./selection-page.component.scss'],
 })
 export class SelectionPageComponent {
-    titre = 'Selectionne ton jeux';
-
+    titre: string = 'Selectionne ton jeu';
     imageSrc: string = '../../../assets/img/rat.jpg';
     newImageSrc: string = '../../../assets/img/strong_rat.jpg';
 
-    gameList = [
+    gameList: Gamecard[] = [
         { name: 'titre jeu 1', picture: this.imageSrc },
         { name: 'titre jeu 2', picture: this.imageSrc },
         { name: 'titre jeu 3', picture: this.imageSrc },
@@ -22,23 +22,17 @@ export class SelectionPageComponent {
         { name: 'titre jeu 8', picture: this.newImageSrc },
     ];
 
-    gameIterator = 0;
+    gameIterator: number = 0;
 
-    previewAction() {
-        this.gameIterator--;
-        this.gameIterator--;
-        this.gameIterator--;
-        this.gameIterator--;
+    lastFour() {
+        this.gameIterator -= 4;
     }
 
-    nextAction() {
-        this.gameIterator++;
-        this.gameIterator++;
-        this.gameIterator++;
-        this.gameIterator++;
+    nextFour() {
+        this.gameIterator += 4;
     }
 
-    selectedGame() {
+    selectedGamecard() {
         alert('Va à la page du jeu selectionner');
     }
 }
