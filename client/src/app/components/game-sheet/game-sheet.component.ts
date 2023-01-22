@@ -9,7 +9,7 @@ import { PlayerNameDialogBoxComponent } from '../player-name-dialog-box/player-n
     styleUrls: ['./game-sheet.component.scss'],
 })
 export class GameSheetComponent {
-    @Input() game: Game = { id: 1, name: 'test', difficultyLevel: 1, thumbnail: 'test', soloTopTime: [], oneVsOneTopTime: [] };
+    @Input() game: Game = { id: 1, name: 'test', difficultyLevel: 1, thumbnail: 'test', soloTopTime: [], oneVsOneTopTime: [], differencesCount: 10 };
     playerName: string;
     constructor(public dialog: MatDialog) {}
 

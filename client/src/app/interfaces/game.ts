@@ -7,4 +7,5 @@ export interface Game {
     thumbnail: string;
     soloTopTime: Player[];
     oneVsOneTopTime: Player[];
+    differencesCount: number;
 }
