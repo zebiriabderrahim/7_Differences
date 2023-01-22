@@ -7,7 +7,7 @@ import { Game } from '@app/interfaces/game';
     styleUrls: ['./solo-game-view.component.scss'],
 })
 export class SoloGameViewComponent {
-    game: Game = { id: 1, name: 'test', difficultyLevel: 1, thumbnail: 'test', soloTopTime: [], oneVsOneTopTime: [] };
+    game: Game = {id: 1, name: "Racoon vs Rat", difficultyLevel: 10, thumbnail: "",soloTopTime: [], oneVsOneTopTime: [], differencesCount: 15};
     isFinished: boolean = false;
     finish(): void {
         this.isFinished = true;
