@@ -19,12 +19,14 @@
 img {
     width: 100%;
   }
-  .topBar {
+  .infomations.section{
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    height: 10%;
+    justify-content: center;
+    background-color: #e84b17fe;
+    border-radius: 5px;
+    padding: 10px;
     margin: 20px;
+}
 
-  }
