@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>Hi</h1>
+<div mat-dialog-content>
+  <p>please enter a valid name?</p>
+  <mat-form-field appearance="fill">
+    <mat-label>your name</mat-label>
+    <input matInput>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">No Thanks</button>
+  <button mat-button [mat-dialog-close]="data" routerLink="/game" cdkFocusInitial>Ok</button>
+</div>
