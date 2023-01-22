@@ -1,0 +1,49 @@
+* {
+    font-family: 'Roboto', sans-serif;
+}
+
+h1 {
+    background-color: rgb(213, 213, 221);
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px;
+    text-align: center;
+}
+
+.game-selection {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    align-items: space-between;
+    text-align: center;
+    margin-left: 10px;
+}
+
+.game-selection > * {
+    flex: 1 40%;
+}
+
+.game {
+    width: 50%;
+    height: 50%;
+    border-color: black;
+    border-style: double;
+}
+
+.change-game {
+    display: flex;
+    justify-content: space-between;
+}
+.previous_button {
+    padding: 10px;
+    margin: 10px;
+    justify-content: flex-start;
+}
+
+.next_button {
+    padding: 10px;
+    margin: 10px;
+    align-items: flex-end;
+}
