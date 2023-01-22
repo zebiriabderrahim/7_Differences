@@ -34,7 +34,7 @@ img {
 
 .button {
   padding: 0.5em 1.7em;
-  margin: 0 0.1em 0.1em 0;
+  margin: 0 0.1em 0.1em 0.5em;
   font-family: "Roboto", sans-serif;
   font-size: 1em;
   font-weight: 500;
@@ -51,4 +51,16 @@ img {
   background-color: black;
   color:white;
 }
+
+.hintIcon{
+  margin-top: 5px;
+  margin-left: 25px;
+  width: 30px;
+  height: 30px;
+}
+.hintIcon:hover{
+  opacity: .5;
+}
+
+
 

@@ -8,4 +8,5 @@ export interface Game {
     soloTopTime: Player[];
     oneVsOneTopTime: Player[];
     differencesCount: number;
+    hintList: string[];
 }
