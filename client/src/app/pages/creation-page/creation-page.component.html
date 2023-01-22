@@ -1,3 +1,18 @@
-<h1>Image Upload</h1>
+<h1>Nom du jeu</h1>
+<div class="btn-group" style="width:100%">
+    <button style="width:50%">Téléverser deux images différentes</button>
+    <button style="width:50%">Téléverser la même image</button>
+</div>
+<button >Réinitialiser les arrière-plans</button>
+<div class="form-group">
+    <label>Configuration du rayon d'élargissement des différences</label>
+    <div class="radio" *ngFor="let radiusSize of radiusSizes">
+      <label for="type">
+        <input type="radio" name="type"
+          [ngModel]="defaultRadius" [value]="radiusSize">
+        {{radiusSize}}
+      </label>
+    </div>
+  </div>
 <input type="file" (change)="onFileSelected($event)">
 <button type="button" (click)="onUpload()">Upload</button>
