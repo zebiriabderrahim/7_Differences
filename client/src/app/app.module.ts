@@ -8,10 +8,10 @@ import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
+import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
-import { ImageUploadComponent } from './components/image-upload/image-upload.component';
 
 /**
  * Main module that is used in main.ts.
@@ -22,15 +22,15 @@ import { ImageUploadComponent } from './components/image-upload/image-upload.com
 @NgModule({
     declarations: [
         AppComponent,
+        CreationPageComponent,
         GamePageComponent,
         MainPageComponent,
         MaterialPageComponent,
-        PlayAreaComponent,
         SidebarComponent,
-        ImageUploadComponent,
+        PlayAreaComponent,
     ],
-    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
     bootstrap: [AppComponent],
+    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
 })
 export class AppModule {}
