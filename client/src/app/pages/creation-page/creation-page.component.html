@@ -13,6 +13,17 @@
         {{radiusSize}}
       </label>
     </div>
-  </div>
-<input type="file" (change)="onFileSelected($event)">
-<button type="button" (click)="onUpload()">Upload</button>
+</div>
+
+<div class="container">
+    <img [src]="url" title="Profile Picture" height="150px" width="150px" />
+    <input
+      type="file"
+      id="img"
+      style="display:none"
+      accept="image/*"
+      (change)="onSelect($event)"
+    />
+    <label for="img">Upload Image</label>
+</div>
+  
