@@ -13,7 +13,7 @@ export class SelectionPageComponent {
     // eslint-disable-next-line no-alert, quotes, semi, @typescript-eslint/no-magic-numbers
     gamePhase: number = 4;
 
-    gameList: Game[] = [
+    games: Game[] = [
         {
             id: 1,
             name: 'rat Game',
@@ -113,12 +113,12 @@ export class SelectionPageComponent {
         this.gameIterator += this.gamePhase;
         this.hasNext = true;
         this.hasPrevious = true;
-        if (this.gameIterator >= this.gameList.length - this.gamePhase) {
+        if (this.gameIterator >= this.games.length - this.gamePhase) {
             this.hasNext = false;
         }
     }
 
     selectedGamecard() {
-        alert('Va à la page du jeu selectionner');
+        alert('Va à la page du jeu selectionné');
     }
 }
