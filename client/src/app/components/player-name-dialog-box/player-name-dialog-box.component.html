@@ -1,12 +1,13 @@
 <h1 mat-dialog-title>Hi</h1>
 <div mat-dialog-content>
   <p>please enter a valid name?</p>
-  <mat-form-field appearance="fill">
-    <mat-label>your name</mat-label>
-    <input matInput [(ngModel)]="playerName">
-  </mat-form-field>
-</div>
-<div mat-dialog-actions>
-  <button mat-button (click)="onNoClick()">No Thanks</button>
-  <button mat-button [mat-dialog-close]="data" routerLink="/game" cdkFocusInitial>Ok</button>
+  <form  [formGroup]="playerNameForm" (ngSubmit)="submitForm()">
+    <mat-form-field >
+      <input matInput type="text" [(ngModel)]="playerName" placeholder="Enter your name" formControlName="name">
+      <mat-error *ngIf="playerNameForm.controls.name.errors?.required" [ngClass]="'error'"> Name can't be empty!</mat-error>
+      <mat-error *ngIf="playerNameForm.controls.name.errors?.pattern" [ngClass]="'error'">Name can't contain spaces!</mat-error>
+    </mat-form-field>
+    <button mat-raised-button type="submit" routerLink="/game"  [disabled]="playerNameForm.invalid" >Ok</button>
+    <button mat-button (click)="onNoClick()">No Thanks</button>
+  </form>
 </div>

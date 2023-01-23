@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 
@@ -8,13 +8,23 @@ import { MatDialogRef } from '@angular/material/dialog';
     styleUrls: ['./player-name-dialog-box.component.scss'],
 })
 export class PlayerNameDialogBoxComponent {
+    @Output() playerNameEvent = new EventEmitter<string>();
     playerName: string = '';
-    ajoutForm = new FormGroup({
-        controlFrequence: new FormControl('', [Validators.required, Validators.min(1), Validators.pattern('^[0-9]*$')]),
+
+    playerNameForm = new FormGroup({
+        name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)]),
     });
+
     constructor(public dialogRef: MatDialogRef<PlayerNameDialogBoxComponent>) {}
 
     onNoClick(): void {
         this.dialogRef.close();
+    }
+
+    submitForm() {
+        if (this.playerNameForm.valid && this.playerNameForm.value.name) {
+            this.playerNameEvent.emit(this.playerNameForm.value.name);
+            this.dialogRef.close();
+        }
     }
 }
