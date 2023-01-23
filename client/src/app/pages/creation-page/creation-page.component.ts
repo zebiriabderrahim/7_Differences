@@ -7,7 +7,7 @@ import { DEFAULT_RADIUS, IMG_HEIGHT, IMG_TYPE, IMG_WIDTH, RADIUS_SIZES } from '@
     styleUrls: ['./creation-page.component.scss'],
 })
 export class CreationPageComponent {
-    url: string | null | ArrayBuffer = '';
+    url: string = '';
 
     radiusSizes: number[] = RADIUS_SIZES;
     defaultRadius: number = DEFAULT_RADIUS;
@@ -27,7 +27,7 @@ export class CreationPageComponent {
             const reader = new FileReader();
             reader.readAsDataURL(target.files[0]);
             reader.onload = (e: Event) => {
-                this.url = (e.target as FileReader).result;
+                this.url = (e.target as FileReader).result as string;
             };
         }
     }
