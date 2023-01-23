@@ -17,6 +17,7 @@ import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
 import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.component';
+import { ConfigPageComponent } from './pages/config-page/config-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -38,6 +39,8 @@ import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.
         GameSheetComponent,
         PlayerNameDialogBoxComponent,
         GameInfosComponent,
+        ConfigPageComponent,
+        ConfigPageComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule, ReactiveFormsModule],
     providers: [],
