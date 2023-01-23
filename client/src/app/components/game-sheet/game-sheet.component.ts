@@ -14,8 +14,16 @@ export class GameSheetComponent {
         name: 'test',
         difficultyLevel: 1,
         thumbnail: 'test',
-        soloTopTime: [],
-        oneVsOneTopTime: [],
+        soloTopTime: [
+            { name: 'top1', time: 1 },
+            { name: 'top2', time: 2 },
+            { name: 'top3', time: 3 },
+        ],
+        oneVsOneTopTime: [
+            { name: 'test1', time: 1 },
+            { name: 'test2', time: 2 },
+            { name: 'test3', time: 3 },
+        ],
         differencesCount: 10,
         hintList: [],
     };

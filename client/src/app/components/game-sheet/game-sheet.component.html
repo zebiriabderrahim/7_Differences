@@ -1,23 +1,48 @@
-<div *ngIf="game" class="game-sheet">
-    <div class="top-three-section">
-        <div class="top-three-title">
-            <h2>Top 3</h2>
-        </div>
-        <div class="top-three-solo">
-            <h3>00:30 coco</h3>
-        </div>
-        <div class="top three vs">
-            <h3>00:30 coco</h3>
-        </div>
-    </div>
-    <div class="title">
-        <h1>{{ game.name }}</h1>
-    </div>
-    <div class="thumbnail">
-        <img [src]="game.thumbnail" alt="track" width="70px" height="75px" />
-    </div>
-    <div class="button-section">
-        <button mat-raised-button (click)="openDialog()">Play</button>
-        <button class="button">join</button>
-    </div>
+<div *ngIf="game" class="game sheet">
+    <mat-grid-list cols="4" rowHeight="50px">
+        <mat-grid-tile [rowspan]="1" [colspan]="2">
+            <div class="title">
+                <h1>{{ game.name }}</h1>
+            </div>
+        </mat-grid-tile>
+
+        <mat-grid-tile [rowspan]="1" [colspan]="2">
+            <div class="difficulty Level">
+                <h2>Difficulté: {{ game.difficultyLevel }}</h2>
+            </div>
+        </mat-grid-tile>
+
+        <mat-grid-tile [rowspan]="4" [colspan]="2">
+            <div class="thumbnail">
+                <img src="../../../assets/img/Pinocchior.jpg" alt="track" width="200px" height="200px" />
+            </div>
+        </mat-grid-tile>
+
+        <mat-grid-tile [rowspan]="4" [colspan]="1">
+            <div class="top three section">
+                <div class="top three title">
+                    <h2>Top 3 Solo</h2>
+                </div>
+                <div *ngFor="let player of game.soloTopTime;index as i">
+                    {{i+1+"  "+player.name +"---"+  player.time}}
+                </div>
+            </div>
+        </mat-grid-tile>
+        <mat-grid-tile [rowspan]="4" [colspan]="1">
+            <div class="top three section">
+                <div class="top three title">
+                    <h2>Top 3 1 V 1</h2>
+                </div>
+                <div *ngFor="let player of game.oneVsOneTopTime ">
+                    {{player.name +"---"+ player.time}}      
+                </div>
+            </div>
+        </mat-grid-tile>
+        <mat-grid-tile [rowspan]="1" [colspan]="2">
+            <div class="button section">
+                <button Flat Buttons color="primary" (click)="openDialog()">Play</button>
+                <button Flat Buttons color="primary" >join</button>
+            </div>
+        </mat-grid-tile>
+    </mat-grid-list>
 </div>
