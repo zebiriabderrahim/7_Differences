@@ -1,4 +1,3 @@
-<input type="text" class="form-control" placeholder="Nom de votre jeu">
 <div class="btn-group" style="width:100%">
     <button style="width:50%">Téléverser deux images différentes</button>
     <button style="width:50%">Téléverser la même image</button>
@@ -17,3 +16,6 @@
 
 <img [src]="url" height="200"> <br/>
 <input type='file' (change)="onSelectFile($event)">  
+<div *ngIf="!this.isImageTypeValid">Le type d'image doit être un bitmap.</div> 
+<div *ngIf="!this.isImageSizeValid">La taille d'image doit être de 640x480.</div>
+<div *ngIf="!this.isImageFormatValid">Le format d'image doit être 24-bits.</div>
