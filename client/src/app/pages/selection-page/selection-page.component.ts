@@ -10,6 +10,8 @@ export class SelectionPageComponent {
     titre: string = 'Selectionne ton jeu';
     imageSrc: string = '../../../assets/img/rat.jpg';
     newImageSrc: string = '../../../assets/img/strong_rat.jpg';
+    // eslint-disable-next-line no-alert, quotes, semi, @typescript-eslint/no-magic-numbers
+    gamePhase: number = 4;
 
     gameList: Gamecard[] = [
         { name: 'titre jeu 1', picture: this.imageSrc },
@@ -27,16 +29,20 @@ export class SelectionPageComponent {
     gameIterator: number = 0;
 
     lastFour() {
-        this.gameIterator -= 4;
-        if (this.gameIterator > 0) {
-            this.hasPrevious = true;
+        this.gameIterator -= this.gamePhase;
+        this.hasNext = true;
+        this.hasPrevious = true;
+        if (this.gameIterator <= 0) {
+            this.hasPrevious = false;
         }
     }
 
     nextFour() {
-        this.gameIterator += 4;
-        if (this.gameIterator > 1) {
-            this.hasPrevious = true;
+        this.gameIterator += this.gamePhase;
+        this.hasNext = true;
+        this.hasPrevious = true;
+        if (this.gameIterator >= this.gameList.length - this.gamePhase) {
+            this.hasNext = false;
         }
     }
 
