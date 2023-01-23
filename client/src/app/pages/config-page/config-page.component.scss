@@ -63,6 +63,21 @@ h1 {
     font-size: 25px;
 }
 
+.create_button {
+    position: absolute;
+    font-size: 25px;
+    margin-top: 40px;
+    width: 500px;
+    margin: auto;
+}
+
+.change-game {
+    text-align: center;
+    display: flex;
+    position: relative;
+    justify-content: center;
+}
+
 .track {
     width: 250px;
     height: 250px;

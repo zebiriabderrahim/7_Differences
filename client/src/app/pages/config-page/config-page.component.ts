@@ -13,6 +13,8 @@ export class ConfigPageComponent {
     // eslint-disable-next-line no-alert, quotes, semi, @typescript-eslint/no-magic-numbers
     gamePhase: number = 4;
 
+    readonly createRoute: string = '/create';
+
     games: Game[] = [
         {
             id: 1,
