@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DEFAULT_RADIUS, IMG_HEIGHT, IMG_TYPE, IMG_WIDTH, RADIUS_SIZES } from '@app/constants/creation-page';
+import { BMP_HEADER_OFFSET, DEFAULT_RADIUS, FORMAT_IMAGE, IMG_HEIGHT, IMG_TYPE, IMG_WIDTH, RADIUS_SIZES } from '@app/constants/creation-page';
 
 @Component({
     selector: 'app-root',
@@ -26,8 +26,8 @@ export class CreationPageComponent {
 
     async validateImageFormat(file: File) {
         const bmpHeader = new DataView(await file.arrayBuffer());
-        const bmpFormat = bmpHeader.getUint16(28, true);
-        this.isImageFormatValid = bmpFormat === 24;
+        const bmpFormat = bmpHeader.getUint16(BMP_HEADER_OFFSET, true);
+        this.isImageFormatValid = bmpFormat === FORMAT_IMAGE;
     }
 
     onSelectFile(event: Event) {
