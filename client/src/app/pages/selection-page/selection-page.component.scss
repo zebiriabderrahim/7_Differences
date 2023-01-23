@@ -32,18 +32,22 @@ h1 {
     border-style: double;
 }
 
-.change-game {
-    display: flex;
-    justify-content: space-between;
-}
 .previous_button {
+    position: absolute;
+    float: left;
+    left: 0;
     padding: 10px;
     margin: 10px;
     justify-content: flex-start;
+    font-size: 25px;
 }
 
 .next_button {
+    position: absolute;
+    float: right;
+    right: 0;
     padding: 10px;
     margin: 10px;
     align-items: flex-end;
+    font-size: 25px;
 }
