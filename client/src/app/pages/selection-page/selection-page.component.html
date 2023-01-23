@@ -1,4 +1,4 @@
-<div>
+<!-- <div>
     <h1>{{ titre }}</h1>
     <div class="game-selection">
         <div *ngFor="let gamecard of gameList.slice(gameIterator, gameIterator + 4)" class="game">
@@ -10,4 +10,10 @@
         <button *ngIf="hasPrevious" class="previous_button" (click)="lastFour()"><< Précedent</button>
         <button *ngIf="hasNext" class="next_button" (click)="nextFour()">Suivant >></button>
     </div>
-</div>
+</div> -->
+
+<mat-grid-list cols="2" rowHeight="2:1">
+    <mat-grid-tile *ngFor="let game of gameList">
+        <app-game-sheet [game]="game"></app-game-sheet>
+    </mat-grid-tile>
+</mat-grid-list>
