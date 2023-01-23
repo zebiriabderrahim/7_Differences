@@ -22,14 +22,22 @@ export class SelectionPageComponent {
         { name: 'titre jeu 8', picture: this.newImageSrc },
     ];
 
+    hasPrevious: boolean = false;
+    hasNext: boolean = true;
     gameIterator: number = 0;
 
     lastFour() {
         this.gameIterator -= 4;
+        if (this.gameIterator > 0) {
+            this.hasPrevious = true;
+        }
     }
 
     nextFour() {
         this.gameIterator += 4;
+        if (this.gameIterator > 8) {
+            this.hasPrevious = true;
+        }
     }
 
     selectedGamecard() {
