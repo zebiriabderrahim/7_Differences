@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { RADIUS_SIZES, DEFAULT_RADIUS } from '@app/constants/creation-page';
 
 @Component({
     selector: 'app-root',
@@ -8,13 +9,8 @@ import { Component } from '@angular/core';
 export class CreationPageComponent {
     url: string | null | ArrayBuffer = '';
 
-    radiusSize0: number = 0;
-    radiusSize3: number = 3;
-    radiusSize9: number = 9;
-    radiusSize15: number = 15;
-
-    radiusSizes: number[] = [this.radiusSize0, this.radiusSize3, this.radiusSize9, this.radiusSize15];
-    defaultRadius: number = this.radiusSize3;
+    radiusSizes: number[] = RADIUS_SIZES;
+    defaultRadius: number = DEFAULT_RADIUS;
 
     onSelectFile(event: Event) {
         const target = event.target as HTMLInputElement;
