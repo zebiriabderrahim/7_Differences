@@ -8,8 +8,7 @@ import { map, takeWhile } from 'rxjs/operators';
     styleUrls: ['./chronometer.component.scss'],
 })
 export class ChronometerComponent implements OnInit, OnChanges {
-    @Input()
-    isRunning: boolean;
+    @Input() isRunning: boolean;
     time: string;
     private timerSubscription: Subscription;
     /* eslint @typescript-eslint/no-magic-numbers: ["error", { "ignoreReadonlyClassProperties": true }]*/
