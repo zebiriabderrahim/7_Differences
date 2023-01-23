@@ -1,6 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ChronometerComponent } from '@app/components/chronometer/chronometer.component';
@@ -31,16 +31,16 @@ import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.
         GamePageComponent,
         MainPageComponent,
         MaterialPageComponent,
-        SidebarComponent,
         PlayAreaComponent,
+        SidebarComponent,
+        ChronometerComponent,
         SoloGameViewComponent,
         GameSheetComponent,
-        ChronometerComponent,
         PlayerNameDialogBoxComponent,
         GameInfosComponent,
     ],
+    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, ReactiveFormsModule, HttpClientModule],
     providers: [],
     bootstrap: [AppComponent],
-    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
 })
 export class AppModule {}
