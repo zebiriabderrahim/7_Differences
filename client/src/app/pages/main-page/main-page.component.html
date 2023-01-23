@@ -9,13 +9,11 @@
             <button class="button" [routerLink]="configRoute">Configuration</button>
         </div>
     </section>
-    <app-game-sheet></app-game-sheet>
     <button class="button" [routerLink]="gameRoute">Jouer!</button>
-
+    <app-game-sheet></app-game-sheet>
     <footer class="footer-item">
         <h4 class="team-name">{{ teamNumber }}</h4>
         <p>
             <span *ngFor="let teammateName of teammateNameList"> {{ teammateName }} </span>
         </p>
     </footer>
-</div>
