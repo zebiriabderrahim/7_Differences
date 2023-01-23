@@ -15,7 +15,7 @@ import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.component';
-import { GameInfosComponent } from './game-infos/game-infos.component';
+import { GameInfosComponent } from './components/game-infos/game-infos.component';
 import { SelectionPageComponent } from './pages/selection-page/selection-page.component';
 
 /**
