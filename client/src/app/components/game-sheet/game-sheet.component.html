@@ -1,26 +1,23 @@
-<div *ngIf="game" class="game sheet">
-    <div class="title">
-        <h1>{{game.name}}</h1>
-    </div>
-    <div class="difficulty Level">
-        <h2>{{game.difficultyLevel}}</h2>
-    </div>
-    <div class="thumbnail">
-        <img src="../../../assets/img/Pinocchior.jpg" alt="track" width="70px" height="75px"/>
-    </div>
-    <div class="top three section">
-        <div class="top three title">
+<div *ngIf="game" class="game-sheet">
+    <div class="top-three-section">
+        <div class="top-three-title">
             <h2>Top 3</h2>
         </div>
-        <div class="top three solo">
+        <div class="top-three-solo">
             <h3>00:30 coco</h3>
         </div>
         <div class="top three vs">
             <h3>00:30 coco</h3>
         </div>
     </div>
-    <div class="button section">
+    <div class="title">
+        <h1>{{ game.name }}</h1>
+    </div>
+    <div class="thumbnail">
+        <img [src]="game.thumbnail" alt="track" width="70px" height="75px" />
+    </div>
+    <div class="button-section">
         <button mat-raised-button (click)="openDialog()">Play</button>
-        <button class="button" >join</button>
+        <button class="button">join</button>
     </div>
 </div>

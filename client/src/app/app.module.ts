@@ -15,6 +15,7 @@ import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
+import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
 import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.component';
 
 /**
@@ -31,13 +32,14 @@ import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.
         MaterialPageComponent,
         PlayAreaComponent,
         SidebarComponent,
+        SelectionPageComponent,
         ChronometerComponent,
         SoloGameViewComponent,
         GameSheetComponent,
         PlayerNameDialogBoxComponent,
         GameInfosComponent,
     ],
-    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, ReactiveFormsModule, HttpClientModule],
+    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule, ReactiveFormsModule],
     providers: [],
     bootstrap: [AppComponent],
 })
