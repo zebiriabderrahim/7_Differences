@@ -9,14 +9,22 @@ import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog
     styleUrls: ['./game-sheet.component.scss'],
 })
 export class GameSheetComponent {
-    @Input() game: Game = { id: 1, name: 'test', difficultyLevel: 1, thumbnail: 'test', soloTopTime: [], oneVsOneTopTime: [], differencesCount: 10, hintList: [] };
+    @Input() game: Game = {
+        id: 1,
+        name: 'test',
+        difficultyLevel: 1,
+        thumbnail: 'test',
+        soloTopTime: [],
+        oneVsOneTopTime: [],
+        differencesCount: 10,
+        hintList: [],
+    };
     playerName: string;
     constructor(public dialog: MatDialog) {}
 
     openDialog() {
         const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent);
         dialogRef.afterClosed().subscribe((result) => {
-            console.log('The dialog was closed');
             this.playerName = result;
         });
     }

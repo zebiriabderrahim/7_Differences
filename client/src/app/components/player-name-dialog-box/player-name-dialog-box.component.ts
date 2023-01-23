@@ -8,7 +8,7 @@ import { MatDialogRef } from '@angular/material/dialog';
     styleUrls: ['./player-name-dialog-box.component.scss'],
 })
 export class PlayerNameDialogBoxComponent {
-    playerName: string= '';
+    playerName: string = '';
     ajoutForm = new FormGroup({
         controlFrequence: new FormControl('', [Validators.required, Validators.min(1), Validators.pattern('^[0-9]*$')]),
     });
