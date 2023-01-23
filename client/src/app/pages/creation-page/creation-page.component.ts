@@ -6,9 +6,7 @@ import { Component } from '@angular/core';
     styleUrls: ['./creation-page.component.scss'],
 })
 export class CreationPageComponent {
-    url: string | null | ArrayBuffer =
-        // eslint-disable-next-line max-len
-        'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.ytimg.com%2Fvi%2Ft6zVn5heQTY%2Fmaxresdefault.jpg&f=1&nofb=1&ipt=233d25c6f7a5c24a68c48f8ad3c8e581e531997f0dd5aa061624e99ad3e9cf2a&ipo=images';
+    url: string | null | ArrayBuffer = '';
 
     radiusSize0: number = 0;
     radiusSize3: number = 3;
@@ -18,18 +16,14 @@ export class CreationPageComponent {
     radiusSizes: number[] = [this.radiusSize0, this.radiusSize3, this.radiusSize9, this.radiusSize15];
     defaultRadius: number = this.radiusSize3;
 
-    onSelect(event: Event) {
+    onSelectFile(event: Event) {
         const target = event.target as HTMLInputElement;
-        const image = (target.files as FileList)[0];
-        const fileType = image.type;
-        if (fileType.match(/image\/*/)) {
+        if (target.files && target.files[0]) {
             const reader = new FileReader();
-            reader.readAsDataURL(image);
+            reader.readAsDataURL(target.files[0]);
             reader.onload = (e: Event) => {
                 this.url = (e.target as FileReader).result;
             };
-        } else {
-            window.alert('Please select correct image format');
         }
     }
 }
