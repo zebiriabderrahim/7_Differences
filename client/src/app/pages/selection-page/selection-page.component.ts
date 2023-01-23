@@ -35,7 +35,7 @@ export class SelectionPageComponent {
 
     nextFour() {
         this.gameIterator += 4;
-        if (this.gameIterator > 8) {
+        if (this.gameIterator > 1) {
             this.hasPrevious = true;
         }
     }
