@@ -1,13 +1,12 @@
 <div>
     <button class="button" routerLink="/home">Return to menu</button>
-    <img src = "../../../assets/img/magnifying-glass.png" id = "hint1" class = "hintIcon" (click) = "getHint()">
-    <img src = "../../../assets/img/magnifying-glass.png" id = "hint2" class = "hintIcon" (click) = "getHint()">
-    <img src = "../../../assets/img/magnifying-glass.png" id = "hint3" class = "hintIcon" (click) = "getHint()">
+    <img src="../../../assets/img/magnifying-glass.png" id="hint1" alt="Icone d'indice" class="hintIcon" (click)="getHint()" />
+    <img src="../../../assets/img/magnifying-glass.png" id="hint2" alt="Icone d'indice" class="hintIcon" (click)="getHint()" />
+    <img src="../../../assets/img/magnifying-glass.png" id="hint3" alt="Icone d'indice" class="hintIcon" (click)="getHint()" />
 </div>
 <div class="infomations section">
-    <h1>{{game.name}}</h1>
+    <h1>{{ game.name }}</h1>
     <app-chronometer [isRunning]="!isFinished"></app-chronometer>
-
 </div>
 <div class="game section">
     <div class="gameCanvas">
@@ -16,6 +15,6 @@
     <div class="gameCanvas">
         <img src="../../../assets/img/Pinocchior.jpg" alt="track" class="track" />
     </div>
-    <app-game-infos [game] = "game"></app-game-infos>
+    <app-game-infos [game]="game"></app-game-infos>
 </div>
 <button class="button" (click)="finish()">stop</button>
