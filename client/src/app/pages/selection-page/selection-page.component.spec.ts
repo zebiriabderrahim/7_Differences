@@ -34,20 +34,4 @@ describe('SelectionPageComponent', () => {
         component.lastFour();
         expect(component.gameIterator).toEqual(currentPhase - component.gamePhase);
     });
-
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
-
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
-
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
-
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
 });
