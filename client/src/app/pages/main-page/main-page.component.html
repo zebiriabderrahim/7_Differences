@@ -1,22 +1,21 @@
 <div class="container justified">
-    <h1 class="header-item">Bienvenue au cours {{ title }}</h1>
-    <img src="https://bit.ly/3QofL1J" alt="Logo Projet" />
+    <h1 class="header-item">{{ gameTitle }}</h1>
+    <img class="project-logo" src="../../../assets/img/RatCoon.png" alt="Logo Projet" />
     <section id="server-message" class="justified">
-        <p>Petit message du serveur : {{ message.getValue() }}</p>
+        <p>Modes de jeu:</p>
         <div class="justified">
-            <button class="button" (click)="getMessagesFromServer()">Récupérer un message du serveur</button>
-            <button class="button" (click)="sendTimeToServer()">Envoyer un message au serveur</button>
-            <button class="button" routerLink="/material">Voir la page démo Angular Material</button>
+            <button class="button" [routerLink]="selectionRoute">Classique</button>
+            <button class="button">Temps Limité</button>
+            <button class="button" [routerLink]="configRoute">Configuration</button>
         </div>
     </section>
-
-    <button class="button" routerLink="/game">Jouer!</button>
+    <app-game-sheet></app-game-sheet>
+    <button class="button" [routerLink]="gameRoute">Jouer!</button>
 
     <footer class="footer-item">
-        <h4 class="team-name">Rat-Coon</h4>
+        <h4 class="team-name">{{ teamNumber }}</h4>
         <p>
-            <span>Edgar Kappauf</span>, <span>Sulayman Hosna</span>, <span>Mathieu Prévost</span>, <span>Zakaria Zair</span>, <span>Jeremy Ear</span>,
-            <span>Abderrahim Zebiri</span>
+            <span *ngFor="let teammateName of teammateNameList"> {{ teammateName }} </span>
         </p>
     </footer>
 </div>
