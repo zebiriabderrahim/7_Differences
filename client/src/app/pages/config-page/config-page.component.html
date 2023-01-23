@@ -7,6 +7,7 @@
     </mat-grid-list>
     <div class="change-game">
         <button *ngIf="hasPrevious" class="previous_button" (click)="lastFour()"><< Précedent</button>
+        <button [routerLink]="createRoute" class="create_button">Création de jeu</button>
         <button *ngIf="hasNext" class="next_button" (click)="nextFour()">Suivant >></button>
     </div>
 </div>
