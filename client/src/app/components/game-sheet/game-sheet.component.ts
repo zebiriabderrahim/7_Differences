@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Game } from '@app/interfaces/game';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
+import { Game } from '@app/interfaces/game';
 
 @Component({
     selector: 'app-game-sheet',
@@ -19,6 +19,7 @@ export class GameSheetComponent {
         differencesCount: 10,
         hintList: [],
     };
+
     playerName: string;
     constructor(public dialog: MatDialog) {}
 

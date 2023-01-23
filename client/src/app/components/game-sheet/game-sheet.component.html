@@ -1,12 +1,12 @@
 <div *ngIf="game" class="game sheet">
     <div class="title">
-        <h1>{{game.name}}</h1>
+        <h1>{{ game.name }}</h1>
     </div>
     <div class="difficulty Level">
-        <h2>{{game.difficultyLevel}}</h2>
+        <h2>{{ game.difficultyLevel }}</h2>
     </div>
     <div class="thumbnail">
-        <img src="../../../assets/img/Pinocchior.jpg" alt="track" width="70px" height="75px"/>
+        <img [src]="game.thumbnail" alt="track" width="70px" height="75px" />
     </div>
     <div class="top three section">
         <div class="top three title">
@@ -21,6 +21,6 @@
     </div>
     <div class="button section">
         <button mat-raised-button (click)="openDialog()">Play</button>
-        <button class="button" >join</button>
+        <button class="button">join</button>
     </div>
 </div>
