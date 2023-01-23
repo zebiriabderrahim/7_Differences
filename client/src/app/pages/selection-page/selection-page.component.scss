@@ -13,15 +13,15 @@ h1 {
 
 @keyframes blink-text {
     0% {
-     opacity: 0;
+        opacity: 0;
     }
     50% {
-     opacity: 1;
+        opacity: 1;
     }
     100% {
-     opacity: 0;
+        opacity: 0;
     }
-}    
+}
 
 .game-selection {
     display: flex;
@@ -38,11 +38,9 @@ h1 {
     flex: 1 40%;
 }
 
-.game {
-    width: 50%;
-    height: 50%;
+.mat-grid-tile {
     border-color: black;
-    border-style: double;
+    border-style: dotted;
 }
 
 .previous_button {
