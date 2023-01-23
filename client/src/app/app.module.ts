@@ -11,10 +11,10 @@ import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
-import { SoloGameViewComponent } from './pages/solo-game-view/solo-game-view.component';
-import { ChronometerComponent } from './components/chronometer/chronometer.component';
-import { GameSheetComponent } from './components/game-sheet/game-sheet.component';
-import { PlayerNameDialogBoxComponent } from './components/player-name-dialog-box/player-name-dialog-box.component';
+import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.component';
+import { ChronometerComponent } from '@app/components/chronometer/chronometer.component';
+import { GameSheetComponent } from '@app/components/game-sheet/game-sheet.component';
+import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { GameInfosComponent } from './game-infos/game-infos.component';
 
 /**
@@ -31,8 +31,8 @@ import { GameInfosComponent } from './game-infos/game-infos.component';
         MaterialPageComponent,
         PlayAreaComponent,
         SidebarComponent,
-        SoloGameViewComponent,
         ChronometerComponent,
+        SoloGameViewComponent,
         GameSheetComponent,
         PlayerNameDialogBoxComponent,
         GameInfosComponent,

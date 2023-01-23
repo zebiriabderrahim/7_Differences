@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Game } from '@app/interfaces/game';
-import { PlayerNameDialogBoxComponent } from '../player-name-dialog-box/player-name-dialog-box.component';
+import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 
 @Component({
     selector: 'app-game-sheet',
@@ -16,6 +16,7 @@ export class GameSheetComponent {
     openDialog() {
         const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent);
         dialogRef.afterClosed().subscribe((result) => {
+            console.log('The dialog was closed');
             this.playerName = result;
         });
     }
