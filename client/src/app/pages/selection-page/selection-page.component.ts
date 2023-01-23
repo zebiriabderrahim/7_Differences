@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { Game } from '@app/interfaces/game';
-import { Gamecard } from '@app/interfaces/gamecard';
 
 @Component({
     selector: 'app-selection-page',
@@ -14,22 +13,87 @@ export class SelectionPageComponent {
     // eslint-disable-next-line no-alert, quotes, semi, @typescript-eslint/no-magic-numbers
     gamePhase: number = 4;
 
-    gameListTest: Gamecard[] = [
-        { name: 'titre jeu 1', picture: this.imageSrc },
-        { name: 'titre jeu 2', picture: this.imageSrc },
-        { name: 'titre jeu 3', picture: this.imageSrc },
-        { name: 'titre jeu 4', picture: this.imageSrc },
-        { name: 'titre jeu 5', picture: this.newImageSrc },
-        { name: 'titre jeu 6', picture: this.newImageSrc },
-        { name: 'titre jeu 7', picture: this.newImageSrc },
-        { name: 'titre jeu 8', picture: this.newImageSrc },
-    ];
-
     gameList: Game[] = [
-        { id: 1, name: 'rat Game', difficultyLevel: 10, thumbnail: 'a', soloTopTime: [], oneVsOneTopTime: [], differencesCount: 15, hintList: [] },
-        { id: 1, name: 'rat Game 2', difficultyLevel: 15, thumbnail: 'b', soloTopTime: [], oneVsOneTopTime: [], differencesCount: 15, hintList: [] },
-        { id: 1, name: 'rat Game 3', difficultyLevel: 20, thumbnail: 'c', soloTopTime: [], oneVsOneTopTime: [], differencesCount: 15, hintList: [] },
-        { id: 1, name: 'rat Game 4', difficultyLevel: 25, thumbnail: 'd', soloTopTime: [], oneVsOneTopTime: [], differencesCount: 15, hintList: [] },
+        {
+            id: 1,
+            name: 'rat Game',
+            difficultyLevel: 10,
+            thumbnail: this.imageSrc,
+            soloTopTime: [],
+            oneVsOneTopTime: [],
+            differencesCount: 15,
+            hintList: [],
+        },
+        {
+            id: 1,
+            name: 'rat Game 2',
+            difficultyLevel: 15,
+            thumbnail: this.imageSrc,
+            soloTopTime: [],
+            oneVsOneTopTime: [],
+            differencesCount: 15,
+            hintList: [],
+        },
+        {
+            id: 1,
+            name: 'rat Game 3',
+            difficultyLevel: 20,
+            thumbnail: this.imageSrc,
+            soloTopTime: [],
+            oneVsOneTopTime: [],
+            differencesCount: 15,
+            hintList: [],
+        },
+        {
+            id: 1,
+            name: 'rat Game 4',
+            difficultyLevel: 25,
+            thumbnail: this.imageSrc,
+            soloTopTime: [],
+            oneVsOneTopTime: [],
+            differencesCount: 15,
+            hintList: [],
+        },
+        {
+            id: 1,
+            name: 'rat Game 4',
+            difficultyLevel: 10,
+            thumbnail: this.newImageSrc,
+            soloTopTime: [],
+            oneVsOneTopTime: [],
+            differencesCount: 15,
+            hintList: [],
+        },
+        {
+            id: 1,
+            name: 'rat Game 5',
+            difficultyLevel: 15,
+            thumbnail: this.newImageSrc,
+            soloTopTime: [],
+            oneVsOneTopTime: [],
+            differencesCount: 15,
+            hintList: [],
+        },
+        {
+            id: 1,
+            name: 'rat Game 6',
+            difficultyLevel: 20,
+            thumbnail: this.newImageSrc,
+            soloTopTime: [],
+            oneVsOneTopTime: [],
+            differencesCount: 15,
+            hintList: [],
+        },
+        {
+            id: 1,
+            name: 'rat Game 7',
+            difficultyLevel: 25,
+            thumbnail: this.newImageSrc,
+            soloTopTime: [],
+            oneVsOneTopTime: [],
+            differencesCount: 15,
+            hintList: [],
+        },
     ];
 
     hasPrevious: boolean = false;

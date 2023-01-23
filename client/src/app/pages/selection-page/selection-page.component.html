@@ -1,16 +1,16 @@
-<!-- <div>
+<div>
     <h1>{{ titre }}</h1>
     <div class="game-selection">
         <div *ngFor="let gamecard of gameList.slice(gameIterator, gameIterator + 4)" class="game">
             <h2>{{ gamecard.name }}</h2>
-            <img src="{{ gamecard.picture }}" (click)="selectedGamecard()" alt="track" class="track" />
+            <img src="{{ gamecard.thumbnail }}" (click)="selectedGamecard()" alt="track" class="track" />
         </div>
     </div>
     <div class="change-game">
         <button *ngIf="hasPrevious" class="previous_button" (click)="lastFour()"><< Précedent</button>
         <button *ngIf="hasNext" class="next_button" (click)="nextFour()">Suivant >></button>
     </div>
-</div> -->
+</div>
 
 <mat-grid-list cols="2" rowHeight="2:1">
     <mat-grid-tile *ngFor="let game of gameList">
