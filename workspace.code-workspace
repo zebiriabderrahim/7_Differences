@@ -12,5 +12,8 @@
         {
             "path": "./common"
         }
-    ]
+    ],
+    "settings": {
+        "liveServer.settings.multiRootWorkspaceName": "LOG2990-101"
+    }
 }
