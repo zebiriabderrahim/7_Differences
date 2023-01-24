@@ -7,13 +7,17 @@ import { Game } from '@app/interfaces/game';
     styleUrls: ['./config-page.component.scss'],
 })
 export class ConfigPageComponent {
-    titre: string = 'Selectionne ton jeu';
-    imageSrc: string = '../../../assets/img/rat.jpg';
-    newImageSrc: string = '../../../assets/img/strong_rat.jpg';
+    readonly titre: string = 'Selectionne ton jeu';
+    readonly imageSrc: string = '../../../assets/img/rat.jpg';
+    readonly newImageSrc: string = '../../../assets/img/strong_rat.jpg';
     // eslint-disable-next-line no-alert, quotes, semi, @typescript-eslint/no-magic-numbers
-    gamePhase: number = 4;
+    readonly gamePhase: number = 4;
 
     readonly createRoute: string = '/create';
+
+    readonly timeCountdown: string = '30 secondes';
+    readonly timePenalty: string = '5 secondes';
+    readonly timeWonByDifference: string = '5 secondes';
 
     games: Game[] = [
         {
