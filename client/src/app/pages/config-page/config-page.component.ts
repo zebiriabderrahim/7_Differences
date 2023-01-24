@@ -119,8 +119,4 @@ export class ConfigPageComponent {
             this.hasNext = false;
         }
     }
-
-    selectedGamecard() {
-        alert('Va à la page du jeu selectionné');
-    }
 }
