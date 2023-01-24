@@ -17,4 +17,7 @@ export class GameInfosComponent {
         differencesCount: 15,
         hintList: ['Look in the far left', 'The sky is beautiful', 'The rat has it'],
     };
+    @Input() mode: string;
+    @Input() penaltyTime: number;
+    @Input() bonusTime: number;
 }

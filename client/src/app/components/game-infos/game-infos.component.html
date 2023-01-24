@@ -1,8 +1,10 @@
 <div id="gameInfos">
     <p><strong>Nom du Jeu:</strong> {{game.name}}</p>
     <p><strong>Niveau de Difficulté:</strong> {{game.difficultyLevel}}</p>
-    <p><strong>Mode de Jeu:</strong> indicate game mode</p>
-    <p><strong>Nombre de Différence:</strong> {{game.differencesCount}}</p>
-    <p>Si mode solo, indique la pénalité de temps</p>
-    <p>Si mode temps limité, indique le bonus de temps quand on trouve une différence</p>  
+    <p><strong>Mode de Jeu:</strong> {{mode}}</p>
+    <p><strong>Nombre de Différences Présentes:</strong> {{game.differencesCount}}</p>
+    <mat-icon *ngIf = "mode === 'Solo'" matTooltip="Pour l'utilisation d'un indice" matTooltipPosition="left">info</mat-icon>
+    <p *ngIf = "mode === 'Solo'"><strong>Temps de pénalité:</strong> {{penaltyTime}}</p>
+    <mat-icon *ngIf = "mode === 'LimitedTime'" matTooltip="Avec la découverte d’une différence" matTooltipPosition="left">info</mat-icon>
+    <p *ngIf = "mode === 'LimitedTime'"><strong>Temps Bonus:</strong> {{bonusTime}}</p>  
 </div>

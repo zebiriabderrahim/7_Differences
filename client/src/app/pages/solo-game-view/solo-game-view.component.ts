@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Game } from '@app/interfaces/game';
 
+
 @Component({
     selector: 'app-solo-game-view',
     templateUrl: './solo-game-view.component.html',
@@ -18,11 +19,18 @@ export class SoloGameViewComponent {
         hintList: ['Look in the far left', 'The sky is beautiful', 'The rat has it'],
     };
     isFinished: boolean = false;
+    mode: string = 'Solo';
+    penaltyTime: number = 1;
+    bonusTime: number = 1;
+    readonly homeRoute: string = '/home';
     finish(): void {
         this.isFinished = true;
     }
-    getHint(): void {
-        const hint = this.game.hintList[Math.floor(Math.random() * this.game.hintList.length)];
+    getHint(index: number): void {
+        const hint = this.game.hintList[index];
         window.alert(hint); // temporary until we find the best way to display it
+    }
+    abandonGame(): void {
+        //
     }
 }
