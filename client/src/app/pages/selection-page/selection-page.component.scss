@@ -1,3 +1,17 @@
+:root {
+    --background-color: #c4e5ff;
+    --player-color: purple;
+    --active-color: darkgreen;
+    --text-color: black;
+    --highlight: #65e073;
+    --selected-page: #96f68f;
+    --hover-playlist: #f2f2f2;
+}
+
+body {
+    background-color: #c4e5ff;
+}
+
 * {
     font-family: 'Roboto', sans-serif;
 }
