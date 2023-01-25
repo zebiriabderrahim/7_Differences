@@ -1,30 +1,16 @@
-<div class="btn-group" style="width:100%">
-    <button mat-stroked-button style="width:50%">Téléverser deux images différentes</button>
-    <button mat-stroked-button style="width:50%">Téléverser la même image</button>
+<div class="images-section">
+  <img *ngFor='let url of urls'  [src]="url" height="200">> <br/>
+  <input type='file' (change)="onSelectFile($event)">  
+  <div *ngIf="!this.isImageTypeValid">Le type d'image doit être un bitmap.</div> 
+  <div *ngIf="!this.isImageSizeValid">La taille d'image doit être de 640x480.</div>
+  <div *ngIf="!this.isImageFormatValid">Le format d'image doit être 24-bits.</div>
 </div>
-<button mat-stroked-button>Réinitialiser les arrière-plans</button>
-<!-- <mat-form-field>
-    <mat-label>Configuration du rayon d'élargissement des différences</mat-label>
-    <div class="radio" *ngFor="let radiusSize of radiusSizes">
-      <mat-select for="type">
-        <input type="radio" name="type"
-          [ngModel]="defaultRadius" [value]="radiusSize">
-        {{radiusSize}}
-      </mat-select >
-    </div>
-</mat-form-field> -->
 
-<!-- <mat-form-field appearance="fill">
-  <mat-label>Choisir le rayon d'élargissement des différences</mat-label>
-  <mat-select>
-    <mat-option *ngFor="let radiusSize of radiusSizes" [ngModel]="defaultRadius" [value]="radiusSize">
-      {{radiusSize}}
-    </mat-option>
-  </mat-select>
-</mat-form-field> -->
-
-<img *ngFor='let url of urls'  [src]="url" height="200">> <br/>
-<input type='file' (change)="onSelectFile($event)">  
-<div *ngIf="!this.isImageTypeValid">Le type d'image doit être un bitmap.</div> 
-<div *ngIf="!this.isImageSizeValid">La taille d'image doit être de 640x480.</div>
-<div *ngIf="!this.isImageFormatValid">Le format d'image doit être 24-bits.</div>
+<div id="configuration-buttons">
+  <div>
+      <p>Choisissez le rayon d'élargissement :</p>
+      <mat-radio-group color="warn" aria-label="Select an option" [(ngModel)]="defaultRadius">
+          <mat-radio-button *ngFor="let rad of radiusSizes" [value]="rad">{{ rad }}</mat-radio-button>
+      </mat-radio-group>
+  </div>
+</div>
