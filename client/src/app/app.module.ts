@@ -18,6 +18,7 @@ import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.component';
+import { ImageCanvasComponent } from './components/image-canvas/image-canvas.component';
 
 /**
  * Main module that is used in main.ts.
@@ -39,6 +40,7 @@ import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.
         GameSheetComponent,
         PlayerNameDialogBoxComponent,
         GameInfosComponent,
+        ImageCanvasComponent,
     ],
     imports: [
         AppMaterialModule,
