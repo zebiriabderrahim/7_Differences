@@ -1,20 +1,29 @@
 <div class="btn-group" style="width:100%">
-    <button style="width:50%">Téléverser deux images différentes</button>
-    <button style="width:50%">Téléverser la même image</button>
+    <button mat-stroked-button style="width:50%">Téléverser deux images différentes</button>
+    <button mat-stroked-button style="width:50%">Téléverser la même image</button>
 </div>
-<button >Réinitialiser les arrière-plans</button>
-<div class="form-group">
-    <label>Configuration du rayon d'élargissement des différences</label>
+<button mat-stroked-button>Réinitialiser les arrière-plans</button>
+<!-- <mat-form-field>
+    <mat-label>Configuration du rayon d'élargissement des différences</mat-label>
     <div class="radio" *ngFor="let radiusSize of radiusSizes">
-      <label for="type">
+      <mat-select for="type">
         <input type="radio" name="type"
           [ngModel]="defaultRadius" [value]="radiusSize">
         {{radiusSize}}
-      </label>
+      </mat-select >
     </div>
-</div>
+</mat-form-field> -->
 
-<img [src]="url" height="200"> <br/>
+<!-- <mat-form-field appearance="fill">
+  <mat-label>Choisir le rayon d'élargissement des différences</mat-label>
+  <mat-select>
+    <mat-option *ngFor="let radiusSize of radiusSizes" [ngModel]="defaultRadius" [value]="radiusSize">
+      {{radiusSize}}
+    </mat-option>
+  </mat-select>
+</mat-form-field> -->
+
+<img *ngFor='let url of urls'  [src]="url" height="200">> <br/>
 <input type='file' (change)="onSelectFile($event)">  
 <div *ngIf="!this.isImageTypeValid">Le type d'image doit être un bitmap.</div> 
 <div *ngIf="!this.isImageSizeValid">La taille d'image doit être de 640x480.</div>
