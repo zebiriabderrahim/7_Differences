@@ -7,7 +7,7 @@ import { BMP_HEADER_OFFSET, DEFAULT_RADIUS, FORMAT_IMAGE, IMG_HEIGHT, IMG_TYPE, 
     styleUrls: ['./creation-page.component.scss'],
 })
 export class CreationPageComponent {
-    url: string = '';
+    urls: string[] = [];
     isImageTypeValid: boolean = false;
     isImageSizeValid: boolean = false;
     isImageFormatValid: boolean = false;
@@ -44,7 +44,7 @@ export class CreationPageComponent {
                     this.validateImageSize(ev);
                     this.validateImageFormat(file);
                 };
-                this.url = (e.target as FileReader).result as string;
+                this.urls.push((e.target as FileReader).result as string);
             };
         }
     }
