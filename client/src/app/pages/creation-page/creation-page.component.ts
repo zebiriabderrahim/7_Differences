@@ -34,11 +34,6 @@ export class CreationPageComponent {
         this.isImageFormatValid = bmpFormat === FORMAT_IMAGE;
     }
 
-    resetCanvas() {
-        this.originalImage = new Image();
-        this.modifiedImage = new Image();
-    }
-
     onSelectFile(event: Event) {
         const target = event.target as HTMLInputElement;
         if (target.files && target.files[0]) {
