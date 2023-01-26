@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { BMP_HEADER_OFFSET, DEFAULT_RADIUS, FORMAT_IMAGE, IMG_HEIGHT, IMG_TYPE, IMG_WIDTH, RADIUS_SIZES } from '@app/constants/creation-page';
+// import { ImageCanvasComponent } from './components/image-canvas/image-canvas.component';
 
 @Component({
     selector: 'app-root',
