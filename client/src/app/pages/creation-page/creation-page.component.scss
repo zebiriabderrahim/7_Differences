@@ -36,7 +36,11 @@
 }
 
 #configuration-buttons p {
-    margin-right: 16px;
+    margin-right: 13px;
+}
+
+.mat-radio-button~.mat-radio-button {
+    margin-left: 13px;
 }
 
 #canvas-zone {
