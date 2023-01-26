@@ -1,21 +1,24 @@
 <div>
-    <button class="button" routerLink="homeRoute">Retour au menu</button>
     <img src="../../../assets/img/magnifying-glass.png" id="hint1" alt="Icone d'indice" class="hintIcon" (click)="getHint(0)" />
     <img src="../../../assets/img/magnifying-glass.png" id="hint2" alt="Icone d'indice" class="hintIcon" (click)="getHint(1)" />
     <img src="../../../assets/img/magnifying-glass.png" id="hint3" alt="Icone d'indice" class="hintIcon" (click)="getHint(2)" />
 </div>
-<div class="infomations section">
+<div class="infomations-header">
     <h1>{{ game.name }}</h1>
-    <app-chronometer [isRunning]="!isFinished"></app-chronometer>
-</div>
-<div class="game section">
-    <div class="gameCanvas">
-        <img src="../../../assets/img/Pinocchior.jpg" alt="track" />
-    </div>
-    <div class="gameCanvas">
-        <img src="../../../assets/img/Pinocchior.jpg" alt="track" class="track" />
+    <div class="game-feedback">
+        <h1> Temps: {{ timer.time }}</h1>
+        <h1> différences trouvées: {{ game.differencesCount }}</h1>
     </div>
     <app-game-infos [game]="game" [mode] = "mode" [penaltyTime]="penaltyTime" [bonusTime] = "bonusTime"></app-game-infos>
 </div>
+<div class="canvas-container">
+        <div class="game-canvas">
+            <canvas id="originalFG" [attr.height]="height" [attr.width]="width" #originalCanvasFG></canvas>
+            <canvas id="original" [attr.height]="height" [attr.width]="width"  #originalCanvas></canvas>
+        </div>
+        <div class="game-canvas">
+            <canvas id="modifiedFG" [attr.height]="height" [attr.width]="width"  #modifiedCanvasFG></canvas>
+            <canvas id="modified" [attr.height]="height" [attr.width]="width"  #modifiedCanvas ></canvas>
+        </div>
+    </div>
 <button class = "importantButton" (click) = "abandonGame()" routerLink = "homeRoute">Abandonner la partie</button>
-<button class="button" (click)="finish()">Arrêt</button>

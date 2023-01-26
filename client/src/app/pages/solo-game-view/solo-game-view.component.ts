@@ -1,13 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { MAX_HEIGHT as CANVAS_HEIGHT, MAX_WIDTH as CANVAS_WIDTH } from '@app/constants';
 import { Game } from '@app/interfaces/game-interfaces';
-
+import { TimerService } from '@app/services/timer-service/timer.service';
 
 @Component({
     selector: 'app-solo-game-view',
     templateUrl: './solo-game-view.component.html',
     styleUrls: ['./solo-game-view.component.scss'],
 })
-export class SoloGameViewComponent {
+export class SoloGameViewComponent implements OnInit {
+    time: string = '00:00';
     game: Game = {
         id: 1,
         name: 'Racoon vs Rat',
@@ -23,14 +25,28 @@ export class SoloGameViewComponent {
     penaltyTime: number = 1;
     bonusTime: number = 1;
     readonly homeRoute: string = '/home';
-    finish(): void {
-        this.isFinished = true;
+    private canvasSize = { width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
+    constructor(public timer: TimerService) {}
+
+    get width(): number {
+        return this.canvasSize.width;
+    }
+
+    get height(): number {
+        return this.canvasSize.height;
+    }
+
+    ngOnInit() {
+        this.timer.startTimer();
+    }
+    finish() {
+        this.timer.resetTimer();
     }
     getHint(index: number): void {
         const hint = this.game.hintList[index];
         window.alert(hint); // temporary until we find the best way to display it
     }
     abandonGame(): void {
-        //
+        this.timer.stopTimer();
     }
 }
