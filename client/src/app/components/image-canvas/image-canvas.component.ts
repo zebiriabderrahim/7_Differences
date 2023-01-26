@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 
 @Component({
@@ -6,14 +6,15 @@ import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
     templateUrl: './image-canvas.component.html',
     styleUrls: ['./image-canvas.component.scss'],
 })
-export class ImageCanvasComponent implements OnInit {
-    canvas: HTMLCanvasElement | null;
-    context: CanvasRenderingContext2D | null;
+export class ImageCanvasComponent implements AfterViewInit {
+    @ViewChild('canvas')
+    canvas: ElementRef = {} as ElementRef;
+    context: CanvasRenderingContext2D;
 
-    // constructor() {}
-    ngOnInit(): void {
-        this.canvas = document.getElementById('myCanvas') as HTMLCanvasElement;
-        this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
+    ngAfterViewInit(): void {
+        this.canvas.nativeElement.width = IMG_WIDTH;
+        this.canvas.nativeElement.height = IMG_HEIGHT;
+        this.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.context.fillStyle = 'green';
         this.context.fillRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
     }
