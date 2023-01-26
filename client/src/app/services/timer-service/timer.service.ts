@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { timer } from 'rxjs';
+import { Subscription, timer } from 'rxjs';
 import { map, takeWhile } from 'rxjs/operators';
-import { MINUTE_CONVERSION, START_TIME, TWO_DIGIT_LIMIT, ONE_SECOND } from '@app/constants';
+import { MINUTE_CONVERSION, START_TIME, TWO_DIGIT_LIMIT, ONE_SECOND } from '@app/constants/constants';
 
 @Injectable({
     providedIn: 'root',
@@ -9,10 +9,10 @@ import { MINUTE_CONVERSION, START_TIME, TWO_DIGIT_LIMIT, ONE_SECOND } from '@app
 export class TimerService {
     time: string;
     isRunning: boolean;
-
+    private timerSubscription: Subscription;
     startTimer() {
         this.isRunning = true;
-        timer(START_TIME, ONE_SECOND)
+        this.timerSubscription = timer(START_TIME, ONE_SECOND)
             .pipe(
                 map((val) => {
                     const minutes = Math.floor(val / MINUTE_CONVERSION);
@@ -26,10 +26,11 @@ export class TimerService {
 
     stopTimer() {
         this.isRunning = false;
+        this.timerSubscription.unsubscribe();
     }
 
     resetTimer() {
-        this.time = '00:00';
+        this.stopTimer();
         this.isRunning = false;
     }
 }

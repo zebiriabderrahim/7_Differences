@@ -14,16 +14,16 @@ export class CommunicationService {
 
     constructor(private readonly http: HttpClient) {}
 
-    fetchAllGames(): Observable<Game[]> {
-        return this.http.get<Game[]>(`${this.gameUrl}`).pipe(catchError(this.handleError<Game[]>('fetchAllGames')));
+    loadAllGames(): Observable<Game[]> {
+        return this.http.get<Game[]>(`${this.gameUrl}`).pipe(catchError(this.handleError<Game[]>('loadAllGames')));
     }
 
     getGameNames(): Observable<string[]> {
         return this.http.get<string[]>(`${this.baseUrl}/gameNames`).pipe(catchError(this.handleError<string[]>('getGameNames')));
     }
 
-    fetchGame(id: number): Observable<Game> {
-        return this.http.get<Game>(`${this.baseUrl}/game/:${id}`).pipe(catchError(this.handleError<Game>('fetchGame')));
+    loadGame(id: number): Observable<Game> {
+        return this.http.get<Game>(`${this.baseUrl}/game/:${id}`).pipe(catchError(this.handleError<Game>('loadGame')));
     }
 
     postGame(gameData: Game): Observable<void> {
@@ -34,8 +34,8 @@ export class CommunicationService {
         return this.http.put<void>(`${this.baseUrl}/`, constants).pipe(catchError(this.handleError<void>('basicPut')));
     }
 
-    fetchConfigConstants(): Observable<GameConst> {
-        return this.http.get<GameConst>(`${this.baseUrl}/constants`).pipe(catchError(this.handleError<GameConst>('basicPut')));
+    loadConfigConstants(): Observable<GameConst> {
+        return this.http.get<GameConst>(`${this.baseUrl}/constants`).pipe(catchError(this.handleError<GameConst>('loadConfigConstants')));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
