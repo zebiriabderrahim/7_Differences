@@ -16,6 +16,9 @@ export class CreationPageComponent {
     radiusSizes: number[] = RADIUS_SIZES;
     defaultRadius: number = DEFAULT_RADIUS;
 
+    originalImage: HTMLImageElement = new Image();
+    modifiedImage: HTMLImageElement = new Image();
+
     validateImageType(imageDescription: string) {
         this.isImageTypeValid = imageDescription.includes(IMG_TYPE);
     }
@@ -29,6 +32,11 @@ export class CreationPageComponent {
         const bmpHeader = new DataView(await file.arrayBuffer());
         const bmpFormat = bmpHeader.getUint16(BMP_HEADER_OFFSET, true);
         this.isImageFormatValid = bmpFormat === FORMAT_IMAGE;
+    }
+
+    resetCanvas() {
+        this.originalImage = new Image();
+        this.modifiedImage = new Image();
     }
 
     onSelectFile(event: Event) {
@@ -45,6 +53,8 @@ export class CreationPageComponent {
                     this.validateImageSize(ev);
                     this.validateImageFormat(file);
                 };
+                this.originalImage = image;
+                this.modifiedImage = image;
                 this.urls.push((e.target as FileReader).result as string);
             };
         }
