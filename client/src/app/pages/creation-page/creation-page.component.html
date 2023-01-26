@@ -12,7 +12,13 @@
         >
             Téléverser la même image sur les deux zones <mat-icon>attach_file</mat-icon>
         </button>
-        <button mat-raised-button color="basic" matTooltip="Réinitialise les arrières-plans">Réinitialiser les arrières-plans</button>
+        <button 
+            mat-raised-button color="basic" 
+            matTooltip="Réinitialise les arrières-plans" 
+            (click)="resetCanvas()"
+        >
+            Réinitialiser les arrières-plans 
+        </button>
     </div>
 
     <input type="file" id="upload-btn" (change)="onSelectFile($event)" #fileUpload />
