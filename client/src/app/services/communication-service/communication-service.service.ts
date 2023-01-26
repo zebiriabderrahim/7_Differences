@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { apiConstants } from '@app/interfaces/api-constants';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Game } from 'src/app/interfaces/game';
+import { Game, GameConst } from '@app/interfaces/game-interfaces';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -31,12 +30,12 @@ export class CommunicationService {
         return this.http.post<void>(`${this.gameUrl}`, gameData).pipe(catchError(this.handleError<void>('postGame')));
     }
 
-    updateConfigConstants(constants: apiConstants): Observable<void> {
+    updateConfigConstants(constants: GameConst): Observable<void> {
         return this.http.put<void>(`${this.baseUrl}/`, constants).pipe(catchError(this.handleError<void>('basicPut')));
     }
 
-    fetchConfigConstants(): Observable<apiConstants> {
-        return this.http.get<apiConstants>(`${this.baseUrl}/constants`).pipe(catchError(this.handleError<apiConstants>('basicPut')));
+    fetchConfigConstants(): Observable<GameConst> {
+        return this.http.get<GameConst>(`${this.baseUrl}/constants`).pipe(catchError(this.handleError<GameConst>('basicPut')));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
