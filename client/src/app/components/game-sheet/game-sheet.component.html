@@ -1,48 +1,34 @@
-<div *ngIf="game" class="game sheet">
-    <mat-grid-list cols="4" rowHeight="50px">
-        <mat-grid-tile [rowspan]="1" [colspan]="2">
-            <div class="title">
-                <h1>{{ game.name }}</h1>
-            </div>
-        </mat-grid-tile>
+<div *ngIf="game" class="gameSheet">
+    <h1 class="title">{{ game.name }}</h1>
+    <div class="gameContainer">
+        <img class="thumbnail" src="../../../assets/img/Pinocchior.jpg" alt="track" />
 
-        <mat-grid-tile [rowspan]="1" [colspan]="2">
-            <div class="difficulty Level">
-                <h2>Difficulté: {{ game.difficultyLevel }}</h2>
-            </div>
-        </mat-grid-tile>
+        <div class="gameInfo">
+            <h2>Difficulté: {{ game.difficultyLevel }}</h2>
 
-        <mat-grid-tile [rowspan]="4" [colspan]="2">
-            <div class="thumbnail">
-                <img src="../../../assets/img/Pinocchior.jpg" alt="track" width="200px" height="200px" />
-            </div>
-        </mat-grid-tile>
+            <div class="ranking">
+                <div class="top three section">
+                    <div class="top three title">
+                        <h3>Top 3 Solo</h3>
+                    </div>
+                    <div *ngFor="let player of game.soloTopTime; index as i">
+                        {{ i + 1 + '  ' + player.name + '---' + player.time }}
+                    </div>
+                </div>
 
-        <mat-grid-tile [rowspan]="4" [colspan]="1">
-            <div class="top three section">
-                <div class="top three title">
-                    <h2>Top 3 Solo</h2>
-                </div>
-                <div *ngFor="let player of game.soloTopTime; index as i">
-                    {{ i + 1 + '  ' + player.name + '---' + player.time }}
-                </div>
-            </div>
-        </mat-grid-tile>
-        <mat-grid-tile [rowspan]="4" [colspan]="1">
-            <div class="top three section">
-                <div class="top three title">
-                    <h2>Top 3 1 V 1</h2>
-                </div>
-                <div *ngFor="let player of game.oneVsOneTopTime">
-                    {{ player.name + '---' + player.time }}
+                <div class="top three section">
+                    <div class="top three title">
+                        <h3>Top 3 1 V 1</h3>
+                    </div>
+                    <div *ngFor="let player of game.oneVsOneTopTime">
+                        {{ player.name + '---' + player.time }}
+                    </div>
                 </div>
             </div>
-        </mat-grid-tile>
-        <mat-grid-tile [rowspan]="1" [colspan]="2">
-            <div class="button section">
-                <button mat-raised-button (click)="openDialog()">Jouer</button>
-                <button mat-raised-button>Joinder</button>
-            </div>
-        </mat-grid-tile>
-    </mat-grid-list>
+        </div>
+    </div>
+    <div class="buttonSection">
+        <button mat-raised-button (click)="openDialog()">Jouer</button>
+        <button mat-raised-button>Joinder</button>
+    </div>
 </div>

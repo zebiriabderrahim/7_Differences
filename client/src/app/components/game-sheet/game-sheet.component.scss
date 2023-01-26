@@ -1,6 +1,70 @@
-.game.sheet {
-    width: 800px;
-    height: 400px;
-    background-color: rgba(143, 116, 97, 0.298);
-    border: 1px solid black;
+* {
+    font-family: 'Roboto', sans-serif;
+}
+
+.gameSheet {
+    border: 6px solid #000000;
+    border-radius: 15px;
+    box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.75);
+    width: 640px;
+    height: 480px;
+}
+
+h1 {
+    text-align: center;
+    padding: 25px;
+    font-size: 300%;
+    font-weight: 700;
+}
+
+.gameContainer {
+    display: flex;
+    background-color: rgb(255, 255, 255);
+    padding-top: 20px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.thumbnail {
+    margin: 5px;
+    display: flex;
+    flex: 0 1 50%;
+    max-width: 320px;
+    max-height: 240px;
+}
+
+.gameInfo {
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+    margin: 5px;
+    background-color: #ffffff;
+    width: 320px;
+    height: 240px;
+}
+
+.ranking {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: center;
+    margin: 10px;
+}
+
+.buttonSection {
+    margin-left: 10px;
+    margin-right: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background-color: #ffffff;
+    text-align: center;
+}
+
+.mat-raised-button {
+    padding: 10px;
+    min-width: 200px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
