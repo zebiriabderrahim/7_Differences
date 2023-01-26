@@ -1,13 +1,14 @@
-import { Component } from '@angular/core';
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from '@app/constants/solo-game-view';
+import { Component, OnInit } from '@angular/core';
+import { CANVAS_WIDTH, CANVAS_HEIGHT } from '@app/constants/solo-game-view';
 import { Game } from '@app/interfaces/game-interfaces';
+import { TimerService } from '@app/services/timer-service/timer.service';
 
 @Component({
     selector: 'app-solo-game-view',
     templateUrl: './solo-game-view.component.html',
     styleUrls: ['./solo-game-view.component.scss'],
 })
-export class SoloGameViewComponent {
+export class SoloGameViewComponent implements OnInit {
     time: string = '00:00';
     game: Game = {
         id: 1,
@@ -26,6 +27,7 @@ export class SoloGameViewComponent {
     readonly homeRoute: string = '/home';
     private canvasSize = { width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
 
+    constructor(public timer: TimerService) {}
     get width(): number {
         return this.canvasSize.width;
     }
@@ -34,8 +36,11 @@ export class SoloGameViewComponent {
         return this.canvasSize.height;
     }
 
+    ngOnInit() {
+        this.timer.startTimer();
+    }
     finish() {
-        // this.timer.resetTimer();
+        this.timer.resetTimer();
     }
     getHint(index: number): void {
         const hint = this.game.hintList[index];
