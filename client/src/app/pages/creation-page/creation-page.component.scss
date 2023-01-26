@@ -1,14 +1,17 @@
-.images-section{
+.images-section {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space;
-    // background-color: rgb(150, 150, 150);
-    border-color: black;
-    color: white;
     border-radius: 5px;
     padding: 10px;
     margin: 20px;
+}
+
+#canvas-action-buttons {
+    width: 55%;
+    display: flex;
+    justify-content: space-around;
 }
 
 #configuration-buttons {
@@ -36,12 +39,12 @@
     margin-right: 16px;
 }
 
-.mat-radio-button~.mat-radio-button {
-    margin-left: 16px;
-}
-
 #canvas-zone {
     display: flex;
     justify-content: center;
     flex-direction: row;
+}
+
+#upload-btn {
+    display: none;
 }
