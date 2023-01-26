@@ -22,9 +22,6 @@ export class ImageCanvasComponent implements AfterViewInit, OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         this.setCanvasImage(changes.image.currentValue);
-        // TODO: remove console.log
-        // eslint-disable-next-line no-console
-        console.log(changes.image.currentValue);
     }
 
     setCanvasImage(image: HTMLImageElement): void {
