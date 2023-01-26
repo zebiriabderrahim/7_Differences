@@ -1,13 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Game } from '@app/interfaces/game-interfaces';
-
+import { TimerService } from '@app/services/timer-service/timer.service';
 
 @Component({
     selector: 'app-solo-game-view',
     templateUrl: './solo-game-view.component.html',
     styleUrls: ['./solo-game-view.component.scss'],
 })
-export class SoloGameViewComponent {
+export class SoloGameViewComponent implements OnInit {
+    time: string = '00:00';
     game: Game = {
         id: 1,
         name: 'Racoon vs Rat',
@@ -23,8 +24,13 @@ export class SoloGameViewComponent {
     penaltyTime: number = 1;
     bonusTime: number = 1;
     readonly homeRoute: string = '/home';
-    finish(): void {
-        this.isFinished = true;
+    constructor(public timer: TimerService) {}
+
+    ngOnInit() {
+        this.timer.startTimer();
+    }
+    finish() {
+        this.timer.resetTimer();
     }
     getHint(index: number): void {
         const hint = this.game.hintList[index];
