@@ -1,0 +1,27 @@
+#image-editor {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+}
+
+#canvas-action-buttons {
+    padding: 10px;
+    padding-right: 80px;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+}
+.canvas-buttons button {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+#image-canvas {
+    width: 100%;
+    padding: 10px;
+    height: 100%;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    overflow: hidden;
+    position: relative;
+}
