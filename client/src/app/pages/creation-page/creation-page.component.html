@@ -1,25 +1,32 @@
 <div class="images-section">
-  <img *ngFor='let url of urls' [src]="url" height="200">> <br />
-  <input type='file' (change)="onSelectFile($event)">
-  <div *ngIf="!this.isImageTypeValid">Le type d'image doit être un bitmap.</div>
-  <div *ngIf="!this.isImageSizeValid">La taille d'image doit être de 640x480.</div>
-  <div *ngIf="!this.isImageFormatValid">Le format d'image doit être 24-bits.</div>
-  <div id="canvas-zone">
-    <app-image-canvas></app-image-canvas>
-    <app-image-canvas></app-image-canvas>
-  </div>
-  <button mat-raised-button color="basic"
-    matTooltip="Téléverser une image en format BMP et de taille 640x480 sur les deux zones">
-    Téléverser la même image sur les deux zones <mat-icon>add</mat-icon>
-  </button>
-</div>
+    <img *ngFor="let url of urls" [src]="url" height="200" /> <br />
+    <div *ngIf="!this.isImageTypeValid">Le type d'image doit être un bitmap.</div>
+    <div *ngIf="!this.isImageSizeValid">La taille d'image doit être de 640x480.</div>
+    <div *ngIf="!this.isImageFormatValid">Le format d'image doit être 24-bits.</div>
+    <div id="canvas-zone">
+        <app-image-canvas></app-image-canvas>
+        <app-image-canvas></app-image-canvas>
+    </div>
+    <div id="canvas-action-buttons">
+        <button
+            mat-raised-button
+            color="basic"
+            matTooltip="Téléverser une image en format BMP et de taille 640x480 sur les deux zones"
+            (click)="fileUpload.click()"
+        >
+            Téléverser la même image sur les deux zones <mat-icon>attach_file</mat-icon>
+        </button>
+        <button mat-raised-button color="basic" matTooltip="Réinitialise les arrières-plans">Réinitialiser les arrières-plans</button>
+    </div>
 
+    <input type="file" id="upload-btn" (change)="onSelectFile($event)" #fileUpload />
 
-<div id="configuration-buttons">
-  <div>
-    <p>Choisissez le rayon d'élargissement :</p>
-    <mat-radio-group color="primary" aria-label="Select an option" [(ngModel)]="defaultRadius">
-      <mat-radio-button *ngFor="let rad of radiusSizes" [value]="rad">{{ rad }}</mat-radio-button>
-    </mat-radio-group>
-  </div>
+    <div id="configuration-buttons">
+        <div>
+            <p>Choisissez le rayon d'élargissement :</p>
+            <mat-radio-group color="primary" aria-label="Select an option" [(ngModel)]="defaultRadius">
+                <mat-radio-button *ngFor="let rad of radiusSizes" [value]="rad">{{ rad }}</mat-radio-button>
+            </mat-radio-group>
+        </div>
+    </div>
 </div>
