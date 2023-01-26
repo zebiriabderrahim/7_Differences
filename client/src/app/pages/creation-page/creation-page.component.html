@@ -1,8 +1,4 @@
 <div class="images-section">
-    <img *ngFor="let url of urls" [src]="url" height="200" /> <br />
-    <div *ngIf="!this.isImageTypeValid">Le type d'image doit être un bitmap.</div>
-    <div *ngIf="!this.isImageSizeValid">La taille d'image doit être de 640x480.</div>
-    <div *ngIf="!this.isImageFormatValid">Le format d'image doit être 24-bits.</div>
     <div id="canvas-zone">
         <app-image-canvas></app-image-canvas>
         <app-image-canvas></app-image-canvas>
@@ -29,4 +25,8 @@
             </mat-radio-group>
         </div>
     </div>
+    <img [src]="urls[0]" height="200" /> <br />
+    <div *ngIf="!this.isImageTypeValid">Le type d'image doit être un bitmap.</div>
+    <div *ngIf="!this.isImageSizeValid">La taille d'image doit être de 640x480.</div>
+    <div *ngIf="!this.isImageFormatValid">Le format d'image doit être 24-bits.</div>
 </div>
