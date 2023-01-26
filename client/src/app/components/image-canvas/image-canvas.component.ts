@@ -7,8 +7,6 @@ import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
     styleUrls: ['./image-canvas.component.scss'],
 })
 export class ImageCanvasComponent implements OnInit {
-    originalContextForeground: CanvasRenderingContext2D;
-    modifiableContextForeground: CanvasRenderingContext2D;
     canvas: HTMLCanvasElement | null;
     context: CanvasRenderingContext2D | null;
 
