@@ -9,7 +9,6 @@ import { ValidationService } from '@app/services/validation-service//validation.
     styleUrls: ['./creation-page.component.scss'],
 })
 export class CreationPageComponent {
-    urls: string[] = [];
     isImageTypeValid: boolean = false;
     isImageSizeValid: boolean = false;
     isImageFormatValid: boolean = false;
@@ -25,14 +24,13 @@ export class CreationPageComponent {
             const reader = new FileReader();
             const file = target.files[0];
             reader.readAsDataURL(target.files[0]);
-            reader.onload = (e: Event) => {
+            reader.onload = () => {
                 const image = new Image();
                 image.src = reader.result as string;
                 image.onload = (ev: Event) => {
                     this.validationService.validateImage(file, ev, image.src);
                     this.imageService.setBothCanvas(image);
                 };
-                this.urls.push((e.target as FileReader).result as string);
             };
         }
     }

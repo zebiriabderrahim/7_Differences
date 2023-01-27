@@ -3,8 +3,12 @@
 </div>
 
 <div id="canvas-action-buttons">
-    <button mat-raised-button color="basic" matTooltip="Téléverser une image en format BMP et de taille 640x480 sur les deux zones">
+    <button mat-raised-button color="basic"
+        matTooltip="Téléverser une image en format BMP et de taille 640x480 sur les deux zones"
+        (click)="fileUpload.click()">
         Téléverser une image <mat-icon>attach_file</mat-icon>
     </button>
-    <button mat-raised-button color="primary" matTooltip="Réinitialise l'arrière-plan" (click)="resetCanvas()">Réinitialiser l'arrière-plan</button>
+    <input type="file" id="upload-btn-canvas" (change)="onSelectFile($event)" #fileUpload />
+    <button mat-raised-button color="primary" matTooltip="Réinitialise l'arrière-plan"
+        (click)="resetCanvas()">Réinitialiser l'arrière-plan</button>
 </div>
