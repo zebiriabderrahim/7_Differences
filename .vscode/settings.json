@@ -9,5 +9,6 @@
     "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
     "eslint.workingDirectories": ["./client", "./server"],
     "eslint.probe": ["javascript", "typescript", "html", "vue", "markdown"],
-    "eslint.validate": ["javascript", "typescript", "html", "vue", "markdown"]
+    "eslint.validate": ["javascript", "typescript", "html", "vue", "markdown"],
+    "cSpell.words": ["Difficulté", "Jouer", "Selectionne"]
 }
