@@ -30,8 +30,8 @@ export class CreationPageComponent {
                 image.src = reader.result as string;
                 image.onload = (ev: Event) => {
                     this.validationService.validateImage(file, ev, image.src);
+                    this.imageService.setBothCanvas(image);
                 };
-                this.imageService.setBothCanvas(image);
                 this.urls.push((e.target as FileReader).result as string);
             };
         }
