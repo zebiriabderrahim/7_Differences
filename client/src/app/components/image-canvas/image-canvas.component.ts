@@ -1,27 +1,24 @@
-import { AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
+import { ImageService } from '@app/services/image-service/image.service';
 
 @Component({
     selector: 'app-image-canvas',
     templateUrl: './image-canvas.component.html',
     styleUrls: ['./image-canvas.component.scss'],
 })
-export class ImageCanvasComponent implements AfterViewInit, OnChanges {
+export class ImageCanvasComponent implements AfterViewInit {
     @Input() position: string;
-    @Input() image: HTMLImageElement;
-    @ViewChild('canvas')
-    canvas: ElementRef = {} as ElementRef;
+    @ViewChild('canvas') canvas: ElementRef;
+    image: HTMLImageElement;
     context: CanvasRenderingContext2D;
 
+    constructor(public imgService: ImageService) {}
     ngAfterViewInit(): void {
         this.canvas.nativeElement.width = IMG_WIDTH;
         this.canvas.nativeElement.height = IMG_HEIGHT;
         this.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.context?.drawImage(this.image, 0, 0);
-    }
-
-    ngOnChanges(changes: SimpleChanges) {
-        this.setCanvasImage(changes.image.currentValue);
     }
 
     setCanvasImage(image: HTMLImageElement): void {
