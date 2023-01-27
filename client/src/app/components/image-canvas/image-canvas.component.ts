@@ -11,7 +11,6 @@ import { Subscription } from 'rxjs';
 export class ImageCanvasComponent implements AfterViewInit {
     @Input() position: string;
     @ViewChild('canvas') canvas: ElementRef;
-    image: HTMLImageElement;
     context: CanvasRenderingContext2D;
 
     imageSubscription: Subscription = new Subscription();
@@ -21,7 +20,6 @@ export class ImageCanvasComponent implements AfterViewInit {
         this.canvas.nativeElement.width = IMG_WIDTH;
         this.canvas.nativeElement.height = IMG_HEIGHT;
         this.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.image = this.position === 'left' ? this.imageService.originalImage : this.imageService.modifiedImage;
         if (this.position === 'left') {
             this.imageSubscription = this.imageService.originalImageObservable.subscribe(() => {
                 this.setCanvasImage(this.imageService.originalImage);
@@ -31,7 +29,6 @@ export class ImageCanvasComponent implements AfterViewInit {
                 this.setCanvasImage(this.imageService.modifiedImage);
             });
         }
-        this.context.drawImage(this.image, 0, 0);
     }
 
     setCanvasImage(image: HTMLImageElement): void {
