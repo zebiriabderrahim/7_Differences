@@ -19,8 +19,16 @@ export class SelectionPageComponent {
             name: 'rat Game',
             difficultyLevel: 10,
             thumbnail: this.imageSrc,
-            soloTopTime: [],
-            oneVsOneTopTime: [],
+            soloTopTime: [
+                { name: 'player1', time: 1.5 },
+                { name: 'player2', time: 2.5 },
+                { name: 'player3', time: 3.5 },
+            ],
+            oneVsOneTopTime: [
+                { name: 'player1', time: 1.5 },
+                { name: 'player2', time: 2.5 },
+                { name: 'player3', time: 3.5 },
+            ],
             differencesCount: 15,
             hintList: [],
         },
@@ -29,8 +37,16 @@ export class SelectionPageComponent {
             name: 'rat Game 2',
             difficultyLevel: 15,
             thumbnail: this.imageSrc,
-            soloTopTime: [],
-            oneVsOneTopTime: [],
+            soloTopTime: [
+                { name: 'player1', time: 1.5 },
+                { name: 'player2', time: 2.5 },
+                { name: 'player3', time: 3.5 },
+            ],
+            oneVsOneTopTime: [
+                { name: 'player1', time: 1.5 },
+                { name: 'player2', time: 2.5 },
+                { name: 'player3', time: 3.5 },
+            ],
             differencesCount: 15,
             hintList: [],
         },
@@ -39,8 +55,16 @@ export class SelectionPageComponent {
             name: 'rat Game 3',
             difficultyLevel: 20,
             thumbnail: this.imageSrc,
-            soloTopTime: [],
-            oneVsOneTopTime: [],
+            soloTopTime: [
+                { name: 'player1', time: 1.5 },
+                { name: 'player2', time: 2.5 },
+                { name: 'player3', time: 3.5 },
+            ],
+            oneVsOneTopTime: [
+                { name: 'player1', time: 1.5 },
+                { name: 'player2', time: 2.5 },
+                { name: 'player3', time: 3.5 },
+            ],
             differencesCount: 15,
             hintList: [],
         },
@@ -49,8 +73,16 @@ export class SelectionPageComponent {
             name: 'rat Game 4',
             difficultyLevel: 25,
             thumbnail: this.imageSrc,
-            soloTopTime: [],
-            oneVsOneTopTime: [],
+            soloTopTime: [
+                { name: 'player1', time: 1.5 },
+                { name: 'player2', time: 2.5 },
+                { name: 'player3', time: 3.5 },
+            ],
+            oneVsOneTopTime: [
+                { name: 'player1', time: 1.5 },
+                { name: 'player2', time: 2.5 },
+                { name: 'player3', time: 3.5 },
+            ],
             differencesCount: 15,
             hintList: [],
         },
@@ -59,8 +91,16 @@ export class SelectionPageComponent {
             name: 'rat Game 4',
             difficultyLevel: 10,
             thumbnail: this.newImageSrc,
-            soloTopTime: [],
-            oneVsOneTopTime: [],
+            soloTopTime: [
+                { name: 'player1', time: 1.5 },
+                { name: 'player2', time: 2.5 },
+                { name: 'player3', time: 3.5 },
+            ],
+            oneVsOneTopTime: [
+                { name: 'player1', time: 1.5 },
+                { name: 'player2', time: 2.5 },
+                { name: 'player3', time: 3.5 },
+            ],
             differencesCount: 15,
             hintList: [],
         },
@@ -69,8 +109,16 @@ export class SelectionPageComponent {
             name: 'rat Game 5',
             difficultyLevel: 15,
             thumbnail: this.newImageSrc,
-            soloTopTime: [],
-            oneVsOneTopTime: [],
+            soloTopTime: [
+                { name: 'player1', time: 1.5 },
+                { name: 'player2', time: 2.5 },
+                { name: 'player3', time: 3.5 },
+            ],
+            oneVsOneTopTime: [
+                { name: 'player1', time: 1.5 },
+                { name: 'player2', time: 2.5 },
+                { name: 'player3', time: 3.5 },
+            ],
             differencesCount: 15,
             hintList: [],
         },
@@ -79,8 +127,16 @@ export class SelectionPageComponent {
             name: 'rat Game 6',
             difficultyLevel: 20,
             thumbnail: this.newImageSrc,
-            soloTopTime: [],
-            oneVsOneTopTime: [],
+            soloTopTime: [
+                { name: 'player1', time: 1.5 },
+                { name: 'player2', time: 2.5 },
+                { name: 'player3', time: 3.5 },
+            ],
+            oneVsOneTopTime: [
+                { name: 'player1', time: 1.5 },
+                { name: 'player2', time: 2.5 },
+                { name: 'player3', time: 3.5 },
+            ],
             differencesCount: 15,
             hintList: [],
         },
@@ -89,8 +145,16 @@ export class SelectionPageComponent {
             name: 'rat Game 7',
             difficultyLevel: 25,
             thumbnail: this.newImageSrc,
-            soloTopTime: [],
-            oneVsOneTopTime: [],
+            soloTopTime: [
+                { name: 'player1', time: 1.5 },
+                { name: 'player2', time: 2.5 },
+                { name: 'player3', time: 3.5 },
+            ],
+            oneVsOneTopTime: [
+                { name: 'player1', time: 1.5 },
+                { name: 'player2', time: 2.5 },
+                { name: 'player3', time: 3.5 },
+            ],
             differencesCount: 15,
             hintList: [],
         },
@@ -116,9 +180,5 @@ export class SelectionPageComponent {
         if (this.gameIterator >= this.games.length - this.gamePhase) {
             this.hasNext = false;
         }
-    }
-
-    selectedGamecard() {
-        alert('Va à la page du jeu selectionné');
     }
 }

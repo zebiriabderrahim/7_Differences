@@ -17,7 +17,9 @@ import { MatInputModule } from '@angular/material/input';
 // import { MatPaginatorModule } from '@angular/material/paginator';
 // import { MatProgressBarModule } from '@angular/material/progress-bar';
 // import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { HttpClientModule } from '@angular/common/http';
 import { MatRadioModule } from '@angular/material/radio';
+import { BrowserModule } from '@angular/platform-browser';
 // import { MatSelectModule } from '@angular/material/select';
 // import { MatSidenavModule } from '@angular/material/sidenav';
 // import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -33,6 +35,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 const modules = [
     // MatAutocompleteModule,
     MatButtonModule,
+    BrowserModule,
+    HttpClientModule,
     // MatButtonToggleModule,
     MatCardModule,
     // MatCheckboxModule,
