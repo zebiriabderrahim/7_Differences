@@ -17,6 +17,8 @@ export class ImageService {
     resetBothCanvas() {
         this.originalImage = new Image();
         this.modifiedImage = new Image();
+        this.originalImageSource.next(this.originalImage);
+        this.modifiedImageSource.next(this.modifiedImage);
     }
 
     setOriginalImage(image: HTMLImageElement) {
