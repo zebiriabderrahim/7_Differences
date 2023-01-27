@@ -18,10 +18,19 @@ export class ImageService {
         this.originalImage = new Image();
         this.modifiedImage = new Image();
     }
-    setBothCanvas(image: HTMLImageElement) {
+
+    setOriginalImage(image: HTMLImageElement) {
         this.originalImage = image;
-        this.modifiedImage = image;
         this.originalImageSource.next(image);
+    }
+
+    setModifiedImage(image: HTMLImageElement) {
+        this.modifiedImage = image;
         this.modifiedImageSource.next(image);
+    }
+
+    setBothCanvas(image: HTMLImageElement) {
+        this.setOriginalImage(image);
+        this.setModifiedImage(image);
     }
 }
