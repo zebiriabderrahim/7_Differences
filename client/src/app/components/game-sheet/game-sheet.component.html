@@ -7,20 +7,17 @@
             <h2>Difficulté: {{ game.difficultyLevel }}</h2>
             <div class="ranking">
                 <div class="top three section">
-                    <div class="top three title">
-                        <h3>Top Solo</h3>
-                        <div *ngFor="let player of game.soloTopTime; index as i">
-                            {{ player.time }}
-                        </div>
+                    <h3>Top Solo</h3>
+                    <div class="topSolo" *ngFor="let player of game.soloTopTime; index as i">
+                        <strong class="bestTime">&nbsp;{{ i + 1 }} </strong>
+                        &nbsp;<strong>{{ player.name }}</strong> {{ '&nbsp;&nbsp;' + player.time }}
                     </div>
                 </div>
 
                 <div class="top three section">
-                    <div class="top three title">
-                        <h3>Top 1 Vs 1</h3>
-                        <div *ngFor="let player of game.oneVsOneTopTime">
-                            {{ player.time }}
-                        </div>
+                    <h3>Top 1 Vs 1</h3>
+                    <div *ngFor="let player of game.oneVsOneTopTime">
+                        <strong>{{ player.name }}</strong> {{ '&nbsp;&nbsp;' + player.time }}
                     </div>
                 </div>
             </div>
