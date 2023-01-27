@@ -3,8 +3,8 @@
     <p><strong>Niveau de Difficulté:</strong> {{game.difficultyLevel}}</p>
     <p><strong>Mode de Jeu:</strong> {{mode}}</p>
     <p><strong>Nombre de Différences Présentes:</strong> {{game.differencesCount}}</p>
-    <mat-icon *ngIf = "mode === 'Solo'" matTooltip="Pour l'utilisation d'un indice" matTooltipPosition="left">info</mat-icon>
     <p *ngIf = "mode === 'Solo'"><strong>Temps de pénalité:</strong> {{penaltyTime}}</p>
-    <mat-icon *ngIf = "mode === 'LimitedTime'" matTooltip="Avec la découverte d’une différence" matTooltipPosition="left">info</mat-icon>
+    <mat-icon *ngIf = "mode === 'Solo'" matTooltip="Pour l'utilisation d'un indice" matTooltipPosition="above">info</mat-icon>
     <p *ngIf = "mode === 'LimitedTime'"><strong>Temps Bonus:</strong> {{bonusTime}}</p>  
+    <mat-icon *ngIf = "mode === 'LimitedTime'" matTooltip="Avec la découverte d’une différence" matTooltipPosition="above">info</mat-icon>
 </div>
