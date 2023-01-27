@@ -1,7 +1,7 @@
 <div>
     <h1>{{ titre }}</h1>
     <mat-grid-list cols="2" rowHeight="3:1" >
-        <mat-grid-tile *ngFor="let game of games.slice(gameIterator, gameIterator + 4)" class="section ">
+        <mat-grid-tile *ngFor="let game of games" class="section ">
             <app-game-sheet [game]="game"></app-game-sheet>
         </mat-grid-tile>
     </mat-grid-list>
