@@ -29,7 +29,6 @@ h1 {
 .thumbnail {
     margin: 5px;
     display: flex;
-    flex: 0 1 50%;
     max-width: 200px;
     max-height: 135px;
 }
@@ -49,7 +48,8 @@ h1 {
     flex-direction: row;
     justify-content: space-between;
     text-align: center;
-    margin: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .buttonSection {
