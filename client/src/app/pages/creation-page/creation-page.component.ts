@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/creation-page';
+import { ImageService } from '@app/services/image-service/image.service';
 import { ValidationService } from '@app/services/validation-service//validation.service';
 
 @Component({
@@ -16,7 +17,7 @@ export class CreationPageComponent {
     radiusSizes: number[] = RADIUS_SIZES;
     defaultRadius: number = DEFAULT_RADIUS;
 
-    constructor(public validationService: ValidationService) {}
+    constructor(public imageService: ImageService, public validationService: ValidationService) {}
 
     onSelectFile(event: Event) {
         const target = event.target as HTMLInputElement;
@@ -30,6 +31,7 @@ export class CreationPageComponent {
                 image.onload = (ev: Event) => {
                     this.validationService.validateImage(file, ev, image.src);
                 };
+                this.imageService.setBothCanvas(image);
                 this.urls.push((e.target as FileReader).result as string);
             };
         }
