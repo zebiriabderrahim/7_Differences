@@ -10,7 +10,7 @@ import { environment } from 'src/environments/environment';
 })
 export class CommunicationService {
     private readonly baseUrl: string = environment.serverUrl;
-    private readonly gameUrl: string = this.baseUrl + 'game';
+    private readonly gameUrl: string = this.baseUrl + '/games';
 
     constructor(private readonly http: HttpClient) {}
 
@@ -22,8 +22,8 @@ export class CommunicationService {
         return this.http.get<string[]>(`${this.baseUrl}/gameNames`).pipe(catchError(this.handleError<string[]>('getGameNames')));
     }
 
-    loadGame(id: number): Observable<Game> {
-        return this.http.get<Game>(`${this.baseUrl}/game/:${id}`).pipe(catchError(this.handleError<Game>('loadGame')));
+    loadGameById(id: number): Observable<Game> {
+        return this.http.get<Game>(`${this.baseUrl}/games/:${id}`).pipe(catchError(this.handleError<Game>('loadGameById')));
     }
 
     postGame(gameData: Game): Observable<void> {
