@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { BMP_HEADER_OFFSET, DEFAULT_RADIUS, FORMAT_IMAGE, IMG_HEIGHT, IMG_TYPE, IMG_WIDTH, RADIUS_SIZES } from '@app/constants/creation-page';
-// import { ImageCanvasComponent } from './components/image-canvas/image-canvas.component';
+import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/creation-page';
+import { ValidationService } from '@app/services/validation-service//validation.service';
 
 @Component({
     selector: 'app-root',
@@ -16,23 +16,7 @@ export class CreationPageComponent {
     radiusSizes: number[] = RADIUS_SIZES;
     defaultRadius: number = DEFAULT_RADIUS;
 
-    originalImage: HTMLImageElement = new Image();
-    modifiedImage: HTMLImageElement = new Image();
-
-    validateImageType(imageDescription: string) {
-        this.isImageTypeValid = imageDescription.includes(IMG_TYPE);
-    }
-
-    validateImageSize(event: Event) {
-        const target = event.target as HTMLInputElement;
-        this.isImageSizeValid = target.width === IMG_WIDTH && target.height === IMG_HEIGHT;
-    }
-
-    async validateImageFormat(file: File) {
-        const bmpHeader = new DataView(await file.arrayBuffer());
-        const bmpFormat = bmpHeader.getUint16(BMP_HEADER_OFFSET, true);
-        this.isImageFormatValid = bmpFormat === FORMAT_IMAGE;
-    }
+    constructor(public validationService: ValidationService) {}
 
     onSelectFile(event: Event) {
         const target = event.target as HTMLInputElement;
@@ -44,12 +28,8 @@ export class CreationPageComponent {
                 const image = new Image();
                 image.src = reader.result as string;
                 image.onload = (ev: Event) => {
-                    this.validateImageType(image.src);
-                    this.validateImageSize(ev);
-                    this.validateImageFormat(file);
+                    this.validationService.validateImage(file, ev, image.src);
                 };
-                this.originalImage = image;
-                this.modifiedImage = image;
                 this.urls.push((e.target as FileReader).result as string);
             };
         }
