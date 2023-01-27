@@ -1,7 +1,7 @@
 <div class="images-section">
     <div id="canvas-zone">
-        <app-image-canvas [position]='"left"' [image]='originalImage'></app-image-canvas>
-        <app-image-canvas [position]='"right"' [image]='modifiedImage'></app-image-canvas>
+        <app-image-canvas [position]="'left'"></app-image-canvas>
+        <app-image-canvas [position]="'right'"></app-image-canvas>
     </div>
     <div id="canvas-action-buttons">
         <button
@@ -33,8 +33,4 @@
             </mat-radio-group>
         </div>
     </div>
-    <img [src]="urls[0]" height="200" /> <br />
-    <div *ngIf="!this.isImageTypeValid">Le type d'image doit être un bitmap.</div>
-    <div *ngIf="!this.isImageSizeValid">La taille d'image doit être de 640x480.</div>
-    <div *ngIf="!this.isImageFormatValid">Le format d'image doit être 24-bits.</div>
 </div>
