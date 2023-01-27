@@ -25,23 +25,18 @@ export class ImageCanvasComponent implements AfterViewInit {
         if (this.position === 'left') {
             this.imageSubscription = this.imageService.originalImageObservable.subscribe(() => {
                 this.setCanvasImage(this.imageService.originalImage);
-                this.redrawCanvas();
             });
         } else if (this.position === 'right') {
             this.imageSubscription = this.imageService.modifiedImageObservable.subscribe(() => {
                 this.setCanvasImage(this.imageService.modifiedImage);
-                this.redrawCanvas();
             });
         }
         this.context.drawImage(this.image, 0, 0);
     }
 
     setCanvasImage(image: HTMLImageElement): void {
+        this.resetCanvas();
         this.context?.drawImage(image, 0, 0);
-    }
-
-    redrawCanvas(): void {
-        this.context.drawImage(this.image, 0, 0);
     }
 
     resetCanvas(): void {
