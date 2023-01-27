@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-// import { Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -7,7 +6,8 @@ import { Injectable } from '@angular/core';
 export class ImageService {
     originalImage: HTMLImageElement = new Image();
     modifiedImage: HTMLImageElement = new Image();
-    // resetCanvas() {
-    //   console.log("reset")
-    // }
+    resetBothCanvas() {
+        this.originalImage = new Image();
+        this.modifiedImage = new Image();
+    }
 }
