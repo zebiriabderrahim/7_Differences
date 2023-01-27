@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Game } from '@app/interfaces/game';
+import { Game } from '@app/interfaces/game-interfaces';
 
 @Component({
     selector: 'app-config-page',

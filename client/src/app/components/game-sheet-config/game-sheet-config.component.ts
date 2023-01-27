@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
-import { Game } from '@app/interfaces/game';
+import { Game } from '@app/interfaces/game-interfaces';
 
 @Component({
     selector: 'app-game-sheet-config',
