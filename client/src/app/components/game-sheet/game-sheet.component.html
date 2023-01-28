@@ -1,26 +1,30 @@
-<div *ngIf="game" class="game sheet">
-    <div class="title">
-        <h1>{{game.name}}</h1>
-    </div>
-    <div class="difficulty Level">
-        <h2>{{game.difficultyLevel}}</h2>
-    </div>
-    <div class="thumbnail">
-        <img src="../../../assets/img/Pinocchior.jpg" alt="track" width="70px" height="75px"/>
-    </div>
-    <div class="top three section">
-        <div class="top three title">
-            <h2>Top 3</h2>
+<div *ngIf="game" class="gameSheet">
+    <h1 class="title">{{ game.name }}</h1>
+    <div class="gameContainer">
+        <img class="thumbnail" src="../../../assets/img/Pinocchior.jpg" alt="track" />
+
+        <div class="gameInfo">
+            <h2>Difficulté: {{ game.difficultyLevel }}</h2>
+            <div class="ranking">
+                <div class="top three section">
+                    <h3>Top Solo</h3>
+                    <div class="topSolo" *ngFor="let player of game.soloTopTime; index as i">
+                        <strong class="bestTime">&nbsp;{{ i + 1 }} </strong>
+                        &nbsp;<strong>{{ player.name }}</strong> {{ '&nbsp;&nbsp;' + player.time }}
+                    </div>
+                </div>
+
+                <div class="top three section">
+                    <h3>Top 1 Vs 1</h3>
+                    <div *ngFor="let player of game.oneVsOneTopTime">
+                        <strong>{{ player.name }}</strong> {{ '&nbsp;&nbsp;' + player.time }}
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="top three solo">
-            <h3>00:30 coco</h3>
-        </div>
-        <div class="top three vs">
-            <h3>00:30 coco</h3>
-        </div>
     </div>
-    <div class="button section">
-        <button mat-raised-button (click)="openDialog()">Play</button>
-        <button class="button" >join</button>
+    <div class="buttonSection">
+        <button mat-raised-button (click)="openDialog()">Jouer</button>
+        <button mat-raised-button>Joinder</button>
     </div>
 </div>

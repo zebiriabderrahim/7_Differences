@@ -1,0 +1,74 @@
+body {
+    background-color: #995757;
+}
+
+* {
+    font-family: 'Roboto', sans-serif;
+}
+
+mat-grid-tile {
+    background: transparent;
+}
+
+h1 {
+    background-color: rgb(255, 255, 255);
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px;
+    text-align: center;
+    animation: blink-text 1.9s linear infinite;
+}
+
+@keyframes blink-text {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.game-selection {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    align-items: space-between;
+    text-align: center;
+    margin-left: 10px;
+}
+
+.game-selection > * {
+    flex: 1 40%;
+}
+
+.buttonContainer {
+    text-align: center;
+}
+
+.previous_button {
+    position: absolute;
+    left: 40%;
+    padding: 10px;
+    margin: 10px;
+    font-size: 20px;
+    min-width: 150px;
+}
+
+.next_button {
+    position: absolute;
+    right: 40%;
+    padding: 10px;
+    margin: 10px;
+    font-size: 20px;
+    min-width: 150px;
+}
+
+.track {
+    width: 250px;
+    height: 250px;
+}

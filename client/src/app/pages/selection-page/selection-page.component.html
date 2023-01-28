@@ -1,0 +1,12 @@
+<body>
+    <h1>{{ titre }}</h1>
+    <mat-grid-list cols="4">
+        <mat-grid-tile *ngFor="let game of games.slice(gameIterator, gameIterator + 4)" class="section">
+            <app-game-sheet [game]="game"></app-game-sheet>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <div class="buttonContainer">
+        <button mat-raised-button *ngIf="hasPrevious" mat-raised-button class="previous_button" (click)="lastFour()"><< Précedent</button>
+        <button mat-raised-button *ngIf="hasNext" mat-raised-button class="next_button" (click)="nextFour()">Suivant >></button>
+    </div>
+</body>
