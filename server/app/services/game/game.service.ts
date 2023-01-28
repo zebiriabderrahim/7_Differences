@@ -9,7 +9,7 @@ export class GameService {
     private defaultBestTimes: PlayerTime[];
     private defaultConstants: GameConfig;
 
-    constructor(private databaseService: DatabaseService) {
+    constructor(private readonly databaseService: DatabaseService) {
         this.gameNames = [];
 
         this.defaultConstants = {
@@ -37,8 +37,8 @@ export class GameService {
         return await this.databaseService.getGames();
     }
 
-    async getGame(gameName: string): Promise<Game | void> {
-        return await this.databaseService.getGame(gameName);
+    async getGameById(id: string): Promise<Game | void> {
+        return await this.databaseService.getGameById(id);
     }
 
     addGame(newGame: GameDetails): void {
@@ -59,9 +59,5 @@ export class GameService {
             differencesCount: newGame.nDifference,
             hintList: [],
         };
-    }
-
-    getNames(): string[] {
-        return this.gameNames;
     }
 }

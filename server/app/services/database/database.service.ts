@@ -44,7 +44,7 @@ export class DatabaseService {
                 ],
                 differencesCount: 10,
                 hintList: [],
-            }
+            },
         ];
         this.selectionViewGames = [];
     }
@@ -68,8 +68,8 @@ export class DatabaseService {
         return this.selectionViewGames;
     }
 
-    async getGame(gameName: string): Promise<Game | void> {
-        return this.games.find((game) => game.name === gameName);
+    async getGameById(id: string): Promise<Game | void> {
+        return this.games.find((game) => game.id === +id);
     }
 
     saveFiles(gameName: string, data: Buffer): void {
