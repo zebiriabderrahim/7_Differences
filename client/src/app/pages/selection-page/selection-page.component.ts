@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { GameCard } from '@app/interfaces/game-interfaces';
 import { CommunicationService } from '@app/services/communication-service/communication-service.service';
 
-
 @Component({
     selector: 'app-selection-page',
     templateUrl: './selection-page.component.html',
