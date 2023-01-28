@@ -2,7 +2,6 @@
     <h1 class="title">{{ game.name }}</h1>
     <div class="gameContainer">
         <img class="thumbnail" src="../../../assets/img/Pinocchior.jpg" alt="track" />
-
         <div class="gameInfo">
             <h2>Difficulté: {{ game.difficultyLevel }}</h2>
             <div class="ranking">
@@ -24,7 +23,8 @@
         </div>
     </div>
     <div class="buttonSection">
-        <button mat-raised-button (click)="openDialog()">Jouer</button>
-        <button mat-raised-button>Joinder</button>
+        {{ navigate() }}
+        <button mat-raised-button (click)="openDialog()">{{ this.buttonPlay }}</button>
+        <button mat-raised-button>{{ this.buttonJoin }}</button>
     </div>
 </div>
