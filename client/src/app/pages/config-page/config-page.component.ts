@@ -7,7 +7,7 @@ import { Game } from '@app/interfaces/game-interfaces';
     styleUrls: ['./config-page.component.scss'],
 })
 export class ConfigPageComponent {
-    readonly titre: string = 'Selectionne ton jeu';
+    readonly titre: string = 'Configure ton jeu';
     readonly imageSrc: string = '../../../assets/img/rat.jpg';
     readonly newImageSrc: string = '../../../assets/img/strong_rat.jpg';
     // eslint-disable-next-line no-alert, quotes, semi, @typescript-eslint/no-magic-numbers

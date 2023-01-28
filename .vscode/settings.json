@@ -10,5 +10,22 @@
     "eslint.workingDirectories": ["./client", "./server"],
     "eslint.probe": ["javascript", "typescript", "html", "vue", "markdown"],
     "eslint.validate": ["javascript", "typescript", "html", "vue", "markdown"],
-    "cSpell.words": ["Difficulté", "Jouer", "Limité", "Selectionne"]
+    "cSpell.words": [
+        "avec",
+        "Création",
+        "d’une",
+        "découverte",
+        "différence",
+        "Difficulté",
+        "gagné",
+        "indice",
+        "Jouer",
+        "l’utilisation",
+        "Limité",
+        "pénalité",
+        "Précedent",
+        "rebours",
+        "Selectionne",
+        "Suivant"
+    ]
 }

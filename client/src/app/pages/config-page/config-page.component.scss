@@ -1,5 +1,6 @@
 * {
     font-family: 'Roboto', sans-serif;
+    background-color: antiquewhite;
 }
 
 h1 {
@@ -8,7 +9,6 @@ h1 {
     margin-right: auto;
     padding: 10px;
     text-align: center;
-    animation: blink-text 1.9s linear infinite;
 }
 
 @keyframes blink-text {
@@ -32,15 +32,6 @@ h1 {
     align-items: space-between;
     text-align: center;
     margin-left: 10px;
-}
-
-.game-selection > * {
-    flex: 1 40%;
-}
-
-.mat-grid-tile {
-    border-color: black;
-    border-style: dotted;
 }
 
 .previous_button {
