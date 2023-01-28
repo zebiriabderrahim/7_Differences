@@ -34,10 +34,6 @@ export class ImageCanvasComponent implements AfterViewInit {
         }
     }
 
-    // setCanvasImage(image: HTMLImageElement): void {
-    //     this.resetCanvas();
-    //     this.context?.drawImage(image, 0, 0);
-    // }
     setCanvasImage(image: string): void {
         this.resetCanvas();
         if (image === '') {
@@ -57,7 +53,6 @@ export class ImageCanvasComponent implements AfterViewInit {
             reader.onload = () => {
                 const image = new Image();
                 image.src = reader.result as string;
-                // console.log(image);
                 image.onload = (ev: Event) => {
                     if (this.validationService.isImageValid(ev, image.src)) {
                         if (this.position === 'left') {
