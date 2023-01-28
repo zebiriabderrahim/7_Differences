@@ -13,7 +13,7 @@ import { ValidationService } from '@app/services/validation-service//validation.
 export class CreationPageComponent {
     @ViewChild('imageNotSetDialog', { static: true }) imageNotSetDialog: TemplateRef<unknown>;
     radiusSizes: number[] = RADIUS_SIZES;
-    defaultRadius: number = DEFAULT_RADIUS;
+    radius: number = DEFAULT_RADIUS;
 
     constructor(public imageService: ImageService, public validationService: ValidationService, public dialog: MatDialog) {}
 
