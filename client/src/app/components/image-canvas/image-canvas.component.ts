@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { ImageService } from '@app/services/image-service/image.service';
-import { ValidationService } from '@app/services/validation-service//validation.service';
+import { ValidationService } from '@app/services/validation-service/validation.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -41,17 +41,18 @@ export class ImageCanvasComponent implements AfterViewInit {
         const target = event.target as HTMLInputElement;
         if (target.files && target.files[0]) {
             const reader = new FileReader();
-            const file = target.files[0];
             reader.readAsDataURL(target.files[0]);
             reader.onload = () => {
                 const image = new Image();
                 image.src = reader.result as string;
+                // console.log(image);
                 image.onload = (ev: Event) => {
-                    this.validationService.validateImage(file, ev, image.src);
-                    if (this.position === 'left') {
-                        this.imageService.setOriginalImage(image);
-                    } else if (this.position === 'right') {
-                        this.imageService.setModifiedImage(image);
+                    if (this.validationService.isImageValid(ev, image.src)) {
+                        if (this.position === 'left') {
+                            this.imageService.setOriginalImage(image);
+                        } else if (this.position === 'right') {
+                            this.imageService.setModifiedImage(image);
+                        }
                     }
                 };
             };

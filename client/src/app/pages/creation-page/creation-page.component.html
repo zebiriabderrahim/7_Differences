@@ -9,17 +9,20 @@
             (click)="fileUpload.click()">
             Téléverser la même image sur les deux zones <mat-icon>attach_file</mat-icon>
         </button>
-        <button mat-raised-button color="basic" matTooltip="Réinitialise les arrières-plans" (click)="imageService.resetBothCanvas()">
+        <button mat-raised-button color="basic" matTooltip="Réinitialise les arrières-plans"
+            (click)="imageService.resetBothCanvas()">
             Réinitialiser les arrières-plans
         </button>
     </div>
 
     <input type="file" id="upload-btn" (change)="onSelectFile($event)" #fileUpload />
-    <mat-error *ngIf="!validationService.isImageTypeValid"> Le type d'image doit être un <strong>bitmap</strong>
+    <mat-error *ngIf="!this.isImageTypeValid"> Le type d'image doit être un
+        <strong>bitmap</strong>
     </mat-error>
-    <mat-error *ngIf="!validationService.isImageSizeValid"> La taille de l'image doit être de <strong>640x480</strong>
+    <mat-error *ngIf="!this.isImageSizeValid"> La taille de l'image doit être de <strong>640x480</strong>
     </mat-error>
-    <mat-error *ngIf="!validationService.isImageFormatValid"> Le format d'image doit être de <strong>24-bits</strong>
+    <mat-error *ngIf="!this.isImageFormatValid"> Le format d'image doit être de
+        <strong>24-bits</strong>
     </mat-error>
 
     <div id="configuration-buttons">
