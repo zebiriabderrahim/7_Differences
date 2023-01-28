@@ -1,17 +1,23 @@
 import { GameService } from '@app/services/game/game.service';
-import { Controller, Get, HttpStatus, Res } from '@nestjs/common';
+import { Game, GameCard } from '@common/game-interfaces';
+import { Controller, Get, HttpStatus, NotFoundException, Param, Res } from '@nestjs/common';
 
 @Controller('games')
 export class GameController {
     constructor(private readonly gameService: GameService) {}
 
-    @Get('/')
-    async allGames(@Res() response) {
-        try {
-            const allGames = await this.gameService.getGames();
-            response.status(HttpStatus.OK).json(allGames);
-        } catch (error) {
-            response.status(HttpStatus.NOT_FOUND).send(error.message);
+    @Get()
+    async allGameCards(): Promise<GameCard[]> {
+        const allGameCards = await this.gameService.getGames();
+        return allGameCards;
+    }
+
+    @Get(':id')
+    async gameById(@Param('id') id: string): Promise<Game> {
+        const game = await this.gameService.getGameById(id);
+        if (!game) {
+            throw new NotFoundException(`Game with id:${id} not found`);
         }
+        return game;
     }
 }
