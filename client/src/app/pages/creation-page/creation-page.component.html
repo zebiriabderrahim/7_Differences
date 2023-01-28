@@ -1,16 +1,18 @@
 <div class="images-section">
     <div id="canvas-zone">
-        <app-image-canvas [position]='"left"'></app-image-canvas>
-        <app-image-canvas [position]='"right"'></app-image-canvas>
+        <app-image-canvas [position]="'left'"></app-image-canvas>
+        <app-image-canvas [position]="'right'"></app-image-canvas>
     </div>
     <div id="canvas-action-buttons">
-        <button mat-raised-button color="basic"
+        <button
+            mat-raised-button
+            color="basic"
             matTooltip="Téléverser une image en format BMP et de taille 640x480 sur les deux zones"
-            (click)="fileUpload.click()">
+            (click)="fileUpload.click()"
+        >
             Téléverser la même image sur les deux zones <mat-icon>attach_file</mat-icon>
         </button>
-        <button mat-raised-button color="basic" matTooltip="Réinitialise les arrières-plans"
-            (click)="imageService.resetBothCanvas()">
+        <button mat-raised-button color="basic" matTooltip="Réinitialise les arrières-plans" (click)="imageService.resetBothCanvas()">
             Réinitialiser les arrières-plans
         </button>
     </div>
@@ -25,14 +27,13 @@
             </mat-radio-group>
         </div>
     </div>
-    <button mat-raised-button color="basic" matTooltip="Vous devez avoir téléversé deux images"
-        (click)="validateDifferences()">
+    <button mat-raised-button color="basic" matTooltip="Vous devez avoir téléversé deux images" (click)="validateDifferences()">
         Valider les différences
     </button>
 </div>
 
 <ng-template #imageNotSetDialog>
-    <button mat-button [mat-dialog-close]="true">Fermer</button>
+    <button mat-button mat-dialog-close>Fermer</button>
     <div mat-dialog-content>
         <h1 mat-dialog-title>Veuillez mettre deux images</h1>
     </div>

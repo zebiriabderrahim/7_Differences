@@ -16,7 +16,7 @@ export class CreationPageComponent {
     radiusSizes: number[] = RADIUS_SIZES;
     radius: number = DEFAULT_RADIUS;
 
-    constructor(public imageService: ImageService, public validationService: ValidationService, public dialog: MatDialog) {}
+    constructor(public imageService: ImageService, public validationService: ValidationService, private readonly matDialog: MatDialog) {}
 
     onSelectFile(event: Event) {
         const target = event.target as HTMLInputElement;
@@ -30,7 +30,7 @@ export class CreationPageComponent {
                     if (this.validationService.isImageValid(ev, image.src)) {
                         this.imageService.setBothCanvas(image.src);
                     } else {
-                        this.dialog.open(ImageValidationDialogComponent);
+                        this.matDialog.open(ImageValidationDialogComponent);
                     }
                 };
             };
@@ -39,7 +39,7 @@ export class CreationPageComponent {
 
     validateDifferences() {
         if (!this.validationService.areImagesSet()) {
-            this.dialog.open(this.imageNotSetDialog);
+            this.matDialog.open(this.imageNotSetDialog);
         }
     }
 }
