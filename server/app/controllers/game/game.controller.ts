@@ -1,7 +1,9 @@
 import { GameService } from '@app/services/game/game.service';
 import { Game, GameCard } from '@common/game-interfaces';
-import { Controller, Get, HttpStatus, NotFoundException, Param, Res } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Games')
 @Controller('games')
 export class GameController {
     constructor(private readonly gameService: GameService) {}
