@@ -9,9 +9,9 @@ import { ValidationService } from '@app/services/validation-service//validation.
     styleUrls: ['./creation-page.component.scss'],
 })
 export class CreationPageComponent {
-    isImageTypeValid: boolean = false;
-    isImageSizeValid: boolean = false;
-    isImageFormatValid: boolean = false;
+    isImageTypeValid: boolean = true;
+    isImageSizeValid: boolean = true;
+    isImageFormatValid: boolean = true;
 
     radiusSizes: number[] = RADIUS_SIZES;
     defaultRadius: number = DEFAULT_RADIUS;
@@ -22,14 +22,17 @@ export class CreationPageComponent {
         const target = event.target as HTMLInputElement;
         if (target.files && target.files[0]) {
             const reader = new FileReader();
-            const file = target.files[0];
             reader.readAsDataURL(target.files[0]);
             reader.onload = () => {
                 const image = new Image();
                 image.src = reader.result as string;
                 image.onload = (ev: Event) => {
-                    this.validationService.validateImage(file, ev, image.src);
-                    this.imageService.setBothCanvas(image);
+                    this.isImageTypeValid = this.validationService.isImageTypeValid(image.src);
+                    this.isImageSizeValid = this.validationService.isImageSizeValid(ev);
+                    this.isImageFormatValid = this.validationService.isImageFormatValid(image.src);
+                    if (this.validationService.isImageValid(ev, image.src)) {
+                        this.imageService.setBothCanvas(image);
+                    }
                 };
             };
         }
