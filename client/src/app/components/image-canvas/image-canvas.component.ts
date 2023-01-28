@@ -73,4 +73,12 @@ export class ImageCanvasComponent implements AfterViewInit {
             this.context.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         }
     }
+
+    removeBackground(): void {
+        if (this.position === 'left') {
+            this.imageService.resetOriginalImage();
+        } else if (this.position === 'right') {
+            this.imageService.resetModifiedImage();
+        }
+    }
 }
