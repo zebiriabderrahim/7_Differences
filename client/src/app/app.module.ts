@@ -1,7 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatSelectModule } from '@angular/material/select';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ChronometerComponent } from '@app/components/chronometer/chronometer.component';
@@ -17,6 +16,7 @@ import { CreationPageComponent } from '@app/pages/creation-page/creation-page.co
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
+import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
 import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.component';
 import { ImageCanvasComponent } from './components/image-canvas/image-canvas.component';
 
@@ -35,6 +35,7 @@ import { ImageCanvasComponent } from './components/image-canvas/image-canvas.com
         MaterialPageComponent,
         PlayAreaComponent,
         SidebarComponent,
+        SelectionPageComponent,
         ChronometerComponent,
         SoloGameViewComponent,
         GameSheetComponent,
@@ -42,16 +43,7 @@ import { ImageCanvasComponent } from './components/image-canvas/image-canvas.com
         GameInfosComponent,
         ImageCanvasComponent,
     ],
-    imports: [
-        AppMaterialModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        BrowserModule,
-        FormsModule,
-        ReactiveFormsModule,
-        HttpClientModule,
-        MatSelectModule,
-    ],
+    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule, ReactiveFormsModule],
     providers: [],
     bootstrap: [AppComponent],
 })

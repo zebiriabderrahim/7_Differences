@@ -4,13 +4,11 @@
     <section id="server-message" class="justified">
         <p>Modes de jeu:</p>
         <div class="justified">
-            <button class="button" [routerLink]="selectionRoute">Classique</button>
-            <button class="button">Temps Limité</button>
-            <button class="button" [routerLink]="configRoute">Configuration</button>
+            <button mat-raised-button class="button" [routerLink]="selectionRoute">Classique</button>
+            <button mat-raised-button class="button">Temps Limité</button>
+            <button mat-raised-button class="button" [routerLink]="configRoute">Configuration</button>
         </div>
     </section>
-    <button class="button" [routerLink]="gameRoute">Jouer!</button>
-
     <footer class="footer-item">
         <h4 class="team-name">{{ teamNumber }}</h4>
         <p>
