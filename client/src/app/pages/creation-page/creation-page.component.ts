@@ -27,7 +27,6 @@ export class CreationPageComponent {
                 image.src = reader.result as string;
                 image.onload = (ev: Event) => {
                     if (this.validationService.isImageValid(ev, image.src)) {
-                        // this.imageService.setBothCanvas(image);
                         this.imageService.setBothCanvas(image.src);
                     } else {
                         this.dialog.open(ImageValidationDialogComponent);
@@ -38,7 +37,6 @@ export class CreationPageComponent {
     }
 
     validateDifferences() {
-        // this.dialog.open(this.imageNotSetDialog);
         if (!this.validationService.areImagesSet()) {
             this.dialog.open(this.imageNotSetDialog);
         }

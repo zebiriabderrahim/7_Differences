@@ -8,16 +8,6 @@ export class ValidationService {
     constructor(public imageService: ImageService) {}
 
     areImagesSet(): boolean {
-        // console.log('original');
-        // console.log(this.imageService.originalImage);
-        // console.log('modif');
-        // console.log(this.imageService.modifiedImage);
-        // console.log('empty');
-        // console.log(new Image());
-        // console.log('og empty');
-        // console.log(this.imageService.originalImage instanceof HTMLImageElement);
-        // console.log('modif empty');
-        // console.log(this.imageService.modifiedImage instanceof HTMLImageElement);
         return this.imageService.originalImage !== '' && this.imageService.modifiedImage !== '';
     }
 
