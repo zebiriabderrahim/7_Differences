@@ -35,19 +35,5 @@ export class ImageService {
     setBothCanvas(image: string) {
         this.setOriginalImage(image);
         this.setModifiedImage(image);
-        // setOriginalImage(image: HTMLImageElement) {
-        //     this.originalImage = image;
-        //     this.originalImageSource.next(image);
-        // }
-
-        // setModifiedImage(image: HTMLImageElement) {
-        //     this.modifiedImage = image;
-        //     this.modifiedImageSource.next(image);
-        // }
-
-        // setBothCanvas(image: HTMLImageElement) {
-        //     this.setOriginalImage(image);
-        //     this.setModifiedImage(image);
-        // }
     }
 }
