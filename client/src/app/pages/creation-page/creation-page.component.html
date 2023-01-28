@@ -20,7 +20,7 @@
     <div id="configuration-buttons">
         <div>
             <p>Choisissez le rayon d'élargissement :</p>
-            <mat-radio-group color="primary" aria-label="Select an option" [(ngModel)]="defaultRadius">
+            <mat-radio-group color="primary" aria-label="Select an option" [(ngModel)]="radius">
                 <mat-radio-button *ngFor="let rad of radiusSizes" [value]="rad">{{ rad }}</mat-radio-button>
             </mat-radio-group>
         </div>
