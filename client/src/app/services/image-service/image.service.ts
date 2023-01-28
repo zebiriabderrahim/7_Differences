@@ -15,11 +15,19 @@ export class ImageService {
     originalImage: string = '';
     modifiedImage: string = '';
 
-    resetBothCanvas() {
+    resetOriginalImage() {
         this.originalImage = '';
-        this.modifiedImage = '';
         this.originalImageSource.next(this.originalImage);
+    }
+
+    resetModifiedImage() {
+        this.modifiedImage = '';
         this.modifiedImageSource.next(this.modifiedImage);
+    }
+
+    resetBothCanvas() {
+        this.resetOriginalImage();
+        this.resetModifiedImage();
     }
 
     setOriginalImage(image: string) {
