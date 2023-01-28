@@ -11,7 +11,8 @@ import { ValidationService } from '@app/services/validation-service//validation.
     styleUrls: ['./creation-page.component.scss'],
 })
 export class CreationPageComponent {
-    @ViewChild('imageNotSetDialog', { static: true }) imageNotSetDialog: TemplateRef<unknown>;
+    @ViewChild('imageNotSetDialog', { static: true })
+    private readonly imageNotSetDialog: TemplateRef<HTMLElement>;
     radiusSizes: number[] = RADIUS_SIZES;
     radius: number = DEFAULT_RADIUS;
 
