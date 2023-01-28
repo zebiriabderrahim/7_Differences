@@ -1,10 +1,26 @@
 import { Injectable } from '@angular/core';
 import { BMP_HEADER_OFFSET, FORMAT_IMAGE, IMG_HEIGHT, IMG_TYPE, IMG_WIDTH } from '@app/constants/creation-page';
-
+import { ImageService } from '@app/services/image-service/image.service';
 @Injectable({
     providedIn: 'root',
 })
 export class ValidationService {
+    constructor(public imageService: ImageService) {}
+
+    areImagesSet(): boolean {
+        // console.log('original');
+        // console.log(this.imageService.originalImage);
+        // console.log('modif');
+        // console.log(this.imageService.modifiedImage);
+        // console.log('empty');
+        // console.log(new Image());
+        // console.log('og empty');
+        // console.log(this.imageService.originalImage instanceof HTMLImageElement);
+        // console.log('modif empty');
+        // console.log(this.imageService.modifiedImage instanceof HTMLImageElement);
+        return this.imageService.originalImage !== '' && this.imageService.modifiedImage !== '';
+    }
+
     isImageTypeValid(imageDescription: string): boolean {
         return imageDescription.includes(IMG_TYPE);
     }

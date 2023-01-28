@@ -34,9 +34,19 @@ export class ImageCanvasComponent implements AfterViewInit {
         }
     }
 
-    setCanvasImage(image: HTMLImageElement): void {
+    // setCanvasImage(image: HTMLImageElement): void {
+    //     this.resetCanvas();
+    //     this.context?.drawImage(image, 0, 0);
+    // }
+    setCanvasImage(image: string): void {
         this.resetCanvas();
-        this.context?.drawImage(image, 0, 0);
+        if (image === '') {
+            this.context?.drawImage(new Image(), 0, 0);
+        } else {
+            const imageToDraw = new Image();
+            imageToDraw.src = image;
+            this.context?.drawImage(imageToDraw, 0, 0);
+        }
     }
 
     onSelectFile(event: Event) {
@@ -51,9 +61,9 @@ export class ImageCanvasComponent implements AfterViewInit {
                 image.onload = (ev: Event) => {
                     if (this.validationService.isImageValid(ev, image.src)) {
                         if (this.position === 'left') {
-                            this.imageService.setOriginalImage(image);
+                            this.imageService.setOriginalImage(image.src);
                         } else if (this.position === 'right') {
-                            this.imageService.setModifiedImage(image);
+                            this.imageService.setModifiedImage(image.src);
                         }
                     } else {
                         this.dialog.open(ImageValidationDialogComponent);
