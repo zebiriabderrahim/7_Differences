@@ -5,34 +5,56 @@ import { Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class ImageService {
-    private originalImageSource = new Subject<HTMLImageElement>();
-    private modifiedImageSource = new Subject<HTMLImageElement>();
+    // private originalImageSource = new Subject<HTMLImageElement>();
+    // private modifiedImageSource = new Subject<HTMLImageElement>();
+
+    // originalImageObservable = this.originalImageSource.asObservable();
+    // modifiedImageObservable = this.modifiedImageSource.asObservable();
+
+    // originalImage: HTMLImageElement = new Image();
+    // modifiedImage: HTMLImageElement = new Image();
+    private originalImageSource = new Subject<string>();
+    private modifiedImageSource = new Subject<string>();
 
     originalImageObservable = this.originalImageSource.asObservable();
     modifiedImageObservable = this.modifiedImageSource.asObservable();
 
-    originalImage: HTMLImageElement = new Image();
-    modifiedImage: HTMLImageElement = new Image();
+    originalImage: string = '';
+    modifiedImage: string = '';
 
     resetBothCanvas() {
-        this.originalImage = new Image();
-        this.modifiedImage = new Image();
+        this.originalImage = '';
+        this.modifiedImage = '';
         this.originalImageSource.next(this.originalImage);
         this.modifiedImageSource.next(this.modifiedImage);
     }
 
-    setOriginalImage(image: HTMLImageElement) {
+    setOriginalImage(image: string) {
         this.originalImage = image;
         this.originalImageSource.next(image);
     }
 
-    setModifiedImage(image: HTMLImageElement) {
+    setModifiedImage(image: string) {
         this.modifiedImage = image;
         this.modifiedImageSource.next(image);
     }
 
-    setBothCanvas(image: HTMLImageElement) {
+    setBothCanvas(image: string) {
         this.setOriginalImage(image);
         this.setModifiedImage(image);
+        // setOriginalImage(image: HTMLImageElement) {
+        //     this.originalImage = image;
+        //     this.originalImageSource.next(image);
+        // }
+
+        // setModifiedImage(image: HTMLImageElement) {
+        //     this.modifiedImage = image;
+        //     this.modifiedImageSource.next(image);
+        // }
+
+        // setBothCanvas(image: HTMLImageElement) {
+        //     this.setOriginalImage(image);
+        //     this.setModifiedImage(image);
+        // }
     }
 }

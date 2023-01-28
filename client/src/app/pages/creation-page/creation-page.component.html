@@ -25,4 +25,15 @@
             </mat-radio-group>
         </div>
     </div>
+    <button mat-raised-button color="basic" matTooltip="Vous devez avoir téléversé deux images"
+        (click)="validateDifferences()">
+        Valider les différences
+    </button>
 </div>
+
+<ng-template #imageNotSetDialog>
+    <button mat-button [mat-dialog-close]="true">Fermer</button>
+    <div mat-dialog-content>
+        <h1 mat-dialog-title>Veuillez mettre deux images</h1>
+    </div>
+</ng-template>
