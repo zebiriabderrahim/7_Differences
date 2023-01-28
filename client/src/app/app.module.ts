@@ -19,6 +19,7 @@ import { MaterialPageComponent } from '@app/pages/material-page/material-page.co
 import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
 import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.component';
 import { ImageCanvasComponent } from './components/image-canvas/image-canvas.component';
+import { ImageValidationDialogComponent } from './components/image-validation-dialog/image-validation-dialog.component';
 
 /**
  * Main module that is used in main.ts.
@@ -42,6 +43,7 @@ import { ImageCanvasComponent } from './components/image-canvas/image-canvas.com
         PlayerNameDialogBoxComponent,
         GameInfosComponent,
         ImageCanvasComponent,
+        ImageValidationDialogComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule, ReactiveFormsModule],
     providers: [],
