@@ -1,4 +1,6 @@
 import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ImageValidationDialogComponent } from '@app/components/image-validation-dialog/image-validation-dialog.component';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ValidationService } from '@app/services/validation-service/validation.service';
@@ -16,7 +18,7 @@ export class ImageCanvasComponent implements AfterViewInit {
 
     imageSubscription: Subscription = new Subscription();
 
-    constructor(public imageService: ImageService, public validationService: ValidationService) {}
+    constructor(public imageService: ImageService, public validationService: ValidationService, public dialog: MatDialog) {}
     ngAfterViewInit(): void {
         this.canvas.nativeElement.width = IMG_WIDTH;
         this.canvas.nativeElement.height = IMG_HEIGHT;
@@ -53,6 +55,8 @@ export class ImageCanvasComponent implements AfterViewInit {
                         } else if (this.position === 'right') {
                             this.imageService.setModifiedImage(image);
                         }
+                    } else {
+                        this.dialog.open(ImageValidationDialogComponent);
                     }
                 };
             };
