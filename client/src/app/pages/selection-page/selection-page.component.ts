@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Game } from '@app/interfaces/game-interfaces';
+import { GameCard } from '@app/interfaces/game-interfaces';
 import { CommunicationService } from '@app/services/communication-service/communication-service.service';
+
 
 @Component({
     selector: 'app-selection-page',
@@ -13,7 +14,7 @@ export class SelectionPageComponent implements OnInit {
     newImageSrc: string = '../../../assets/img/strong_rat.jpg';
     // eslint-disable-next-line no-alert, quotes, semi, @typescript-eslint/no-magic-numbers
     gamePhase: number = 4;
-    games: Game[];
+    games: GameCard[];
     hasPrevious: boolean = false;
     hasNext: boolean = true;
     gameIterator: number = 0;
