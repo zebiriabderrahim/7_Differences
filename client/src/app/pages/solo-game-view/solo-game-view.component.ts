@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { CANVAS_WIDTH, CANVAS_HEIGHT } from '@app/constants/solo-game-view';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Game } from '@app/interfaces/game-interfaces';
+import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { TimerService } from '@app/services/timer-service/timer.service';
 
 @Component({
@@ -8,7 +8,11 @@ import { TimerService } from '@app/services/timer-service/timer.service';
     templateUrl: './solo-game-view.component.html',
     styleUrls: ['./solo-game-view.component.scss'],
 })
-export class SoloGameViewComponent implements OnInit {
+export class SoloGameViewComponent implements OnInit, AfterViewInit {
+    @ViewChild('originalCanvas', { static: false }) originalCanvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('modifiedCanvas', { static: false }) modifiedCanvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('originalCanvasFG', { static: false }) originalCanvasForeground!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('modifiedCanvasFG', { static: false }) modifiedCanvasForeground!: ElementRef<HTMLCanvasElement>;
     time: string = '00:00';
     game: Game = {
         id: 1,
@@ -25,15 +29,17 @@ export class SoloGameViewComponent implements OnInit {
     penaltyTime: number = 1;
     bonusTime: number = 1;
     readonly homeRoute: string = '/home';
-    private canvasSize = { width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
+    // private canvasSize = { width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
 
-    constructor(public timer: TimerService) {}
-    get width(): number {
-        return this.canvasSize.width;
-    }
+    constructor(public timer: TimerService, private gameAreaService: GameAreaService) {}
 
-    get height(): number {
-        return this.canvasSize.height;
+    ngAfterViewInit(): void {
+        this.gameAreaService.originalContext = this.originalCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.gameAreaService.modifiedContext = this.modifiedCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.gameAreaService.originalContextFrontLayer = this.originalCanvasForeground.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.gameAreaService.modifiedContextFrontLayer = this.modifiedCanvasForeground.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.gameAreaService.onLoad(this.gameAreaService.originalContext, '');
+        this.gameAreaService.onLoad(this.gameAreaService.modifiedContext, '');
     }
 
     ngOnInit() {
@@ -48,5 +54,19 @@ export class SoloGameViewComponent implements OnInit {
     }
     abandonGame(): void {
         // this.timer.stopTimer();
+    }
+    mouseHitDetectOriginalImage(event: MouseEvent) {
+        if (this.gameAreaService.detectLeftClick(event)) {
+            this.displayError(true);
+        }
+    }
+
+    mouseHitDetectModifiedImage(event: MouseEvent) {
+        if (this.gameAreaService.detectLeftClick(event)) {
+            this.displayError(false);
+        }
+    }
+    displayError(isMain: boolean): void {
+        this.gameAreaService.showError(isMain);
     }
 }
