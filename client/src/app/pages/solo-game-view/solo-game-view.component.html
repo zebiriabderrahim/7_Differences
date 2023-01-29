@@ -6,19 +6,19 @@
 <div class="infomations-header">
     <h1>{{ game.name }}</h1>
     <div class="game-feedback">
-        <h1> Temps: {{ time }}</h1>
-        <h1> différences trouvées: {{ 0 }}</h1>
+        <h1>Temps: {{ time }}</h1>
+        <h1>différences trouvées: {{ 0 }}</h1>
     </div>
-    <app-game-infos [game]="game" [mode] = "mode" [penaltyTime]="penaltyTime" [bonusTime] = "bonusTime"></app-game-infos>
+    <app-game-infos [game]="game" [mode]="mode" [penaltyTime]="penaltyTime" [bonusTime]="bonusTime"></app-game-infos>
 </div>
 <div class="canvas-container">
-        <div class="game-canvas">
-            <canvas id="originalFG" [attr.height]="height" [attr.width]="width" #originalCanvasFG></canvas>
-            <canvas id="original" [attr.height]="height" [attr.width]="width"  #originalCanvas></canvas>
-        </div>
-        <div class="game-canvas">
-            <canvas id="modifiedFG" [attr.height]="height" [attr.width]="width"  #modifiedCanvasFG></canvas>
-            <canvas id="modified" [attr.height]="height" [attr.width]="width"  #modifiedCanvas ></canvas>
-        </div>
+    <div class="game-canvas">
+        <canvas id="originalFG" [attr.height]="'480'" [attr.width]="'640'" #originalCanvasFG></canvas>
+        <canvas id="original" [attr.height]="'480'" [attr.width]="'640'" #originalCanvas (click)="mouseHitDetectOriginalImage($event)"></canvas>
     </div>
-<button class = "importantButton" (click) = "abandonGame()" routerLink = "homeRoute">Abandonner la partie</button>
+    <div class="game-canvas">
+        <canvas id="modifiedFG" [attr.height]="'480'" [attr.width]="'640'" #modifiedCanvasFG></canvas>
+        <canvas id="modified" [attr.height]="'480'" [attr.width]="'640'" #modifiedCanvas (click)="mouseHitDetectModifiedImage($event)"></canvas>
+    </div>
+</div>
+<button class="importantButton" (click)="abandonGame()" routerLink="homeRoute">Abandonner la partie</button>
