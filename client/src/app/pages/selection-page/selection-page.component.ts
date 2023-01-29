@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Game } from '@app/interfaces/game-interfaces';
 
 @Component({
@@ -6,7 +6,7 @@ import { Game } from '@app/interfaces/game-interfaces';
     templateUrl: './selection-page.component.html',
     styleUrls: ['./selection-page.component.scss'],
 })
-export class SelectionPageComponent {
+export class SelectionPageComponent implements OnInit {
     titre: string = 'Selectionne ton jeu';
     imageSrc: string = '../../../assets/img/rat.jpg';
     newImageSrc: string = '../../../assets/img/strong_rat.jpg';
@@ -161,24 +161,24 @@ export class SelectionPageComponent {
     ];
 
     hasPrevious: boolean = false;
-    hasNext: boolean = true;
+    hasNext: boolean = false;
     gameIterator: number = 0;
 
-    lastFour() {
-        this.gameIterator -= this.gamePhase;
-        this.hasNext = true;
-        this.hasPrevious = true;
-        if (this.gameIterator <= 0) {
-            this.hasPrevious = false;
-        }
+    ngOnInit() {
+        this.phaseVerifiction();
+    }
+
+    phaseVerifiction() {
+        this.hasNext = this.games.length - (this.gameIterator + this.gamePhase) > 0 ? true : false;
+        this.hasPrevious = this.gameIterator !== 0 ? true : false;
     }
 
     nextFour() {
         this.gameIterator += this.gamePhase;
-        this.hasNext = true;
-        this.hasPrevious = true;
-        if (this.gameIterator >= this.games.length - this.gamePhase) {
-            this.hasNext = false;
-        }
+        this.phaseVerifiction();
+    }
+    lastFour() {
+        this.gameIterator -= this.gamePhase;
+        this.phaseVerifiction();
     }
 }
