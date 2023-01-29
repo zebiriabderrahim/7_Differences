@@ -46,6 +46,7 @@ import { ConfigPageComponent } from './pages/config-page/config-page.component';
         GameInfosComponent,
         ImageCanvasComponent,
         ImageValidationDialogComponent,
+        ConfigPageComponent,
     ],
     imports: [
         AppMaterialModule,
@@ -56,7 +57,6 @@ import { ConfigPageComponent } from './pages/config-page/config-page.component';
         HttpClientModule,
         ReactiveFormsModule,
         MatDialogModule,
-        ConfigPageComponent,
     ],
     providers: [],
     bootstrap: [AppComponent],
