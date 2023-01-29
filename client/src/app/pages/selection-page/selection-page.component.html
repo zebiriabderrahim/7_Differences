@@ -1,4 +1,5 @@
 <body>
+    {{ navigate() }}
     <h1>{{ titre }}</h1>
     <mat-grid-list cols="4">
         <mat-grid-tile *ngFor="let game of games.slice(gameIterator, gameIterator + gamePhase)" class="section">

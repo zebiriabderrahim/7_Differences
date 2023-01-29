@@ -1,12 +1,13 @@
-import { Component } from '@angular/core';
-import { Game } from '@app/interfaces/game-interfaces';
+import { Component, OnInit } from '@angular/core';
+import { GameCard } from '@app/interfaces/game-interfaces';
+import { CommunicationService } from '@app/services/communication-service/communication-service.service';
 
 @Component({
     selector: 'app-config-page',
     templateUrl: './config-page.component.html',
     styleUrls: ['./config-page.component.scss'],
 })
-export class ConfigPageComponent {
+export class ConfigPageComponent implements OnInit {
     readonly titre: string = 'Configure ton jeu';
     readonly imageSrc: string = '../../../assets/img/rat.jpg';
     readonly newImageSrc: string = '../../../assets/img/strong_rat.jpg';
@@ -19,172 +20,17 @@ export class ConfigPageComponent {
     readonly timePenalty: string = '5 secondes';
     readonly timeWonByDifference: string = '5 secondes';
 
-    games: Game[] = [
-        {
-            id: 1,
-            name: 'rat Game',
-            difficultyLevel: 10,
-            thumbnail: this.imageSrc,
-            soloTopTime: [
-                { name: 'player1', time: 1.5 },
-                { name: 'player2', time: 2.5 },
-                { name: 'player3', time: 3.5 },
-            ],
-            oneVsOneTopTime: [
-                { name: 'player1', time: 1.5 },
-                { name: 'player2', time: 2.5 },
-                { name: 'player3', time: 3.5 },
-            ],
-            differencesCount: 15,
-            hintList: [],
-        },
-        {
-            id: 1,
-            name: 'rat Game 2',
-            difficultyLevel: 15,
-            thumbnail: this.imageSrc,
-            soloTopTime: [
-                { name: 'player1', time: 1.5 },
-                { name: 'player2', time: 2.5 },
-                { name: 'player3', time: 3.5 },
-            ],
-            oneVsOneTopTime: [
-                { name: 'player1', time: 1.5 },
-                { name: 'player2', time: 2.5 },
-                { name: 'player3', time: 3.5 },
-            ],
-            differencesCount: 15,
-            hintList: [],
-        },
-        {
-            id: 1,
-            name: 'rat Game 3',
-            difficultyLevel: 20,
-            thumbnail: this.imageSrc,
-            soloTopTime: [
-                { name: 'player1', time: 1.5 },
-                { name: 'player2', time: 2.5 },
-                { name: 'player3', time: 3.5 },
-            ],
-            oneVsOneTopTime: [
-                { name: 'player1', time: 1.5 },
-                { name: 'player2', time: 2.5 },
-                { name: 'player3', time: 3.5 },
-            ],
-            differencesCount: 15,
-            hintList: [],
-        },
-        {
-            id: 1,
-            name: 'rat Game 4',
-            difficultyLevel: 25,
-            thumbnail: this.imageSrc,
-            soloTopTime: [
-                { name: 'player1', time: 1.5 },
-                { name: 'player2', time: 2.5 },
-                { name: 'player3', time: 3.5 },
-            ],
-            oneVsOneTopTime: [
-                { name: 'player1', time: 1.5 },
-                { name: 'player2', time: 2.5 },
-                { name: 'player3', time: 3.5 },
-            ],
-            differencesCount: 15,
-            hintList: [],
-        },
-        {
-            id: 1,
-            name: 'rat Game 4',
-            difficultyLevel: 10,
-            thumbnail: this.newImageSrc,
-            soloTopTime: [
-                { name: 'player1', time: 1.5 },
-                { name: 'player2', time: 2.5 },
-                { name: 'player3', time: 3.5 },
-            ],
-            oneVsOneTopTime: [
-                { name: 'player1', time: 1.5 },
-                { name: 'player2', time: 2.5 },
-                { name: 'player3', time: 3.5 },
-            ],
-            differencesCount: 15,
-            hintList: [],
-        },
-        {
-            id: 1,
-            name: 'rat Game 5',
-            difficultyLevel: 15,
-            thumbnail: this.newImageSrc,
-            soloTopTime: [
-                { name: 'player1', time: 1.5 },
-                { name: 'player2', time: 2.5 },
-                { name: 'player3', time: 3.5 },
-            ],
-            oneVsOneTopTime: [
-                { name: 'player1', time: 1.5 },
-                { name: 'player2', time: 2.5 },
-                { name: 'player3', time: 3.5 },
-            ],
-            differencesCount: 15,
-            hintList: [],
-        },
-        {
-            id: 1,
-            name: 'rat Game 6',
-            difficultyLevel: 20,
-            thumbnail: this.newImageSrc,
-            soloTopTime: [
-                { name: 'player1', time: 1.5 },
-                { name: 'player2', time: 2.5 },
-                { name: 'player3', time: 3.5 },
-            ],
-            oneVsOneTopTime: [
-                { name: 'player1', time: 1.5 },
-                { name: 'player2', time: 2.5 },
-                { name: 'player3', time: 3.5 },
-            ],
-            differencesCount: 15,
-            hintList: [],
-        },
-        {
-            id: 1,
-            name: 'rat Game 7',
-            difficultyLevel: 25,
-            thumbnail: this.newImageSrc,
-            soloTopTime: [
-                { name: 'player1', time: 1.5 },
-                { name: 'player2', time: 2.5 },
-                { name: 'player3', time: 3.5 },
-            ],
-            oneVsOneTopTime: [
-                { name: 'player1', time: 1.5 },
-                { name: 'player2', time: 2.5 },
-                { name: 'player3', time: 3.5 },
-            ],
-            differencesCount: 15,
-            hintList: [],
-        },
-    ];
+    games: GameCard[];
 
     hasPrevious: boolean = false;
     hasNext: boolean = true;
     gameIterator: number = 0;
 
-    lastFour() {
-        this.gameIterator -= this.gamePhase;
-        this.hasNext = true;
-        this.hasPrevious = true;
-        if (this.gameIterator <= 0) {
-            this.hasPrevious = false;
-        }
-    }
+    constructor(private readonly communicationService: CommunicationService) {}
 
-    nextFour() {
-        this.gameIterator += this.gamePhase;
-        this.hasNext = true;
-        this.hasPrevious = true;
-        if (this.gameIterator >= this.games.length - this.gamePhase) {
-            this.hasNext = false;
-        }
+    ngOnInit(): void {
+        this.communicationService.loadAllGames().subscribe((games) => {
+            this.games = games;
+        });
     }
 }

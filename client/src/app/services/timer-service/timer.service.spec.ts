@@ -1,5 +1,5 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { MINUTE_CONVERSION, START_TIME, ONE_SECOND } from '@app/constants';
+import { MINUTE_CONVERSION, START_TIME, ONE_SECOND } from '@common/constants';
 import { TimerService } from './timer.service';
 
 describe('TimerService', () => {

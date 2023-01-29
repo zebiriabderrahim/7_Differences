@@ -1,8 +1,3 @@
-export interface Message {
-    title: string;
-    body: string;
-}
-
 export interface GameDetails {
     id: number;
     name: string;
@@ -33,7 +28,7 @@ export interface GameCard {
     thumbnail: string;
 }
 
-export interface GameConst {
+export interface GameConfig {
     countdownTime: number;
     penaltyTime: number;
     bonusTime: number;

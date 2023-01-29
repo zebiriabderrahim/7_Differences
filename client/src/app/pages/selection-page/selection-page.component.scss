@@ -16,7 +16,6 @@ h1 {
     margin-right: auto;
     padding: 10px;
     text-align: center;
-    animation: blink-text 1.9s linear infinite;
 }
 
 @keyframes blink-text {
@@ -51,7 +50,7 @@ h1 {
 }
 
 .previous_button {
-    position: absolute;
+    position: static;
     left: 40%;
     padding: 10px;
     margin: 10px;
@@ -60,7 +59,7 @@ h1 {
 }
 
 .next_button {
-    position: absolute;
+    position: static;
     right: 40%;
     padding: 10px;
     margin: 10px;
