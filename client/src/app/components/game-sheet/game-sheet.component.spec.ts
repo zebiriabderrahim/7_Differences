@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { GameSheetComponent } from './game-sheet.component';
 
@@ -9,6 +10,7 @@ describe('GameSheetComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
+            imports: [RouterTestingModule],
             declarations: [GameSheetComponent],
             providers: [{ provide: MatDialog, useValue: {} }],
         }).compileComponents();
