@@ -62,7 +62,6 @@ export class GameAreaService {
             frontContext = this.modifiedContextFrontLayer;
             frontContext.fillStyle = 'green';
         }
-        this.clearCanvasPixels(frontContext);
         this.clickDisabled = true;
         frontContext.font = 'bold 30px sheriff';
         frontContext.fillText('Erreur', this.mousePosition.x - 38, this.mousePosition.y);

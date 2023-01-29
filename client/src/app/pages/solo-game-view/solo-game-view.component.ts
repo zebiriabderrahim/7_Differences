@@ -38,8 +38,8 @@ export class SoloGameViewComponent implements OnInit, AfterViewInit {
         this.gameAreaService.modifiedContext = this.modifiedCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.gameAreaService.originalContextFrontLayer = this.originalCanvasForeground.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.gameAreaService.modifiedContextFrontLayer = this.modifiedCanvasForeground.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.gameAreaService.onLoad(this.gameAreaService.originalContext, '');
-        this.gameAreaService.onLoad(this.gameAreaService.modifiedContext, '');
+        this.gameAreaService.onLoad(this.gameAreaService.originalContext, '../../../assets/img/testBMP.bmp');
+        this.gameAreaService.onLoad(this.gameAreaService.modifiedContext, '../../../assets/img/modifiedTestBMP.bmp');
     }
 
     ngOnInit() {
