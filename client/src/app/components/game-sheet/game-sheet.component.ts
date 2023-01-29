@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { GameCard } from '@app/interfaces/game-interfaces';
@@ -19,7 +19,11 @@ export class GameSheetComponent {
 
     openDialog() {
         if (this.router.url === '/selection') {
-            const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent);
+            const dialogConfig = new MatDialogConfig();
+            dialogConfig.data = {
+                id: this.game.id,
+            };
+            const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent, dialogConfig);
             dialogRef.afterClosed().subscribe((result) => {
                 this.playerName = result;
             });
