@@ -1,10 +1,7 @@
 #gameInfos{
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    border: 3px solid black;
-    width: 85%;
-    border-radius: 5px;
-    padding: 10px;
-    margin: 5px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
 }
