@@ -1,6 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ChronometerComponent } from '@app/components/chronometer/chronometer.component';
@@ -12,11 +13,14 @@ import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
+import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
 import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.component';
+import { ImageCanvasComponent } from './components/image-canvas/image-canvas.component';
+import { ImageValidationDialogComponent } from './components/image-validation-dialog/image-validation-dialog.component';
 
 /**
  * Main module that is used in main.ts.
@@ -27,6 +31,7 @@ import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.
 @NgModule({
     declarations: [
         AppComponent,
+        CreationPageComponent,
         GamePageComponent,
         MainPageComponent,
         MaterialPageComponent,
@@ -38,8 +43,19 @@ import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.
         GameSheetComponent,
         PlayerNameDialogBoxComponent,
         GameInfosComponent,
+        ImageCanvasComponent,
+        ImageValidationDialogComponent,
     ],
-    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule, ReactiveFormsModule],
+    imports: [
+        AppMaterialModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        BrowserModule,
+        FormsModule,
+        HttpClientModule,
+        ReactiveFormsModule,
+        MatDialogModule,
+    ],
     providers: [],
     bootstrap: [AppComponent],
 })
