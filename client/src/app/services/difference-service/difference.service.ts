@@ -15,4 +15,13 @@ export class DifferenceService {
     isCoordInImage(x: number, y: number): boolean {
         return x >= 0 && x < IMG_WIDTH && y >= 0 && y < IMG_HEIGHT;
     }
+
+    isCoordInDifferencesArr(point: Vec2): boolean {
+        for (const coord of this.differencesArr) {
+            if (coord.x === point.x && coord.y === point.y) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
