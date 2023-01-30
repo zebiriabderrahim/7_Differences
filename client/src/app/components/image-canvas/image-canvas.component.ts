@@ -56,11 +56,7 @@ export class ImageCanvasComponent implements AfterViewInit {
                 image.src = reader.result as string;
                 image.onload = (ev: Event) => {
                     if (this.validationService.isImageValid(ev, image.src)) {
-                        if (this.position === CanvasPosition.Left) {
-                            this.imageService.setOriginalImage(image.src);
-                        } else if (this.position === CanvasPosition.Right) {
-                            this.imageService.setModifiedImage(image.src);
-                        }
+                        this.imageService.setBackground(this.position, image.src);
                     } else {
                         this.dialog.open(ImageValidationDialogComponent);
                     }
