@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
@@ -6,15 +5,18 @@ import { Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class ImageService {
-    private originalImageSource = new Subject<string>();
-    private modifiedImageSource = new Subject<string>();
-
-    originalImageObservable = this.originalImageSource.asObservable();
-    modifiedImageObservable = this.modifiedImageSource.asObservable();
-
+    originalImageObservable;
+    modifiedImageObservable;
     originalImage: string = '';
     modifiedImage: string = '';
 
+    private originalImageSource = new Subject<string>();
+    private modifiedImageSource = new Subject<string>();
+
+    constructor() {
+        this.originalImageObservable = this.originalImageSource.asObservable();
+        this.modifiedImageObservable = this.modifiedImageSource.asObservable();
+    }
     resetOriginalImage() {
         this.originalImage = '';
         this.originalImageSource.next(this.originalImage);
