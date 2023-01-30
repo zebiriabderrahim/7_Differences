@@ -24,14 +24,17 @@ export class ImageCanvasComponent implements AfterViewInit {
         this.canvas.nativeElement.width = IMG_WIDTH;
         this.canvas.nativeElement.height = IMG_HEIGHT;
         this.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        if (this.position === CanvasPosition.Left) {
-            this.imageSubscription = this.imageService.originalImageObservable.subscribe(() => {
-                this.setCanvasImage(this.imageService.originalImage);
-            });
-        } else if (this.position === CanvasPosition.Right) {
-            this.imageSubscription = this.imageService.modifiedImageObservable.subscribe(() => {
-                this.setCanvasImage(this.imageService.modifiedImage);
-            });
+        switch (this.position) {
+            case CanvasPosition.Left:
+                this.imageSubscription = this.imageService.originalImageObservable.subscribe(() => {
+                    this.setCanvasImage(this.imageService.originalImage);
+                });
+                break;
+            case CanvasPosition.Right:
+                this.imageSubscription = this.imageService.modifiedImageObservable.subscribe(() => {
+                    this.setCanvasImage(this.imageService.modifiedImage);
+                });
+                break;
         }
     }
 
