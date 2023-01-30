@@ -44,7 +44,7 @@ export class CreationPageComponent {
         if (!this.validationService.areImagesSet()) {
             this.matDialog.open(this.imageNotSetDialog);
         } else {
-            this.imageService.validateDifferences();
+            this.imageService.validateDifferences(this.radius);
         }
     }
 }
