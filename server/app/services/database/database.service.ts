@@ -1,11 +1,11 @@
+import { Game, GameCard } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
-import { GameCard, Game } from '@common/game-interfaces';
 import * as fs from 'fs';
 
 @Injectable()
 export class DatabaseService {
     private games: Game[];
-    private selectionViewGames: GameCard[];
+    private gameCards: GameCard[] = [];
 
     constructor() {
         this.games = [
@@ -46,17 +46,24 @@ export class DatabaseService {
                 hintList: [],
             },
         ];
-        this.selectionViewGames = [];
+        this.gameCards = [];
     }
 
-    getGamesData(): Game[] {
-        return this.games;
+    getGameCards(): GameCard[] {
+        return this.createGameCardFromGameData();
     }
 
-    async getGames(): Promise<GameCard[]> {
-        this.selectionViewGames = [];
+    getGameById(id: string): Game {
+        return this.games.find((game) => game.id === +id);
+    }
+
+    addGame(gameData: Game): void {
+        this.games.push(gameData);
+    }
+
+    createGameCardFromGameData(): GameCard[] {
         for (const game of this.games) {
-            this.selectionViewGames.push({
+            this.gameCards.push({
                 id: game.id,
                 name: game.name,
                 difficultyLevel: game.difficultyLevel,
@@ -65,13 +72,8 @@ export class DatabaseService {
                 thumbnail: game.thumbnail,
             });
         }
-        return this.selectionViewGames;
+        return this.gameCards;
     }
-
-    async getGameById(id: string): Promise<Game | void> {
-        return this.games.find((game) => game.id === +id);
-    }
-
     saveFiles(gameName: string, data: Buffer): void {
         const dirName = `assets/${gameName}`;
 
@@ -80,9 +82,5 @@ export class DatabaseService {
             fs.writeFileSync(`assets/${gameName}/original.bmp`, data);
             fs.writeFileSync(`assets/${gameName}/modified.bmp`, data);
         }
-    }
-
-    addGame(gameData: Game): void {
-        this.games.push(gameData);
     }
 }
