@@ -31,7 +31,7 @@ export class CreationPageComponent {
                 image.src = reader.result as string;
                 image.onload = (ev: Event) => {
                     if (this.validationService.isImageValid(ev, image.src)) {
-                        this.imageService.setBothCanvas(image.src);
+                        this.imageService.setBothBackgrounds(image.src);
                     } else {
                         this.matDialog.open(ImageValidationDialogComponent);
                     }
