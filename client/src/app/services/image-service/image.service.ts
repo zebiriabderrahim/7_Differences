@@ -109,4 +109,53 @@ export class ImageService {
         }
         return pixelMatrix;
     }
+    comparePixelArrays(pixelArray1: Pixel[], pixelArray2: Pixel[]): Pixel[] {
+        const blackPixel: Pixel = {
+            red: 0,
+            green: 0,
+            blue: 0,
+            alpha: 255,
+        };
+        const whitePixel: Pixel = {
+            red: 255,
+            green: 255,
+            blue: 255,
+            alpha: 255,            
+        }
+        const difference: Pixel[] = new Array(IMG_HEIGHT * IMG_WIDTH).fill(whitePixel);
+        for (let i = 0; i < pixelArray1.length; i++) {
+            if(this.arePixelsDifferent(pixelArray1[i], pixelArray2[i])){
+                difference[i] = blackPixel;
+            }
+        }
+        return difference;
+    }
+
+    arePixelsDifferent(pixel1: Pixel, pixel2: Pixel): boolean {
+        return !(pixel1.red === pixel2.red && pixel1.green === pixel2.green && pixel1.blue === pixel2.blue);
+    }
+
+    generateDifferencePixelArray(): Pixel[] {
+        const leftPixelArray = this.transformContextToPixelArray(this.leftBackgroundContext);
+        const rightPixelArray = this.transformContextToPixelArray(this.rightBackgroundContext);
+        return this.comparePixelArrays(leftPixelArray, rightPixelArray);
+    }
+
+    transformPixelArrayToImageData(pixelArray: Pixel[]): Uint8ClampedArray {
+        const data = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * 4);
+        for (let i = 0; i < pixelArray.length; i++) {
+            data[i * 4] = pixelArray[i].red;
+            data[i * 4 + 1] = pixelArray[i].green;
+            data[i * 4 + 2] = pixelArray[i].blue;
+            data[i * 4 + 3] = pixelArray[i].alpha;
+        }
+        return data;
+    }
+
+    validateDifferences() {
+        const differencePixelArray = this.generateDifferencePixelArray();
+        const differenceImageData = this.transformPixelArrayToImageData(differencePixelArray);
+        this.resetLeftBackground();
+        this.leftBackgroundContext.putImageData(new ImageData(differenceImageData, IMG_WIDTH, IMG_HEIGHT), 0, 0);
+    }
 }
