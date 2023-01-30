@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { Game } from '@app/interfaces/game-interfaces';
 import { CommunicationService } from '@app/services/communication-service/communication-service.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
@@ -43,8 +43,8 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.gameAreaService.modifiedContext = this.modifiedCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.gameAreaService.originalContextFrontLayer = this.originalCanvasForeground.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.gameAreaService.modifiedContextFrontLayer = this.modifiedCanvasForeground.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.gameAreaService.loadImage(this.gameAreaService.originalContext, '../../../assets/img/testBMP.bmp');
-        this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, '../../../assets/img/modifiedTestBMP.bmp');
+        this.gameAreaService.loadImage(this.gameAreaService.originalContext, '../../../assets/img/bouffon.bmp');
+        this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, '../../../assets/img/bouffonne.bmp');
     }
 
     finish() {
@@ -57,19 +57,19 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     abandonGame(): void {
         // this.timer.stopTimer();
     }
-    mouseHitDetectOriginalImage(event: MouseEvent) {
+    displayError(isMain: boolean): void {
+        this.gameAreaService.showError(isMain);
+    }
+    mouseClickOnOriginal(event: MouseEvent) {
         if (this.gameAreaService.detectLeftClick(event)) {
             this.displayError(true);
         }
     }
 
-    mouseHitDetectModifiedImage(event: MouseEvent) {
+    mouseClickOnModified(event: MouseEvent) {
         if (this.gameAreaService.detectLeftClick(event)) {
             this.displayError(false);
         }
-    }
-    displayError(isMain: boolean): void {
-        this.gameAreaService.showError(isMain);
     }
     ngOnDestroy(): void {
         this.timer.stopTimer();
