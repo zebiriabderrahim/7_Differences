@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Pixel } from '@app/interfaces/pixel';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
-import { BLACK_PIXEL, WHITE_PIXEL } from '@app/constants/pixels';
+import { BLACK_PIXEL, WHITE_PIXEL, N_PIXEL_ATTRIBUTE } from '@app/constants/pixels';
 import { CanvasPosition } from '@app/enum/canvas-position';
 
 @Injectable({
@@ -89,7 +89,7 @@ export class ImageService {
         const imageData = context.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         const data = imageData.data;
         const pixelArray: Pixel[] = [];
-        for (let i = 0; i < data.length; i += 4) {
+        for (let i = 0; i < data.length; i += N_PIXEL_ATTRIBUTE) {
             const pixel : Pixel = {
                 red: data[i],
                 green: data[i + 1],
@@ -132,12 +132,12 @@ export class ImageService {
     }
 
     transformPixelArrayToImageData(pixelArray: Pixel[]): Uint8ClampedArray {
-        const data = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * 4);
+        const data = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * N_PIXEL_ATTRIBUTE);
         for (let i = 0; i < pixelArray.length; i++) {
-            data[i * 4] = pixelArray[i].red;
-            data[i * 4 + 1] = pixelArray[i].green;
-            data[i * 4 + 2] = pixelArray[i].blue;
-            data[i * 4 + 3] = pixelArray[i].alpha;
+            data[i * N_PIXEL_ATTRIBUTE] = pixelArray[i].red;
+            data[i * N_PIXEL_ATTRIBUTE + 1] = pixelArray[i].green;
+            data[i * N_PIXEL_ATTRIBUTE + 2] = pixelArray[i].blue;
+            data[i * N_PIXEL_ATTRIBUTE + 3] = pixelArray[i].alpha;
         }
         return data;
     }
