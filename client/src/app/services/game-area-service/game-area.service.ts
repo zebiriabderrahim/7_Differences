@@ -28,7 +28,7 @@ export class GameAreaService {
     forwardButton: number = 4;
 
     @HostListener('keydown', ['$event'])
-    onLoad(context: CanvasRenderingContext2D, path: string) {
+    loadImage(context: CanvasRenderingContext2D, path: string) {
         const image = new Image();
         image.onload = async () => {
             context.drawImage(await createImageBitmap(image), 0, 0);
