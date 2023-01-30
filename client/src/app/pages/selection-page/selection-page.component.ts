@@ -18,6 +18,7 @@ export class SelectionPageComponent implements OnInit {
     hasPrevious: boolean = false;
     hasNext: boolean = false;
     gameIterator: number = 0;
+    gameCarrousel: GameCard[];
     constructor(private communicationService: CommunicationService, public router: Router) {}
 
     navigate() {
@@ -38,6 +39,7 @@ export class SelectionPageComponent implements OnInit {
     phaseVerification() {
         this.hasNext = this.games.length - (this.gameIterator + this.gamePhase) > 0 ? true : false;
         this.hasPrevious = this.gameIterator !== 0 ? true : false;
+        this.gameCarrousel = this.games.slice(this.gameIterator, this.gameIterator + this.gamePhase);
     }
 
     nextFour() {
