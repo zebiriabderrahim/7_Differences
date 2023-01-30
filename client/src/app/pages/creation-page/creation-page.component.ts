@@ -43,6 +43,8 @@ export class CreationPageComponent {
     validateDifferences() {
         if (!this.validationService.areImagesSet()) {
             this.matDialog.open(this.imageNotSetDialog);
+        } else {
+            this.imageService.validateDifferences();
         }
     }
 }
