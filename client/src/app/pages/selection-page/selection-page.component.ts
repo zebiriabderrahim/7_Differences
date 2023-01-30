@@ -1,124 +1,51 @@
-import { Component } from '@angular/core';
-import { Game } from '@app/interfaces/game-interfaces';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { GameCard } from '@app/interfaces/game-interfaces';
+import { CommunicationService } from '@app/services/communication-service/communication-service.service';
 
 @Component({
     selector: 'app-selection-page',
     templateUrl: './selection-page.component.html',
     styleUrls: ['./selection-page.component.scss'],
 })
-export class SelectionPageComponent {
-    titre: string = 'Selectionne ton jeu';
+export class SelectionPageComponent implements OnInit {
+    titre: string;
     imageSrc: string = '../../../assets/img/rat.jpg';
     newImageSrc: string = '../../../assets/img/strong_rat.jpg';
     // eslint-disable-next-line no-alert, quotes, semi, @typescript-eslint/no-magic-numbers
     gamePhase: number = 4;
-
-    games: Game[] = [
-        {
-            id: 1,
-            name: 'rat Game',
-            difficultyLevel: 10,
-            thumbnail: this.imageSrc,
-            soloTopTime: [],
-            oneVsOneTopTime: [],
-            differencesCount: 15,
-            hintList: [],
-        },
-        {
-            id: 1,
-            name: 'rat Game 2',
-            difficultyLevel: 15,
-            thumbnail: this.imageSrc,
-            soloTopTime: [],
-            oneVsOneTopTime: [],
-            differencesCount: 15,
-            hintList: [],
-        },
-        {
-            id: 1,
-            name: 'rat Game 3',
-            difficultyLevel: 20,
-            thumbnail: this.imageSrc,
-            soloTopTime: [],
-            oneVsOneTopTime: [],
-            differencesCount: 15,
-            hintList: [],
-        },
-        {
-            id: 1,
-            name: 'rat Game 4',
-            difficultyLevel: 25,
-            thumbnail: this.imageSrc,
-            soloTopTime: [],
-            oneVsOneTopTime: [],
-            differencesCount: 15,
-            hintList: [],
-        },
-        {
-            id: 1,
-            name: 'rat Game 4',
-            difficultyLevel: 10,
-            thumbnail: this.newImageSrc,
-            soloTopTime: [],
-            oneVsOneTopTime: [],
-            differencesCount: 15,
-            hintList: [],
-        },
-        {
-            id: 1,
-            name: 'rat Game 5',
-            difficultyLevel: 15,
-            thumbnail: this.newImageSrc,
-            soloTopTime: [],
-            oneVsOneTopTime: [],
-            differencesCount: 15,
-            hintList: [],
-        },
-        {
-            id: 1,
-            name: 'rat Game 6',
-            difficultyLevel: 20,
-            thumbnail: this.newImageSrc,
-            soloTopTime: [],
-            oneVsOneTopTime: [],
-            differencesCount: 15,
-            hintList: [],
-        },
-        {
-            id: 1,
-            name: 'rat Game 7',
-            difficultyLevel: 25,
-            thumbnail: this.newImageSrc,
-            soloTopTime: [],
-            oneVsOneTopTime: [],
-            differencesCount: 15,
-            hintList: [],
-        },
-    ];
-
+    games: GameCard[];
     hasPrevious: boolean = false;
-    hasNext: boolean = true;
+    hasNext: boolean = false;
     gameIterator: number = 0;
+    constructor(private communicationService: CommunicationService, public router: Router) {}
 
-    lastFour() {
-        this.gameIterator -= this.gamePhase;
-        this.hasNext = true;
-        this.hasPrevious = true;
-        if (this.gameIterator <= 0) {
-            this.hasPrevious = false;
+    navigate() {
+        if (this.router.url === '/selection') {
+            this.titre = 'Selectionne ton jeu';
+        } else if (this.router.url === '/config') {
+            this.titre = 'Configure ton jeu';
         }
+    }
+
+    ngOnInit(): void {
+        this.communicationService.loadAllGames().subscribe((games) => {
+            this.games = games;
+            this.phaseVerification();
+        });
+    }
+
+    phaseVerification() {
+        this.hasNext = this.games.length - (this.gameIterator + this.gamePhase) > 0 ? true : false;
+        this.hasPrevious = this.gameIterator !== 0 ? true : false;
     }
 
     nextFour() {
         this.gameIterator += this.gamePhase;
-        this.hasNext = true;
-        this.hasPrevious = true;
-        if (this.gameIterator >= this.games.length - this.gamePhase) {
-            this.hasNext = false;
-        }
+        this.phaseVerification();
     }
-
-    selectedGamecard() {
-        alert('Va à la page du jeu selectionné');
+    lastFour() {
+        this.gameIterator -= this.gamePhase;
+        this.phaseVerification();
     }
 }

@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { CANVAS_WIDTH, CANVAS_HEIGHT } from '@app/constants/constants';
 import { Game } from '@app/interfaces/game-interfaces';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { TimerService } from '@app/services/timer-service/timer.service';
@@ -24,7 +25,6 @@ export class SoloGameViewComponent implements OnInit, AfterViewInit {
         differencesCount: 15,
         hintList: ['Look in the far left', 'The sky is beautiful', 'The rat has it'],
     };
-    isFinished: boolean = false;
     mode: string = 'Solo';
     penaltyTime: number = 1;
     bonusTime: number = 1;
@@ -44,6 +44,7 @@ export class SoloGameViewComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.timer.startTimer();
+        this.time = this.timer.time;
     }
     finish() {
         this.timer.resetTimer();
