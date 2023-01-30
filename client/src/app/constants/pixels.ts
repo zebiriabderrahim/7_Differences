@@ -11,3 +11,4 @@ export const WHITE_PIXEL: Pixel = {
     blue: 255,
     alpha: 255,
 };
+export const N_PIXEL_ATTRIBUTE: number = 4
