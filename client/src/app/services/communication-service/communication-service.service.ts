@@ -24,7 +24,7 @@ export class CommunicationService {
     }
 
     loadGameById(id: number): Observable<Game> {
-        return this.http.get<Game>(`${this.baseUrl}/games/:${id}`).pipe(catchError(this.handleError<Game>('loadGameById')));
+        return this.http.get<Game>(`${this.baseUrl}/games/${id}`).pipe(catchError(this.handleError<Game>('loadGameById')));
     }
 
     postGame(gameData: Game): Observable<void> {
