@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Pixel } from '@app/interfaces/pixel';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
+import { BLACK_PIXEL, WHITE_PIXEL } from '@app/constants/pixels';
 import { CanvasPosition } from '@app/enum/canvas-position';
 
 @Injectable({
@@ -109,23 +110,12 @@ export class ImageService {
         }
         return pixelMatrix;
     }
+
     comparePixelArrays(pixelArray1: Pixel[], pixelArray2: Pixel[]): Pixel[] {
-        const blackPixel: Pixel = {
-            red: 0,
-            green: 0,
-            blue: 0,
-            alpha: 255,
-        };
-        const whitePixel: Pixel = {
-            red: 255,
-            green: 255,
-            blue: 255,
-            alpha: 255,            
-        }
-        const difference: Pixel[] = new Array(IMG_HEIGHT * IMG_WIDTH).fill(whitePixel);
+        const difference: Pixel[] = new Array(IMG_HEIGHT * IMG_WIDTH).fill(WHITE_PIXEL);
         for (let i = 0; i < pixelArray1.length; i++) {
             if(this.arePixelsDifferent(pixelArray1[i], pixelArray2[i])){
-                difference[i] = blackPixel;
+                difference[i] = BLACK_PIXEL;
             }
         }
         return difference;
