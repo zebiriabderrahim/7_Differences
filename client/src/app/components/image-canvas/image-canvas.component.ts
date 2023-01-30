@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular
 import { MatDialog } from '@angular/material/dialog';
 import { ImageValidationDialogComponent } from '@app/components/image-validation-dialog/image-validation-dialog.component';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
+import { CanvasPosition } from '@app/enum/canvas-position';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ValidationService } from '@app/services/validation-service/validation.service';
 import { Subscription } from 'rxjs';
@@ -12,7 +13,7 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./image-canvas.component.scss'],
 })
 export class ImageCanvasComponent implements AfterViewInit {
-    @Input() position: string;
+    @Input() position: CanvasPosition;
     @ViewChild('canvas') canvas: ElementRef;
     context: CanvasRenderingContext2D;
 
@@ -23,11 +24,11 @@ export class ImageCanvasComponent implements AfterViewInit {
         this.canvas.nativeElement.width = IMG_WIDTH;
         this.canvas.nativeElement.height = IMG_HEIGHT;
         this.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        if (this.position === 'left') {
+        if (this.position === CanvasPosition.Left) {
             this.imageSubscription = this.imageService.originalImageObservable.subscribe(() => {
                 this.setCanvasImage(this.imageService.originalImage);
             });
-        } else if (this.position === 'right') {
+        } else if (this.position === CanvasPosition.Right) {
             this.imageSubscription = this.imageService.modifiedImageObservable.subscribe(() => {
                 this.setCanvasImage(this.imageService.modifiedImage);
             });
@@ -55,9 +56,9 @@ export class ImageCanvasComponent implements AfterViewInit {
                 image.src = reader.result as string;
                 image.onload = (ev: Event) => {
                     if (this.validationService.isImageValid(ev, image.src)) {
-                        if (this.position === 'left') {
+                        if (this.position === CanvasPosition.Left) {
                             this.imageService.setOriginalImage(image.src);
-                        } else if (this.position === 'right') {
+                        } else if (this.position === CanvasPosition.Right) {
                             this.imageService.setModifiedImage(image.src);
                         }
                     } else {
@@ -75,9 +76,9 @@ export class ImageCanvasComponent implements AfterViewInit {
     }
 
     removeBackground(): void {
-        if (this.position === 'left') {
+        if (this.position === CanvasPosition.Left) {
             this.imageService.resetOriginalImage();
-        } else if (this.position === 'right') {
+        } else if (this.position === CanvasPosition.Right) {
             this.imageService.resetModifiedImage();
         }
     }

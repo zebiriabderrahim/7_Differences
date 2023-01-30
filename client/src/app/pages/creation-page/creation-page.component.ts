@@ -2,6 +2,7 @@ import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ImageValidationDialogComponent } from '@app/components/image-validation-dialog/image-validation-dialog.component';
 import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/creation-page';
+import { CanvasPosition } from '@app/enum/canvas-position';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ValidationService } from '@app/services/validation-service//validation.service';
 
@@ -14,6 +15,7 @@ export class CreationPageComponent {
     @ViewChild('imageNotSetDialog', { static: true })
     private readonly imageNotSetDialog: TemplateRef<HTMLElement>;
     readonly configRoute: string = '/config';
+    canvasPostion: typeof CanvasPosition = CanvasPosition;
     radiusSizes: number[] = RADIUS_SIZES;
     radius: number = DEFAULT_RADIUS;
 
