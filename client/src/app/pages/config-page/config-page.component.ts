@@ -21,7 +21,6 @@ export class ConfigPageComponent implements OnInit {
     readonly timeWonByDifference: string = '5 secondes';
 
     games: GameCard[];
-
     hasPrevious: boolean = false;
     hasNext: boolean = true;
     gameIterator: number = 0;
