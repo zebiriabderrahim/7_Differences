@@ -36,7 +36,6 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
 
         this.gameCard.getGameId().subscribe((id) => {
             this.communication.loadGameById(id).subscribe((game) => {
-                console.log(id);
                 this.game = game;
             });
         });
@@ -44,8 +43,8 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.gameAreaService.modifiedContext = this.modifiedCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.gameAreaService.originalContextFrontLayer = this.originalCanvasForeground.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.gameAreaService.modifiedContextFrontLayer = this.modifiedCanvasForeground.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.gameAreaService.loadImage(this.gameAreaService.originalContext, '../../../assets/img/bouffon.bmp');
-        this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, '../../../assets/img/bouffonne.bmp');
+        this.gameAreaService.loadImage(this.gameAreaService.originalContext, '../../../assets/img/testBMP.bmp');
+        this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, '../../../assets/img/modifiedTestBMP.bmp');
     }
 
     finish() {
