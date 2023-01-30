@@ -5,7 +5,6 @@ import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ValidationService } from '@app/services/validation-service/validation.service';
-import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-image-canvas',
@@ -17,36 +16,12 @@ export class ImageCanvasComponent implements AfterViewInit {
     @ViewChild('canvas') canvas: ElementRef;
     context: CanvasRenderingContext2D;
 
-    imageSubscription: Subscription = new Subscription();
-
     constructor(public imageService: ImageService, public validationService: ValidationService, public dialog: MatDialog) {}
     ngAfterViewInit(): void {
         this.canvas.nativeElement.width = IMG_WIDTH;
         this.canvas.nativeElement.height = IMG_HEIGHT;
         this.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        switch (this.position) {
-            case CanvasPosition.Left:
-                this.imageSubscription = this.imageService.originalImageObservable.subscribe(() => {
-                    this.setCanvasImage(this.imageService.originalImage);
-                });
-                break;
-            case CanvasPosition.Right:
-                this.imageSubscription = this.imageService.modifiedImageObservable.subscribe(() => {
-                    this.setCanvasImage(this.imageService.modifiedImage);
-                });
-                break;
-        }
-    }
-
-    setCanvasImage(image: string): void {
-        this.resetCanvas();
-        if (image === '') {
-            this.context?.drawImage(new Image(), 0, 0);
-        } else {
-            const imageToDraw = new Image();
-            imageToDraw.src = image;
-            this.context?.drawImage(imageToDraw, 0, 0);
-        }
+        this.imageService.setBackgroundContext(this.position, this.context);
     }
 
     onSelectFile(event: Event) {
@@ -66,10 +41,6 @@ export class ImageCanvasComponent implements AfterViewInit {
                 };
             };
         }
-    }
-
-    resetCanvas(): void {
-        this.context?.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
     }
 
     removeBackground(): void {
