@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Pixel } from '@app/interfaces/pixel';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
-import { BLACK_PIXEL, WHITE_PIXEL, N_PIXEL_ATTRIBUTE } from '@app/constants/pixels';
+import { BLACK_PIXEL, N_PIXEL_ATTRIBUTE, WHITE_PIXEL } from '@app/constants/pixels';
 import { CanvasPosition } from '@app/enum/canvas-position';
+import { Pixel } from '@app/interfaces/pixel';
 
 @Injectable({
     providedIn: 'root',
