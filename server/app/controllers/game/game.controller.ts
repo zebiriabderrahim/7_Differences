@@ -10,7 +10,7 @@ export class GameController {
 
     @Get()
     async allGameCards(): Promise<GameCard[]> {
-        const allGameCards = await this.gameService.getGames();
+        const allGameCards = await this.gameService.getGameCards();
         return allGameCards;
     }
 
