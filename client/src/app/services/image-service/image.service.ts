@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { BLACK_PIXEL, N_PIXEL_ATTRIBUTE, WHITE_PIXEL } from '@app/constants/pixels';
 import { CanvasPosition } from '@app/enum/canvas-position';
+import { Coordinate } from '@app/interfaces/coordinate';
 import { Pixel } from '@app/interfaces/pixel';
 
 @Injectable({
@@ -101,24 +102,20 @@ export class ImageService {
         return pixelArray;
     }
 
-    comparePixelArrays(pixelArray1: Pixel[], pixelArray2: Pixel[]): Pixel[] {
-        const difference: Pixel[] = new Array(IMG_HEIGHT * IMG_WIDTH).fill(WHITE_PIXEL);
+    generateDifferences(pixelArray1: Pixel[], pixelArray2: Pixel[]): Coordinate[] {
+        const differentCoordinates: Coordinate[] = [];
         for (let i = 0; i < pixelArray1.length; i++) {
             if (this.arePixelsDifferent(pixelArray1[i], pixelArray2[i])) {
-                difference[i] = BLACK_PIXEL;
+                const x = i % IMG_WIDTH;
+                const y = Math.floor(i / IMG_WIDTH);
+                differentCoordinates.push({ x, y });
             }
         }
-        return difference;
+        return differentCoordinates;
     }
 
     arePixelsDifferent(pixel1: Pixel, pixel2: Pixel): boolean {
         return !(pixel1.red === pixel2.red && pixel1.green === pixel2.green && pixel1.blue === pixel2.blue);
-    }
-
-    generateDifferencePixelArray(): Pixel[] {
-        const leftPixelArray = this.transformContextToPixelArray(this.leftBackgroundContext);
-        const rightPixelArray = this.transformContextToPixelArray(this.rightBackgroundContext);
-        return this.comparePixelArrays(leftPixelArray, rightPixelArray);
     }
 
     transformPixelArrayToImageData(pixelArray: Pixel[]): Uint8ClampedArray {
@@ -132,10 +129,46 @@ export class ImageService {
         return data;
     }
 
-    validateDifferences() {
-        const differencePixelArray = this.generateDifferencePixelArray();
+    enlargeDifferences(differenceCoordinates: Coordinate[], radius: number): Coordinate[] {
+        const visitedDifferences: boolean[][] = new Array(IMG_WIDTH).fill(false).map(() => new Array(IMG_HEIGHT).fill(false)) as boolean[][];
+        const enlargedDifferenceCoordinates: Coordinate[] = [];
+        for (const coordinate of differenceCoordinates) {
+            for (let i = -radius; i <= radius; i++) {
+                for (let j = -radius; j <= radius; j++) {
+                    const distance = Math.sqrt(i * i + j * j);
+                    if (distance <= radius) {
+                        const largerCoordinate: Coordinate = { x: coordinate.x + i, y: coordinate.y + j };
+                        if (this.isCoordinateValid(largerCoordinate) && !visitedDifferences[largerCoordinate.x][largerCoordinate.y]) {
+                            enlargedDifferenceCoordinates.push(largerCoordinate);
+                            visitedDifferences[largerCoordinate.x][largerCoordinate.y] = true;
+                        }
+                    }
+                }
+            }
+        }
+        return enlargedDifferenceCoordinates;
+    }
+
+    isCoordinateValid(coordinate: Coordinate): boolean {
+        return coordinate.x >= 0 && coordinate.x < IMG_WIDTH && coordinate.y >= 0 && coordinate.y < IMG_HEIGHT;
+    }
+
+    validateDifferences(radius: number): void {
+        const leftPixelArray = this.transformContextToPixelArray(this.leftBackgroundContext);
+        const rightPixelArray = this.transformContextToPixelArray(this.rightBackgroundContext);
+        const differenceCoordinates = this.generateDifferences(leftPixelArray, rightPixelArray);
+        const enlargedDifferences = this.enlargeDifferences(differenceCoordinates, radius);
+        this.drawDifferences(enlargedDifferences);
+    }
+
+    drawDifferences(differences: Coordinate[]): void {
+        const differencePixelArray = new Array(IMG_HEIGHT * IMG_WIDTH).fill(WHITE_PIXEL);
+        for (const difference of differences) {
+            differencePixelArray[difference.y * IMG_WIDTH + difference.x] = BLACK_PIXEL;
+        }
         const differenceImageData = this.transformPixelArrayToImageData(differencePixelArray);
         this.resetLeftBackground();
+        this.resetRightBackground();
         this.leftBackgroundContext.putImageData(new ImageData(differenceImageData, IMG_WIDTH, IMG_HEIGHT), 0, 0);
     }
 }
