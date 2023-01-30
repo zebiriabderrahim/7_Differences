@@ -23,12 +23,4 @@ describe('GameSheetComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-
-    /*it("shows the 'Jouer' text on the /selection page", () => {
-        expect(component.buttonPlay).toEqual('Jouer');
-    });
-
-    it("shows the 'Joindre' text on the /selection page", () => {
-        expect(component.buttonJoin).toEqual('Joindre');
-    });*/
 });
