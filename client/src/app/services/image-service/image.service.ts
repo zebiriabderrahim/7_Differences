@@ -52,7 +52,7 @@ export class ImageService {
         }
     }
 
-    //TODO: Possible to avoid code duplication?
+    // TODO: Possible to avoid code duplication?
     setLeftBackground(image: string) {
         const imageToDraw = new Image();
         imageToDraw.src = image;
@@ -61,7 +61,7 @@ export class ImageService {
         this.leftBackgroundContext.drawImage(imageToDraw, 0, 0);
     }
 
-    setRightBackground(image: string){
+    setRightBackground(image: string) {
         const imageToDraw = new Image();
         imageToDraw.src = image;
         this.rightBackground = image;
@@ -69,7 +69,7 @@ export class ImageService {
         this.rightBackgroundContext.drawImage(imageToDraw, 0, 0);
     }
 
-    setBackgroundContext(canvasPosition: CanvasPosition, context: CanvasRenderingContext2D){
+    setBackgroundContext(canvasPosition: CanvasPosition, context: CanvasRenderingContext2D) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
                 this.leftBackgroundContext = context;
@@ -84,13 +84,13 @@ export class ImageService {
         this.setLeftBackground(image);
         this.setRightBackground(image);
     }
-    
+
     transformContextToPixelArray(context: CanvasRenderingContext2D): Pixel[] {
         const imageData = context.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         const data = imageData.data;
         const pixelArray: Pixel[] = [];
         for (let i = 0; i < data.length; i += N_PIXEL_ATTRIBUTE) {
-            const pixel : Pixel = {
+            const pixel: Pixel = {
                 red: data[i],
                 green: data[i + 1],
                 blue: data[i + 2],
@@ -98,14 +98,13 @@ export class ImageService {
             };
             pixelArray.push(pixel);
         }
-        console.log(pixelArray);
         return pixelArray;
     }
 
     comparePixelArrays(pixelArray1: Pixel[], pixelArray2: Pixel[]): Pixel[] {
         const difference: Pixel[] = new Array(IMG_HEIGHT * IMG_WIDTH).fill(WHITE_PIXEL);
         for (let i = 0; i < pixelArray1.length; i++) {
-            if(this.arePixelsDifferent(pixelArray1[i], pixelArray2[i])){
+            if (this.arePixelsDifferent(pixelArray1[i], pixelArray2[i])) {
                 difference[i] = BLACK_PIXEL;
             }
         }
