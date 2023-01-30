@@ -102,15 +102,6 @@ export class ImageService {
         return pixelArray;
     }
 
-    //Pixel[y][x] is the pixel at position (x,y)
-    transformPixelArrayToPixelMatrix(pixelArray: Pixel[]): Pixel[][] {
-        const pixelMatrix: Pixel[][] = [];
-        for (let i = 0; i < IMG_HEIGHT; i++) {
-            pixelMatrix.push(pixelArray.slice(i * IMG_WIDTH, (i + 1) * IMG_WIDTH));
-        }
-        return pixelMatrix;
-    }
-
     comparePixelArrays(pixelArray1: Pixel[], pixelArray2: Pixel[]): Pixel[] {
         const difference: Pixel[] = new Array(IMG_HEIGHT * IMG_WIDTH).fill(WHITE_PIXEL);
         for (let i = 0; i < pixelArray1.length; i++) {
