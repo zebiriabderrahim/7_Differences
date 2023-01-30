@@ -13,7 +13,7 @@ import { ValidationService } from '@app/services/validation-service//validation.
 export class CreationPageComponent {
     @ViewChild('imageNotSetDialog', { static: true })
     private readonly imageNotSetDialog: TemplateRef<HTMLElement>;
-    readonly configroute: string = '/config';
+    readonly configRoute: string = '/config';
     radiusSizes: number[] = RADIUS_SIZES;
     radius: number = DEFAULT_RADIUS;
 
