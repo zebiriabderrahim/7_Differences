@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Pixel } from '@app/interfaces/pixel';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { CanvasPosition } from '@app/enum/canvas-position';
 
@@ -40,25 +41,28 @@ export class ImageService {
     }
 
     setBackground(canvasPosition: CanvasPosition, image: string) {
-        const imageToDraw = new Image();
-        imageToDraw.src = image;
         switch (canvasPosition) {
             case CanvasPosition.Left:
-                this.setLeftBackground(image, imageToDraw);
+                this.setLeftBackground(image);
                 break;
             case CanvasPosition.Right:
-                this.setRightBackground(image, imageToDraw);
+                this.setRightBackground(image);
                 break;
         }
     }
 
-    setLeftBackground(image: string, imageToDraw: HTMLImageElement) {
+    //TODO: Possible to avoid code duplication?
+    setLeftBackground(image: string) {
+        const imageToDraw = new Image();
+        imageToDraw.src = image;
         this.leftBackground = image;
         this.leftBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.leftBackgroundContext.drawImage(imageToDraw, 0, 0);
     }
 
-    setRightBackground(image: string, imageToDraw: HTMLImageElement){
+    setRightBackground(image: string){
+        const imageToDraw = new Image();
+        imageToDraw.src = image;
         this.rightBackground = image;
         this.rightBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.rightBackgroundContext.drawImage(imageToDraw, 0, 0);
@@ -76,7 +80,7 @@ export class ImageService {
     }
 
     setBothBackgrounds(image: string) {
-        this.setBackground(CanvasPosition.Left, image);
-        this.setBackground(CanvasPosition.Right, image);
+        this.setLeftBackground(image);
+        this.setRightBackground(image);
     }
 }
