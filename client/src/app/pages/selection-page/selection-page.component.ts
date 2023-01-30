@@ -13,7 +13,7 @@ export class SelectionPageComponent implements OnInit {
     newImageSrc: string = '../../../assets/img/strong_rat.jpg';
     // eslint-disable-next-line no-alert, quotes, semi, @typescript-eslint/no-magic-numbers
     gamePhase: number = 4;
-    games: GameCard[];
+    games: GameCard[] = [];
     hasPrevious: boolean = false;
     hasNext: boolean = true;
     gameIterator: number = 0;
