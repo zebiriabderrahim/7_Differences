@@ -70,4 +70,12 @@ export class GameAreaService {
             this.clickDisabled = false;
         }, 1000);
     }
+    convertCoordToImageData(differenceCoord: Vec2[]): number[] {
+        // to be continued...
+        const imageDataIndex: number[] = [];
+        for (const coord of differenceCoord) {
+            imageDataIndex.push(coord.x);
+        }
+        return imageDataIndex;
+    }
 }
