@@ -24,4 +24,16 @@ export class DifferenceService {
         }
         return false;
     }
+
+    findAdjacentCoords(coord: Vec2): Vec2[] {
+        const adjacentCoords: Vec2[] = [];
+        for (let x = coord.x - 1; x <= coord.x + 1; x++) {
+            for (let y = coord.y - 1; y <= coord.y + 1; y++) {
+                if (this.isCoordInImage(x, y)) {
+                    adjacentCoords.push({ x, y });
+                }
+            }
+        }
+        return adjacentCoords;
+    }
 }
