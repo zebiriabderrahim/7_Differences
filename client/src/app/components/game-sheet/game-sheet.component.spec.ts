@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
+import { CommunicationService } from '@app/services/communication-service/communication-service.service';
 import { PlayerNameDialogBoxComponent } from '../player-name-dialog-box/player-name-dialog-box.component';
 import { GameSheetComponent } from './game-sheet.component';
 
@@ -11,9 +12,9 @@ describe('GameSheetComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule, MatDialog, PlayerNameDialogBoxComponent],
+            imports: [RouterTestingModule, MatDialogModule],
             declarations: [GameSheetComponent, PlayerNameDialogBoxComponent],
-            providers: [{ provide: MatDialog, useValue: {} }],
+            providers: [CommunicationService],
         }).compileComponents();
     });
 
@@ -30,8 +31,8 @@ describe('GameSheetComponent', () => {
     it('should change the values of buttonPlay and ButtonJoin when url is /selection', () => {
         spyOnProperty(component.router, 'url').and.returnValue('/selection');
         component.navigate();
+        expect(component.buttonJoin).toEqual('Joindre');
         expect(component.buttonPlay).toEqual('Jouer');
-        expect(component.buttonPlay).toEqual('Joindre');
     });
 
     it('should open the dialog', () => {
