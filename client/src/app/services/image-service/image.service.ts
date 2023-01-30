@@ -45,6 +45,17 @@ export class ImageService {
         this.resetModifiedImage();
     }
 
+    setBackground(canvasPosition: CanvasPosition, image: string) {
+        switch (canvasPosition) {
+            case CanvasPosition.Left:
+                this.setOriginalImage(image);
+                break;
+            case CanvasPosition.Right:
+                this.setModifiedImage(image);
+                break;
+        }
+    }
+
     setOriginalImage(image: string) {
         this.originalImage = image;
         this.originalImageSource.next(image);
