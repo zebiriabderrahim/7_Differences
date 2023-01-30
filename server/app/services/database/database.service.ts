@@ -1,19 +1,22 @@
-import { Game, GameCard } from '@common/game-interfaces';
+import { Game, GameCard, GameCarrousel } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 
 @Injectable()
 export class DatabaseService {
     private games: Game[];
-    private selectionViewGames: GameCard[];
+    private gameCardsList: GameCard[];
+    private carrouselGames: GameCarrousel[];
 
     constructor() {
         this.games = [
             {
                 id: 1,
-                name: 'nicolay',
+                name: 'Bouffon',
                 difficultyLevel: 1,
                 thumbnail: 'test',
+                original: '@assets/Bouffon/original.bmp',
+                modified: '@assets/Bouffon/modified.bmp',
                 soloTopTime: [
                     { name: 'top1', time: 1 },
                     { name: 'top2', time: 2 },
@@ -28,10 +31,12 @@ export class DatabaseService {
                 hintList: [],
             },
             {
-                id: 2,
-                name: 'tVSz',
+                id: 1,
+                name: 'Bouffon',
                 difficultyLevel: 1,
                 thumbnail: 'test',
+                original: '@assets/Bouffon/original.bmp',
+                modified: '@assets/Bouffon/modified.bmp',
                 soloTopTime: [
                     { name: 'top1', time: 1 },
                     { name: 'top2', time: 2 },
@@ -46,10 +51,12 @@ export class DatabaseService {
                 hintList: [],
             },
             {
-                id: 3,
-                name: 'chat',
+                id: 1,
+                name: 'Bouffon',
                 difficultyLevel: 1,
                 thumbnail: 'test',
+                original: '@assets/Bouffon/original.bmp',
+                modified: '@assets/Bouffon/modified.bmp',
                 soloTopTime: [
                     { name: 'top1', time: 1 },
                     { name: 'top2', time: 2 },
@@ -64,10 +71,12 @@ export class DatabaseService {
                 hintList: [],
             },
             {
-                id: 4,
-                name: 'rat',
+                id: 1,
+                name: 'Bouffon',
                 difficultyLevel: 1,
                 thumbnail: 'test',
+                original: '@assets/Bouffon/original.bmp',
+                modified: '@assets/Bouffon/modified.bmp',
                 soloTopTime: [
                     { name: 'top1', time: 1 },
                     { name: 'top2', time: 2 },
@@ -82,10 +91,12 @@ export class DatabaseService {
                 hintList: [],
             },
             {
-                id: 5,
-                name: 'est',
+                id: 1,
+                name: 'Bouffon',
                 difficultyLevel: 1,
                 thumbnail: 'test',
+                original: '@assets/Bouffon/original.bmp',
+                modified: '@assets/Bouffon/modified.bmp',
                 soloTopTime: [
                     { name: 'top1', time: 1 },
                     { name: 'top2', time: 2 },
@@ -100,10 +111,12 @@ export class DatabaseService {
                 hintList: [],
             },
             {
-                id: 6,
-                name: 'raton',
+                id: 1,
+                name: 'Bouffon',
                 difficultyLevel: 1,
                 thumbnail: 'test',
+                original: '@assets/Bouffon/original.bmp',
+                modified: '@assets/Bouffon/modified.bmp',
                 soloTopTime: [
                     { name: 'top1', time: 1 },
                     { name: 'top2', time: 2 },
@@ -118,10 +131,12 @@ export class DatabaseService {
                 hintList: [],
             },
             {
-                id: 7,
-                name: 'raton-laveur',
+                id: 1,
+                name: 'Bouffon',
                 difficultyLevel: 1,
                 thumbnail: 'test',
+                original: '@assets/Bouffon/original.bmp',
+                modified: '@assets/Bouffon/modified.bmp',
                 soloTopTime: [
                     { name: 'top1', time: 1 },
                     { name: 'top2', time: 2 },
@@ -136,10 +151,12 @@ export class DatabaseService {
                 hintList: [],
             },
             {
-                id: 8,
-                name: 'lavons',
+                id: 1,
+                name: 'Bouffon',
                 difficultyLevel: 1,
                 thumbnail: 'test',
+                original: '@assets/Bouffon/original.bmp',
+                modified: '@assets/Bouffon/modified.bmp',
                 soloTopTime: [
                     { name: 'top1', time: 1 },
                     { name: 'top2', time: 2 },
@@ -154,10 +171,12 @@ export class DatabaseService {
                 hintList: [],
             },
             {
-                id: 9,
-                name: 'génial',
+                id: 1,
+                name: 'Bouffon',
                 difficultyLevel: 1,
                 thumbnail: 'test',
+                original: '@assets/Bouffon/original.bmp',
+                modified: '@assets/Bouffon/modified.bmp',
                 soloTopTime: [
                     { name: 'top1', time: 1 },
                     { name: 'top2', time: 2 },
@@ -172,10 +191,92 @@ export class DatabaseService {
                 hintList: [],
             },
             {
-                id: 10,
-                name: 'raton',
+                id: 1,
+                name: 'Bouffon',
                 difficultyLevel: 1,
                 thumbnail: 'test',
+                original: '@assets/Bouffon/original.bmp',
+                modified: '@assets/Bouffon/modified.bmp',
+                soloTopTime: [
+                    { name: 'top1', time: 1 },
+                    { name: 'top2', time: 2 },
+                    { name: 'top3', time: 3 },
+                ],
+                oneVsOneTopTime: [
+                    { name: 'test1', time: 1 },
+                    { name: 'test2', time: 2 },
+                    { name: 'test3', time: 3 },
+                ],
+                differencesCount: 10,
+                hintList: [],
+            },
+            {
+                id: 1,
+                name: 'Bouffon',
+                difficultyLevel: 1,
+                thumbnail: 'test',
+                original: '@assets/Bouffon/original.bmp',
+                modified: '@assets/Bouffon/modified.bmp',
+                soloTopTime: [
+                    { name: 'top1', time: 1 },
+                    { name: 'top2', time: 2 },
+                    { name: 'top3', time: 3 },
+                ],
+                oneVsOneTopTime: [
+                    { name: 'test1', time: 1 },
+                    { name: 'test2', time: 2 },
+                    { name: 'test3', time: 3 },
+                ],
+                differencesCount: 10,
+                hintList: [],
+            },
+            {
+                id: 1,
+                name: 'Bouffon',
+                difficultyLevel: 1,
+                thumbnail: 'test',
+                original: '@assets/Bouffon/original.bmp',
+                modified: '@assets/Bouffon/modified.bmp',
+                soloTopTime: [
+                    { name: 'top1', time: 1 },
+                    { name: 'top2', time: 2 },
+                    { name: 'top3', time: 3 },
+                ],
+                oneVsOneTopTime: [
+                    { name: 'test1', time: 1 },
+                    { name: 'test2', time: 2 },
+                    { name: 'test3', time: 3 },
+                ],
+                differencesCount: 10,
+                hintList: [],
+            },
+            {
+                id: 1,
+                name: 'Bouffon',
+                difficultyLevel: 1,
+                thumbnail: 'test',
+                original: '@assets/Bouffon/original.bmp',
+                modified: '@assets/Bouffon/modified.bmp',
+                soloTopTime: [
+                    { name: 'top1', time: 1 },
+                    { name: 'top2', time: 2 },
+                    { name: 'top3', time: 3 },
+                ],
+                oneVsOneTopTime: [
+                    { name: 'test1', time: 1 },
+                    { name: 'test2', time: 2 },
+                    { name: 'test3', time: 3 },
+                ],
+                differencesCount: 10,
+                hintList: [],
+            },
+            {
+                id: 1,
+                name: 'Bouffon',
+                difficultyLevel: 1,
+                thumbnail: 'test',
+                original: '@assets/Bouffon/original.bmp',
+                modified: '@assets/Bouffon/modified.bmp',
                 soloTopTime: [
                     { name: 'top1', time: 1 },
                     { name: 'top2', time: 2 },
@@ -190,17 +291,17 @@ export class DatabaseService {
                 hintList: [],
             },
         ];
-        this.selectionViewGames = [];
+        this.gameCardsList = [];
+        this.carrouselGames = [];
     }
 
     getGamesData(): Game[] {
         return this.games;
     }
 
-    async getGames(): Promise<GameCard[]> {
-        this.selectionViewGames = [];
+    async getGames(): Promise<GameCarrousel[]> {
         for (const game of this.games) {
-            this.selectionViewGames.push({
+            this.gameCardsList.push({
                 id: game.id,
                 name: game.name,
                 difficultyLevel: game.difficultyLevel,
@@ -209,7 +310,9 @@ export class DatabaseService {
                 thumbnail: game.thumbnail,
             });
         }
-        return this.selectionViewGames;
+        this.carrouselGames = this.buildGameCarrousel();
+
+        return this.carrouselGames;
     }
 
     async getGameById(id: string): Promise<Game | void> {
@@ -228,5 +331,21 @@ export class DatabaseService {
 
     addGame(gameData: Game): void {
         this.games.push(gameData);
+    }
+
+    buildGameCarrousel(): GameCarrousel[] {
+        let j = 0;
+        const gamePhase = 4;
+        for (let i = 0; i < this.gameCardsList.length; ) {
+            i += gamePhase;
+            const gameCarrousel: GameCarrousel = {
+                hasNext: this.gameCardsList.length - (j + gamePhase) > 0,
+                hasPrevious: j > 0,
+                gameCards: this.gameCardsList.slice(j, i),
+            };
+            j = i;
+            this.carrouselGames.push(gameCarrousel);
+        }
+        return this.carrouselGames;
     }
 }
