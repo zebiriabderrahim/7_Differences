@@ -76,10 +76,6 @@ export class ImageCanvasComponent implements AfterViewInit {
     }
 
     removeBackground(): void {
-        if (this.position === CanvasPosition.Left) {
-            this.imageService.resetOriginalImage();
-        } else if (this.position === CanvasPosition.Right) {
-            this.imageService.resetModifiedImage();
-        }
+        this.imageService.removeBackground(this.position);
     }
 }

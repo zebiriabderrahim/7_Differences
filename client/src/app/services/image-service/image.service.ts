@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { CanvasPosition } from '@app/enum/canvas-position';
 import { Subject } from 'rxjs';
 
 @Injectable({
@@ -17,6 +18,18 @@ export class ImageService {
         this.originalImageObservable = this.originalImageSource.asObservable();
         this.modifiedImageObservable = this.modifiedImageSource.asObservable();
     }
+
+    removeBackground(canvasPosition: CanvasPosition) {
+        switch (canvasPosition) {
+            case CanvasPosition.Left:
+                this.resetOriginalImage();
+                break;
+            case CanvasPosition.Right:
+                this.resetModifiedImage();
+                break;
+        }
+    }
+
     resetOriginalImage() {
         this.originalImage = '';
         this.originalImageSource.next(this.originalImage);
