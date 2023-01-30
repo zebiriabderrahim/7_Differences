@@ -1,7 +1,8 @@
 <div class="images-section">
+    <button mat-raised-button [routerLink]="configRoute">Retour à la page de Configuration</button>
     <div id="canvas-zone">
-        <app-image-canvas [position]="'left'"></app-image-canvas>
-        <app-image-canvas [position]="'right'"></app-image-canvas>
+        <app-image-canvas [position]="canvasPostion.Left"></app-image-canvas>
+        <app-image-canvas [position]="canvasPostion.Right"></app-image-canvas>
     </div>
     <div id="canvas-action-buttons">
         <button
@@ -12,7 +13,7 @@
         >
             Téléverser la même image sur les deux zones <mat-icon>attach_file</mat-icon>
         </button>
-        <button mat-raised-button color="basic" matTooltip="Réinitialise les arrières-plans" (click)="imageService.resetBothCanvas()">
+        <button mat-raised-button color="basic" matTooltip="Réinitialise les arrières-plans" (click)="imageService.resetBothBackgrounds()">
             Réinitialiser les arrières-plans
         </button>
     </div>

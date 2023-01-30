@@ -2,6 +2,7 @@ import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ImageValidationDialogComponent } from '@app/components/image-validation-dialog/image-validation-dialog.component';
 import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/creation-page';
+import { CanvasPosition } from '@app/enum/canvas-position';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ValidationService } from '@app/services/validation-service//validation.service';
 
@@ -13,6 +14,8 @@ import { ValidationService } from '@app/services/validation-service//validation.
 export class CreationPageComponent {
     @ViewChild('imageNotSetDialog', { static: true })
     private readonly imageNotSetDialog: TemplateRef<HTMLElement>;
+    readonly configRoute: string = '/config';
+    canvasPostion: typeof CanvasPosition = CanvasPosition;
     radiusSizes: number[] = RADIUS_SIZES;
     radius: number = DEFAULT_RADIUS;
 
@@ -28,7 +31,7 @@ export class CreationPageComponent {
                 image.src = reader.result as string;
                 image.onload = (ev: Event) => {
                     if (this.validationService.isImageValid(ev, image.src)) {
-                        this.imageService.setBothCanvas(image.src);
+                        this.imageService.setBothBackgrounds(image.src);
                     } else {
                         this.matDialog.open(ImageValidationDialogComponent);
                     }
@@ -40,6 +43,8 @@ export class CreationPageComponent {
     validateDifferences() {
         if (!this.validationService.areImagesSet()) {
             this.matDialog.open(this.imageNotSetDialog);
+        } else {
+            this.imageService.validateDifferences();
         }
     }
 }
