@@ -11,7 +11,7 @@ export class ImageService {
     originalImage: string = '';
     modifiedImage: string = '';
 
-    removeBackground(canvasPosition: CanvasPosition) {
+    resetBackground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
                 this.resetOriginalImage();

@@ -43,7 +43,7 @@ export class ImageCanvasComponent implements AfterViewInit {
         }
     }
 
-    removeBackground(): void {
-        this.imageService.removeBackground(this.position);
+    resetBackground(): void {
+        this.imageService.resetBackground(this.position);
     }
 }
