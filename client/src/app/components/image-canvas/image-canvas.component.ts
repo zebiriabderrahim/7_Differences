@@ -13,14 +13,14 @@ import { ValidationService } from '@app/services/validation-service/validation.s
 })
 export class ImageCanvasComponent implements AfterViewInit {
     @Input() position: CanvasPosition;
-    @ViewChild('canvas') canvas: ElementRef;
+    @ViewChild('backgroundCanvas') backgroundCanvas: ElementRef;
     context: CanvasRenderingContext2D;
 
     constructor(public imageService: ImageService, public validationService: ValidationService, public dialog: MatDialog) {}
     ngAfterViewInit(): void {
-        this.canvas.nativeElement.width = IMG_WIDTH;
-        this.canvas.nativeElement.height = IMG_HEIGHT;
-        this.context = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.backgroundCanvas.nativeElement.width = IMG_WIDTH;
+        this.backgroundCanvas.nativeElement.height = IMG_HEIGHT;
+        this.context = this.backgroundCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.imageService.setBackgroundContext(this.position, this.context);
     }
 
