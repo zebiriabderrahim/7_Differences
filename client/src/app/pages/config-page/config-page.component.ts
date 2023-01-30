@@ -1,13 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { GameCard } from '@app/interfaces/game-interfaces';
-import { CommunicationService } from '@app/services/communication-service/communication-service.service';
 
 @Component({
     selector: 'app-config-page',
     templateUrl: './config-page.component.html',
     styleUrls: ['./config-page.component.scss'],
 })
-export class ConfigPageComponent implements OnInit {
+export class ConfigPageComponent {
     readonly titre: string = 'Configure ton jeu';
     readonly imageSrc: string = '../../../assets/img/rat.jpg';
     readonly newImageSrc: string = '../../../assets/img/strong_rat.jpg';
@@ -25,12 +24,4 @@ export class ConfigPageComponent implements OnInit {
     hasPrevious: boolean = false;
     hasNext: boolean = true;
     gameIterator: number = 0;
-
-    constructor(private readonly communicationService: CommunicationService) {}
-
-    ngOnInit(): void {
-        this.communicationService.loadAllGames().subscribe((games) => {
-            this.games = games;
-        });
-    }
 }
