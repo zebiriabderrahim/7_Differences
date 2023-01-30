@@ -3,6 +3,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { GameCard } from '@app/interfaces/game-interfaces';
+import { GameCardService } from '@app/services/gamecard-service/gamecard.service';
 
 @Component({
     selector: 'app-game-sheet',
@@ -11,21 +12,19 @@ import { GameCard } from '@app/interfaces/game-interfaces';
 })
 export class GameSheetComponent {
     @Input() game: GameCard;
-
-    playerName: string;
     buttonPlay: string;
     buttonJoin: string;
-    constructor(public dialog: MatDialog, public router: Router) {}
+    constructor(public dialog: MatDialog, public router: Router, private gameCard: GameCardService) {}
 
     openDialog() {
         if (this.router.url === '/selection') {
             const dialogConfig = new MatDialogConfig();
-            dialogConfig.data = {
-                id: this.game.id,
-            };
+            dialogConfig.data = { disableClose: true };
             const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent, dialogConfig);
             dialogRef.afterClosed().subscribe((result) => {
-                this.playerName = result;
+                if (result.trim().length !== 0 && result !== undefined) {
+                    this.gameCard.redirection(this.game.id);
+                }
             });
         }
     }

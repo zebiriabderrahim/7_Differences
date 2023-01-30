@@ -3,7 +3,7 @@
     <img src="../../../assets/img/magnifying-glass.png" id="hint2" alt="Icone d'indice" class="hintIcon" (click)="getHint(1)" />
     <img src="../../../assets/img/magnifying-glass.png" id="hint3" alt="Icone d'indice" class="hintIcon" (click)="getHint(2)" />
 </div>
-<div class="infomations-header">
+<div *ngIf="game" class="infomations-header">
     <h1>{{ game.name }}</h1>
     <div class="game-feedback">
         <h1> Temps: {{ timer.time }}</h1>
