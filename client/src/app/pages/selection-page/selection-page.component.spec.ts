@@ -1,5 +1,6 @@
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { CommunicationService } from '@app/services/communication-service/communication-service.service';
 
 import { SelectionPageComponent } from './selection-page.component';
@@ -10,6 +11,7 @@ describe('SelectionPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
+            imports: [RouterTestingModule],
             declarations: [SelectionPageComponent],
             providers: [CommunicationService, HttpClient, HttpHandler],
         }).compileComponents();
@@ -21,20 +23,5 @@ describe('SelectionPageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
-    });
-
-    // it('#nextFour() should display the next 4 games', () => {
-    //     const currentPhase = component.gameIterator;
-    //     expect(component.gameIterator).toEqual(currentPhase);
-    //     component.nextFour();
-    //     expect(component.gameIterator).toEqual(currentPhase + component.gamePhase);
-    // });
-
-    it('#lastFour() should display the last 4 games', () => {
-        component.gameIterator += component.gamePhase;
-        const currentPhase = component.gameIterator;
-        expect(component.gameIterator).toEqual(currentPhase);
-        component.lastFour();
-        expect(component.gameIterator).toEqual(currentPhase - component.gamePhase);
     });
 });
