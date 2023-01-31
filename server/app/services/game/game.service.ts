@@ -1,6 +1,6 @@
-import { DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
 import { DatabaseService } from '@app/services/database/database.service';
-import { PlayerTime, GameConfig, GameCard, Game, GameDetails } from '@common/game-interfaces';
+import { DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
+import { Game, GameCarrousel, GameConfig, GameDetails, PlayerTime } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -25,24 +25,20 @@ export class GameService {
         ];
     }
 
-    getGameCards(): GameCard[] {
-        return this.databaseService.getGameCards();
-    }
-
-    getGameById(id: string): Game {
-        return this.databaseService.getGameById(id);
+    modifyConstants(newConstants: GameConfig): void {
+        this.defaultConstants = newConstants;
     }
 
     getConfigConstants(): GameConfig {
         return this.defaultConstants;
     }
 
-    async getGames(): Promise<GameCard[]> {
-        return await this.databaseService.getGames();
+    getGames(): GameCarrousel[] {
+        return this.databaseService.getGamesCarrousel();
     }
 
-    async getGameById(id: string): Promise<Game | void> {
-        return await this.databaseService.getGameById(id);
+    getGameById(id: string): Game | void {
+        return this.databaseService.getGameById(id);
     }
 
     addGame(newGame: GameDetails): void {
@@ -50,10 +46,6 @@ export class GameService {
         // strip off the data: url prefix to get just the base64-encoded bytes
         this.databaseService.saveFiles(newGame.name, Buffer.from(newGame.originalImagePath.replace(/^data:image\/\w+;base64,/, ''), 'base64'));
         this.databaseService.addGame(this.createGameData(newGame));
-    }
-
-    modifyConfigConstants(newConstants: GameConfig): void {
-        this.defaultConstants = newConstants;
     }
 
     createGameData(newGame: GameDetails): Game {
@@ -69,10 +61,5 @@ export class GameService {
             differencesCount: newGame.nDifference,
             hintList: [],
         };
-    }
-    getGamesCarrousel(): GameCarrousel[] {
-        this.gameCardsList = this.buildGameCardsList();
-        this.carrouselGames = this.buildGameCarrousel();
-        return this.carrouselGames;
     }
 }

@@ -29,7 +29,7 @@ export class GameListsService {
         return createdGames.map((game) => ({
             id: game.id,
             name: game.name,
-            difficultyLevel: game.isHard ? 2 : 1,
+            difficultyLevel: game.isHard,
             soloTopTime: this.defaultBestTimes,
             oneVsOneTopTime: this.defaultBestTimes,
             thumbnail: game.thumbnail,

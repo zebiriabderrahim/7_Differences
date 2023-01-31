@@ -8,7 +8,9 @@ import * as fs from 'fs';
 export class DatabaseService {
     private createdGames: CreateGameDto[];
     private games: Game[];
-    private selectionViewGames: GameCard[];
+    private gameCardsList: GameCard[];
+    private carrouselGames: GameCarrousel[];
+    private defaultBestTimes: PlayerTime[];
 
     constructor() {
         this.defaultBestTimes = [
@@ -39,31 +41,20 @@ export class DatabaseService {
                 hintList: [],
             },
         ];
-        this.selectionViewGames = [];
+        this.gameCardsList = [];
+        this.carrouselGames = [];
     }
 
-    getGamesData(): Game[] {
-        return this.games;
+    getGamesCarrousel(): GameCarrousel[] {
+        this.gameCardsList = this.buildGameCardsList();
+        this.carrouselGames = this.buildGameCarrouselList();
+        return this.carrouselGames;
     }
 
-    async getGames(): Promise<GameCard[]> {
-        this.selectionViewGames = [];
-        for (const game of this.games) {
-            this.selectionViewGames.push({
-                id: game.id,
-                name: game.name,
-                difficultyLevel: game.difficultyLevel,
-                soloTopTime: game.soloTopTime,
-                oneVsOneTopTime: game.oneVsOneTopTime,
-                thumbnail: game.thumbnail,
-            });
-        }
-        return this.selectionViewGames;
-    }
-
-    async getGameById(id: string): Promise<Game | void> {
+    getGameById(id: string): Game | void {
         return this.games.find((game) => game.id === +id);
     }
+
     saveFiles(gameName: string, data: Buffer): void {
         const dirName = `assets/${gameName}`;
 
@@ -76,5 +67,29 @@ export class DatabaseService {
 
     addGame(gameData: Game): void {
         this.games.push(gameData);
+    }
+
+    buildGameCarrouselList(): GameCarrousel[] {
+        for (let i = 0; i < this.gameCardsList.length; i += GAME_CARROUSEL_SIZE) {
+            const j = i;
+            const gameCarrousel: GameCarrousel = {
+                hasNext: i + GAME_CARROUSEL_SIZE < this.gameCardsList.length,
+                hasPrevious: j > 0,
+                gameCards: this.gameCardsList.slice(j, i + GAME_CARROUSEL_SIZE),
+            };
+            this.carrouselGames.push(gameCarrousel);
+        }
+        return this.carrouselGames;
+    }
+
+    buildGameCardsList(): GameCard[] {
+        return this.createdGames.map((game) => ({
+            id: game.id,
+            name: game.name,
+            difficultyLevel: game.isHard,
+            soloTopTime: this.defaultBestTimes,
+            oneVsOneTopTime: this.defaultBestTimes,
+            thumbnail: game.thumbnail,
+        }));
     }
 }
