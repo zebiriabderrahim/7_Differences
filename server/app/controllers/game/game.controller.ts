@@ -1,5 +1,5 @@
 import { GameService } from '@app/services/game/game.service';
-import { Game, GameCard } from '@common/game-interfaces';
+import { Game, GameCarrousel } from '@common/game-interfaces';
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -8,10 +8,10 @@ import { ApiTags } from '@nestjs/swagger';
 export class GameController {
     constructor(private readonly gameService: GameService) {}
 
-    @Get('')
-    async allGameCards(): Promise<GameCard[]> {
-        const allGameCards = await this.gameService.getGames();
-        return allGameCards;
+    @Get('carrousel/:index')
+    async getGameCarrousel(@Param('index') index: number): Promise<GameCarrousel> {
+        const gameCarrousel = await this.gameService.getGames();
+        return gameCarrousel[+index];
     }
 
     @Get(':id')

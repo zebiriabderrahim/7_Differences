@@ -1,6 +1,6 @@
 import { DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
 import { DatabaseService } from '@app/services/database/database.service';
-import { PlayerTime, GameConfig, GameCard, Game, GameDetails } from '@common/game-interfaces';
+import { PlayerTime, GameConfig, GameCard, Game, GameDetails, GameCarrousel } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -33,7 +33,7 @@ export class GameService {
         return this.defaultConstants;
     }
 
-    async getGames(): Promise<GameCard[]> {
+    async getGames(): Promise<GameCarrousel[]> {
         return await this.databaseService.getGames();
     }
 
@@ -52,6 +52,8 @@ export class GameService {
         return {
             id: newGame.id,
             name: newGame.name,
+            original: '@assets/Bouffon/original.bmp',
+            modified: '@assets/Bouffon/modified.bmp',
             soloTopTime: this.defaultBestTimes,
             oneVsOneTopTime: this.defaultBestTimes,
             difficultyLevel: newGame.nDifference,

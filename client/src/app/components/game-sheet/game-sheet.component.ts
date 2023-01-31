@@ -21,9 +21,10 @@ export class GameSheetComponent {
             const dialogConfig = new MatDialogConfig();
             dialogConfig.data = { disableClose: true };
             const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent, dialogConfig);
-            dialogRef.afterClosed().subscribe((result) => {
-                if (result.trim().length !== 0 && result !== undefined) {
+            dialogRef.afterClosed().subscribe((playerName) => {
+                if (playerName.trim().length !== 0 && playerName !== undefined) {
                     this.gameCard.redirection(this.game.id);
+                    dialogConfig.data = { playerName, game: this.game };
                 }
             });
         }
