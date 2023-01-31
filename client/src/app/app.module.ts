@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ChronometerComponent } from '@app/components/chronometer/chronometer.component';
 import { GameInfosComponent } from '@app/components/game-infos/game-infos.component';
 import { GameSheetComponent } from '@app/components/game-sheet/game-sheet.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
@@ -39,7 +38,6 @@ import { ConfigPageComponent } from './pages/config-page/config-page.component';
         PlayAreaComponent,
         SidebarComponent,
         SelectionPageComponent,
-        ChronometerComponent,
         SoloGameViewComponent,
         GameSheetComponent,
         PlayerNameDialogBoxComponent,
