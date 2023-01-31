@@ -12,20 +12,27 @@ export interface Game {
     id: number;
     name: string;
     difficultyLevel: number;
-    thumbnail: string;
+    original: string;
+    modified: string;
     soloTopTime: PlayerTime[];
     oneVsOneTopTime: PlayerTime[];
     differencesCount: number;
+    thumbnail: string;
     hintList: string[];
 }
 
 export interface GameCard {
     id: number;
     name: string;
-    difficultyLevel: number;
+    difficultyLevel: boolean;
     soloTopTime: PlayerTime[];
     oneVsOneTopTime: PlayerTime[];
     thumbnail: string;
+}
+export interface GameCarrousel {
+    hasNext: boolean;
+    hasPrevious: boolean;
+    gameCards: GameCard[];
 }
 
 export interface GameConfig {

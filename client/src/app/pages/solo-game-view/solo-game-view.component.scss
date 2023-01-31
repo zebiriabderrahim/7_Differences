@@ -27,6 +27,21 @@ canvas {
     position: absolute;
 }
 
+#original {
+  z-index: 0;
+}
+
+#originalFG {
+  z-index: 1;
+}
+
+#modified {
+  z-index: 0;
+}
+#modifiedFG {
+  z-index: 1;
+}
+
 
 img {
     width: 100%;

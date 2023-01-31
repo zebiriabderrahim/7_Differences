@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { GameCard } from '@app/interfaces/game-interfaces';
+import { CarrouselPaginator } from '@app/interfaces/game-interfaces';
 import { CommunicationService } from '@app/services/communication-service/communication-service.service';
 
 @Component({
@@ -14,11 +14,10 @@ export class SelectionPageComponent implements OnInit {
     newImageSrc: string = '../../../assets/img/strong_rat.jpg';
     // eslint-disable-next-line no-alert, quotes, semi, @typescript-eslint/no-magic-numbers
     gamePhase: number = 4;
-    games: GameCard[] = [];
+    games: GameCard[];
     hasPrevious: boolean = false;
     hasNext: boolean = false;
     gameIterator: number = 0;
-    gameCarrousel: GameCard[];
     constructor(private communicationService: CommunicationService, public router: Router) {}
 
     navigate() {
@@ -30,24 +29,21 @@ export class SelectionPageComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.communicationService.loadAllGames().subscribe((games) => {
-            this.games = games;
-            this.phaseVerification();
+        this.communicationService.loadGameCarrousel(this.index).subscribe((gameCarrousel) => {
+            this.gameCarrousel = gameCarrousel;
         });
     }
 
     phaseVerification() {
         this.hasNext = this.games.length - (this.gameIterator + this.gamePhase) > 0 ? true : false;
         this.hasPrevious = this.gameIterator !== 0 ? true : false;
-        this.gameCarrousel = this.games.slice(this.gameIterator, this.gameIterator + this.gamePhase);
     }
 
-    nextFour() {
-        this.gameIterator += this.gamePhase;
-        this.phaseVerification();
-    }
-    lastFour() {
-        this.gameIterator -= this.gamePhase;
-        this.phaseVerification();
+    hasPrevious() {
+        if (this.gameCarrousel.hasPrevious) {
+            this.communicationService.loadGameCarrousel(--this.index).subscribe((gameCarrousel) => {
+                this.gameCarrousel = gameCarrousel;
+            });
+        }
     }
 }
