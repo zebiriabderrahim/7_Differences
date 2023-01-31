@@ -26,7 +26,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     constructor(
         public timer: TimerService,
         private gameAreaService: GameAreaService,
-        private gameCard: GameCardService,
+        private gameCardService: GameCardService,
         private communication: CommunicationService,
     ) {}
 
@@ -34,7 +34,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.timer.startTimer();
         this.time = this.timer.time;
 
-        this.gameCard.getGameId().subscribe((id) => {
+        this.gameCardService.getGameId().subscribe((id) => {
             this.communication.loadGameById(id).subscribe((game) => {
                 this.game = game;
             });
@@ -43,8 +43,8 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.gameAreaService.modifiedContext = this.modifiedCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.gameAreaService.originalContextFrontLayer = this.originalCanvasForeground.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.gameAreaService.modifiedContextFrontLayer = this.modifiedCanvasForeground.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.gameAreaService.loadImage(this.gameAreaService.originalContext, '../../../assets/img/bouffon.bmp');
-        this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, '../../../assets/img/bouffonne.bmp');
+        this.gameAreaService.loadImage(this.gameAreaService.originalContext, this.game.original);
+        this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, this.game.modified);
     }
 
     finish() {
