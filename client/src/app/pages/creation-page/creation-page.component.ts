@@ -15,7 +15,7 @@ export class CreationPageComponent {
     @ViewChild('imageNotSetDialog', { static: true })
     private readonly imageNotSetDialog: TemplateRef<HTMLElement>;
     readonly configRoute: string = '/config';
-    canvasPostion: typeof CanvasPosition = CanvasPosition;
+    canvasPosition: typeof CanvasPosition = CanvasPosition;
     radiusSizes: number[] = RADIUS_SIZES;
     radius: number = DEFAULT_RADIUS;
 
