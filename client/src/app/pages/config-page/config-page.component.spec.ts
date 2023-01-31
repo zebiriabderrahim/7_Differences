@@ -1,22 +1,22 @@
-import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CommunicationService } from '@app/services/communication-service/communication-service.service';
+import { HttpClient, HttpHandler } from '@angular/common/http';
 import { RouterTestingModule } from '@angular/router/testing';
+import { CommunicationService } from '@app/services/communication-service/communication-service.service';
 
-import { SelectionPageComponent } from './selection-page.component';
+import { ConfigPageComponent } from './config-page.component';
 
-describe('SelectionPageComponent', () => {
-    let component: SelectionPageComponent;
-    let fixture: ComponentFixture<SelectionPageComponent>;
+describe('ConfigPageComponent', () => {
+    let component: ConfigPageComponent;
+    let fixture: ComponentFixture<ConfigPageComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule],
-            declarations: [SelectionPageComponent],
+            declarations: [ConfigPageComponent],
             providers: [CommunicationService, HttpClient, HttpHandler],
         }).compileComponents();
 
-        fixture = TestBed.createComponent(SelectionPageComponent);
+        fixture = TestBed.createComponent(ConfigPageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

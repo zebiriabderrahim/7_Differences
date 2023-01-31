@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { GameCard } from '@app/interfaces/game-interfaces';
 import { CommunicationService } from '@app/services/communication-service/communication-service.service';
 
@@ -8,42 +9,45 @@ import { CommunicationService } from '@app/services/communication-service/commun
     styleUrls: ['./selection-page.component.scss'],
 })
 export class SelectionPageComponent implements OnInit {
-    titre: string = 'Selectionne ton jeu';
+    titre: string;
     imageSrc: string = '../../../assets/img/rat.jpg';
     newImageSrc: string = '../../../assets/img/strong_rat.jpg';
     // eslint-disable-next-line no-alert, quotes, semi, @typescript-eslint/no-magic-numbers
     gamePhase: number = 4;
     games: GameCard[] = [];
     hasPrevious: boolean = false;
-    hasNext: boolean = true;
+    hasNext: boolean = false;
     gameIterator: number = 0;
-    constructor(private communicationService: CommunicationService) {}
+    gameCarrousel: GameCard[];
+    constructor(private communicationService: CommunicationService, public router: Router) {}
+
+    navigate() {
+        if (this.router.url === '/selection') {
+            this.titre = 'Selectionne ton jeu';
+        } else if (this.router.url === '/config') {
+            this.titre = 'Configure ton jeu';
+        }
+    }
 
     ngOnInit(): void {
         this.communicationService.loadAllGames().subscribe((games) => {
             this.games = games;
+            this.phaseVerification();
         });
     }
 
-    lastFour() {
-        this.gameIterator -= this.gamePhase;
-        this.hasNext = true;
-        this.hasPrevious = true;
-        if (this.gameIterator <= 0) {
-            this.hasPrevious = false;
-        }
+    phaseVerification() {
+        this.hasNext = this.games.length - (this.gameIterator + this.gamePhase) > 0 ? true : false;
+        this.hasPrevious = this.gameIterator !== 0 ? true : false;
+        this.gameCarrousel = this.games.slice(this.gameIterator, this.gameIterator + this.gamePhase);
     }
 
     nextFour() {
         this.gameIterator += this.gamePhase;
-        this.hasNext = true;
-        this.hasPrevious = true;
-        if (this.gameIterator >= this.games.length - this.gamePhase) {
-            this.hasNext = false;
-        }
+        this.phaseVerification();
     }
-
-    selectedGamecard() {
-        alert('Va à la page du jeu selectionné');
+    lastFour() {
+        this.gameIterator -= this.gamePhase;
+        this.phaseVerification();
     }
 }

@@ -8,7 +8,7 @@ import { ApiTags } from '@nestjs/swagger';
 export class GameController {
     constructor(private readonly gameService: GameService) {}
 
-    @Get()
+    @Get('')
     async allGameCards(): Promise<GameCard[]> {
         const allGameCards = await this.gameService.getGameCards();
         return allGameCards;

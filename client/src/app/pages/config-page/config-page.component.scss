@@ -1,0 +1,44 @@
+.create_button {
+    position: relative;
+    font-size: 20px;
+    margin-top: 40px;
+    width: 500px;
+    height: 70px;
+    margin: auto;
+    margin-top: 60px;
+    background-color: white;
+}
+
+.change-game {
+    text-align: center;
+    display: flex;
+    position: relative;
+    justify-content: center;
+}
+
+.game-constants {
+    position: relative;
+    display: block;
+    border-style: groove;
+    text-align: center;
+    margin: 25px 20% 400px;
+    font-size: x-large;
+}
+
+.game-constants * * {
+    font-style: italic;
+    margin: 2% 2%;
+}
+
+.under-game-list {
+    display: block;
+    margin: 20% 20%;
+    padding: 20% 20%;
+    border-radius: 30%;
+    border-style: dotted;
+    border-width: 5px;
+}
+
+.upper-list-game {
+    background-color: rgb(18, 0, 84);
+}
