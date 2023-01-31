@@ -1,17 +1,15 @@
+import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { DatabaseService } from '@app/services/database/database.service';
 import { DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
-import { Game, GameCarrousel, GameConfig, GameDetails, PlayerTime } from '@common/game-interfaces';
+import { CarrouselPaginator, Game, GameConfigConst, PlayerTime } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class GameService {
-    private gameNames: string[];
     private defaultBestTimes: PlayerTime[];
-    private defaultConstants: GameConfig;
+    private defaultConstants: GameConfigConst;
 
     constructor(private readonly databaseService: DatabaseService) {
-        this.gameNames = [];
-
         this.defaultConstants = {
             countdownTime: DEFAULT_COUNTDOWN_VALUE,
             penaltyTime: DEFAULT_HINT_PENALTY,
@@ -25,15 +23,15 @@ export class GameService {
         ];
     }
 
-    modifyConstants(newConstants: GameConfig): void {
+    modifyConstants(newConstants: GameConfigConst): void {
         this.defaultConstants = newConstants;
     }
 
-    getConfigConstants(): GameConfig {
+    getConfigConstants(): GameConfigConst {
         return this.defaultConstants;
     }
 
-    getGames(): GameCarrousel[] {
+    getGames(): CarrouselPaginator[] {
         return this.databaseService.getGamesCarrousel();
     }
 
@@ -41,23 +39,22 @@ export class GameService {
         return this.databaseService.getGameById(id);
     }
 
-    addGame(newGame: GameDetails): void {
-        this.gameNames.push(newGame.name);
+    addGame(newGame: CreateGameDto): void {
         // strip off the data: url prefix to get just the base64-encoded bytes
         this.databaseService.saveFiles(newGame.name, Buffer.from(newGame.originalImagePath.replace(/^data:image\/\w+;base64,/, ''), 'base64'));
         this.databaseService.addGame(this.createGameData(newGame));
     }
 
-    createGameData(newGame: GameDetails): Game {
+    createGameData(newGame: CreateGameDto): Game {
         return {
             id: newGame.id,
             name: newGame.name,
-            original: '@assets/Bouffon/original.bmp',
-            modified: '@assets/Bouffon/modified.bmp',
+            original: newGame.originalImagePath,
+            modified: newGame.modifiedImagePath,
             soloTopTime: this.defaultBestTimes,
             oneVsOneTopTime: this.defaultBestTimes,
-            difficultyLevel: newGame.nDifference,
-            thumbnail: '',
+            difficultyLevel: newGame.isHard,
+            thumbnail: newGame.originalImagePath,
             differencesCount: newGame.nDifference,
             hintList: [],
         };
