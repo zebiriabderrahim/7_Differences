@@ -26,6 +26,7 @@ export class GameAreaService {
     rightButton: number = 2;
     backButton: number = 3;
     forwardButton: number = 4;
+    pixelLength: number = 4;
 
     @HostListener('keydown', ['$event'])
     loadImage(context: CanvasRenderingContext2D, path: string) {
@@ -70,11 +71,11 @@ export class GameAreaService {
             this.clickDisabled = false;
         }, 1000);
     }
-    convertCoordToImageData(differenceCoord: Vec2[]): number[] {
-        // to be continued...
+    convert2DCoordToPixelIndex(differenceCoord: Vec2[]): number[] {
         const imageDataIndex: number[] = [];
         for (const coord of differenceCoord) {
-            imageDataIndex.push(coord.x);
+            const flatIndex = (coord.x + this.maxWidth * coord.y) * this.pixelLength;
+            imageDataIndex.push(flatIndex);
         }
         return imageDataIndex;
     }

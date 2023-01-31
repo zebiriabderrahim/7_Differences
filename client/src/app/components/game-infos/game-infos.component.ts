@@ -7,16 +7,7 @@ import { Game } from '@app/interfaces/game-interfaces';
     styleUrls: ['./game-infos.component.scss'],
 })
 export class GameInfosComponent {
-    @Input() game: Game = {
-        id: 1,
-        name: 'Racoon vs Rat',
-        difficultyLevel: 10,
-        thumbnail: '',
-        soloTopTime: [],
-        oneVsOneTopTime: [],
-        differencesCount: 15,
-        hintList: ['Look in the far left', 'The sky is beautiful', 'The rat has it'],
-    };
+    @Input() game: Game;
     @Input() mode: string;
     @Input() penaltyTime: number;
     @Input() bonusTime: number;
