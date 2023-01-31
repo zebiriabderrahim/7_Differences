@@ -7,7 +7,12 @@ import { ImageService } from '@app/services/image-service/image.service';
     providedIn: 'root',
 })
 export class DifferenceService {
-    differencesArr: Vec2[] = [];
+    differencesArr: Vec2[] = [
+        { x: 69, y: 4 },
+        { x: 70, y: 4 },
+        { x: 3, y: 39 },
+        { x: 3, y: 40 },
+    ];
     differencesCounter: number = this.differencesArr.length;
 
     constructor(public imageService: ImageService) {}
