@@ -1,7 +1,6 @@
-import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
-import { DatabaseService } from '@app/services/database/database.service';
 import { DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
-import { Game, GameCard, GameConfig, GameDetails, PlayerTime } from '@common/game-interfaces';
+import { DatabaseService } from '@app/services/database/database.service';
+import { PlayerTime, GameConfig, GameCard, Game, GameDetails } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -38,7 +37,15 @@ export class GameService {
         return this.defaultConstants;
     }
 
-    addGame(newGame: CreateGameDto): void {
+    async getGames(): Promise<GameCard[]> {
+        return await this.databaseService.getGames();
+    }
+
+    async getGameById(id: string): Promise<Game | void> {
+        return await this.databaseService.getGameById(id);
+    }
+
+    addGame(newGame: GameDetails): void {
         this.gameNames.push(newGame.name);
         // strip off the data: url prefix to get just the base64-encoded bytes
         this.databaseService.saveFiles(newGame.name, Buffer.from(newGame.originalImagePath.replace(/^data:image\/\w+;base64,/, ''), 'base64'));
@@ -53,6 +60,8 @@ export class GameService {
         return {
             id: newGame.id,
             name: newGame.name,
+            original: '@assets/Bouffon/original.bmp',
+            modified: '@assets/Bouffon/modified.bmp',
             soloTopTime: this.defaultBestTimes,
             oneVsOneTopTime: this.defaultBestTimes,
             difficultyLevel: newGame.nDifference,
@@ -60,5 +69,10 @@ export class GameService {
             differencesCount: newGame.nDifference,
             hintList: [],
         };
+    }
+    getGamesCarrousel(): GameCarrousel[] {
+        this.gameCardsList = this.buildGameCardsList();
+        this.carrouselGames = this.buildGameCarrousel();
+        return this.carrouselGames;
     }
 }
