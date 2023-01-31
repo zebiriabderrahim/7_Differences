@@ -27,6 +27,10 @@ export class CreateGameDto {
     differenceMatrix: number[][];
 
     @ApiProperty()
+    @IsString()
+    thumbnail: string;
+
+    @ApiProperty()
     @IsBoolean()
     isHard: boolean;
 }
