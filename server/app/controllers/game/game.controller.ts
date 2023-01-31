@@ -9,14 +9,14 @@ export class GameController {
     constructor(private readonly gameService: GameService) {}
 
     @Get('carrousel/:index')
-    async getGameCarrousel(@Param('index') index: number): Promise<GameCarrousel> {
-        const gameCarrousel = await this.gameService.getGames();
+    getGameCarrousel(@Param('index') index: number): GameCarrousel {
+        const gameCarrousel = this.gameService.getGames();
         return gameCarrousel[+index];
     }
 
     @Get(':id')
-    async gameById(@Param('id') id: string): Promise<Game> {
-        const game = await this.gameService.getGameById(id);
+    gameById(@Param('id') id: string): Game {
+        const game = this.gameService.getGameById(id);
         if (!game) {
             throw new NotFoundException(`Game with id:${id} not found`);
         }
