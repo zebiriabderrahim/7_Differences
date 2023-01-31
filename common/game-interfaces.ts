@@ -24,7 +24,7 @@ export interface Game {
 export interface GameCard {
     id: number;
     name: string;
-    difficultyLevel: number;
+    difficultyLevel: boolean;
     soloTopTime: PlayerTime[];
     oneVsOneTopTime: PlayerTime[];
     thumbnail: string;
