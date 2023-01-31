@@ -1,5 +1,5 @@
 import { GameService } from '@app/services/game/game.service';
-import { Game, GameCarrousel } from '@common/game-interfaces';
+import { Game, GameCarrousel, GameConfig } from '@common/game-interfaces';
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -21,5 +21,11 @@ export class GameController {
             throw new NotFoundException(`Game with id:${id} not found`);
         }
         return game;
+    }
+
+    @Get('config/constants')
+    async getConstants(): Promise<GameConfig> {
+        const gameConstants = await this.gameService.getConfigConstants();
+        return gameConstants;
     }
 }

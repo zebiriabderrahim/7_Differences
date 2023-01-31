@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CarrouselPaginator, Game, GameConfigConst } from '@app/interfaces/game-interfaces';
+import { CarrouselPaginator, Game, GameConfig } from '@app/interfaces/game-interfaces';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -28,12 +28,12 @@ export class CommunicationService {
         return this.http.post<void>(`${this.gameUrl}`, gameData).pipe(catchError(this.handleError<void>('postGame')));
     }
 
-    updateConfigConstants(constants: GameConfigConst): Observable<void> {
+    updateConfigConstants(constants: GameConfig): Observable<void> {
         return this.http.put<void>(`${this.baseUrl}/`, constants).pipe(catchError(this.handleError<void>('basicPut')));
     }
 
-    loadConfigConstants(): Observable<GameConfigConst> {
-        return this.http.get<GameConfigConst>(`${this.baseUrl}/constants`).pipe(catchError(this.handleError<GameConfigConst>('loadConfigConstants')));
+    loadConfigConstants(): Observable<GameConfig> {
+        return this.http.get<GameConfig>(`${this.gameUrl}/config/constants`).pipe(catchError(this.handleError<GameConfig>('loadConfigConstants')));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
