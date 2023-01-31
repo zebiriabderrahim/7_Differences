@@ -1,181 +1,30 @@
-import { Game, GameCard } from '@common/game-interfaces';
+import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
+import { GAME_CARROUSEL_SIZE } from '@common/constants';
+import { Game, GameCard, GameCarrousel, PlayerTime } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 
 @Injectable()
 export class DatabaseService {
+    private createdGames: CreateGameDto[];
     private games: Game[];
-    private gameCards: GameCard[] = [];
+    private selectionViewGames: GameCard[];
 
     constructor() {
+        this.defaultBestTimes = [
+            { name: 'rxjs', time: 100 },
+            { name: 'ts', time: 200 },
+            { name: 'angular', time: 250 },
+        ];
+        this.createdGames = [];
         this.games = [
             {
                 id: 1,
-                name: 'nicolay',
+                name: 'Bouffon',
                 difficultyLevel: 1,
                 thumbnail: 'test',
-                soloTopTime: [
-                    { name: 'top1', time: 1 },
-                    { name: 'top2', time: 2 },
-                    { name: 'top3', time: 3 },
-                ],
-                oneVsOneTopTime: [
-                    { name: 'test1', time: 1 },
-                    { name: 'test2', time: 2 },
-                    { name: 'test3', time: 3 },
-                ],
-                differencesCount: 10,
-                hintList: [],
-            },
-            {
-                id: 2,
-                name: 'tVSz',
-                difficultyLevel: 1,
-                thumbnail: 'test',
-                soloTopTime: [
-                    { name: 'top1', time: 1 },
-                    { name: 'top2', time: 2 },
-                    { name: 'top3', time: 3 },
-                ],
-                oneVsOneTopTime: [
-                    { name: 'test1', time: 1 },
-                    { name: 'test2', time: 2 },
-                    { name: 'test3', time: 3 },
-                ],
-                differencesCount: 10,
-                hintList: [],
-            },
-            {
-                id: 3,
-                name: 'chat',
-                difficultyLevel: 1,
-                thumbnail: 'test',
-                soloTopTime: [
-                    { name: 'top1', time: 1 },
-                    { name: 'top2', time: 2 },
-                    { name: 'top3', time: 3 },
-                ],
-                oneVsOneTopTime: [
-                    { name: 'test1', time: 1 },
-                    { name: 'test2', time: 2 },
-                    { name: 'test3', time: 3 },
-                ],
-                differencesCount: 10,
-                hintList: [],
-            },
-            {
-                id: 4,
-                name: 'rat',
-                difficultyLevel: 1,
-                thumbnail: 'test',
-                soloTopTime: [
-                    { name: 'top1', time: 1 },
-                    { name: 'top2', time: 2 },
-                    { name: 'top3', time: 3 },
-                ],
-                oneVsOneTopTime: [
-                    { name: 'test1', time: 1 },
-                    { name: 'test2', time: 2 },
-                    { name: 'test3', time: 3 },
-                ],
-                differencesCount: 10,
-                hintList: [],
-            },
-            {
-                id: 5,
-                name: 'est',
-                difficultyLevel: 1,
-                thumbnail: 'test',
-                soloTopTime: [
-                    { name: 'top1', time: 1 },
-                    { name: 'top2', time: 2 },
-                    { name: 'top3', time: 3 },
-                ],
-                oneVsOneTopTime: [
-                    { name: 'test1', time: 1 },
-                    { name: 'test2', time: 2 },
-                    { name: 'test3', time: 3 },
-                ],
-                differencesCount: 10,
-                hintList: [],
-            },
-            {
-                id: 6,
-                name: 'raton',
-                difficultyLevel: 1,
-                thumbnail: 'test',
-                soloTopTime: [
-                    { name: 'top1', time: 1 },
-                    { name: 'top2', time: 2 },
-                    { name: 'top3', time: 3 },
-                ],
-                oneVsOneTopTime: [
-                    { name: 'test1', time: 1 },
-                    { name: 'test2', time: 2 },
-                    { name: 'test3', time: 3 },
-                ],
-                differencesCount: 10,
-                hintList: [],
-            },
-            {
-                id: 7,
-                name: 'raton-laveur',
-                difficultyLevel: 1,
-                thumbnail: 'test',
-                soloTopTime: [
-                    { name: 'top1', time: 1 },
-                    { name: 'top2', time: 2 },
-                    { name: 'top3', time: 3 },
-                ],
-                oneVsOneTopTime: [
-                    { name: 'test1', time: 1 },
-                    { name: 'test2', time: 2 },
-                    { name: 'test3', time: 3 },
-                ],
-                differencesCount: 10,
-                hintList: [],
-            },
-            {
-                id: 8,
-                name: 'lavons',
-                difficultyLevel: 1,
-                thumbnail: 'test',
-                soloTopTime: [
-                    { name: 'top1', time: 1 },
-                    { name: 'top2', time: 2 },
-                    { name: 'top3', time: 3 },
-                ],
-                oneVsOneTopTime: [
-                    { name: 'test1', time: 1 },
-                    { name: 'test2', time: 2 },
-                    { name: 'test3', time: 3 },
-                ],
-                differencesCount: 10,
-                hintList: [],
-            },
-            {
-                id: 9,
-                name: 'génial',
-                difficultyLevel: 1,
-                thumbnail: 'test',
-                soloTopTime: [
-                    { name: 'top1', time: 1 },
-                    { name: 'top2', time: 2 },
-                    { name: 'top3', time: 3 },
-                ],
-                oneVsOneTopTime: [
-                    { name: 'test1', time: 1 },
-                    { name: 'test2', time: 2 },
-                    { name: 'test3', time: 3 },
-                ],
-                differencesCount: 10,
-                hintList: [],
-            },
-            {
-                id: 10,
-                name: 'raton',
-                difficultyLevel: 1,
-                thumbnail: 'test',
+                original: '@assets/Bouffon/original.bmp',
+                modified: '@assets/Bouffon/modified.bmp',
                 soloTopTime: [
                     { name: 'top1', time: 1 },
                     { name: 'top2', time: 2 },
@@ -190,24 +39,17 @@ export class DatabaseService {
                 hintList: [],
             },
         ];
-        this.gameCards = [];
+        this.selectionViewGames = [];
     }
 
-    getGameCards(): GameCard[] {
-        return this.createGameCardFromGameData();
+    getGamesData(): Game[] {
+        return this.games;
     }
 
-    getGameById(id: string): Game {
-        return this.games.find((game) => game.id === +id);
-    }
-
-    addGame(gameData: Game): void {
-        this.games.push(gameData);
-    }
-
-    createGameCardFromGameData(): GameCard[] {
+    async getGames(): Promise<GameCard[]> {
+        this.selectionViewGames = [];
         for (const game of this.games) {
-            this.gameCards.push({
+            this.selectionViewGames.push({
                 id: game.id,
                 name: game.name,
                 difficultyLevel: game.difficultyLevel,
@@ -216,7 +58,11 @@ export class DatabaseService {
                 thumbnail: game.thumbnail,
             });
         }
-        return this.gameCards;
+        return this.selectionViewGames;
+    }
+
+    async getGameById(id: string): Promise<Game | void> {
+        return this.games.find((game) => game.id === +id);
     }
     saveFiles(gameName: string, data: Buffer): void {
         const dirName = `assets/${gameName}`;
@@ -226,5 +72,9 @@ export class DatabaseService {
             fs.writeFileSync(`assets/${gameName}/original.bmp`, data);
             fs.writeFileSync(`assets/${gameName}/modified.bmp`, data);
         }
+    }
+
+    addGame(gameData: Game): void {
+        this.games.push(gameData);
     }
 }
