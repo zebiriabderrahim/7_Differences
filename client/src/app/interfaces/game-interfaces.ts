@@ -38,7 +38,7 @@ export interface CarrouselPaginator {
     gameCards: GameCard[];
 }
 
-export interface GameConfigConst {
+export interface GameConfig {
     countdownTime: number;
     penaltyTime: number;
     bonusTime: number;

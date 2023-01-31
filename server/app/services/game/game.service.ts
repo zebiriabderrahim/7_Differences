@@ -1,6 +1,6 @@
-import { DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
 import { DatabaseService } from '@app/services/database/database.service';
-import { PlayerTime, GameConfig, GameCard, Game, GameDetails, GameCarrousel } from '@common/game-interfaces';
+import { DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
+import { Game, GameCarrousel, GameConfig, GameDetails, PlayerTime } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -29,8 +29,8 @@ export class GameService {
         this.defaultConstants = newConstants;
     }
 
-    getConfigConstants(): GameConfig {
-        return this.defaultConstants;
+    async getConfigConstants(): Promise<GameConfig> {
+        return await this.defaultConstants;
     }
 
     async getGames(): Promise<GameCarrousel[]> {
