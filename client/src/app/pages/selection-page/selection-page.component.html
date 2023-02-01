@@ -2,9 +2,11 @@
     {{ navigate() }}
     <h1>{{ titre }}</h1>
     <mat-grid-list cols="4">
-        <mat-grid-tile *ngFor="let game of gameCarrousel.gameCards" class="section">
-            <app-game-sheet [game]="game"></app-game-sheet>
-        </mat-grid-tile>
+       <ng-container  *ngIf="gameCarrousel.gameCards">
+            <mat-grid-tile *ngFor="let game of gameCarrousel.gameCards" class="section">
+                <app-game-sheet  [game]="game"></app-game-sheet>
+            </mat-grid-tile>
+        </ng-container>
     </mat-grid-list>
     <div class="buttonContainer">
         <button mat-raised-button *ngIf="gameCarrousel.hasPrevious" mat-raised-button class="previous_button" (click)="hasPrevious()"><< Précedent</button>
