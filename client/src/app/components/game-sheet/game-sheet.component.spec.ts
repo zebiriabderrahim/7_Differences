@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
+import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { CommunicationService } from '@app/services/communication-service/communication-service.service';
-import { PlayerNameDialogBoxComponent } from '../player-name-dialog-box/player-name-dialog-box.component';
 import { GameSheetComponent } from './game-sheet.component';
 
 describe('GameSheetComponent', () => {
