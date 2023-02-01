@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { GameConfig } from '@app/interfaces/game-interfaces';
 import { CommunicationService } from '@app/services/communication-service/communication-service.service';
 import { Subscription } from 'rxjs';
 
@@ -15,7 +14,9 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
     // eslint-disable-next-line no-alert, quotes, semi, @typescript-eslint/no-magic-numbers
     readonly gamePhase: number = 4;
     readonly createRoute: string = '/create';
-    readonly constants: GameConfig;
+    countdownTime: number;
+    penaltyTime: number;
+    bonusTime: number;
 
     private commSub: Subscription;
 
@@ -23,9 +24,9 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.commSub = this.communicationService.loadConfigConstants().subscribe((res) => {
-            this.constants.countdownTime = res.countdownTime;
-            this.constants.penaltyTime = res.penaltyTime;
-            this.constants.bonusTime = res.bonusTime;
+            this.countdownTime = res.countdownTime;
+            this.penaltyTime = res.penaltyTime;
+            this.bonusTime = res.bonusTime;
         });
     }
 
