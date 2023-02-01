@@ -36,15 +36,21 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
 
         this.gameCardService.getGameId().subscribe((id) => {
             this.communication.loadGameById(id).subscribe((game) => {
-                this.game = game;
+                if (game) {
+                    this.game = game;
+                    this.gameAreaService.originalContext = this.originalCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+                    this.gameAreaService.modifiedContext = this.modifiedCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+                    this.gameAreaService.originalContextFrontLayer = this.originalCanvasForeground.nativeElement.getContext(
+                        '2d',
+                    ) as CanvasRenderingContext2D;
+                    this.gameAreaService.modifiedContextFrontLayer = this.modifiedCanvasForeground.nativeElement.getContext(
+                        '2d',
+                    ) as CanvasRenderingContext2D;
+                    this.gameAreaService.loadImage(this.gameAreaService.originalContext, this.game.original);
+                    this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, this.game.modified);
+                }
             });
         });
-        this.gameAreaService.originalContext = this.originalCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.gameAreaService.modifiedContext = this.modifiedCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.gameAreaService.originalContextFrontLayer = this.originalCanvasForeground.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.gameAreaService.modifiedContextFrontLayer = this.modifiedCanvasForeground.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.gameAreaService.loadImage(this.gameAreaService.originalContext, this.game.original);
-        this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, this.game.modified);
     }
 
     finish() {

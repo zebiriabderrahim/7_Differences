@@ -10,13 +10,11 @@ import { CommunicationService } from '@app/services/communication-service/commun
 })
 export class SelectionPageComponent implements OnInit {
     titre: string;
-    imageSrc: string = '../../../assets/img/rat.jpg';
-    newImageSrc: string = '../../../assets/img/strong_rat.jpg';
-    // eslint-disable-next-line no-alert, quotes, semi, @typescript-eslint/no-magic-numbers
-    gamePhase: number = 4;
     gameCarrousel: CarrouselPaginator;
     index: number = 0;
-    constructor(private communicationService: CommunicationService, public router: Router) {}
+    constructor(private communicationService: CommunicationService, public router: Router) {
+        this.gameCarrousel = { hasNext: false, hasPrevious: false, gameCards: [] };
+    }
 
     navigate() {
         if (this.router.url === '/selection') {
@@ -28,14 +26,18 @@ export class SelectionPageComponent implements OnInit {
 
     ngOnInit(): void {
         this.communicationService.loadGameCarrousel(this.index).subscribe((gameCarrousel) => {
-            this.gameCarrousel = gameCarrousel;
+            if (gameCarrousel) {
+                this.gameCarrousel = gameCarrousel;
+            }
         });
     }
 
     hasNext() {
         if (this.gameCarrousel.hasNext) {
             this.communicationService.loadGameCarrousel(++this.index).subscribe((gameCarrousel) => {
-                this.gameCarrousel = gameCarrousel;
+                if (gameCarrousel) {
+                    this.gameCarrousel = gameCarrousel;
+                }
             });
         }
     }
@@ -43,9 +45,10 @@ export class SelectionPageComponent implements OnInit {
     hasPrevious() {
         if (this.gameCarrousel.hasPrevious) {
             this.communicationService.loadGameCarrousel(--this.index).subscribe((gameCarrousel) => {
-                this.gameCarrousel = gameCarrousel;
+                if (gameCarrousel) {
+                    this.gameCarrousel = gameCarrousel;
+                }
             });
         }
     }
 }
-
