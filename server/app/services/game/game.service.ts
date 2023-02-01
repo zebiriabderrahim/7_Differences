@@ -31,7 +31,7 @@ export class GameService {
         return this.defaultConstants;
     }
 
-    getGames(): CarrouselPaginator[] {
+    getGameCarrousel(): CarrouselPaginator[] {
         return this.databaseService.getGamesCarrousel();
     }
 

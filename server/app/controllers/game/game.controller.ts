@@ -1,7 +1,6 @@
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameService } from '@app/services/game/game.service';
-import { Game, CarrouselPaginator } from '@common/game-interfaces';
-import { Body, Controller, Get, HttpStatus, NotFoundException, Param, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
@@ -11,18 +10,23 @@ export class GameController {
     constructor(private readonly gameService: GameService) {}
 
     @Get('carrousel/:index')
-    getGameCarrousel(@Param('index') index: number): CarrouselPaginator {
-        const gameCarrousel = this.gameService.getGames();
-        return gameCarrousel[+index];
+    getGameCarrousel(@Param('index') index: number, @Res() response: Response) {
+        try {
+            const gameCarrousel = this.gameService.getGameCarrousel();
+            response.status(HttpStatus.OK).json(gameCarrousel[+index]);
+        } catch (error) {
+            response.status(HttpStatus.NOT_FOUND).send(error.message);
+        }
     }
 
     @Get(':id')
-    gameById(@Param('id') id: string): Game {
-        const game = this.gameService.getGameById(id);
-        if (!game) {
-            throw new NotFoundException(`Game with id:${id} not found`);
+    gameById(@Param('id') id: string, @Res() response: Response) {
+        try {
+            const game = this.gameService.getGameById(id);
+            response.status(HttpStatus.OK).json(game);
+        } catch (error) {
+            response.status(HttpStatus.NOT_FOUND).send(error.message);
         }
-        return game;
     }
 
     @Post('/')
