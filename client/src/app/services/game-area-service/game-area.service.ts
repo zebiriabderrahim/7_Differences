@@ -18,8 +18,10 @@ export class GameAreaService {
     modifiedContextFrontLayer: CanvasRenderingContext2D;
     mousePosition: Vec2 = { x: 0, y: 0 };
     clickDisabled: boolean = false;
+    correctSoundEffect: HTMLAudioElement = new Audio('assets/sound/WinSoundEffect.mp3');
+    incorrectSoundEffect: HTMLAudioElement = new Audio('assets/sound/ErrorSoundEffect.mp3');
     // To Be put in constants file:
-    maxWidth: number = 680;
+    maxWidth: number = 640;
     maxHeight: number = 480;
     leftButton: number = 0;
     middleButton: number = 1;
@@ -36,6 +38,7 @@ export class GameAreaService {
         };
         image.src = path;
     }
+
     setAllData(): void {
         this.originalPixelData = this.originalContext.getImageData(0, 0, this.maxWidth, this.maxHeight);
         this.modifiedPixelData = this.modifiedContext.getImageData(0, 0, this.maxWidth, this.maxHeight);
@@ -51,26 +54,27 @@ export class GameAreaService {
             return false;
         }
     }
-    clearCanvasPixels(context: CanvasRenderingContext2D): void {
-        context.clearRect(0, 0, this.maxWidth, this.maxHeight);
-    }
+
     showError(isMainCanvas: boolean): void {
         let frontContext: CanvasRenderingContext2D;
         if (isMainCanvas) {
             frontContext = this.originalContextFrontLayer;
             frontContext.fillStyle = 'red';
+            this.incorrectSoundEffect.play();
         } else {
             frontContext = this.modifiedContextFrontLayer;
             frontContext.fillStyle = 'green';
+            this.correctSoundEffect.play();
         }
         this.clickDisabled = true;
         frontContext.font = 'bold 30px sheriff';
         frontContext.fillText('Erreur', this.mousePosition.x - 38, this.mousePosition.y);
         setTimeout(() => {
-            this.clearCanvasPixels(frontContext);
+            frontContext.clearRect(0, 0, this.maxWidth, this.maxHeight);
             this.clickDisabled = false;
         }, 1000);
     }
+
     convert2DCoordToPixelIndex(differenceCoord: Vec2[]): number[] {
         const imageDataIndex: number[] = [];
         for (const coord of differenceCoord) {
@@ -78,5 +82,14 @@ export class GameAreaService {
             imageDataIndex.push(flatIndex);
         }
         return imageDataIndex;
+    }
+    replaceDifference(differenceCoord: Vec2[]): void {
+        const imageDataIndex = this.convert2DCoordToPixelIndex(differenceCoord);
+        for (const index of imageDataIndex) {
+            for (let i = 0; i < this.pixelLength; i++) {
+                this.modifiedPixelData.data[index + i] = this.originalPixelData.data[index + i];
+            }
+        }
+        this.modifiedContext.putImageData(this.modifiedPixelData, 0, 0);
     }
 }
