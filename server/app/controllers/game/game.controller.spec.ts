@@ -1,11 +1,11 @@
+import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameService } from '@app/services/game/game.service';
-import { CarrouselPaginator, Game } from '@common/game-interfaces';
+import { CarrouselPaginator, Game, GameConfigConst } from '@common/game-interfaces';
 import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SinonStubbedInstance, createStubInstance } from 'sinon';
-import { GameController } from './game.controller';
 import { Response } from 'express';
-import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
+import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { GameController } from './game.controller';
 
 describe('GameController', () => {
     let controller: GameController;
@@ -31,14 +31,14 @@ describe('GameController', () => {
     });
     it('getGameCarrousel() should call getGameCarrousel() in gameService', () => {
         const fakeGameCarrousel = {} as CarrouselPaginator[];
-        gameService.getGameCarrousel.returns(fakeGameCarrousel);
+        gameService.getGameCarousel.returns(fakeGameCarrousel);
         const res = {} as unknown as Response;
         res.status = (code) => {
             expect(code).toEqual(HttpStatus.OK);
             return res;
         };
-        res.json = (courses) => {
-            expect(courses).toEqual(fakeGameCarrousel[0]);
+        res.json = (gameCarrousel) => {
+            expect(gameCarrousel).toEqual(fakeGameCarrousel[0]);
             return res;
         };
         res.send = () => res;
@@ -63,8 +63,8 @@ describe('GameController', () => {
             expect(code).toEqual(HttpStatus.OK);
             return res;
         };
-        res.json = (courses) => {
-            expect(courses).toEqual(fakeGame);
+        res.json = (game) => {
+            expect(game).toEqual(fakeGame);
             return res;
         };
         res.send = () => res;
@@ -78,12 +78,43 @@ describe('GameController', () => {
             expect(code).toEqual(HttpStatus.NOT_FOUND);
             return res;
         };
-        res.json = (courses) => {
-            expect(courses).toEqual(undefined);
+        res.json = (game) => {
+            expect(game).toEqual(undefined);
             return res;
         };
         res.send = () => res;
         controller.gameById('0', res);
+    });
+
+    it('getConfigConstants() should call getConfigConstants() in gameService', () => {
+        const fakeGameConfigConst = {} as GameConfigConst;
+        gameService.getConfigConstants.returns(fakeGameConfigConst);
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.OK);
+            return res;
+        };
+        res.json = (gameConfigConst) => {
+            expect(gameConfigConst).toEqual(fakeGameConfigConst);
+            return res;
+        };
+        res.send = () => res;
+        controller.getConfigConstants(res);
+    });
+
+    it('getConfigConstants() should return NOT_FOUND when service unable to fetch game ConfigConstants', () => {
+        gameService.getConfigConstants.returns(undefined);
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.NOT_FOUND);
+            return res;
+        };
+        res.json = (gameConfigConst) => {
+            expect(gameConfigConst).toEqual(undefined);
+            return res;
+        };
+        res.send = () => res;
+        controller.getConfigConstants(res);
     });
 
     it('addCourse()should call addCourse() in gameService', () => {
