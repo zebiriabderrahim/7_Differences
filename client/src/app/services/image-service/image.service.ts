@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
+import { DEFAULT_RADIUS, IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { BLACK_PIXEL, N_PIXEL_ATTRIBUTE, WHITE_PIXEL } from '@app/constants/pixels';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { Coordinate } from '@app/interfaces/coordinate';
@@ -11,8 +11,11 @@ import { Pixel } from '@app/interfaces/pixel';
 export class ImageService {
     leftBackgroundContext: CanvasRenderingContext2D;
     rightBackgroundContext: CanvasRenderingContext2D;
+    differenceContext: CanvasRenderingContext2D;
     leftBackground: string = '';
     rightBackground: string = '';
+
+    enlargementRadius: number = DEFAULT_RADIUS;
 
     resetBackground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
@@ -78,6 +81,17 @@ export class ImageService {
             case CanvasPosition.Right:
                 this.rightBackgroundContext = context;
                 break;
+        }
+    }
+
+    setEnlargementRadius(radius: number) {
+        this.enlargementRadius = radius;
+    }
+
+    setDifferenceContext(context: CanvasRenderingContext2D) {
+        this.differenceContext = context;
+        if (this.leftBackground && this.rightBackground) {
+            this.validateDifferences(this.enlargementRadius);
         }
     }
 
@@ -167,8 +181,6 @@ export class ImageService {
             differencePixelArray[difference.y * IMG_WIDTH + difference.x] = BLACK_PIXEL;
         }
         const differenceImageData = this.transformPixelArrayToImageData(differencePixelArray);
-        this.resetLeftBackground();
-        this.resetRightBackground();
-        this.leftBackgroundContext.putImageData(new ImageData(differenceImageData, IMG_WIDTH, IMG_HEIGHT), 0, 0);
+        this.differenceContext.putImageData(new ImageData(differenceImageData, IMG_WIDTH, IMG_HEIGHT), 0, 0);
     }
 }
