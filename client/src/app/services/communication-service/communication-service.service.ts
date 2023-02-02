@@ -15,8 +15,8 @@ export class CommunicationService {
 
     loadGameCarrousel(index: number): Observable<CarrouselPaginator> {
         return this.http
-            .get<CarrouselPaginator>(`${this.gameUrl}/carrousel/${index}`)
-            .pipe(catchError(this.handleError<CarrouselPaginator>('loadGameCarrousel')));
+            .get<CarrouselPaginator>(`${this.gameUrl}/carousel/${index}`)
+            .pipe(catchError(this.handleError<CarrouselPaginator>('loadGameCarousel')));
     }
 
     loadGameById(id: number): Observable<Game> {
