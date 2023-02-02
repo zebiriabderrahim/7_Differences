@@ -7,13 +7,8 @@ import { ImageService } from '@app/services/image-service/image.service';
     providedIn: 'root',
 })
 export class DifferenceService {
-    differencesArr: Vec2[] = [
-        { x: 69, y: 4 },
-        { x: 70, y: 4 },
-        { x: 3, y: 39 },
-        { x: 3, y: 40 },
-    ];
-    differencesCounter: number = this.differencesArr.length;
+    differencesArray: Vec2[] = []; // TODO link to appropriate service
+    differencesCounter: number = this.differencesArray.length;
 
     constructor(public imageService: ImageService) {}
 
@@ -22,7 +17,7 @@ export class DifferenceService {
     }
 
     isCoordInDifferencesArr(point: Vec2): boolean {
-        for (const coord of this.differencesArr) {
+        for (const coord of this.differencesArray) {
             if (coord.x === point.x && coord.y === point.y) {
                 return true;
             }
@@ -40,5 +35,36 @@ export class DifferenceService {
             }
         }
         return adjacentCoords;
+    }
+
+    sortDifferences(): Vec2[][] {
+        const differences: Vec2[][] = [];
+        const visitedCoords: boolean[][] = new Array(IMG_WIDTH).fill(false).map(() => new Array(IMG_HEIGHT).fill(false)) as boolean[][];
+        let queue: Vec2[] = [];
+        let currentDifference: Vec2[] = [];
+        let activeDifference: Vec2;
+        for (const differenceCoordinate of this.differencesArray) {
+            queue = [];
+            currentDifference = [];
+            if (!visitedCoords[differenceCoordinate.x][differenceCoordinate.y]) {
+                currentDifference.push(differenceCoordinate);
+                visitedCoords[differenceCoordinate.x][differenceCoordinate.y] = true;
+                queue.push(differenceCoordinate);
+            }
+            while (queue.length !== 0) {
+                activeDifference = queue.pop() as Vec2;
+                for (const coord of this.findAdjacentCoords(activeDifference as Vec2)) {
+                    if (!visitedCoords[coord.x][coord.y] && this.isCoordInDifferencesArr(coord)) {
+                        visitedCoords[coord.x][coord.y] = true;
+                        currentDifference.push(coord);
+                        queue.push(coord);
+                    }
+                }
+            }
+            if (currentDifference.length !== 0) {
+                differences.push(currentDifference);
+            }
+        }
+        return differences;
     }
 }
