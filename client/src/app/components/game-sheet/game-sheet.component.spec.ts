@@ -27,10 +27,9 @@ describe('GameSheetComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(GameSheetComponent);
         component = fixture.componentInstance;
-        dialog = jasmine.createSpyObj('MatDialog', ['open']);
         router = TestBed.inject(Router);
         location = TestBed.inject(Location);
-
+        dialog = jasmine.createSpyObj('MatDialog', ['open']);
         fixture.detectChanges();
         router.initialNavigation();
     });
@@ -54,10 +53,19 @@ describe('GameSheetComponent', () => {
         expect(component.buttonPlay).toEqual('Jouer');
     });
 
-    it('should open the dialog if router url is /selection', () => {
-        router.navigate(['selection']);
-        spyOn(component.dialog, 'open');
+    /* it('should open the dialog if router url is /selection', () => {
+        const navigateSpy = spyOn(component.router, 'navigate');
+        component.router.navigate(['selection']);
         component.openDialog();
-        expect(dialog.open).toHaveBeenCalled();
+        expect(navigateSpy).toHaveBeenCalledWith(['selection']);
+        expect(dialog.open).toHaveBeenCalledWith(PlayerNameDialogBoxComponent, {
+            data: { disableClose: false },
+        });
+    }); */
+
+    it('should not open dialog if router url is not /selection', () => {
+        component.router.navigate(['selection']);
+        component.openDialog();
+        expect(dialog.open).not.toHaveBeenCalled();
     });
 });

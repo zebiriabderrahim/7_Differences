@@ -27,7 +27,7 @@ export class GameService {
         this.defaultConstants = newConstants;
     }
 
-    async getConfigConstants(): Promise<GameConfig> {
+    async getConfigConstants(): Promise<GameConfigConst> {
         return await this.defaultConstants;
     }
 

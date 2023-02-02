@@ -19,6 +19,7 @@ describe('SelectionPageComponent', () => {
         fixture = TestBed.createComponent(SelectionPageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        component.titre = 'Selectionne ton jeu';
     });
 
     it('should create', () => {
