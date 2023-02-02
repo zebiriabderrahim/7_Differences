@@ -9,11 +9,6 @@ import { Subscription } from 'rxjs';
 })
 export class ConfigPageComponent implements OnInit, OnDestroy {
     readonly titre: string = 'Configure ton jeu';
-    readonly imageSrc: string = '../../../assets/img/rat.jpg';
-    readonly newImageSrc: string = '../../../assets/img/strong_rat.jpg';
-    // eslint-disable-next-line no-alert, quotes, semi, @typescript-eslint/no-magic-numbers
-    readonly gamePhase: number = 4;
-
     readonly createRoute: string = '/create';
     countdownTime: number;
     penaltyTime: number;
