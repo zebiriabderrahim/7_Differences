@@ -43,6 +43,7 @@ describe('GameController', () => {
         };
         res.send = () => res;
         controller.getGameCarrousel(0, res);
+        expect(gameService.getGameCarousel.calledOnce).toBe(true);
     });
 
     it('getGameCarrousel() should return NOT_FOUND when service unable to fetch GameCarrousel', async () => {
@@ -53,6 +54,7 @@ describe('GameController', () => {
         };
         res.send = () => res;
         controller.getGameCarrousel(0, res);
+        expect(gameService.getGameCarousel.calledOnce).toBe(true);
     });
 
     it('getGameById() should call getGameById() in gameService', () => {
@@ -69,6 +71,7 @@ describe('GameController', () => {
         };
         res.send = () => res;
         controller.gameById('0', res);
+        expect(gameService.getGameById.calledOnce).toBe(true);
     });
 
     it('getGameById() should return NOT_FOUND when service unable to fetch Game', () => {
@@ -84,6 +87,7 @@ describe('GameController', () => {
         };
         res.send = () => res;
         controller.gameById('0', res);
+        expect(gameService.getGameById.calledOnce).toBe(true);
     });
 
     it('getConfigConstants() should call getConfigConstants() in gameService', () => {
@@ -100,6 +104,7 @@ describe('GameController', () => {
         };
         res.send = () => res;
         controller.getConfigConstants(res);
+        expect(gameService.getConfigConstants.calledOnce).toBe(true);
     });
 
     it('getConfigConstants() should return NOT_FOUND when service unable to fetch game ConfigConstants', () => {
@@ -115,6 +120,7 @@ describe('GameController', () => {
         };
         res.send = () => res;
         controller.getConfigConstants(res);
+        expect(gameService.getConfigConstants.calledOnce).toBe(true);
     });
 
     it('addCourse()should call addCourse() in gameService', () => {
@@ -125,16 +131,18 @@ describe('GameController', () => {
             return res;
         };
         res.send = () => res;
-        controller.addCourse(new CreateGameDto(), res);
+        controller.addGame(new CreateGameDto(), res);
+        expect(gameService.addGame.calledOnce).toBe(true);
     });
 
-    it('addCourse()should call addCourse() in gameService', () => {
+    it('addCourse() should return NOT_FOUND when service unable to add new game', () => {
         const res = {} as unknown as Response;
         res.status = (code) => {
             expect(code).toEqual(HttpStatus.NOT_FOUND);
             return res;
         };
         res.send = () => res;
-        controller.addCourse(new CreateGameDto(), res);
+        controller.addGame(new CreateGameDto(), res);
+        expect(gameService.addGame.calledOnce).toBe(true);
     });
 });
