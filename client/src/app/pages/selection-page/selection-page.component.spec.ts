@@ -25,4 +25,13 @@ describe('SelectionPageComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('should load a Carrousel when this one exist', () => {
+        if (component.gameCarrousel) {
+            component.ngOnInit();
+            expect(component.gameCarrousel).toBeTruthy();
+        } else {
+            expect(component.gameCarrousel).toBeUndefined();
+        }
+    });
 });
