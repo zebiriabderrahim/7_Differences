@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CarrouselPaginator, Game, GameConfig } from '@app/interfaces/game-interfaces';
+import { CarrouselPaginator, Game } from '@app/interfaces/game-interfaces';
+import { GameConfigConst } from '@common/game-interfaces';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
