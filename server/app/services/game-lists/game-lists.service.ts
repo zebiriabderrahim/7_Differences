@@ -1,22 +1,13 @@
-import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GAME_CARROUSEL_SIZE } from '@common/constants';
-import { GameCarrousel, GameCard, PlayerTime } from '@common/game-interfaces';
+import { CarrouselPaginator, GameCard, Game } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class GameListsService {
-    private defaultBestTimes: PlayerTime[];
-    constructor() {
-        this.defaultBestTimes = [
-            { name: 'rxjs', time: 100 },
-            { name: 'ts', time: 200 },
-            { name: 'angular', time: 250 },
-        ];
-    }
-    buildGameCarrousel(gameCardsList: GameCard[], carrouselGames: GameCarrousel[]): void {
+    buildGameCarrousel(gameCardsList: GameCard[], carrouselGames: CarrouselPaginator[]): void {
         for (let i = 0; i < gameCardsList.length; i += GAME_CARROUSEL_SIZE) {
             const j = i;
-            const gameCarrousel: GameCarrousel = {
+            const gameCarrousel: CarrouselPaginator = {
                 hasNext: i + GAME_CARROUSEL_SIZE < gameCardsList.length,
                 hasPrevious: j > 0,
                 gameCards: gameCardsList.slice(j, i + GAME_CARROUSEL_SIZE),
@@ -25,13 +16,13 @@ export class GameListsService {
         }
     }
 
-    buildGameCardsList(createdGames: CreateGameDto[]): GameCard[] {
-        return createdGames.map((game) => ({
+    buildGameCardsList(games: Game[]): GameCard[] {
+        return games.map((game) => ({
             id: game.id,
             name: game.name,
-            difficultyLevel: game.isHard ? 2 : 1,
-            soloTopTime: this.defaultBestTimes,
-            oneVsOneTopTime: this.defaultBestTimes,
+            difficultyLevel: game.difficultyLevel,
+            soloTopTime: game.soloTopTime,
+            oneVsOneTopTime: game.oneVsOneTopTime,
             thumbnail: game.thumbnail,
         }));
     }

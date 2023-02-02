@@ -1,17 +1,19 @@
+import { Vec2 } from './vec2';
+
 export interface GameDetails {
     id: number;
     name: string;
     originalImagePath: string;
     modifiedImagePath: string;
     nDifference: number;
-    differenceMatrix: number[][];
+    differenceMatrix: Vec2[][];
     isHard: boolean;
 }
 
 export interface Game {
     id: number;
     name: string;
-    difficultyLevel: number;
+    difficultyLevel: boolean;
     original: string;
     modified: string;
     soloTopTime: PlayerTime[];
@@ -29,13 +31,14 @@ export interface GameCard {
     oneVsOneTopTime: PlayerTime[];
     thumbnail: string;
 }
-export interface GameCarrousel {
+
+export interface CarrouselPaginator {
     hasNext: boolean;
     hasPrevious: boolean;
     gameCards: GameCard[];
 }
 
-export interface GameConfig {
+export interface GameConfigConst {
     countdownTime: number;
     penaltyTime: number;
     bonusTime: number;
