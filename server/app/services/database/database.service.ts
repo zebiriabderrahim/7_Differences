@@ -1,13 +1,19 @@
-import { Game, GameCard, CarrouselPaginator, GameConfigConst } from '@common/game-interfaces';
+import { Game, GameCard, CarrouselPaginator, GameConfigConst, PlayerTime } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import { DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY, DEFAULT_BONUS_TIME, GAME_CARROUSEL_SIZE } from '@common/constants';
+import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 
 @Injectable()
 export class DatabaseService {
     private games: Game[] = [];
     private gameCardsList: GameCard[] = [];
     private carrouselGames: CarrouselPaginator[] = [];
+    private defaultBestTimes: PlayerTime[] = [
+        { name: 'John Doe', time: 100 },
+        { name: 'Jane Doe', time: 200 },
+        { name: 'the scream', time: 250 },
+    ];
     private defaultConstants: GameConfigConst = {
         countdownTime: DEFAULT_COUNTDOWN_VALUE,
         penaltyTime: DEFAULT_HINT_PENALTY,
@@ -38,9 +44,11 @@ export class DatabaseService {
         }
     }
 
-    addGame(gameData: Game): void {
-        this.games.push(gameData);
-        this.addGameCard(gameData);
+    addGame(newGame: CreateGameDto): void {
+        const game: Game = this.createGameFromGameDto(newGame);
+        this.saveFiles(newGame.name, Buffer.from(newGame.originalImagePath.replace(/^data:image\/\w+;base64,/, ''), 'base64'));
+        this.games.push(game);
+        this.addGameCard(game);
     }
 
     addGameCard(game: Game): void {
@@ -65,5 +73,19 @@ export class DatabaseService {
             };
             this.carrouselGames.push(gameCarrousel);
         }
+    }
+    createGameFromGameDto(newGame: CreateGameDto): Game {
+        return {
+            id: newGame.id,
+            name: newGame.name,
+            original: newGame.originalImagePath,
+            modified: newGame.modifiedImagePath,
+            soloTopTime: this.defaultBestTimes,
+            oneVsOneTopTime: this.defaultBestTimes,
+            difficultyLevel: newGame.isHard,
+            thumbnail: newGame.originalImagePath,
+            differencesCount: newGame.nDifference,
+            hintList: [],
+        };
     }
 }

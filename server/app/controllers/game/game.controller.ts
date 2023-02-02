@@ -29,7 +29,7 @@ export class GameController {
         }
     }
 
-    @Get('carrousel/:index')
+    @Get('carousel/:index')
     getGameCarrousel(@Param('index') index: number, @Res() response: Response) {
         try {
             const gameCarrousel = this.gameService.getGameCarousel();
@@ -40,7 +40,7 @@ export class GameController {
     }
 
     @Post('/')
-    addCourse(@Body() gameDto: CreateGameDto, @Res() response: Response) {
+    addGame(@Body() gameDto: CreateGameDto, @Res() response: Response) {
         try {
             this.gameService.addGame(gameDto);
             response.status(HttpStatus.CREATED).send();
