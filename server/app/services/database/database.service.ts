@@ -1,22 +1,31 @@
-import { Game, GameCard, CarrouselPaginator } from '@common/game-interfaces';
+import { Game, GameCard, CarrouselPaginator, GameConfigConst } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
-import { GameListsService } from '@app/services/game-lists/game-lists.service';
+import { DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY, DEFAULT_BONUS_TIME, GAME_CARROUSEL_SIZE } from '@common/constants';
 
 @Injectable()
 export class DatabaseService {
     private games: Game[] = [];
     private gameCardsList: GameCard[] = [];
     private carrouselGames: CarrouselPaginator[] = [];
-    constructor(private gameListService: GameListsService) {}
+    private defaultConstants: GameConfigConst = {
+        countdownTime: DEFAULT_COUNTDOWN_VALUE,
+        penaltyTime: DEFAULT_HINT_PENALTY,
+        bonusTime: DEFAULT_BONUS_TIME,
+    };
 
     getGamesCarrousel(): CarrouselPaginator[] {
-        this.gameListService.buildGameCarrousel(this.gameCardsList, this.carrouselGames);
+        this.carrouselGames = [];
+        this.buildGameCarrousel();
         return this.carrouselGames;
     }
 
     getGameById(id: string): Game | void {
         return this.games.find((game) => game.id === +id);
+    }
+
+    getConfigConstants(): GameConfigConst {
+        return this.defaultConstants;
     }
 
     saveFiles(gameName: string, data: Buffer): void {
@@ -44,5 +53,17 @@ export class DatabaseService {
             thumbnail: game.thumbnail,
         };
         this.gameCardsList.push(gameCard);
+    }
+
+    buildGameCarrousel(): void {
+        for (let i = 0; i < this.gameCardsList.length; i += GAME_CARROUSEL_SIZE) {
+            const j = i;
+            const gameCarrousel: CarrouselPaginator = {
+                hasNext: i + GAME_CARROUSEL_SIZE < this.gameCardsList.length,
+                hasPrevious: j > 0,
+                gameCards: this.gameCardsList.slice(j, i + GAME_CARROUSEL_SIZE),
+            };
+            this.carrouselGames.push(gameCarrousel);
+        }
     }
 }
