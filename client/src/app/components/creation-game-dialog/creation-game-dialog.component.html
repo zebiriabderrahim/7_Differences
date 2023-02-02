@@ -1,5 +1,8 @@
 <div mat-dialog-content>
     <h1 mat-dialog-title>Voici l'image des différences :</h1>
     <canvas #differenceCanvas></canvas>
-    <h2 mat-dialog-title>Il y a : 100 différences</h2>
+    <!-- TODO fix value change error -->
+    <p *ngIf="displayDifferences">
+        Il y a : <strong> {{ displayDifferences }} </strong> différences
+    </p>
 </div>
