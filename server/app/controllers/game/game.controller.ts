@@ -11,11 +11,11 @@ import { Response } from 'express';
 export class GameController {
     constructor(private readonly gameService: GameService) {}
 
-    @Get('carrousel/:index')
-    getGameCarrousel(@Param('index') index: number, @Res() response: Response) {
+    @Get('/constants')
+    getConfigConstants(@Res() response: Response) {
         try {
-            const gameCarrousel = this.gameService.getGameCarrousel();
-            response.status(HttpStatus.OK).json(gameCarrousel[+index]);
+            const gameConfigConstants = this.gameService.getConfigConstants();
+            response.status(HttpStatus.OK).json(gameConfigConstants);
         } catch (error) {
             response.status(HttpStatus.NOT_FOUND).send(error.message);
         }
@@ -26,6 +26,16 @@ export class GameController {
         try {
             const game = this.gameService.getGameById(id);
             response.status(HttpStatus.OK).json(game);
+        } catch (error) {
+            response.status(HttpStatus.NOT_FOUND).send(error.message);
+        }
+    }
+
+    @Get('carrousel/:index')
+    getGameCarrousel(@Param('index') index: number, @Res() response: Response) {
+        try {
+            const gameCarrousel = this.gameService.getGameCarousel();
+            response.status(HttpStatus.OK).json(gameCarrousel[+index]);
         } catch (error) {
             response.status(HttpStatus.NOT_FOUND).send(error.message);
         }
