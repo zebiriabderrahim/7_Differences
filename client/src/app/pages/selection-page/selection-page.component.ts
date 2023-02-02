@@ -12,8 +12,6 @@ export class SelectionPageComponent implements OnInit {
     titre: string;
     imageSrc: string = '../../../assets/img/rat.jpg';
     newImageSrc: string = '../../../assets/img/strong_rat.jpg';
-    // eslint-disable-next-line no-alert, quotes, semi, @typescript-eslint/no-magic-numbers
-    gamePhase: number = 4;
     gameCarrousel: CarrouselPaginator;
     index: number = 0;
     constructor(private communicationService: CommunicationService, public router: Router) {}
