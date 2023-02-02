@@ -1,23 +1,13 @@
+import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { DatabaseService } from '@app/services/database/database.service';
-import { DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
-import { Game, GameCarrousel, GameConfig, GameDetails, PlayerTime } from '@common/game-interfaces';
-import { Injectable } from '@nestjs/common';
+import { CarrouselPaginator as CarouselPaginator, Game, GameConfigConst, PlayerTime } from '@common/game-interfaces';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class GameService {
-    private gameNames: string[];
     private defaultBestTimes: PlayerTime[];
-    private defaultConstants: GameConfig;
 
     constructor(private readonly databaseService: DatabaseService) {
-        this.gameNames = [];
-
-        this.defaultConstants = {
-            countdownTime: DEFAULT_COUNTDOWN_VALUE,
-            penaltyTime: DEFAULT_HINT_PENALTY,
-            bonusTime: DEFAULT_BONUS_TIME,
-        };
-
         this.defaultBestTimes = [
             { name: 'John Doe', time: 100 },
             { name: 'Jane Doe', time: 200 },
@@ -25,46 +15,43 @@ export class GameService {
         ];
     }
 
-    modifyConstants(newConstants: GameConfig): void {
-        this.defaultConstants = newConstants;
+    getConfigConstants(): GameConfigConst {
+        const configConstants = this.databaseService.getConfigConstants();
+        if (configConstants) {
+            return configConstants;
+        }
+        throw new HttpException('No game config constants found', HttpStatus.NOT_FOUND);
     }
 
-    getConfigConstants(): GameConfig {
-        return this.defaultConstants;
-    }
-
-    getGames(): GameCarrousel[] {
+    getGameCarousel(): CarouselPaginator[] {
         return this.databaseService.getGamesCarrousel();
     }
 
     getGameById(id: string): Game | void {
-        return this.databaseService.getGameById(id);
+        const game = this.databaseService.getGameById(id);
+        if (game) {
+            return game;
+        }
+        throw new HttpException('No games found', HttpStatus.NOT_FOUND);
     }
 
-    addGame(newGame: GameDetails): void {
-        this.gameNames.push(newGame.name);
-        // strip off the data: url prefix to get just the base64-encoded bytes
+    addGame(newGame: CreateGameDto): void {
         this.databaseService.saveFiles(newGame.name, Buffer.from(newGame.originalImagePath.replace(/^data:image\/\w+;base64,/, ''), 'base64'));
         this.databaseService.addGame(this.createGameData(newGame));
     }
 
-    createGameData(newGame: GameDetails): Game {
+    createGameData(newGame: CreateGameDto): Game {
         return {
             id: newGame.id,
             name: newGame.name,
-            original: '@assets/Bouffon/original.bmp',
-            modified: '@assets/Bouffon/modified.bmp',
+            original: newGame.originalImagePath,
+            modified: newGame.modifiedImagePath,
             soloTopTime: this.defaultBestTimes,
             oneVsOneTopTime: this.defaultBestTimes,
-            difficultyLevel: newGame.nDifference,
-            thumbnail: '',
+            difficultyLevel: newGame.isHard,
+            thumbnail: newGame.originalImagePath,
             differencesCount: newGame.nDifference,
             hintList: [],
         };
-    }
-    getGamesCarrousel(): GameCarrousel[] {
-        this.gameCardsList = this.buildGameCardsList();
-        this.carrouselGames = this.buildGameCarrousel();
-        return this.carrouselGames;
     }
 }

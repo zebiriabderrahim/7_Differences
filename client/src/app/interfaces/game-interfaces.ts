@@ -13,7 +13,7 @@ export interface GameDetails {
 export interface Game {
     id: number;
     name: string;
-    difficultyLevel: number;
+    difficultyLevel: boolean;
     original: string;
     modified: string;
     soloTopTime: PlayerTime[];
@@ -26,7 +26,7 @@ export interface Game {
 export interface GameCard {
     id: number;
     name: string;
-    difficultyLevel: number;
+    difficultyLevel: boolean;
     soloTopTime: PlayerTime[];
     oneVsOneTopTime: PlayerTime[];
     thumbnail: string;

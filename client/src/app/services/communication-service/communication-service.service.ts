@@ -9,8 +9,7 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root',
 })
 export class CommunicationService {
-    private readonly baseUrl: string = environment.serverUrl;
-    private readonly gameUrl: string = this.baseUrl + '/games';
+    private readonly gameUrl: string = environment.serverUrl + '/games';
 
     constructor(private readonly http: HttpClient) {}
 
@@ -28,12 +27,8 @@ export class CommunicationService {
         return this.http.post<void>(`${this.gameUrl}`, gameData).pipe(catchError(this.handleError<void>('postGame')));
     }
 
-    updateConfigConstants(constants: GameConfigConst): Observable<void> {
-        return this.http.put<void>(`${this.baseUrl}/`, constants).pipe(catchError(this.handleError<void>('basicPut')));
-    }
-
     loadConfigConstants(): Observable<GameConfigConst> {
-        return this.http.get<GameConfigConst>(`${this.baseUrl}/constants`).pipe(catchError(this.handleError<GameConfigConst>('loadConfigConstants')));
+        return this.http.get<GameConfigConst>(`${this.gameUrl}/constants`).pipe(catchError(this.handleError<GameConfigConst>('loadConfigConstants')));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
