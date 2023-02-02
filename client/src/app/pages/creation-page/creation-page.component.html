@@ -5,15 +5,13 @@
         <app-image-canvas [position]="canvasPosition.Right"></app-image-canvas>
     </div>
     <div id="canvas-action-buttons">
-        <button
-            mat-raised-button
-            color="basic"
+        <button mat-raised-button color="basic"
             matTooltip="Téléverser une image en format BMP et de taille 640x480 sur les deux zones"
-            (click)="fileUpload.click()"
-        >
+            (click)="fileUpload.click()">
             Téléverser la même image sur les deux zones <mat-icon>attach_file</mat-icon>
         </button>
-        <button mat-raised-button color="basic" matTooltip="Réinitialise les arrières-plans" (click)="imageService.resetBothBackgrounds()">
+        <button mat-raised-button color="basic" matTooltip="Réinitialise les arrières-plans"
+            (click)="imageService.resetBothBackgrounds()">
             Réinitialiser les arrières-plans
         </button>
     </div>
@@ -28,7 +26,8 @@
             </mat-radio-group>
         </div>
     </div>
-    <button mat-raised-button color="basic" matTooltip="Vous devez avoir téléversé deux images" (click)="diffService.sortDifferences()">
+    <button mat-raised-button color="basic" matTooltip="Vous devez avoir téléversé deux images"
+        (click)="validateDifferences()">
         Valider les différences
     </button>
 </div>
