@@ -38,7 +38,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
             this.communication.loadGameById(id).subscribe((game) => {
                 if (game) {
                     this.game = game;
-                    this.gameAreaService.originalContext = this.originalCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+                    /* this.gameAreaService.originalContext = this.originalCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
                     this.gameAreaService.modifiedContext = this.modifiedCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
                     this.gameAreaService.originalContextFrontLayer = this.originalCanvasForeground.nativeElement.getContext(
                         '2d',
@@ -47,10 +47,17 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
                         '2d',
                     ) as CanvasRenderingContext2D;
                     this.gameAreaService.loadImage(this.gameAreaService.originalContext, this.game.original);
-                    this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, this.game.modified);
+                    this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, this.game.modified);*/
                 }
             });
         });
+        // TEST
+        this.gameAreaService.originalContext = this.originalCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.gameAreaService.modifiedContext = this.modifiedCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.gameAreaService.originalContextFrontLayer = this.originalCanvasForeground.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.gameAreaService.modifiedContextFrontLayer = this.modifiedCanvasForeground.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.gameAreaService.loadImage(this.gameAreaService.originalContext, '../../assets/img/bouffon.bmp');
+        this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, '../../assets/img/bouffonne.bmp');
     }
 
     finish() {
