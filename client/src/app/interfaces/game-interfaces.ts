@@ -32,7 +32,7 @@ export interface GameCard {
     thumbnail: string;
 }
 
-export interface CarrouselPaginator {
+export interface CarouselPaginator {
     hasNext: boolean;
     hasPrevious: boolean;
     gameCards: GameCard[];

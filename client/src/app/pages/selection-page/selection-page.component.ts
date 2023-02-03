@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { CarrouselPaginator } from '@app/interfaces/game-interfaces';
+import { CarouselPaginator } from '@app/interfaces/game-interfaces';
 import { CommunicationService } from '@app/services/communication-service/communication-service.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { CommunicationService } from '@app/services/communication-service/commun
 })
 export class SelectionPageComponent implements OnInit {
     titre: string;
-    gameCarrousel: CarrouselPaginator;
+    gameCarrousel: CarouselPaginator;
     index: number = 0;
     constructor(private communicationService: CommunicationService, public router: Router) {
         this.gameCarrousel = { hasNext: false, hasPrevious: false, gameCards: [] };
