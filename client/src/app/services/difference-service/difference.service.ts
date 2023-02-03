@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DEFAULT_RADIUS, IMG_HEIGHT, IMG_WIDTH, MIN_N_DIFFERENCES, MAX_N_DIFFERENCES } from '@app/constants/creation-page';
+import { DEFAULT_RADIUS, IMG_HEIGHT, IMG_WIDTH, MAX_N_DIFFERENCES, MIN_N_DIFFERENCES } from '@app/constants/creation-page';
 import { Coordinate } from '@app/interfaces/coordinate';
 import { Pixel } from '@app/interfaces/pixel';
 
@@ -117,7 +117,7 @@ export class DifferenceService {
     }
 
     isNumberOfDifferencesValid(): boolean {
-        const nDifferences = this.differencesArray.length;
-        return MIN_N_DIFFERENCES >= nDifferences && nDifferences <= MAX_N_DIFFERENCES;
+        const nDifferences = this.differencePackages.length;
+        return nDifferences >= MIN_N_DIFFERENCES && nDifferences <= MAX_N_DIFFERENCES;
     }
 }
