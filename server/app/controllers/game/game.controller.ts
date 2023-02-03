@@ -22,7 +22,7 @@ export class GameController {
     @Get(':id')
     gameById(@Param('id') id: string, @Res() response: Response) {
         try {
-            const game = this.gameService.getGameById(id);
+            const game = this.gameService.getGameById(+id);
             response.status(HttpStatus.OK).json(game);
         } catch (error) {
             response.status(HttpStatus.NOT_FOUND).send(error.message);

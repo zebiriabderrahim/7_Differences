@@ -1,8 +1,8 @@
-import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
-import { DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY, GAME_CARROUSEL_SIZE } from '@common/constants';
-import { CarouselPaginator, Game, GameCard, GameConfigConst, PlayerTime } from '@common/game-interfaces';
+import { Game, GameCard, CarouselPaginator, GameConfigConst, PlayerTime } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
+import { DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY, DEFAULT_BONUS_TIME, GAME_CARROUSEL_SIZE } from '@common/constants';
+import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 
 @Injectable()
 export class DatabaseService {
@@ -26,7 +26,7 @@ export class DatabaseService {
         return this.carrouselGames;
     }
 
-    getGameById(id: string): Game {
+    getGameById(id: number): Game {
         return this.games.find((game) => game.id === +id);
     }
 
@@ -45,7 +45,7 @@ export class DatabaseService {
     }
 
     addGame(newGame: CreateGameDto): void {
-        const game: Game = this.createGameFromGameDto(newGame);
+        const game = this.createGameFromGameDto(newGame);
         this.games.push(game);
         this.addGameCard(game);
     }

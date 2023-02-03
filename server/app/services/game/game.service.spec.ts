@@ -65,14 +65,14 @@ describe('GameService', () => {
 
     it('should call with the right arg getGameById() and return testGame as expected', () => {
         databaseService.getGameById.returns(testGame);
-        expect(service.getGameById('fakeId')).toEqual(testGame);
+        expect(service.getGameById(1)).toEqual(testGame);
         expect(databaseService.getGameById.calledOnce).toBe(true);
-        expect(databaseService.getGameById.calledWith('fakeId')).toBe(true);
+        expect(databaseService.getGameById.calledWith(1)).toBe(true);
     });
 
     it('should throw HttpException when getGameById() in databaseService unable to found Game', () => {
         databaseService.getGameById.returns(undefined);
-        expect(() => service.getGameById('fakeId')).toThrowError();
+        expect(() => service.getGameById(0)).toThrowError();
         expect(databaseService.getGameById.calledOnce).toBe(true);
     });
 

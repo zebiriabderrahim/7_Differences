@@ -1,7 +1,7 @@
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { DatabaseService } from '@app/services/database/database.service';
 import { CarouselPaginator, Game, GameConfigConst } from '@common/game-interfaces';
-import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class GameService {
@@ -19,12 +19,12 @@ export class GameService {
         return this.databaseService.getGamesCarrousel();
     }
 
-    getGameById(id: string): Game {
+    getGameById(id: number): Game {
         const game = this.databaseService.getGameById(id);
         if (game) {
             return game;
         }
-        throw new HttpException('No games found', HttpStatus.NOT_FOUND);
+        throw new NotFoundException('No games found');
     }
 
     addGame(newGame: CreateGameDto): void {
