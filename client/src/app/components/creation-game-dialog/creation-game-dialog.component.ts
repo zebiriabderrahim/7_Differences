@@ -15,10 +15,15 @@ export class CreationGameDialogComponent implements OnInit {
     get displayDifferences(): number {
         return this.differenceService.differencePackages.length;
     }
+
     ngOnInit(): void {
         this.differenceCanvas.nativeElement.width = IMG_WIDTH;
         this.differenceCanvas.nativeElement.height = IMG_HEIGHT;
         const differenceContext = this.differenceCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.imageService.setDifferenceContext(differenceContext);
+    }
+
+    isNumberOfDifferencesValid(): boolean {
+        return this.differenceService.isNumberOfDifferencesValid();
     }
 }
