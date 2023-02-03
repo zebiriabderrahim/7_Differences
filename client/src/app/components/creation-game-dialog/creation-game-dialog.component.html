@@ -14,4 +14,5 @@
         <button mat-raised-button type="submit" [routerLink]="routerConfig" [disabled]="gameNameForm.invalid">Créer un jeu</button>
         <button mat-button (click)="onNoClick()">Quitter</button>
     </form>
+    <p *ngIf="isNumberOfDifferencesValid">Il doit y avoir entre 3 et 9 différences. Veuillez recommencer le processus</p>
 </div>
