@@ -1,6 +1,6 @@
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { DatabaseService } from '@app/services/database/database.service';
-import { CarrouselPaginator as CarouselPaginator, Game, GameConfigConst } from '@common/game-interfaces';
+import { CarouselPaginator, Game, GameConfigConst } from '@common/game-interfaces';
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()

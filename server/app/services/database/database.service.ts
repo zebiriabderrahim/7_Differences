@@ -1,14 +1,14 @@
-import { Game, GameCard, CarrouselPaginator, GameConfigConst, PlayerTime } from '@common/game-interfaces';
+import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
+import { DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY, GAME_CARROUSEL_SIZE } from '@common/constants';
+import { CarouselPaginator, Game, GameCard, GameConfigConst, PlayerTime } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
-import { DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY, DEFAULT_BONUS_TIME, GAME_CARROUSEL_SIZE } from '@common/constants';
-import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 
 @Injectable()
 export class DatabaseService {
     private games: Game[] = [];
     private gameCardsList: GameCard[] = [];
-    private carrouselGames: CarrouselPaginator[] = [];
+    private carrouselGames: CarouselPaginator[] = [];
     private defaultBestTimes: PlayerTime[] = [
         { name: 'John Doe', time: 100 },
         { name: 'Jane Doe', time: 200 },
@@ -20,7 +20,7 @@ export class DatabaseService {
         bonusTime: DEFAULT_BONUS_TIME,
     };
 
-    getGamesCarrousel(): CarrouselPaginator[] {
+    getGamesCarrousel(): CarouselPaginator[] {
         this.carrouselGames = [];
         this.buildGameCarrousel();
         return this.carrouselGames;
@@ -65,7 +65,7 @@ export class DatabaseService {
     buildGameCarrousel(): void {
         for (let i = 0; i < this.gameCardsList.length; i += GAME_CARROUSEL_SIZE) {
             const j = i;
-            const gameCarrousel: CarrouselPaginator = {
+            const gameCarrousel: CarouselPaginator = {
                 hasNext: i + GAME_CARROUSEL_SIZE < this.gameCardsList.length,
                 hasPrevious: j > 0,
                 gameCards: this.gameCardsList.slice(j, i + GAME_CARROUSEL_SIZE),
