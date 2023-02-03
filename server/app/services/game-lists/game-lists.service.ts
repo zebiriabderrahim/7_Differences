@@ -1,13 +1,13 @@
 import { GAME_CARROUSEL_SIZE } from '@common/constants';
-import { CarrouselPaginator, GameCard, Game } from '@common/game-interfaces';
+import { CarouselPaginator, Game, GameCard } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class GameListsService {
-    buildGameCarrousel(gameCardsList: GameCard[], carrouselGames: CarrouselPaginator[]): void {
+    buildGameCarrousel(gameCardsList: GameCard[], carrouselGames: CarouselPaginator[]): void {
         for (let i = 0; i < gameCardsList.length; i += GAME_CARROUSEL_SIZE) {
             const j = i;
-            const gameCarrousel: CarrouselPaginator = {
+            const gameCarrousel: CarouselPaginator = {
                 hasNext: i + GAME_CARROUSEL_SIZE < gameCardsList.length,
                 hasPrevious: j > 0,
                 gameCards: gameCardsList.slice(j, i + GAME_CARROUSEL_SIZE),
