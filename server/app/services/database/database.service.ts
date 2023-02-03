@@ -26,7 +26,7 @@ export class DatabaseService {
         return this.carrouselGames;
     }
 
-    getGameById(id: string): Game | void {
+    getGameById(id: string): Game {
         return this.games.find((game) => game.id === +id);
     }
 
@@ -46,7 +46,6 @@ export class DatabaseService {
 
     addGame(newGame: CreateGameDto): void {
         const game: Game = this.createGameFromGameDto(newGame);
-        this.saveFiles(newGame.name, Buffer.from(newGame.originalImagePath.replace(/^data:image\/\w+;base64,/, ''), 'base64'));
         this.games.push(game);
         this.addGameCard(game);
     }
