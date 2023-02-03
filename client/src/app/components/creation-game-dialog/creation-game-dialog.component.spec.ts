@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogRef } from '@angular/material/dialog';
 import { CreationGameDialogComponent } from './creation-game-dialog.component';
 
 describe('CreationGameDialogComponent', () => {
@@ -8,6 +9,7 @@ describe('CreationGameDialogComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [CreationGameDialogComponent],
+            providers: [{ provide: MatDialogRef, useValue: {} }],
         }).compileComponents();
 
         fixture = TestBed.createComponent(CreationGameDialogComponent);
