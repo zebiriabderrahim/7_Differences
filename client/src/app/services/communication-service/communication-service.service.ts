@@ -31,7 +31,7 @@ export class CommunicationService {
         return this.http.get<GameConfigConst>(`${this.gameUrl}/constants`).pipe(catchError(this.handleError<GameConfigConst>('loadConfigConstants')));
     }
 
-    private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
+    private handleError<T>(_request: string, result?: T): (error: Error) => Observable<T> {
         return () => of(result as T);
     }
 }
