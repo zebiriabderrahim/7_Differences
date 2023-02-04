@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
 import { CreationGameDialogComponent } from './creation-game-dialog.component';
@@ -8,6 +9,7 @@ describe('CreationGameDialogComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
             declarations: [CreationGameDialogComponent],
             providers: [{ provide: MatDialogRef, useValue: {} }],
         }).compileComponents();
