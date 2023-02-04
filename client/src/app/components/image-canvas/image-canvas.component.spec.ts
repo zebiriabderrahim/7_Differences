@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,7 +11,7 @@ describe('ImageCanvasComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [ImageCanvasComponent],
-            imports: [MatDialogModule, MatIconModule],
+            imports: [MatDialogModule, MatIconModule, HttpClientTestingModule],
             providers: [
                 {
                     provide: MatDialog,

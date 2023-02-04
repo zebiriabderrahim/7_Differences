@@ -1,6 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { CarrouselPaginator, Game, GameConfig } from '@app/interfaces/game-interfaces';
+import { CarrouselPaginator, Game, GameConfig, GameDetails } from '@app/interfaces/game-interfaces';
 
 import { CommunicationService } from './communication-service.service';
 
@@ -10,6 +10,7 @@ describe('CommunicationServiceService', () => {
     let mockGameCarrousel: CarrouselPaginator;
     let game: Game;
     let gameConfig: GameConfig;
+    let gameDetails: GameDetails;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -80,23 +81,20 @@ describe('CommunicationServiceService', () => {
     });
 
     it('should send a POST request to the server when postGame is called', () => {
-        game = {
+        gameDetails = {
             id: 0,
             name: '',
-            difficultyLevel: true,
-            original: '',
-            modified: '',
-            soloTopTime: [],
-            oneVsOneTopTime: [],
-            differencesCount: 0,
-            thumbnail: '',
-            hintList: [''],
+            originalImage: '',
+            modifiedImage: '',
+            nDifference: 0,
+            differences: [][0],
+            isHard: true,
         };
-        serviceComponent.postGame(game).subscribe();
+        serviceComponent.postGame(gameDetails).subscribe();
 
         const request = httpMock.expectOne(`${serviceComponent['gameUrl']}`);
         expect(request.request.method).toEqual('POST');
-        expect(request.request.body).toEqual(game);
+        expect(request.request.body).toEqual(gameDetails);
         request.flush({});
     });
 

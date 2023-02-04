@@ -6,3 +6,5 @@ export const BMP_HEADER_OFFSET = 28;
 export const DEFAULT_RADIUS = 3;
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
 export const RADIUS_SIZES = [0, 3, 9, 15];
+export const MIN_N_DIFFERENCES = 3;
+export const MAX_N_DIFFERENCES = 9;

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CarrouselPaginator, Game, GameConfig } from '@app/interfaces/game-interfaces';
+import { CarrouselPaginator, Game, GameConfig, GameDetails } from '@app/interfaces/game-interfaces';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -23,7 +23,7 @@ export class CommunicationService {
         return this.http.get<Game>(`${this.gameUrl}/${id}`).pipe(catchError(this.handleError<Game>('loadGameById')));
     }
 
-    postGame(gameData: Game): Observable<void> {
+    postGame(gameData: GameDetails): Observable<void> {
         return this.http.post<void>(`${this.gameUrl}`, gameData).pipe(catchError(this.handleError<void>('postGame')));
     }
 
