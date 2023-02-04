@@ -1,5 +1,7 @@
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { routes } from '@app/modules/app-routing.module';
@@ -12,11 +14,10 @@ describe('SelectionPageComponent', () => {
     let component: SelectionPageComponent;
     let fixture: ComponentFixture<SelectionPageComponent>;
     let router: Router;
-    // let communication: CommunicationService;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule.withRoutes(routes)],
+            imports: [RouterTestingModule.withRoutes(routes), MatGridListModule, FormsModule],
             declarations: [SelectionPageComponent],
             providers: [
                 HttpClient,
@@ -34,9 +35,6 @@ describe('SelectionPageComponent', () => {
         component = fixture.componentInstance;
         fixture.detectChanges();
         router = TestBed.inject(Router);
-        /* communication = jasmine.createSpyObj('CommunicationService', {
-            loadGameCarrousel: of({ hasNext: false, hasPrevious: false, gameCards: [] }),
-        }); */
     });
 
     it('should create', () => {
