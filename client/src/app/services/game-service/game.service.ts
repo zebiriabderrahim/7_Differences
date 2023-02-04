@@ -21,24 +21,6 @@ export class GameService {
     }
 
     postGame(gameDetails: GameDetails): void {
-        const finalGameDetails: GameDetails = {
-            id: this.generateId(),
-            name: gameDetails.name,
-            originalImage: gameDetails.originalImage,
-            modifiedImage: gameDetails.modifiedImage,
-            nDifference: gameDetails.nDifference,
-            differences: gameDetails.differences,
-            isHard: gameDetails.isHard,
-        };
-        this.communicationService.postGame(finalGameDetails);
+        this.communicationService.postGame(gameDetails);
     }
-
-    // createGame(): Game {
-    //     return {
-    //         id: this.generateId(),
-    //         name: 'New Game',
-    //         // players: [],
-    //         // rounds: [],
-    //     };
-    // }
 }
