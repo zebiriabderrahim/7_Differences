@@ -1,0 +1,22 @@
+<div mat-dialog-content>
+    <h1 mat-dialog-title>Voici l'image des différences :</h1>
+    <canvas #differenceCanvas></canvas>
+    <p *ngIf="displayDifferences">
+        Il y a : <strong> {{ displayDifferences }} </strong> différences
+    </p>
+    <div *ngIf="isNumberOfDifferencesValid(); else differencesInvalid">
+        <p>Veuillez entrer un nom de jeu :</p>
+        <form [formGroup]="gameNameForm" (ngSubmit)="submitForm()">
+            <mat-form-field>
+                <input matInput type="text" [(ngModel)]="gameName" placeholder="Entrer le nom de votre jeu" formControlName="name" />
+                <mat-error *ngIf="gameNameForm.controls.name.errors?.required" [ngClass]="'error'"> Le nom ne peut pas être vide</mat-error>
+                <mat-error *ngIf="gameNameForm.controls.name.errors?.pattern" [ngClass]="'error'">Le nom ne peut pas contenir d'espaces</mat-error>
+            </mat-form-field>
+            <button mat-raised-button type="submit" [routerLink]="routerConfig" [disabled]="gameNameForm.invalid">Créer un jeu</button>
+            <button mat-button (click)="onNoClick()">Quitter</button>
+        </form>
+    </div>
+    <ng-template #differencesInvalid>
+        <p>Il doit y avoir entre 3 et 9 différences. Veuillez recommencer le processus</p>
+    </ng-template>
+</div>

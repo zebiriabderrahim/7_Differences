@@ -8,7 +8,7 @@ export class ValidationService {
     constructor(public imageService: ImageService) {}
 
     areImagesSet(): boolean {
-        return this.imageService.originalImage !== '' && this.imageService.modifiedImage !== '';
+        return this.imageService.leftBackground !== '' && this.imageService.rightBackground !== '';
     }
 
     isImageTypeValid(imageDescription: string): boolean {
