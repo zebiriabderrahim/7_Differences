@@ -77,24 +77,40 @@ describe('GameListsManagerService', () => {
         expect(testCarousel).toEqual(testCarousel2);
     });
     it('createGameFromGameDto() should create the game from the game dto', () => {
-
         expect(service.createGameFromGameDto(testGameDto)).toEqual(testGame);
     });
-    it('buildGameCarrousel() should build the game carrousel', () => {
-        const testCarousel2: CarouselPaginator[] = [
+    it('buildGameCarrousel() should build the game carrousel when it is empty', () => {
+        const testCarousel2: CarouselPaginator[] = [];
+        const testCarouselExpected: CarouselPaginator[] = [
             {
                 hasNext: true,
                 hasPrevious: false,
-                gameCards: [{}, {}, {}, {}] as GameCard[],
+                gameCards: [testGameCard, testGameCard, testGameCard, testGameCard],
             },
             {
                 hasNext: false,
                 hasPrevious: true,
-                gameCards: [{}] as GameCard[],
+                gameCards: [testGameCard, testGameCard],
             },
         ];
-        service.buildGameCarousel([], [] as CarouselPaginator[]);
+        const testGameCards: GameCard[] = [testGameCard, testGameCard, testGameCard, testGameCard, testGameCard, testGameCard];
         const addGameCarouselSpy = jest.spyOn(service, 'addGameCarousel');
-        expect(testCarousel).toEqual(testCarousel2);
+        service.buildGameCarousel(testGameCards, testCarousel2);
+        expect(addGameCarouselSpy).toBeCalled();
+        expect(testCarouselExpected).toEqual(testCarousel2);
+    });
+    it('buildGameCarrousel() should not build the game carrousel when it is filled with at least one carousel paginator', () => {
+        const testCarousel2: CarouselPaginator[] = [
+            {
+                hasNext: false,
+                hasPrevious: false,
+                gameCards: [testGameCard],
+            },
+        ];
+        const testCarouselBefore: CarouselPaginator[] = testCarousel2;
+        const addGameCarouselSpy = jest.spyOn(service, 'addGameCarousel');
+        service.buildGameCarousel([], testCarousel2);
+        expect(addGameCarouselSpy).not.toBeCalled();
+        expect(testCarouselBefore).toEqual(testCarousel2);
     });
 });
