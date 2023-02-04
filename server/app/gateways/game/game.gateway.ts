@@ -29,11 +29,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         this.server.emit(GameEvents.ValidateCoords, `${socket.id} : ${message}`);
     }
 
-    @SubscribeMessage(GameEvents.RoomMessage)
+    @SubscribeMessage(GameEvents.CheckStatus)
     roomMessage(socket: Socket, message: string) {
         // Seulement un membre de la salle peut envoyer un message aux autres
         if (socket.rooms.has(this.room)) {
-            this.server.to(this.room).emit(GameEvents.RoomMessage, `${socket.id} : ${message}`);
+            this.server.to(this.room).emit(GameEvents.CheckStatus, `${socket.id} : ${message}`);
         }
     }
 
@@ -54,6 +54,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     private emitTime() {
-        this.server.emit(GameEvents.Clock, new Date().toLocaleTimeString());
+        this.server.emit(GameEvents.CheckStatus, new Date().toLocaleTimeString());
     }
 }

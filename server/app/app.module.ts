@@ -7,6 +7,7 @@ import { GameController } from './controllers/game/game.controller';
 import { DatabaseService } from './services/database/database.service';
 import { GameGateway } from './gateways/game/game.gateway';
 import { ClassicSoloModeService } from './services/classic-solo-mode/classic-solo-mode.service';
+import { GameListsManagerService } from './services/game-lists-manager/game-lists-manager.service';
 
 @Module({
     imports: [
@@ -21,6 +22,6 @@ import { ClassicSoloModeService } from './services/classic-solo-mode/classic-sol
         // MongooseModule.forFeature([{ name: Course.name, schema: courseSchema }]),
     ],
     controllers: [GameController],
-    providers: [Logger, GameService, DatabaseService, ConfigService, GameGateway, ClassicSoloModeService],
+    providers: [Logger, GameService, DatabaseService, ConfigService, GameGateway, ClassicSoloModeService, GameListsManagerService],
 })
 export class AppModule {}
