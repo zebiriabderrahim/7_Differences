@@ -23,7 +23,7 @@ export class DifferenceService {
         return coordinate.x >= 0 && coordinate.x < IMG_WIDTH && coordinate.y >= 0 && coordinate.y < IMG_HEIGHT;
     }
 
-    isCoordInDifferencesArr(point: Coordinate): boolean {
+    isCoordInDifferencesArray(point: Coordinate): boolean {
         for (const coord of this.differencesArray) {
             if (coord.x === point.x && coord.y === point.y) {
                 return true;
@@ -61,7 +61,7 @@ export class DifferenceService {
             while (queue.length !== 0) {
                 activeDifference = queue.pop() as Coordinate;
                 for (const coord of this.findAdjacentCoords(activeDifference as Coordinate)) {
-                    if (!visitedCoords[coord.x][coord.y] && this.isCoordInDifferencesArr(coord)) {
+                    if (!visitedCoords[coord.x][coord.y] && this.isCoordInDifferencesArray(coord)) {
                         visitedCoords[coord.x][coord.y] = true;
                         currentDifference.push(coord);
                         queue.push(coord);

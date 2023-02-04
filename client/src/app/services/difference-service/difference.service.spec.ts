@@ -39,21 +39,37 @@ describe('DifferenceService', () => {
         expect(service.isCoordinateValid(coordinate)).toBe(false);
     });
 
-    it('isCoordInDifferencesArr should return true if the point is in differencesArray', () => {
+    it('isCoordInDifferencesArray should return true if the point is in differencesArray', () => {
         service.differencesArray = [
             { x: 100, y: 200 },
             { x: 300, y: 400 },
         ];
         const point = { x: 100, y: 200 };
-        expect(service.isCoordInDifferencesArr(point)).toBe(true);
+        expect(service.isCoordInDifferencesArray(point)).toBe(true);
     });
 
-    it('isCoordInDifferencesArr should return false if the point is not in differencesArray', () => {
+    it('isCoordInDifferencesArray should return false if the point is not in differencesArray', () => {
         service.differencesArray = [
             { x: 100, y: 200 },
             { x: 300, y: 400 },
         ];
         const point = { x: 500, y: 600 };
-        expect(service.isCoordInDifferencesArr(point)).toBe(false);
+        expect(service.isCoordInDifferencesArray(point)).toBe(false);
+    });
+
+    it('findAdjacentCoords should return the correct list of adjacent coordinates', () => {
+        const coord = { x: 1, y: 1 };
+        const expectedAdjacentCoords = [
+            { x: 0, y: 0 },
+            { x: 0, y: 1 },
+            { x: 0, y: 2 },
+            { x: 1, y: 0 },
+            { x: 1, y: 1 },
+            { x: 1, y: 2 },
+            { x: 2, y: 0 },
+            { x: 2, y: 1 },
+            { x: 2, y: 2 },
+        ];
+        expect(service.findAdjacentCoords(coord)).toEqual(expectedAdjacentCoords);
     });
 });
