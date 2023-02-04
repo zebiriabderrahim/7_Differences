@@ -38,4 +38,22 @@ describe('DifferenceService', () => {
         const coordinate = { x: 300, y: 480 };
         expect(service.isCoordinateValid(coordinate)).toBe(false);
     });
+
+    it('isCoordInDifferencesArr should return true if the point is in differencesArray', () => {
+        service.differencesArray = [
+            { x: 100, y: 200 },
+            { x: 300, y: 400 },
+        ];
+        const point = { x: 100, y: 200 };
+        expect(service.isCoordInDifferencesArr(point)).toBe(true);
+    });
+
+    it('isCoordInDifferencesArr should return false if the point is not in differencesArray', () => {
+        service.differencesArray = [
+            { x: 100, y: 200 },
+            { x: 300, y: 400 },
+        ];
+        const point = { x: 500, y: 600 };
+        expect(service.isCoordInDifferencesArr(point)).toBe(false);
+    });
 });
