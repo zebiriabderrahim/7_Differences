@@ -3,6 +3,7 @@ import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { BLACK_PIXEL, N_PIXEL_ATTRIBUTE, WHITE_PIXEL } from '@app/constants/pixels';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { Coordinate } from '@app/interfaces/coordinate';
+import { GameDetails } from '@app/interfaces/game-interfaces';
 import { Pixel } from '@app/interfaces/pixel';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { GameService } from '@app/services/game-service/game.service';
@@ -145,9 +146,16 @@ export class ImageService {
     }
 
     createGame(name: string): void {
-        const GameDetails = {
-            name: name,
-
-        this.gameService.createGame(name));
+        const differences: Coordinate[][] = this.differenceService.generateDifferencesPackages();
+        const gameDetails: GameDetails = {
+            id: this.gameService.generateId(),
+            name,
+            originalImage: this.leftBackground,
+            modifiedImage: this.rightBackground,
+            nDifference: differences.length,
+            differences,
+            isHard: false,
+        };
+        this.gameService.postGame(gameDetails);
     }
 }
