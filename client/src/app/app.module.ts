@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { GameInfosComponent } from '@app/components/game-infos/game-infos.component';
 import { GameSheetComponent } from '@app/components/game-sheet/game-sheet.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
@@ -46,6 +47,7 @@ import { ConfigPageComponent } from './pages/config-page/config-page.component';
         ImageCanvasComponent,
         ImageValidationDialogComponent,
         ConfigPageComponent,
+        CreationGameDialogComponent,
     ],
     imports: [
         AppMaterialModule,
