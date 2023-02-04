@@ -143,4 +143,11 @@ export class ImageService {
         const differenceImageData = this.transformPixelArrayToImageData(differencePixelArray);
         this.differenceContext.putImageData(new ImageData(differenceImageData, IMG_WIDTH, IMG_HEIGHT), 0, 0);
     }
+
+    createGame(name: string): void {
+        const GameDetails = {
+            name: name,
+
+        this.gameService.createGame(name));
+    }
 }
