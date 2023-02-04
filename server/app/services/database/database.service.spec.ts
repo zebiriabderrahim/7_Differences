@@ -3,9 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DatabaseService } from './database.service';
 import * as fs from 'fs';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
+import { GameListsManagerService } from '@app/services/game-lists-manager/game-lists-manager.service';
+import { createStubInstance, SinonStubbedInstance } from 'sinon';
 
 describe('DatabaseService', () => {
     let dataBaseService: DatabaseService;
+    let listsManagerService: SinonStubbedInstance<GameListsManagerService>;
     const mockData: Buffer = Buffer.from('');
     const defaultBestTimes: PlayerTime[] = [
         { name: 'John Doe', time: 100 },
@@ -58,10 +61,17 @@ describe('DatabaseService', () => {
         oneVsOneTopTime: defaultBestTimes,
         thumbnail: 'test',
     };
+    const testGameCarousel: CarouselPaginator = 
+        {
+            hasNext: true,
+            hasPrevious: false,
+            gameCards: [{}, {}, {}, {}] as GameCard[],
+        };
 
     beforeEach(async () => {
+        listsManagerService = createStubInstance(GameListsManagerService);
         const module: TestingModule = await Test.createTestingModule({
-            providers: [DatabaseService],
+            providers: [DatabaseService, { provide: GameListsManagerService, useValue: listsManagerService }],
         }).compile();
 
         dataBaseService = module.get<DatabaseService>(DatabaseService);
@@ -71,16 +81,9 @@ describe('DatabaseService', () => {
         expect(dataBaseService).toBeDefined();
     });
 
-    it('getGamesCarrousel() should call buildGameCarrousel()', () => {
-        const buildGameCarrouselSpy = jest.spyOn(dataBaseService, 'buildGameCarrousel');
-        dataBaseService.getGamesCarrousel();
-        expect(buildGameCarrouselSpy).toBeCalled();
-    });
-    it('getGamesCarrousel() should return the carrousel as expected', () => {
-        dataBaseService['gameCardsList'] = [{} as GameCard];
-        dataBaseService.buildGameCarrousel();
-        const games = dataBaseService.getGamesCarrousel();
-        expect(games).toEqual(testCarousel);
+    it('getGamesCarrousel() should return the games carrousel as expected', () => {
+        dataBaseService['carouselGames'] = testCarousel;
+        expect(dataBaseService.getGamesCarrousel()).toEqual(testCarousel);
     });
 
     it('getGameById() should return the game as expected', () => {
@@ -111,39 +114,21 @@ describe('DatabaseService', () => {
         expect(writeSpy).not.toBeCalled();
     });
 
-    it('addGame() should add the game to the games list', () => {
-        const createGameFromGameDtoSpy = jest.spyOn(dataBaseService, 'createGameFromGameDto').mockReturnValue(testGames[0]);
+    it('addGame() should add the game to the games list and call createGameFromGameDto and addGameCard ', () => {
+        listsManagerService.createGameFromGameDto.returns(testGames[0]);
         const addGameCardSpy = jest.spyOn(dataBaseService, 'addGameCard');
         dataBaseService.addGame(testGameDto);
-        expect(createGameFromGameDtoSpy).toBeCalledTimes(1);
+        expect(listsManagerService.createGameFromGameDto.calledOnce).toBe(true);
         expect(addGameCardSpy).toBeCalledTimes(1);
         expect(dataBaseService['games']).toEqual(testGames);
     });
 
     it('addGameCard() should add the game card to the game card list', () => {
+        listsManagerService.buildGameCardFromGame.returns(testGameCard);
         dataBaseService.addGameCard(testGames[0]);
+        expect(listsManagerService.buildGameCardFromGame.calledOnce).toBe(true);
+        expect(listsManagerService.buildGameCarousel.calledOnce).toBe(true);
+        expect(listsManagerService.addGameCarousel.calledOnce).toBe(true);
         expect(dataBaseService['gameCardsList'][0]).toEqual(testGameCard);
-    });
-
-    it('buildGameCarrousel() should build the game carrousel', () => {
-        const testCarousel2: CarouselPaginator[] = [
-            {
-                hasNext: true,
-                hasPrevious: false,
-                gameCards: [{}, {}, {}, {}] as GameCard[],
-            },
-            {
-                hasNext: false,
-                hasPrevious: true,
-                gameCards: [{}] as GameCard[],
-            },
-        ];
-        dataBaseService['gameCardsList'] = [{}, {}, {}, {}, {}] as GameCard[];
-        const carousel = dataBaseService.getGamesCarrousel();
-        expect(carousel).toEqual(testCarousel2);
-    });
-
-    it('createGameFromGameDto() should create the game from the game dto', () => {
-        expect(dataBaseService.createGameFromGameDto(testGameDto)).toEqual(testGames[0]);
     });
 });
