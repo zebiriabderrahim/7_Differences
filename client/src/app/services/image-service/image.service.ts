@@ -154,8 +154,10 @@ export class ImageService {
             modifiedImage: this.rightBackground,
             nDifference: differences.length,
             differences,
-            isHard: false,
+            isHard: this.differenceService.isGameHard(),
         };
+        this.resetBothBackgrounds();
+        console.log(gameDetails);
         this.gameService.postGame(gameDetails);
     }
 }
