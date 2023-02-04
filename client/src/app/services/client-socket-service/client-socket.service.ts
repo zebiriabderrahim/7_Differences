@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
 @Injectable({
     providedIn: 'root',
 })
-export class SocketClientService {
+export class ClientSocketService {
     socket: Socket;
 
     isSocketAlive() {

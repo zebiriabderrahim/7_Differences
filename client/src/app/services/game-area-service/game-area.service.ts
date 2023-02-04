@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */ // TO BE ERASED AFTER CREATION OF CONSTANTS FILES
 import { HostListener, Injectable } from '@angular/core';
-import { Game } from '@app/interfaces/game-interfaces';
 import { Vec2 } from '@app/interfaces/vec2';
 
 @Injectable({
     providedIn: 'root',
 })
 export class GameAreaService {
-    game: Game;
     originalPixelData: ImageData;
     modifiedPixelData: ImageData;
     originalFrontPixelData: ImageData;
@@ -46,9 +44,13 @@ export class GameAreaService {
         this.modifiedFrontPixelData = this.modifiedContextFrontLayer.getImageData(0, 0, this.maxWidth, this.maxHeight);
     }
 
+    saveCoord(event: MouseEvent): void {
+        this.mousePosition = { x: event.offsetX, y: event.offsetY };
+    }
+
     detectLeftClick(event: MouseEvent): boolean {
         if (event.button === this.leftButton && !this.clickDisabled) {
-            this.mousePosition = { x: event.offsetX, y: event.offsetY };
+            this.saveCoord(event);
             return true;
         } else {
             return false;
@@ -83,6 +85,7 @@ export class GameAreaService {
         }
         return imageDataIndex;
     }
+
     replaceDifference(differenceCoord: Vec2[]): void {
         const imageDataIndex = this.convert2DCoordToPixelIndex(differenceCoord);
         for (const index of imageDataIndex) {
