@@ -44,8 +44,7 @@ export class DifferenceService {
         return adjacentCoords;
     }
 
-    // sortDifferences(): Coordinate[][] {
-    sortDifferences(): void {
+    generateDifferencesPackages(): Coordinate[][] {
         const differences: Coordinate[][] = [];
         const visitedCoords: boolean[][] = new Array(IMG_WIDTH).fill(false).map(() => new Array(IMG_HEIGHT).fill(false)) as boolean[][];
         let queue: Coordinate[] = [];
@@ -74,8 +73,7 @@ export class DifferenceService {
             }
         }
         this.differencePackages = differences;
-        // this.differencesCounter = differences.length;
-        // return differences;
+        return differences;
     }
 
     generateDifferences(pixelArray1: Pixel[], pixelArray2: Pixel[]): Coordinate[] {
@@ -88,7 +86,7 @@ export class DifferenceService {
             }
         }
         this.differencesArray = this.enlargeDifferences(differentCoordinates);
-        this.sortDifferences();
+        this.generateDifferencesPackages();
         return this.differencesArray;
     }
 
