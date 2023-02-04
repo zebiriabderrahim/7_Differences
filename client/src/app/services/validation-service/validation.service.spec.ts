@@ -2,18 +2,43 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { TestBed } from '@angular/core/testing';
 import { IMG_HEIGHT, IMG_TYPE, IMG_WIDTH } from '@app/constants/creation-page';
+import { ImageService } from '@app/services/image-service/image.service';
+import { of } from 'rxjs';
 import { ValidationService } from './validation.service';
 
 describe('ValidationService', () => {
     let service: ValidationService;
+    let imageService: ImageService;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        TestBed.configureTestingModule({
+            providers: [
+                {
+                    provide: ImageService,
+                    useValue: jasmine.createSpyObj('ImageService', {
+                        imageService: of({ leftBackground: 'left', rightBackground: 'right' }),
+                    }),
+                },
+            ],
+        }).compileComponents();
         service = TestBed.inject(ValidationService);
+        imageService = TestBed.inject(ImageService);
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('areImagesSet should return true if both leftBackground and rightBackground are set', () => {
+        expect(service.areImagesSet()).toBe(true);
+    });
+
+    it('areImagesSet should return false if either leftBackground or rightBackground is not set', () => {
+        imageService.leftBackground = '';
+        expect(service.areImagesSet()).toBe(false);
+        imageService.leftBackground = 'left';
+        imageService.rightBackground = '';
+        expect(service.areImagesSet()).toBe(false);
     });
 
     it('isImageTypeValid should return false when given the wrong image type', () => {

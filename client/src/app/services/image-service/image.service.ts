@@ -5,6 +5,7 @@ import { CanvasPosition } from '@app/enum/canvas-position';
 import { Coordinate } from '@app/interfaces/coordinate';
 import { Pixel } from '@app/interfaces/pixel';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
+import { GameService } from '@app/services/game-service/game.service';
 
 @Injectable({
     providedIn: 'root',
@@ -16,7 +17,7 @@ export class ImageService {
     leftBackground: string = '';
     rightBackground: string = '';
 
-    constructor(public differenceService: DifferenceService) {}
+    constructor(public differenceService: DifferenceService, public gameService: GameService) {}
 
     resetBackground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {

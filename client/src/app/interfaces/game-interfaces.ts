@@ -1,10 +1,12 @@
+import { Coordinate } from '@app/interfaces/coordinate';
+
 export interface GameDetails {
     id: number;
     name: string;
     originalImagePath: string;
     modifiedImagePath: string;
     nDifference: number;
-    differenceMatrix: number[][];
+    differenceMatrix: Coordinate[][];
     isHard: boolean;
 }
 
