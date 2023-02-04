@@ -127,4 +127,14 @@ describe('ValidationService', () => {
         };
         expect(service.isImageSizeValid(event)).toBeFalsy();
     });
+
+    it('isImageFormatValid should return true when image format is valid', () => {
+        const imageDescription = 'data:image/bmp;base64,Qk02EA4AAAAAADYAAAAoAAAAgAIAAOABAAABABgAAAAAAAAQDgDEDgAAxA4AAAAAAAAAAAAA';
+        expect(service.isImageFormatValid(imageDescription)).toBe(true); // false
+    });
+
+    it('isImageFormatValid should return false when image format is not valid', () => {
+        const imageDescription = 'data:image/bmp;base64,def';
+        expect(service.isImageFormatValid(imageDescription)).toBe(false);
+    });
 });
