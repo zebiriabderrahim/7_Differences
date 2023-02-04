@@ -5,6 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GameService } from './services/game/game.service';
 import { GameController } from './controllers/game/game.controller';
 import { DatabaseService } from './services/database/database.service';
+import { GameGateway } from './gateways/game/game.gateway';
+import { ClassicSoloModeService } from './services/classic-solo-mode/classic-solo-mode.service';
 
 @Module({
     imports: [
@@ -19,6 +21,6 @@ import { DatabaseService } from './services/database/database.service';
         // MongooseModule.forFeature([{ name: Course.name, schema: courseSchema }]),
     ],
     controllers: [GameController],
-    providers: [Logger, GameService, DatabaseService, ConfigService],
+    providers: [Logger, GameService, DatabaseService, ConfigService, GameGateway, ClassicSoloModeService],
 })
 export class AppModule {}

@@ -19,7 +19,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(ChatEvents.Validate)
-    validate(socket: Socket, word: string) {
+    validate(socket: Socket, word: string) {s
         socket.emit(ChatEvents.WordValidated, word.length > WORD_MIN_LENGTH);
     }
 
