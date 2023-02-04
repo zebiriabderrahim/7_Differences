@@ -1,37 +1,80 @@
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication-service.service';
+import { of } from 'rxjs';
 
 import { SelectionPageComponent } from './selection-page.component';
 
 describe('SelectionPageComponent', () => {
     let component: SelectionPageComponent;
     let fixture: ComponentFixture<SelectionPageComponent>;
+    let router: Router;
+    // let communication: CommunicationService;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule],
+            imports: [RouterTestingModule.withRoutes(routes)],
             declarations: [SelectionPageComponent],
-            providers: [CommunicationService, HttpClient, HttpHandler],
+            providers: [
+                HttpClient,
+                HttpHandler,
+                {
+                    provide: CommunicationService,
+                    useValue: jasmine.createSpyObj('CommunicationService', {
+                        loadGameCarrousel: of({ hasNext: false, hasPrevious: false, gameCards: [] }),
+                    }),
+                },
+            ],
         }).compileComponents();
 
         fixture = TestBed.createComponent(SelectionPageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        component.titre = 'Selectionne ton jeu';
+        router = TestBed.inject(Router);
+        /* communication = jasmine.createSpyObj('CommunicationService', {
+            loadGameCarrousel: of({ hasNext: false, hasPrevious: false, gameCards: [] }),
+        }); */
     });
 
     it('should create', () => {
         expect(component).toBeTruthy();
     });
 
+    it('Page titre should be Selectionne ton jeu if the page is /selection', () => {
+        router.navigate(['selection']);
+        fixture.detectChanges();
+        fixture.whenStable().then(() => {
+            component.navigate();
+            expect(component.titre).toEqual('Selectionne ton jeu');
+        });
+    });
+
+    it('Page titre should be Configure ton jeu if the page is /selection', () => {
+        router.navigate(['config']);
+        fixture.detectChanges();
+        fixture.whenStable().then(() => {
+            component.navigate();
+            expect(component.titre).toEqual('Configure ton jeu');
+        });
+    });
+
     it('should load a Carrousel when this one exist', () => {
-        if (component.gameCarrousel) {
-            component.ngOnInit();
-            expect(component.gameCarrousel).toBeTruthy();
-        } else {
-            expect(component.gameCarrousel).toBeUndefined();
-        }
+        component.ngOnInit();
+        expect(component.gameCarrousel).toEqual({ hasNext: false, hasPrevious: false, gameCards: [] });
+    });
+
+    it('should load the next Carrousel when clicking on the next_button', () => {
+        component.gameCarrousel.hasNext = true;
+        component.hasNext();
+        expect(component.gameCarrousel).toEqual({ hasNext: true, hasPrevious: false, gameCards: [] });
+    });
+
+    it('should load the previous Carrousel when clicking on the previous_button', () => {
+        component.gameCarrousel.hasPrevious = true;
+        component.hasPrevious();
+        expect(component.gameCarrousel).toEqual({ hasNext: false, hasPrevious: true, gameCards: [] });
     });
 });
