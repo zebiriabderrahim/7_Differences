@@ -157,7 +157,6 @@ export class ImageService {
             isHard: this.differenceService.isGameHard(),
         };
         this.resetBothBackgrounds();
-        console.log(gameDetails);
         this.gameService.postGame(gameDetails);
     }
 }
