@@ -130,7 +130,7 @@ describe('ValidationService', () => {
 
     it('isImageFormatValid should return true when image format is valid', () => {
         const imageDescription = 'data:image/bmp;base64,Qk02EA4AAAAAADYAAAAoAAAAgAIAAOABAAABABgAAAAAAAAQDgDEDgAAxA4AAAAAAAAAAAAA';
-        expect(service.isImageFormatValid(imageDescription)).toBe(true); // false
+        expect(service.isImageFormatValid(imageDescription)).toBe(true);
     });
 
     it('isImageFormatValid should return false when image format is not valid', () => {
