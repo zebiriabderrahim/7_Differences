@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Game } from '@app/interfaces/game-interfaces';
 import { GameInfosComponent } from './game-infos.component';
 
 describe('GameInfosComponent', () => {
@@ -7,11 +8,33 @@ describe('GameInfosComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
+            imports: [],
             declarations: [GameInfosComponent],
+            providers: [],
         }).compileComponents();
+    });
 
+    beforeEach(() => {
         fixture = TestBed.createComponent(GameInfosComponent);
         component = fixture.componentInstance;
+
+        const game: Game = {
+            id: 0,
+            name: 'test',
+            difficultyLevel: true,
+            original: 'test',
+            modified: '',
+            soloTopTime: [],
+            oneVsOneTopTime: [],
+            differencesCount: 0,
+            thumbnail: '',
+            hintList: [''],
+        };
+        component.game = game;
+        component.mode = 'solo';
+        component.penaltyTime = 0;
+        component.bonusTime = 0;
+
         fixture.detectChanges();
     });
 
@@ -19,28 +42,10 @@ describe('GameInfosComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    /*
-    it('should have game input', () => {
-        expect(component.game).toBeUndefined();
-    });
-
-    it('should have mode input', () => {
-        if (component?.mode !== undefined && component?.mode !== null) {
-            component.mode = 'soloMode';
-            expect(component.mode).toEqual('soloMode');
-        } else {
-            fail('mode is undefined');
-        }
-    });
-
-    it('should have penaltyTime input', () => {
-        component.penaltyTime = 1;
-        expect(component.penaltyTime).toEqual(1);
-    });
-
-    it('should have bonusTime input', () => {
-        component.bonusTime = 0;
+    it('should have input properties set correctly', () => {
+        expect(component.game.id).toEqual(0);
+        expect(component.mode).toEqual('solo');
+        expect(component.penaltyTime).toEqual(0);
         expect(component.bonusTime).toEqual(0);
     });
-    */
 });
