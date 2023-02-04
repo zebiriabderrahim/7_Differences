@@ -10,7 +10,3 @@ export const MIDDLE_BUTTON = 1;
 export const RIGHT_BUTTON = 2;
 export const BACK_BUTTON = 3;
 export const FORWARD_BUTTON = 4;
-/* middleButton: number = 1;
-    rightButton: number = 2;
-    backButton: number = 3;
-    forwardButton: number = 4;*/
