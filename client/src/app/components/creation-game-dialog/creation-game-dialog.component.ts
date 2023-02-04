@@ -48,6 +48,7 @@ export class CreationGameDialogComponent implements OnInit {
         if (this.gameNameForm.valid && this.gameNameForm.value.name) {
             this.gameNameEvent.emit(this.gameNameForm.value.name);
             this.dialogRef.close();
+            this.imageService.createGame(this.gameNameForm.value.name);
         }
     }
 }
