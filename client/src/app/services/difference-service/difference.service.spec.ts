@@ -111,6 +111,7 @@ describe('DifferenceService', () => {
     });
 
     it('generateDifferences should return differences of pixels', () => {
+        service.setEnlargementRadius(0);
         const originalPixelArray = [
             { red: 100, green: 200, blue: 150, alpha: 0 },
             { red: 50, green: 100, blue: 200, alpha: 1 },
