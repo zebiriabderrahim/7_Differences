@@ -4,6 +4,7 @@ export const ONE_SECOND = 1000;
 export const MINUTE_CONVERSION = 60;
 export const TWO_DIGIT_LIMIT = 10;
 export const START_TIME = 0;
+export const GAME_CARROUSEL_SIZE = 4;
 export const GAME_ID_MAX = 1000000;
 export const N_DIFFERENCES_HARD_GAME = 7;
 export const HARD_DIFFERENCES_PERCENTAGE = 0.15;

@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { CANVAS_WIDTH, CANVAS_HEIGHT } from '@app/constants/constants';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { Game } from '@app/interfaces/game-interfaces';
+import { CommunicationService } from '@app/services/communication-service/communication-service.service';
+import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { GameCardService } from '@app/services/gamecard-service/gamecard.service';
 import { TimerService } from '@app/services/timer-service/timer.service';
 
 @Component({
@@ -8,37 +10,49 @@ import { TimerService } from '@app/services/timer-service/timer.service';
     templateUrl: './solo-game-view.component.html',
     styleUrls: ['./solo-game-view.component.scss'],
 })
-export class SoloGameViewComponent implements OnInit {
+export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
+    @ViewChild('originalCanvas', { static: false }) originalCanvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('modifiedCanvas', { static: false }) modifiedCanvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('originalCanvasFG', { static: false }) originalCanvasForeground!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('modifiedCanvasFG', { static: false }) modifiedCanvasForeground!: ElementRef<HTMLCanvasElement>;
     time: string = '00:00';
-    game: Game = {
-        id: 1,
-        name: 'Racoon vs Rat',
-        difficultyLevel: 10,
-        thumbnail: '',
-        soloTopTime: [],
-        oneVsOneTopTime: [],
-        differencesCount: 15,
-        hintList: ['Look in the far left', 'The sky is beautiful', 'The rat has it'],
-    };
+    game: Game;
     mode: string = 'Solo';
     penaltyTime: number = 1;
     bonusTime: number = 1;
     readonly homeRoute: string = '/home';
-    private canvasSize = { width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
+    // private canvasSize = { width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
 
-    constructor(public timer: TimerService) {}
-    get width(): number {
-        return this.canvasSize.width;
-    }
+    constructor(
+        public timer: TimerService,
+        private gameAreaService: GameAreaService,
+        private gameCardService: GameCardService,
+        private communication: CommunicationService,
+    ) {}
 
-    get height(): number {
-        return this.canvasSize.height;
-    }
-
-    ngOnInit() {
+    ngAfterViewInit(): void {
         this.timer.startTimer();
         this.time = this.timer.time;
+
+        this.gameCardService.getGameId().subscribe((id) => {
+            this.communication.loadGameById(id).subscribe((game) => {
+                if (game) {
+                    this.game = game;
+                    this.gameAreaService.originalContext = this.originalCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+                    this.gameAreaService.modifiedContext = this.modifiedCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+                    this.gameAreaService.originalContextFrontLayer = this.originalCanvasForeground.nativeElement.getContext(
+                        '2d',
+                    ) as CanvasRenderingContext2D;
+                    this.gameAreaService.modifiedContextFrontLayer = this.modifiedCanvasForeground.nativeElement.getContext(
+                        '2d',
+                    ) as CanvasRenderingContext2D;
+                    this.gameAreaService.loadImage(this.gameAreaService.originalContext, this.game.original);
+                    this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, this.game.modified);
+                }
+            });
+        });
     }
+
     finish() {
         this.timer.resetTimer();
     }
@@ -48,5 +62,22 @@ export class SoloGameViewComponent implements OnInit {
     }
     abandonGame(): void {
         // this.timer.stopTimer();
+    }
+    displayError(isMain: boolean): void {
+        this.gameAreaService.showError(isMain);
+    }
+    mouseClickOnOriginal(event: MouseEvent) {
+        if (this.gameAreaService.detectLeftClick(event)) {
+            this.displayError(true);
+        }
+    }
+
+    mouseClickOnModified(event: MouseEvent) {
+        if (this.gameAreaService.detectLeftClick(event)) {
+            this.displayError(false);
+        }
+    }
+    ngOnDestroy(): void {
+        this.timer.stopTimer();
     }
 }

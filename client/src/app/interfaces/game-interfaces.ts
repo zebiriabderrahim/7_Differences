@@ -13,24 +13,32 @@ export interface GameDetails {
 export interface Game {
     id: number;
     name: string;
-    difficultyLevel: number;
-    thumbnail: string;
+    difficultyLevel: boolean;
+    original: string;
+    modified: string;
     soloTopTime: PlayerTime[];
     oneVsOneTopTime: PlayerTime[];
     differencesCount: number;
+    thumbnail: string;
     hintList: string[];
 }
 
 export interface GameCard {
     id: number;
     name: string;
-    difficultyLevel: number;
+    difficultyLevel: boolean;
     soloTopTime: PlayerTime[];
     oneVsOneTopTime: PlayerTime[];
     thumbnail: string;
 }
 
-export interface GameConst {
+export interface CarrouselPaginator {
+    hasNext: boolean;
+    hasPrevious: boolean;
+    gameCards: GameCard[];
+}
+
+export interface GameConfig {
     countdownTime: number;
     penaltyTime: number;
     bonusTime: number;
