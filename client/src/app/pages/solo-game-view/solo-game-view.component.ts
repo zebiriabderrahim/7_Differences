@@ -48,7 +48,6 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
                     ) as CanvasRenderingContext2D;
                     this.gameAreaService.loadImage(this.gameAreaService.originalContext, this.game.original);
                     this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, this.game.modified);
-                    this.gameAreaService.setAllData();
                 }
             });
         });
