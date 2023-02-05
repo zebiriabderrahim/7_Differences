@@ -42,6 +42,7 @@ export class DatabaseService {
         const game = this.gameListManager.createGameFromGameDto(newGame);
         this.games.push(game);
         this.addGameCard(game);
+        this.saveFiles(newGame.name, Buffer.from(newGame.originalImage.replace(/^data:image\/\w+;base64,/, ''), 'base64'));
     }
 
     addGameCard(game: Game): void {
