@@ -40,13 +40,13 @@ export class GameController {
         }
     }
 
-    @Post('/')
+    @Post()
     addGame(@Body() gameDto: CreateGameDto, @Res() response: Response) {
         try {
             this.gameService.addGame(gameDto);
             response.status(HttpStatus.CREATED).send();
         } catch (error) {
-            response.status(HttpStatus.NOT_FOUND).send(error.message);
+            response.status(HttpStatus.BAD_REQUEST).send(error.message);
         }
     }
 

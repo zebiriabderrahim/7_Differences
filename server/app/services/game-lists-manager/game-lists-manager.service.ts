@@ -53,12 +53,12 @@ export class GameListsManagerService {
         return {
             id: newGame.id,
             name: newGame.name,
-            original: newGame.originalImagePath,
-            modified: newGame.modifiedImagePath,
+            original: newGame.originalImage,
+            modified: newGame.modifiedImage,
             soloTopTime: this.defaultBestTimes,
             oneVsOneTopTime: this.defaultBestTimes,
             difficultyLevel: newGame.isHard,
-            thumbnail: newGame.originalImagePath,
+            thumbnail: newGame.modifiedImage,
             differencesCount: newGame.nDifference,
             hintList: [],
         };

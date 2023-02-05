@@ -21,6 +21,6 @@ export class GameService {
     }
 
     postGame(gameDetails: GameDetails): void {
-        this.communicationService.postGame(gameDetails);
+        this.communicationService.postGame(gameDetails).subscribe();
     }
 }

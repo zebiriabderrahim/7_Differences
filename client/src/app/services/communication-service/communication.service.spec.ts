@@ -1,13 +1,13 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { CarrouselPaginator, Game, GameConfigConst, GameDetails } from '@app/interfaces/game-interfaces';
+import { CarouselPaginator, Game, GameConfigConst, GameDetails } from '@app/interfaces/game-interfaces';
 
 import { CommunicationService } from './communication-service.service';
 
 describe('CommunicationServiceService', () => {
     let serviceComponent: CommunicationService;
     let httpMock: HttpTestingController;
-    let mockGameCarrousel: CarrouselPaginator;
+    let mockGameCarrousel: CarouselPaginator;
     let game: Game;
     let gameConfig: GameConfigConst;
     let gameDetails: GameDetails;
