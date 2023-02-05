@@ -149,7 +149,7 @@ describe('GameController', () => {
         expect(gameService.getConfigConstants.called).toBe(true);
     });
 
-    it('addCourse()should call addCourse() in gameService', () => {
+    it('addGame()should call addGame() in gameService', () => {
         const res = {} as unknown as Response;
         res.status = (code) => {
             expect(code).toEqual(HttpStatus.CREATED);
@@ -160,11 +160,11 @@ describe('GameController', () => {
         expect(gameService.addGame.calledOnce).toBe(true);
     });
 
-    it('addCourse() should return NOT_FOUND when service unable to add new game', () => {
+    it('addGame() should return NOT_FOUND when service unable to add new game', () => {
         gameService.addGame.throwsException();
         const res = {} as unknown as Response;
         res.status = (code) => {
-            expect(code).toEqual(HttpStatus.NOT_FOUND);
+            expect(code).toEqual(HttpStatus.BAD_REQUEST);
             return res;
         };
         res.send = () => res;

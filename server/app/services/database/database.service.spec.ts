@@ -46,10 +46,10 @@ describe('DatabaseService', () => {
     const testGameDto: CreateGameDto = {
         id: 1,
         name: 'test',
-        originalImagePath: 'test',
-        modifiedImagePath: 'test',
+        originalImage: 'test',
+        modifiedImage: 'test',
         nDifference: 1,
-        differenceMatrix: [[]],
+        differences: [[]],
         isHard: true,
     };
 
