@@ -61,12 +61,6 @@ describe('DatabaseService', () => {
         oneVsOneTopTime: defaultBestTimes,
         thumbnail: 'test',
     };
-    const testGameCarousel: CarouselPaginator = 
-        {
-            hasNext: true,
-            hasPrevious: false,
-            gameCards: [{}, {}, {}, {}] as GameCard[],
-        };
 
     beforeEach(async () => {
         listsManagerService = createStubInstance(GameListsManagerService);
