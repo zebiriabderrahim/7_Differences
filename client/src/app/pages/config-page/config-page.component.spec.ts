@@ -1,7 +1,7 @@
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { CommunicationService } from '@app/services/communication-service/communication-service.service';
+import { CommunicationService } from '@app/services/communication-service/communication.service';
 
 import { of } from 'rxjs';
 import { ConfigPageComponent } from './config-page.component';
