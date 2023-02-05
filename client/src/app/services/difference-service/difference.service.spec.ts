@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { TestBed } from '@angular/core/testing';
 
 import { DifferenceService } from './difference.service';
@@ -12,6 +13,21 @@ describe('DifferenceService', () => {
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('setEnlargementRadius should set the enlargementRadius', () => {
+        const radius = 3;
+        service.setEnlargementRadius(radius);
+        expect(service.enlargementRadius).toBe(radius);
+    });
+
+    it('setDifferencesArray should set the differencesArray', () => {
+        const differencesArray = [
+            { x: 300, y: 200 },
+            { x: 400, y: 300 },
+        ];
+        service.setDifferencesArray(differencesArray);
+        expect(service.differencesArray).toBe(differencesArray);
     });
 
     it('isCoordinateValid should return true if the coordinate is valid', () => {
@@ -71,6 +87,70 @@ describe('DifferenceService', () => {
             { x: 2, y: 2 },
         ];
         expect(service.findAdjacentCoords(coord)).toEqual(expectedAdjacentCoords);
+    });
+
+    it('generateDifferencesPackages should return differences grouped by proximity', () => {
+        const differencesArray = [
+            { x: 69, y: 0 },
+            { x: 70, y: 0 },
+            { x: 0, y: 39 },
+            { x: 0, y: 40 },
+        ];
+        const expectedDifferencesPackages = [
+            [
+                { x: 69, y: 0 },
+                { x: 70, y: 0 },
+            ],
+            [
+                { x: 0, y: 39 },
+                { x: 0, y: 40 },
+            ],
+        ];
+        service.setDifferencesArray(differencesArray);
+        expect(service.generateDifferencesPackages()).toEqual(expectedDifferencesPackages);
+    });
+
+    it('generateDifferences should return differences of pixels', () => {
+        const originalPixelArray = [
+            { red: 100, green: 200, blue: 150, alpha: 0 },
+            { red: 50, green: 100, blue: 200, alpha: 1 },
+        ];
+        const modifiedPixelArray = [
+            { red: 40, green: 200, blue: 150, alpha: 0 },
+            { red: 50, green: 100, blue: 200, alpha: 1 },
+        ];
+        const expectDifferences = [{ x: 0, y: 0 }];
+        expect(service.generateDifferences(originalPixelArray, modifiedPixelArray)).toEqual(expectDifferences);
+    });
+
+    it('enlargeDifferences should enlarge differences according to radius', () => {
+        service.setEnlargementRadius(1);
+        const differences = [
+            { x: 100, y: 200 },
+            { x: 300, y: 400 },
+        ];
+        const enlargedDifferences = [
+            { x: 99, y: 200 },
+            { x: 100, y: 199 },
+            { x: 100, y: 200 },
+            { x: 100, y: 201 },
+            { x: 101, y: 200 },
+            { x: 299, y: 400 },
+            { x: 300, y: 399 },
+            { x: 300, y: 400 },
+            { x: 300, y: 401 },
+            { x: 301, y: 400 },
+        ];
+        expect(service.enlargeDifferences(differences)).toEqual(enlargedDifferences);
+    });
+
+    it('enlargeDifferences should not change differences if radius is zero', () => {
+        service.setEnlargementRadius(0);
+        const differencesArray = [
+            { x: 100, y: 200 },
+            { x: 300, y: 400 },
+        ];
+        expect(service.enlargeDifferences(differencesArray)).toEqual(differencesArray);
     });
 
     it('arePixelsDifferent should return true if the two pixels have different values', () => {
