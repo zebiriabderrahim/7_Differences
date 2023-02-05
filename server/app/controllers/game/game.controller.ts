@@ -1,5 +1,6 @@
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameService } from '@app/services/game/game.service';
+import { GameConfigConst } from '@common/game-interfaces';
 import { Body, Controller, Get, HttpStatus, Param, Post, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -47,5 +48,11 @@ export class GameController {
         } catch (error) {
             response.status(HttpStatus.NOT_FOUND).send(error.message);
         }
+    }
+
+    @Get('config/constants')
+    async getConstants(): Promise<GameConfigConst> {
+        const gameConstants = await this.gameService.getConfigConstants();
+        return gameConstants;
     }
 }

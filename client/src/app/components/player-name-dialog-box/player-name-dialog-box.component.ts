@@ -18,7 +18,6 @@ export class PlayerNameDialogBoxComponent implements OnInit {
     });
 
     constructor(public dialogRef: MatDialogRef<PlayerNameDialogBoxComponent>, @Inject(MAT_DIALOG_DATA) public data: GameCard) {}
-
     ngOnInit(): void {
         this.routerPlay += this.data.id;
     }
