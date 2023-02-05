@@ -162,4 +162,100 @@ describe('DifferenceService', () => {
         ];
         expect(service.isNumberOfDifferencesValid()).toBe(false);
     });
+
+    // eslint-disable-next-line max-len
+    it('isGameHard returns true if differencePackages has N_DIFFERENCES_HARD_GAME = 7 or more elements and differencesPercentage is less than or equal to HARD_DIFFERENCES_PERCENTAGE = 0.15', () => {
+        service.differencesArray = [
+            { x: 1, y: 1 },
+            { x: 1, y: 4 },
+        ];
+        service.differencePackages = [
+            [
+                { x: 1, y: 1 },
+                { x: 2, y: 2 },
+            ],
+            [
+                { x: 3, y: 3 },
+                { x: 4, y: 4 },
+            ],
+            [
+                { x: 3, y: 3 },
+                { x: 4, y: 4 },
+            ],
+            [
+                { x: 3, y: 3 },
+                { x: 4, y: 4 },
+            ],
+            [
+                { x: 3, y: 3 },
+                { x: 4, y: 4 },
+            ],
+            [
+                { x: 3, y: 3 },
+                { x: 4, y: 4 },
+            ],
+            [
+                { x: 3, y: 3 },
+                { x: 4, y: 4 },
+            ],
+        ];
+        expect(service.isGameHard()).toBe(true);
+    });
+
+    it('isGameHard returns false if differencePackages has less than N_DIFFERENCES_HARD_GAME = 7 elements', () => {
+        service.differencesArray = [
+            { x: 1, y: 1 },
+            { x: 2, y: 2 },
+        ];
+        service.differencePackages = [
+            [
+                { x: 1, y: 1 },
+                { x: 2, y: 2 },
+            ],
+            [
+                { x: 3, y: 3 },
+                { x: 4, y: 4 },
+            ],
+            [{ x: 5, y: 5 }],
+        ];
+        expect(service.isGameHard()).toBe(false);
+    });
+
+    it('isGameHard returns false if differencesPercentage is greater than HARD_DIFFERENCES_PERCENTAGE = 0.15', () => {
+        service.differencesArray = [
+            { x: 1, y: 1 },
+            { x: 2, y: 2 },
+            { x: 3, y: 3 },
+            { x: 4, y: 4 },
+            { x: 5, y: 5 },
+            { x: 6, y: 6 },
+            { x: 7, y: 7 },
+            { x: 8, y: 8 },
+            { x: 9, y: 9 },
+            { x: 10, y: 10 },
+        ];
+        service.differencePackages = [
+            [
+                { x: 1, y: 1 },
+                { x: 2, y: 2 },
+            ],
+            [
+                { x: 3, y: 3 },
+                { x: 4, y: 4 },
+            ],
+            [
+                { x: 5, y: 5 },
+                { x: 6, y: 6 },
+            ],
+            [
+                { x: 7, y: 7 },
+                { x: 8, y: 8 },
+            ],
+            [
+                { x: 9, y: 9 },
+                { x: 10, y: 10 },
+            ],
+        ];
+        expect(service.isGameHard()).toBe(false);
+    });
 });
