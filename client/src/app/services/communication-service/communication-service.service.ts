@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Game, GameConst, GameDetails } from '@app/interfaces/game-interfaces';
-import { GameCard } from '@common/message';
+import { CarrouselPaginator, Game, GameConfig, GameDetails } from '@app/interfaces/game-interfaces';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -10,33 +9,26 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root',
 })
 export class CommunicationService {
-    private readonly baseUrl: string = environment.serverUrl;
-    private readonly gameUrl: string = this.baseUrl + '/games';
+    private readonly gameUrl: string = environment.serverUrl + '/games';
 
     constructor(private readonly http: HttpClient) {}
 
-    loadAllGames(): Observable<GameCard[]> {
-        return this.http.get<GameCard[]>(`${this.gameUrl}`).pipe(catchError(this.handleError<GameCard[]>('loadAllGames')));
-    }
-
-    getGameNames(): Observable<string[]> {
-        return this.http.get<string[]>(`${this.baseUrl}/gameNames`).pipe(catchError(this.handleError<string[]>('getGameNames')));
+    loadGameCarrousel(index: number): Observable<CarrouselPaginator> {
+        return this.http
+            .get<CarrouselPaginator>(`${this.gameUrl}/carrousel/${index}`)
+            .pipe(catchError(this.handleError<CarrouselPaginator>('loadGameCarrousel')));
     }
 
     loadGameById(id: number): Observable<Game> {
-        return this.http.get<Game>(`${this.baseUrl}/games/:${id}`).pipe(catchError(this.handleError<Game>('loadGameById')));
+        return this.http.get<Game>(`${this.gameUrl}/${id}`).pipe(catchError(this.handleError<Game>('loadGameById')));
     }
 
     postGame(gameData: GameDetails): Observable<void> {
         return this.http.post<void>(`${this.gameUrl}`, gameData).pipe(catchError(this.handleError<void>('postGame')));
     }
 
-    updateConfigConstants(constants: GameConst): Observable<void> {
-        return this.http.put<void>(`${this.baseUrl}/`, constants).pipe(catchError(this.handleError<void>('basicPut')));
-    }
-
-    loadConfigConstants(): Observable<GameConst> {
-        return this.http.get<GameConst>(`${this.baseUrl}/constants`).pipe(catchError(this.handleError<GameConst>('loadConfigConstants')));
+    loadConfigConstants(): Observable<GameConfig> {
+        return this.http.get<GameConfig>(`${this.gameUrl}/constants`).pipe(catchError(this.handleError<GameConfig>('loadConfigConstants')));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {

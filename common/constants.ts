@@ -15,3 +15,5 @@ export const DEFAULT_HINT_PENALTY = 5;
 export const DEFAULT_BONUS_TIME = 5;
 export const MAX_COUNTDOWNTIMER_VALUE = 120;
 export const SERVER_TIMEOUT = 1000;
+
+export const GAME_CARROUSEL_SIZE = 4;
