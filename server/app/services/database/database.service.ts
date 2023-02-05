@@ -1,9 +1,9 @@
-import { Game, GameCard, CarouselPaginator, GameConfigConst, PlayerTime } from '@common/game-interfaces';
-import { Injectable } from '@nestjs/common';
-import * as fs from 'fs';
-import { DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY, DEFAULT_BONUS_TIME, GAME_CARROUSEL_SIZE } from '@common/constants';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameListsManagerService } from '@app/services/game-lists-manager/game-lists-manager.service';
+import { DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
+import { CarouselPaginator, Game, GameCard, GameConfigConst, PlayerTime } from '@common/game-interfaces';
+import { Injectable } from '@nestjs/common';
+import * as fs from 'fs';
 
 @Injectable()
 export class DatabaseService {
