@@ -5,7 +5,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { routes } from '@app/modules/app-routing.module';
-import { CommunicationService } from '@app/services/communication-service/communication-service.service';
+import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { of } from 'rxjs';
 
 import { SelectionPageComponent } from './selection-page.component';
