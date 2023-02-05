@@ -49,10 +49,4 @@ export class GameController {
             response.status(HttpStatus.BAD_REQUEST).send(error.message);
         }
     }
-
-    @Get('config/constants')
-    async getConstants(): Promise<GameConfigConst> {
-        const gameConstants = await this.gameService.getConfigConstants();
-        return gameConstants;
-    }
 }
