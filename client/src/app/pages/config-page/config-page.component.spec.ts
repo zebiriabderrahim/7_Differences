@@ -4,6 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { CommunicationService } from '@app/services/communication-service/communication-service.service';
 
 import { ConfigPageComponent } from './config-page.component';
+import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
 
 describe('ConfigPageComponent', () => {
     let component: ConfigPageComponent;
@@ -12,7 +13,7 @@ describe('ConfigPageComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule],
-            declarations: [ConfigPageComponent],
+            declarations: [ConfigPageComponent, SelectionPageComponent],
             providers: [CommunicationService, HttpClient, HttpHandler],
         }).compileComponents();
 
