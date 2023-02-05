@@ -53,16 +53,6 @@ describe('GameSheetComponent', () => {
         expect(component.buttonPlay).toEqual('Jouer');
     });
 
-    /* it('should open the dialog if router url is /selection', () => {
-        const navigateSpy = spyOn(component.router, 'navigate');
-        component.router.navigate(['selection']);
-        component.openDialog();
-        expect(navigateSpy).toHaveBeenCalledWith(['selection']);
-        expect(dialog.open).toHaveBeenCalledWith(PlayerNameDialogBoxComponent, {
-            data: { disableClose: false },
-        });
-    }); */
-
     it('should not open dialog if router url is not /selection', () => {
         component.router.navigate(['selection']);
         component.openDialog();
