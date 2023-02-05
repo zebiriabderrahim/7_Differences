@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { routes } from '@app/modules/app-routing.module';
-import { CommunicationService } from '@app/services/communication-service/communication-service.service';
+import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { GameCardService } from '@app/services/gamecard-service/gamecard.service';
 import { GameSheetComponent } from './game-sheet.component';
 
