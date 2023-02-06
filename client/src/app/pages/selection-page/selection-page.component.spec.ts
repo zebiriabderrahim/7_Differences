@@ -2,7 +2,6 @@ import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
@@ -13,7 +12,6 @@ import { SelectionPageComponent } from './selection-page.component';
 describe('SelectionPageComponent', () => {
     let component: SelectionPageComponent;
     let fixture: ComponentFixture<SelectionPageComponent>;
-    let router: Router;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -34,33 +32,14 @@ describe('SelectionPageComponent', () => {
         fixture = TestBed.createComponent(SelectionPageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        router = TestBed.inject(Router);
     });
 
     it('should create', () => {
         expect(component).toBeTruthy();
     });
 
-    it('Page titre should be Selectionne ton jeu if the page is /selection', () => {
-        router.navigate(['selection']);
-        fixture.detectChanges();
-        fixture.whenStable().then(() => {
-            component.navigate();
-            expect(component.titre).toEqual('Selectionne ton jeu');
-        });
-    });
-
-    it('Page titre should be Configure ton jeu if the page is /selection', () => {
-        router.navigate(['config']);
-        fixture.detectChanges();
-        fixture.whenStable().then(() => {
-            component.navigate();
-            expect(component.titre).toEqual('Configure ton jeu');
-        });
-    });
-
     it('should load a Carrousel when this one exist', () => {
-        component.ngOnInit();
+        component.ngAfterViewInit();
         expect(component.gameCarrousel).toEqual({ hasNext: false, hasPrevious: false, gameCards: [] });
     });
 

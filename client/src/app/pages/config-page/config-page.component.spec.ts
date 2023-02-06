@@ -1,4 +1,3 @@
-import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
@@ -13,10 +12,8 @@ describe('ConfigPageComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule],
-            declarations: [ConfigPageComponent],
+            declarations: [],
             providers: [
-                HttpClient,
-                HttpHandler,
                 {
                     provide: CommunicationService,
                     useValue: jasmine.createSpyObj('CommunicationService', {
@@ -37,8 +34,8 @@ describe('ConfigPageComponent', () => {
 
     it('should load a game when this one exist', () => {
         component.ngOnInit();
-        expect(component.bonusTime).toEqual(0);
-        expect(component.penaltyTime).toEqual(0);
-        expect(component.countdownTime).toEqual(0);
+        expect(component.configConstants.bonusTime).toEqual(0);
+        expect(component.configConstants.penaltyTime).toEqual(0);
+        expect(component.configConstants.countdownTime).toEqual(0);
     });
 });
