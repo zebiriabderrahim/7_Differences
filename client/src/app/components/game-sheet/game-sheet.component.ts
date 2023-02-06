@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { GameCard } from '@app/interfaces/game-interfaces';
 import { GameCardService } from '@app/services/gamecard-service/gamecard.service';
@@ -13,7 +14,7 @@ export class GameSheetComponent {
     @Input() game: GameCard;
     buttonPlay: string;
     buttonJoin: string;
-    constructor(public dialog: MatDialog, private gameCard: GameCardService) {}
+    constructor(public dialog: MatDialog, public router: Router, private gameCard: GameCardService) {}
 
     openDialog() {
         const dialogConfig = new MatDialogConfig();
