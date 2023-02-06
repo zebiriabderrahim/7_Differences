@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Coordinate } from '@common/coordinate';
 
 export class CreateGameDto {
     @ApiProperty()
@@ -12,11 +13,11 @@ export class CreateGameDto {
 
     @ApiProperty()
     @IsString()
-    originalImagePath: string;
+    originalImage: string;
 
     @ApiProperty()
     @IsString()
-    modifiedImagePath: string;
+    modifiedImage: string;
 
     @ApiProperty()
     @IsNumber()
@@ -24,7 +25,7 @@ export class CreateGameDto {
 
     @ApiProperty()
     @IsOptional()
-    differenceMatrix: number[][];
+    differences: Coordinate[][];
 
     @ApiProperty()
     @IsBoolean()

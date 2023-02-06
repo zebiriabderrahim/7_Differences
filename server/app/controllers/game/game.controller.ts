@@ -1,6 +1,5 @@
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameService } from '@app/services/game/game.service';
-import { GameConfigConst } from '@common/game-interfaces';
 import { Body, Controller, Get, HttpStatus, Param, Post, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -23,14 +22,14 @@ export class GameController {
     @Get(':id')
     gameById(@Param('id') id: string, @Res() response: Response) {
         try {
-            const game = this.gameService.getGameById(id);
+            const game = this.gameService.getGameById(+id);
             response.status(HttpStatus.OK).json(game);
         } catch (error) {
             response.status(HttpStatus.NOT_FOUND).send(error.message);
         }
     }
 
-    @Get('carrousel/:index')
+    @Get('carousel/:index')
     getGameCarrousel(@Param('index') index: number, @Res() response: Response) {
         try {
             const gameCarrousel = this.gameService.getGameCarousel();
@@ -40,19 +39,13 @@ export class GameController {
         }
     }
 
-    @Post('/')
-    addCourse(@Body() gameDto: CreateGameDto, @Res() response: Response) {
+    @Post()
+    addGame(@Body() gameDto: CreateGameDto, @Res() response: Response) {
         try {
             this.gameService.addGame(gameDto);
             response.status(HttpStatus.CREATED).send();
         } catch (error) {
-            response.status(HttpStatus.NOT_FOUND).send(error.message);
+            response.status(HttpStatus.BAD_REQUEST).send(error.message);
         }
-    }
-
-    @Get('config/constants')
-    async getConstants(): Promise<GameConfigConst> {
-        const gameConstants = await this.gameService.getConfigConstants();
-        return gameConstants;
     }
 }

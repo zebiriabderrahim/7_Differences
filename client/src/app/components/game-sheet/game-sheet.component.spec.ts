@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
-import { CommunicationService } from '@app/services/communication-service/communication-service.service';
+import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { GameCardService } from '@app/services/gamecard-service/gamecard.service';
 import { GameSheetComponent } from './game-sheet.component';
 

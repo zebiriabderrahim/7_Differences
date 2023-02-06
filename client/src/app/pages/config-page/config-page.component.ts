@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CommunicationService } from '@app/services/communication-service/communication-service.service';
+import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { GameConfigConst } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
