@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { GameConfigConst } from '@common/game-interfaces';
 import { CommunicationService } from '@app/services/communication-service/communication-service.service';
 import { Subscription } from 'rxjs';
 
@@ -10,9 +11,7 @@ import { Subscription } from 'rxjs';
 export class ConfigPageComponent implements OnInit, OnDestroy {
     readonly titre: string = 'Configure ton jeu';
     readonly createRoute: string = '/create';
-    countdownTime: number;
-    penaltyTime: number;
-    bonusTime: number;
+    configConstants: GameConfigConst;
 
     private commSub: Subscription;
 
@@ -20,9 +19,9 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.commSub = this.communicationService.loadConfigConstants().subscribe((res) => {
-            this.countdownTime = res.countdownTime;
-            this.penaltyTime = res.penaltyTime;
-            this.bonusTime = res.bonusTime;
+            this.configConstants.countdownTime = res.countdownTime;
+            this.configConstants.penaltyTime = res.penaltyTime;
+            this.configConstants.bonusTime = res.bonusTime;
         });
     }
 
