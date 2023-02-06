@@ -54,14 +54,14 @@ export class ClassicSoloModeService {
             room.clientGame.currentDifference = [];
         }
         this.rooms.set(room.roomId, room);
-        this.server.to(room.roomId).emit(GameEvents.RemoveDiff, room);
+        this.server.to(room.roomId).emit(GameEvents.RemoveDiff, room.clientGame);
     }
 
-    buildClientGameVersion(playerName: string, gameInfo: ServerSideGame): ClientSideGame {
+    buildClientGameVersion(playerName: string, game: ServerSideGame): ClientSideGame {
         const clientGame: ClientSideGame = {
-            id: gameInfo.id,
+            id: game.id,
             player: playerName,
-            gameName: gameInfo.name,
+            gameName: game.name,
             gameMode: 'Classic -> solo',
             timer: 0,
             differencesFound: 0,
@@ -69,8 +69,8 @@ export class ClassicSoloModeService {
             endGameMessage: '',
             currentDifference: [],
             hintPenalty: this.gameService.getConfigConstants().penaltyTime,
-            soloTopTime: gameInfo.soloTopTime,
-            oneVsOneTopTime: gameInfo.oneVsOneTopTime,
+            soloTopTime: game.soloTopTime,
+            oneVsOneTopTime: game.oneVsOneTopTime,
         };
         return clientGame;
     }
