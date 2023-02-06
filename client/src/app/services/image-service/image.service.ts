@@ -87,14 +87,10 @@ export class ImageService {
         }
     }
 
-    setEnlargementRadius(radius: number) {
-        this.differenceService.enlargementRadius = radius;
-    }
-
-    setDifferenceContext(context: CanvasRenderingContext2D) {
+    setDifferenceContext(context: CanvasRenderingContext2D, radius: number) {
         this.differenceContext = context;
         if (this.leftBackground && this.rightBackground) {
-            this.validateDifferences();
+            this.validateDifferences(radius);
         }
     }
 
@@ -129,10 +125,10 @@ export class ImageService {
         }
         return data;
     }
-    validateDifferences(): void {
+    validateDifferences(radius: number): void {
         const leftPixelArray = this.transformContextToPixelArray(this.leftBackgroundContext);
         const rightPixelArray = this.transformContextToPixelArray(this.rightBackgroundContext);
-        const differenceCoordinates = this.differenceService.generateDifferences(leftPixelArray, rightPixelArray);
+        const differenceCoordinates = this.differenceService.generateDifferences(leftPixelArray, rightPixelArray, radius);
         this.drawDifferences(differenceCoordinates);
     }
 

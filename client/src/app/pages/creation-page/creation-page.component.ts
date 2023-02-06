@@ -1,5 +1,5 @@
-import { Component, TemplateRef, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageValidationDialogComponent } from '@app/components/image-validation-dialog/image-validation-dialog.component';
 import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/creation-page';
@@ -13,12 +13,12 @@ import { ValidationService } from '@app/services/validation-service//validation.
     styleUrls: ['./creation-page.component.scss'],
 })
 export class CreationPageComponent {
+    @Input() radius: number = DEFAULT_RADIUS;
     @ViewChild('imageNotSetDialog', { static: true })
     private readonly imageNotSetDialog: TemplateRef<HTMLElement>;
     readonly configRoute: string = '/config';
     canvasPosition: typeof CanvasPosition = CanvasPosition;
     radiusSizes: number[] = RADIUS_SIZES;
-    radius: number = DEFAULT_RADIUS;
 
     constructor(public imageService: ImageService, public validationService: ValidationService, private readonly matDialog: MatDialog) {}
 
@@ -49,8 +49,9 @@ export class CreationPageComponent {
         if (!this.validationService.areImagesSet()) {
             this.matDialog.open(this.imageNotSetDialog);
         } else {
-            this.imageService.setEnlargementRadius(this.radius);
-            this.matDialog.open(CreationGameDialogComponent);
+            const dialogConfig = new MatDialogConfig();
+            dialogConfig.data = this.radius;
+            this.matDialog.open(CreationGameDialogComponent, dialogConfig);
         }
     }
 }

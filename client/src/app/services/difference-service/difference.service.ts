@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { DEFAULT_RADIUS, IMG_HEIGHT, IMG_WIDTH, MAX_N_DIFFERENCES, MIN_N_DIFFERENCES } from '@app/constants/creation-page';
-import { N_DIFFERENCES_HARD_GAME, HARD_DIFFERENCES_PERCENTAGE } from '@app/constants/constants';
+import { HARD_DIFFERENCES_PERCENTAGE, N_DIFFERENCES_HARD_GAME } from '@app/constants/constants';
+import { IMG_HEIGHT, IMG_WIDTH, MAX_N_DIFFERENCES, MIN_N_DIFFERENCES } from '@app/constants/creation-page';
 import { Coordinate } from '@app/interfaces/coordinate';
 import { Pixel } from '@app/interfaces/pixel';
 
@@ -10,11 +10,6 @@ import { Pixel } from '@app/interfaces/pixel';
 export class DifferenceService {
     differencesArray: Coordinate[] = []; // TODO link to appropriate service
     differencePackages: Coordinate[][] = [];
-    enlargementRadius: number = DEFAULT_RADIUS;
-
-    setEnlargementRadius(radius: number) {
-        this.enlargementRadius = radius;
-    }
 
     setDifferencesArray(differencesArray: Coordinate[]) {
         this.differencesArray = differencesArray;
@@ -77,7 +72,7 @@ export class DifferenceService {
         return differences;
     }
 
-    generateDifferences(pixelArray1: Pixel[], pixelArray2: Pixel[]): Coordinate[] {
+    generateDifferences(pixelArray1: Pixel[], pixelArray2: Pixel[], radius: number): Coordinate[] {
         const differentCoordinates: Coordinate[] = [];
         for (let i = 0; i < pixelArray1.length; i++) {
             if (this.arePixelsDifferent(pixelArray1[i], pixelArray2[i])) {
@@ -86,7 +81,7 @@ export class DifferenceService {
                 differentCoordinates.push({ x, y });
             }
         }
-        this.differencesArray = this.enlargeDifferences(differentCoordinates);
+        this.differencesArray = this.enlargeDifferences(differentCoordinates, radius);
         this.generateDifferencesPackages();
         return this.differencesArray;
     }
@@ -95,14 +90,14 @@ export class DifferenceService {
         return !(pixel1.red === pixel2.red && pixel1.green === pixel2.green && pixel1.blue === pixel2.blue);
     }
 
-    enlargeDifferences(differenceCoordinates: Coordinate[]): Coordinate[] {
+    enlargeDifferences(differenceCoordinates: Coordinate[], radius: number): Coordinate[] {
         const visitedDifferences: boolean[][] = new Array(IMG_WIDTH).fill(false).map(() => new Array(IMG_HEIGHT).fill(false)) as boolean[][];
         const enlargedDifferenceCoordinates: Coordinate[] = [];
         for (const coordinate of differenceCoordinates) {
-            for (let i = -this.enlargementRadius; i <= this.enlargementRadius; i++) {
-                for (let j = -this.enlargementRadius; j <= this.enlargementRadius; j++) {
+            for (let i = -radius; i <= radius; i++) {
+                for (let j = -radius; j <= radius; j++) {
                     const distance = Math.sqrt(i * i + j * j);
-                    if (distance <= this.enlargementRadius) {
+                    if (distance <= radius) {
                         const largerCoordinate: Coordinate = { x: coordinate.x + i, y: coordinate.y + j };
                         if (this.isCoordinateValid(largerCoordinate) && !visitedDifferences[largerCoordinate.x][largerCoordinate.y]) {
                             enlargedDifferenceCoordinates.push(largerCoordinate);
