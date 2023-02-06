@@ -1,15 +1,15 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { CarrouselPaginator, Game, GameConfig, GameDetails } from '@app/interfaces/game-interfaces';
+import { CarouselPaginator, Game, GameConfigConst, GameDetails } from '@app/interfaces/game-interfaces';
 
-import { CommunicationService } from './communication-service.service';
+import { CommunicationService } from './communication.service';
 
-describe('CommunicationServiceService', () => {
+describe('CommunicationService', () => {
     let serviceComponent: CommunicationService;
     let httpMock: HttpTestingController;
-    let mockGameCarrousel: CarrouselPaginator;
+    let mockGameCarrousel: CarouselPaginator;
     let game: Game;
-    let gameConfig: GameConfig;
+    let gameConfig: GameConfigConst;
     let gameDetails: GameDetails;
 
     beforeEach(() => {
@@ -34,7 +34,7 @@ describe('CommunicationServiceService', () => {
         expect(httpMock).toBeTruthy();
     });
 
-    it('should GET a CarrouselPaginator when loadGameCarrousel is called', () => {
+    it('should GET a CarouselPaginator when loadGameCarousel is called', () => {
         mockGameCarrousel = {
             hasNext: false,
             hasPrevious: false,
@@ -49,10 +49,10 @@ describe('CommunicationServiceService', () => {
                 },
             ],
         };
-        serviceComponent.loadGameCarrousel(1).subscribe((response) => {
+        serviceComponent.loadGameCarrousel(0).subscribe((response) => {
             expect(response).toEqual(mockGameCarrousel);
         });
-        const request = httpMock.expectOne(`${serviceComponent['gameUrl']}/carrousel/1`);
+        const request = httpMock.expectOne(`${serviceComponent['gameUrl']}/carousel/0`);
         request.flush(mockGameCarrousel);
     });
 

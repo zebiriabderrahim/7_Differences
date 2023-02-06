@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GAME_ID_MAX } from '@app/constants/constants';
 import { GameDetails } from '@app/interfaces/game-interfaces';
-import { CommunicationService } from '@app/services/communication-service/communication-service.service';
+import { CommunicationService } from '@app/services/communication-service/communication.service';
 
 @Injectable({
     providedIn: 'root',
@@ -21,6 +21,6 @@ export class GameService {
     }
 
     postGame(gameDetails: GameDetails): void {
-        this.communicationService.postGame(gameDetails);
+        this.communicationService.postGame(gameDetails).subscribe();
     }
 }
