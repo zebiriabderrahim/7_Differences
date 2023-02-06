@@ -15,12 +15,6 @@ describe('DifferenceService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('setEnlargementRadius should set the enlargementRadius', () => {
-        const radius = 3;
-        service.setEnlargementRadius(radius);
-        expect(service.enlargementRadius).toBe(radius);
-    });
-
     it('setDifferencesArray should set the differencesArray', () => {
         const differencesArray = [
             { x: 300, y: 200 },
@@ -111,7 +105,6 @@ describe('DifferenceService', () => {
     });
 
     it('generateDifferences should return differences of pixels', () => {
-        service.setEnlargementRadius(0);
         const originalPixelArray = [
             { red: 100, green: 200, blue: 150, alpha: 0 },
             { red: 50, green: 100, blue: 200, alpha: 1 },
@@ -121,11 +114,11 @@ describe('DifferenceService', () => {
             { red: 50, green: 100, blue: 200, alpha: 1 },
         ];
         const expectDifferences = [{ x: 0, y: 0 }];
-        expect(service.generateDifferences(originalPixelArray, modifiedPixelArray)).toEqual(expectDifferences);
+        const radius = 0;
+        expect(service.generateDifferences(originalPixelArray, modifiedPixelArray, radius)).toEqual(expectDifferences);
     });
 
     it('enlargeDifferences should enlarge differences according to radius', () => {
-        service.setEnlargementRadius(1);
         const differences = [
             { x: 100, y: 200 },
             { x: 300, y: 400 },
@@ -142,16 +135,17 @@ describe('DifferenceService', () => {
             { x: 300, y: 401 },
             { x: 301, y: 400 },
         ];
-        expect(service.enlargeDifferences(differences)).toEqual(enlargedDifferences);
+        const radius = 1;
+        expect(service.enlargeDifferences(differences, radius)).toEqual(enlargedDifferences);
     });
 
     it('enlargeDifferences should not change differences if radius is zero', () => {
-        service.setEnlargementRadius(0);
         const differencesArray = [
             { x: 100, y: 200 },
             { x: 300, y: 400 },
         ];
-        expect(service.enlargeDifferences(differencesArray)).toEqual(differencesArray);
+        const radius = 0;
+        expect(service.enlargeDifferences(differencesArray, radius)).toEqual(differencesArray);
     });
 
     it('arePixelsDifferent should return true if the two pixels have different values', () => {

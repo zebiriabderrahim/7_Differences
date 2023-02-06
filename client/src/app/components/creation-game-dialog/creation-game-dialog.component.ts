@@ -1,6 +1,6 @@
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Inject, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
@@ -19,10 +19,13 @@ export class CreationGameDialogComponent implements OnInit {
     gameNameForm = new FormGroup({
         name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)]),
     });
+    // Services are needed for the dialog and dialog needs to talk to the parent component
+    // eslint-disable-next-line max-params
     constructor(
         public imageService: ImageService,
         private differenceService: DifferenceService,
         public dialogRef: MatDialogRef<CreationPageComponent>,
+        @Inject(MAT_DIALOG_DATA) public radius: number,
     ) {}
 
     get displayDifferences(): number {
@@ -33,7 +36,7 @@ export class CreationGameDialogComponent implements OnInit {
         this.differenceCanvas.nativeElement.width = IMG_WIDTH;
         this.differenceCanvas.nativeElement.height = IMG_HEIGHT;
         const differenceContext = this.differenceCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.imageService.setDifferenceContext(differenceContext);
+        this.imageService.setDifferenceContext(differenceContext, this.radius);
     }
 
     isNumberOfDifferencesValid(): boolean {
