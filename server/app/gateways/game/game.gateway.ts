@@ -1,7 +1,18 @@
+import { ClassicSoloModeService } from '@app/services/classic-solo-mode/classic-solo-mode.service';
+import { Coordinate } from '@common/coordinate';
 import { Injectable, Logger } from '@nestjs/common';
-import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit } from '@nestjs/websockets';
+import {
+    WebSocketGateway,
+    WebSocketServer,
+    SubscribeMessage,
+    OnGatewayConnection,
+    OnGatewayDisconnect,
+    OnGatewayInit,
+    ConnectedSocket,
+    MessageBody,
+} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID, WORD_MIN_LENGTH } from './game.gateway.constants';
+import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID } from './game.gateway.constants';
 import { GameEvents } from './game.gateway.events';
 
 @WebSocketGateway(
@@ -17,16 +28,36 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     private readonly room = PRIVATE_ROOM_ID;
 
-    constructor(private readonly logger: Logger) {}
+    constructor(private readonly logger: Logger, private readonly classicSoloModeService: ClassicSoloModeService) {}
 
     @SubscribeMessage(GameEvents.CreateSoloGame)
-    createSoloGame(socket: Socket, word: string) {
-        socket.emit(GameEvents.CreateSoloGame, word.length > WORD_MIN_LENGTH);
+    createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('playerName') playerName: string, @MessageBody('gameId') gameId: number) {
+        try {
+            const room = this.classicSoloModeService.createSoloRoom(socket, playerName, gameId);
+            if (room) {
+                this.server.in(room.roomId).emit(GameEvents.CreateSoloGame, room.clientGame);
+            }
+        } catch (error) {
+            this.server.in(socket.id).emit(GameEvents.CreateSoloGame, 'Erreur lors de la création de la partie');
+        }
     }
 
     @SubscribeMessage(GameEvents.ValidateCoords)
-    validateCoords(socket: Socket, message: string) {
-        this.server.emit(GameEvents.ValidateCoords, `${socket.id} : ${message}`);
+    validateCoords(@ConnectedSocket() socket: Socket, coords: Coordinate) {
+        try {
+            this.classicSoloModeService.verifyCoords(socket.id, coords);
+        } catch (error) {
+            this.server.in(socket.id).emit(GameEvents.ValidateCoords, 'Erreur lors de la validation des coordonnées');
+        }
+    }
+
+    @SubscribeMessage(GameEvents.Penalty)
+    applyPenalty(@ConnectedSocket() socket: Socket) {
+        try {
+            this.classicSoloModeService.addPenalty(socket.id);
+        } catch (error) {
+            this.server.in(socket.id).emit(GameEvents.Penalty, "Erreur lors de l'application de la pénalité");
+        }
     }
 
     @SubscribeMessage(GameEvents.CheckStatus)
@@ -39,21 +70,23 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     afterInit() {
         setInterval(() => {
-            this.emitTime();
+            this.updateTimers();
         }, DELAY_BEFORE_EMITTING_TIME);
     }
 
-    handleConnection(socket: Socket) {
+    handleConnection(@ConnectedSocket() socket: Socket) {
         this.logger.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
         // message initial
-        socket.emit(GameEvents.Connection, 'Hello World!');
+        socket.emit(GameEvents.CheckStatus, 'Hello World!');
     }
 
-    handleDisconnect(socket: Socket) {
+    handleDisconnect(@ConnectedSocket() socket: Socket) {
         this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
     }
 
-    private emitTime() {
-        this.server.emit(GameEvents.CheckStatus, new Date().toLocaleTimeString());
+    private updateTimers() {
+        // for (const room of this.classicSoloModeService['rooms']) {
+        //     this.classicSoloModeService.updateTimer(room['roomId']);
+        // }
     }
 }

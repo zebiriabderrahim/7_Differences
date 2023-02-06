@@ -1,6 +1,6 @@
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { DatabaseService } from '@app/services/database/database.service';
-import { CarouselPaginator, Game, GameConfigConst } from '@common/game-interfaces';
+import { CarouselPaginator, GameConfigConst, ServerSideGame } from '@common/game-interfaces';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class GameService {
         return this.databaseService.getGamesCarrousel();
     }
 
-    getGameById(id: number): Game {
+    getGameById(id: number): ServerSideGame {
         const game = this.databaseService.getGameById(id);
         if (game) {
             return game;
