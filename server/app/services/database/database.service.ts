@@ -19,7 +19,6 @@ export class DatabaseService {
     constructor(private readonly gameListManager: GameListsManagerService) {}
 
     getGamesCarrousel(): CarouselPaginator[] {
-        console.log(this.games)
         return this.carouselGames;
     }
 
