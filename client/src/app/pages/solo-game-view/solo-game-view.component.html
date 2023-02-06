@@ -9,7 +9,7 @@
         <h1>Temps: {{ game.timer | date: 'mm:ss' }}</h1>
         <h1>différences trouvées: {{ game.differencesFound }}</h1>
     </div>
-    <app-game-infos [game]="game" [mode]="mode" [penaltyTime]="penaltyTime" [bonusTime]="bonusTime"></app-game-infos>
+    <app-game-infos [game]="game"></app-game-infos>
 </div>
 <div class="canvas-container">
     <div class="game-canvas">

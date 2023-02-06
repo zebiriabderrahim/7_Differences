@@ -6,32 +6,26 @@ import * as io from 'socket.io';
 
 @Injectable()
 export class ClassicSoloModeService {
-    private server: io.Server;
     private readonly rooms: Map<string, PlayRoom> = new Map<string, PlayRoom>();
 
     constructor(private readonly gameService: GameService) {}
 
-    logServer(server: io.Server) {
-        this.server = server;
-    }
-
     createSoloRoom(socket: io.Socket, playerName: string, gameId: number): PlayRoom {
         const game = this.gameService.getGameById(gameId);
+        const clientGame = this.buildClientGameVersion(playerName, game);
         const room: PlayRoom = {
             roomId: socket.id,
             serverGame: game,
-            clientGame: this.buildClientGameVersion(playerName, game),
+            clientGame,
         };
-
-        socket.join(room.roomId);
         this.rooms.set(room.roomId, room);
         return room;
     }
 
-    updateTimer(roomId: string): void {
+    updateTimer(roomId: string, server: io.Server): void {
         const room = this.rooms.get(roomId);
         room.clientGame.timer++;
-        this.server.to(room.roomId).emit(GameEvents.TimerStarted, room.clientGame.timer);
+        server.to(room.roomId).emit(GameEvents.TimerStarted, room.clientGame.timer);
     }
 
     addPenalty(roomId: string): void {
@@ -39,14 +33,14 @@ export class ClassicSoloModeService {
         room.clientGame.timer += room.clientGame.hintPenalty;
     }
 
-    verifyCoords(roomId: string, coords: Coordinate): void {
+    verifyCoords(roomId: string, coords: Coordinate, server: io.Server): void {
         const room = this.rooms.get(roomId);
         const { serverGame } = room;
         let index = 0;
         for (; index < serverGame.differences.length; index++) {
             if (serverGame.differences[index].some((coord: Coordinate) => coord.x === coords.x && coord.y === coords.y)) {
                 room.clientGame.differencesFound++;
-                room.clientGame.currentDifference = serverGame.differencesCount[index];
+                room.clientGame.currentDifference = serverGame.differences[index];
                 break;
             }
         }
@@ -58,7 +52,7 @@ export class ClassicSoloModeService {
         }
 
         this.rooms.set(room.roomId, room);
-        this.server.to(roomId).emit(GameEvents.RemoveDiff, room.clientGame);
+        server.to(room.roomId).emit(GameEvents.RemoveDiff, room.clientGame);
     }
 
     buildClientGameVersion(playerName: string, game: ServerSideGame): ClientSideGame {
@@ -81,10 +75,10 @@ export class ClassicSoloModeService {
         };
         return clientGame;
     }
-    endGame(room: PlayRoom): void {
+    endGame(room: PlayRoom, server: io.Server): void {
         if (room.serverGame.differencesCount === room.clientGame.differencesFound) {
             room.clientGame.endGameMessage = `Vous avez trouver les ${room.serverGame.differencesCount} différences! Bravo!`;
-            this.server.to(room.roomId).emit(GameEvents.EndGame, room.clientGame.endGameMessage);
+            server.to(room.roomId).emit(GameEvents.EndGame, room.clientGame.endGameMessage);
             this.rooms.delete(room.roomId);
         }
     }
