@@ -1,10 +1,10 @@
-<div id="gameInfos">
+<div *ngIf="game" id="gameInfos">
     <p><strong>Nom du Jeu:</strong> {{ game.gameName }}</p>
     <p><strong>Niveau de Difficulté:</strong> 5</p>
-    <p><strong>Mode de Jeu:</strong> {{ mode }}</p>
+    <p><strong>Mode de Jeu:</strong> {{ game.gameMode }}</p>
     <p><strong>Nombre de Différences Présentes:</strong> {{ game.differencesFound }}</p>
-    <p *ngIf="mode === 'Solo'"><strong>Temps de pénalité:</strong> {{ penaltyTime }}</p>
-    <mat-icon *ngIf="mode === 'Solo'" matTooltip="Pour l'utilisation d'un indice" matTooltipPosition="above">info</mat-icon>
-    <p *ngIf="mode === 'LimitedTime'"><strong>Temps Bonus:</strong> {{ bonusTime }}</p>
-    <mat-icon *ngIf="mode === 'LimitedTime'" matTooltip="Avec la découverte d’une différence" matTooltipPosition="above">info</mat-icon>
+    <ng-template *ngIf="game.gameMode === 'Classic -> solo'">
+        <p ><strong>Temps de pénalité:</strong> {{ game.hintPenalty }}</p>
+        <mat-icon  matTooltip="Pour l'utilisation d'un indice" matTooltipPosition="above">info</mat-icon>
+    </ng-template>
 </div>

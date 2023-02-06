@@ -60,15 +60,15 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     mouseClickOnOriginal(event: MouseEvent) {
         if (this.gameAreaService.detectLeftClick(event)) {
             this.isLeftCanvas = true;
-            this.gameAreaService.setAllData();
-            this.classicService.requestVerification(this.gameAreaService.mousePosition);
-            console.log('CLIC !');
         }
     }
 
     mouseClickOnModified(event: MouseEvent) {
         if (this.gameAreaService.detectLeftClick(event)) {
             this.isLeftCanvas = false;
+            this.gameAreaService.setAllData();
+            this.classicService.requestVerification(this.gameAreaService.mousePosition);
+            console.log(this.game.differencesFound);
         }
     }
     ngOnDestroy(): void {
