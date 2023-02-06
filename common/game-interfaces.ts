@@ -1,12 +1,12 @@
-import { Vec2 } from './vec2';
+import { Coordinate } from '@common/coordinate';
 
 export interface GameDetails {
     id: number;
     name: string;
-    originalImagePath: string;
-    modifiedImagePath: string;
+    originalImage: string;
+    modifiedImage: string;
     nDifference: number;
-    differenceMatrix: Vec2[][];
+    differences: Coordinate[][];
     isHard: boolean;
 }
 
@@ -32,7 +32,7 @@ export interface GameCard {
     thumbnail: string;
 }
 
-export interface CarrouselPaginator {
+export interface CarouselPaginator {
     hasNext: boolean;
     hasPrevious: boolean;
     gameCards: GameCard[];

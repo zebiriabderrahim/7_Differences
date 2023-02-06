@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { Game } from '@app/interfaces/game-interfaces';
-import { CommunicationService } from '@app/services/communication-service/communication-service.service';
+import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { GameCardService } from '@app/services/gamecard-service/gamecard.service';
 import { TimerService } from '@app/services/timer-service/timer.service';

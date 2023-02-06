@@ -2,22 +2,33 @@
     <div class="upper-list-game">
         <app-selection-page> </app-selection-page>
     </div>
-    <div class="under-list-game">
-        <div class="change-game">
-            <button mat-raised-button [routerLink]="createRoute" class="create_button">Création de jeu</button>
-        </div>
-        <div class="game-constants">
-            <ul>
-                <p>
-                    Temps initial du compte à rebours: <strong>{{ timeCountdown }}</strong>
-                </p>
-                <p>
-                    Temps de pénalité pour l’utilisation d’un indice: <strong>{{ timePenalty }}</strong>
-                </p>
-                <p>
-                    Temps gagné avec la découverte d’une différence: <strong>{{ timeWonByDifference }}</strong>
-                </p>
-            </ul>
-        </div>
+    <div class="under-game-list">
+        <mat-grid-list cols="2" rowHeight="300px">
+            <mat-grid-tile>
+                <div class="change-game">
+                    <button mat-raised-button [routerLink]="createRoute" class="create_button">Création de jeu</button>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile
+                ><div class="game-constants">
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title> Constantes de jeu </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <ul>
+                            <p>
+                                Temps initial du compte à rebours: <strong>{{ countdownTime }} secondes</strong>
+                            </p>
+                            <p>
+                                Temps de pénalité pour l’utilisation d’un indice: <strong>{{ penaltyTime }} secondes</strong>
+                            </p>
+                            <p>
+                                Temps gagné avec la découverte d’une différence: <strong>{{ bonusTime }} secondes</strong>
+                            </p>
+                        </ul>
+                    </mat-expansion-panel>
+                </div>
+            </mat-grid-tile>
+        </mat-grid-list>
     </div>
 </div>
