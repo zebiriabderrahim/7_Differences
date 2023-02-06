@@ -61,13 +61,11 @@ export class GameAreaService {
         let frontContext: CanvasRenderingContext2D;
         if (isMainCanvas) {
             frontContext = this.originalContextFrontLayer;
-            frontContext.fillStyle = 'red';
-            this.incorrectSoundEffect.play();
         } else {
             frontContext = this.modifiedContextFrontLayer;
-            frontContext.fillStyle = 'green';
-            this.correctSoundEffect.play();
         }
+        this.incorrectSoundEffect.play();
+        frontContext.fillStyle = 'red';
         this.clickDisabled = true;
         frontContext.font = 'bold 30px sheriff';
         frontContext.fillText('Erreur', this.mousePosition.x - 38, this.mousePosition.y);
@@ -94,5 +92,10 @@ export class GameAreaService {
             }
         }
         this.modifiedContext.putImageData(this.modifiedPixelData, 0, 0);
+        // this.flashCorrectCoord(differenceCoord);
     }
+
+    /* flashCorrectCoord(differenceCoord: Vec2[]): void {
+        this.correctSoundEffect.play();
+    }*/
 }

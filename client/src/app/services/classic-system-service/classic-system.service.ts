@@ -9,7 +9,20 @@ import { GameAreaService } from '@app/services/game-area-service/game-area.servi
 export class ClassicSystemService {
     constructor(private gameAreaService: GameAreaService, private clientSocket: ClientSocketService) {}
 
-    requestVerification(game: Game, coords: Vec2) {
+    requestVerification(game: Game, coords: Vec2): void {
         this.clientSocket.send('verifyCoords', { game, coords });
     }
+
+    /* replaceDifference(differences: Vec2[]): void {
+        if (differences.length === 0) {
+            this.gameAreaService.showError(false);
+        } else {
+        }
+    }*/
+
+    /* manageSocket(): void {
+        this.clientSocket.on('validateCoords', (differences: Vec2[]) => {
+            // replaceDifference(differences);
+        });
+    }*/
 }
