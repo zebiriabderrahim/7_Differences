@@ -3,7 +3,7 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { BACK_BUTTON, CANVAS_HEIGHT, CANVAS_WIDTH, FORWARD_BUTTON, LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON } from '@app/constants/constants';
-import { Vec2 } from '@app/interfaces/vec2';
+import { Coordinate } from '@common/coordinate';
 import { GameAreaService } from './game-area.service';
 
 describe('GameAreaService', () => {
@@ -37,7 +37,7 @@ describe('GameAreaService', () => {
     });
 
     it('should convert 2D coordinates to pixel indexes', () => {
-        const differenceCoord: Vec2[] = [
+        const differenceCoord: Coordinate[] = [
             { x: 12, y: 15 },
             { x: 0, y: 0 },
             { x: 20, y: 100 },
@@ -48,7 +48,7 @@ describe('GameAreaService', () => {
         expect(resultingIndexList).toEqual(expectedIndexList);
     });
 
-    it('should get the imagesData of the two contexes when setImageData is called', () => {
+    it('should get the imagesData of the two contexts when setImageData is called', () => {
         const originalCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
         const modifiedCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
         const originalCanvasForeground: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */ // TO BE ERASED AFTER CREATION OF CONSTANTS FILES
 import { HostListener, Injectable } from '@angular/core';
-import { Vec2 } from '@app/interfaces/vec2';
+import { Coordinate } from '@common/coordinate';
 
 @Injectable({
     providedIn: 'root',
@@ -14,7 +14,7 @@ export class GameAreaService {
     modifiedContext: CanvasRenderingContext2D;
     originalContextFrontLayer: CanvasRenderingContext2D;
     modifiedContextFrontLayer: CanvasRenderingContext2D;
-    mousePosition: Vec2 = { x: 0, y: 0 };
+    mousePosition: Coordinate = { x: 0, y: 0 };
     clickDisabled: boolean = false;
     correctSoundEffect: HTMLAudioElement = new Audio('assets/sound/WinSoundEffect.mp3');
     incorrectSoundEffect: HTMLAudioElement = new Audio('assets/sound/ErrorSoundEffect.mp3');
@@ -75,7 +75,7 @@ export class GameAreaService {
         }, 1000);
     }
 
-    convert2DCoordToPixelIndex(differenceCoord: Vec2[]): number[] {
+    convert2DCoordToPixelIndex(differenceCoord: Coordinate[]): number[] {
         const imageDataIndex: number[] = [];
         for (const coord of differenceCoord) {
             const flatIndex = (coord.x + this.maxWidth * coord.y) * this.pixelLength;
@@ -84,7 +84,8 @@ export class GameAreaService {
         return imageDataIndex;
     }
 
-    replaceDifference(differenceCoord: Vec2[]): void {
+    replaceDifference(differenceCoord: Coordinate[]): void {
+        this.correctSoundEffect.play();
         const imageDataIndex = this.convert2DCoordToPixelIndex(differenceCoord);
         for (const index of imageDataIndex) {
             for (let i = 0; i < this.pixelLength; i++) {
@@ -95,7 +96,7 @@ export class GameAreaService {
         // this.flashCorrectCoord(differenceCoord);
     }
 
-    /* flashCorrectCoord(differenceCoord: Vec2[]): void {
+    /* flashCorrectCoord(differenceCoord: Coordinate[]): void {
         this.correctSoundEffect.play();
     }*/
 }
