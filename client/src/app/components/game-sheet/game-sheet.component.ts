@@ -17,26 +17,14 @@ export class GameSheetComponent {
     constructor(public dialog: MatDialog, public router: Router, private gameCard: GameCardService) {}
 
     openDialog() {
-        if (this.router.url === '/selection') {
-            const dialogConfig = new MatDialogConfig();
-            dialogConfig.data = { disableClose: true };
-            const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent, dialogConfig);
-            dialogRef.afterClosed().subscribe((playerName) => {
-                if (playerName.trim().length !== 0 && playerName !== undefined) {
-                    this.gameCard.redirection(this.game.id);
-                    dialogConfig.data = { playerName, game: this.game };
-                }
-            });
-        }
-    }
-
-    navigate() {
-        if (this.router.url === '/selection') {
-            this.buttonPlay = 'Jouer';
-            this.buttonJoin = 'Joindre';
-        } else if (this.router.url === '/config') {
-            this.buttonPlay = 'Supprimer';
-            this.buttonJoin = 'Réinitialier';
-        }
+        const dialogConfig = new MatDialogConfig();
+        dialogConfig.data = { disableClose: true };
+        const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent, dialogConfig);
+        dialogRef.afterClosed().subscribe((playerName) => {
+            if (playerName.trim().length !== 0 && playerName !== undefined) {
+                this.gameCard.redirection(this.game.id);
+                dialogConfig.data = { playerName, game: this.game };
+            }
+        });
     }
 }

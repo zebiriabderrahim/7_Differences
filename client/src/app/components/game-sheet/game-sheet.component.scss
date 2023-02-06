@@ -3,6 +3,8 @@
 }
 
 .gameSheet {
+    display: flex;
+    flex-direction: column;
     border: 6px solid #000000;
     border-radius: 15px;
     box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.75);
@@ -29,8 +31,8 @@ h1 {
 .thumbnail {
     margin: 5px;
     display: flex;
-    max-width: 200px;
-    max-height: 135px;
+    max-width: 250px;
+    max-height: 150px;
 }
 
 .gameInfo {
@@ -39,28 +41,22 @@ h1 {
     flex-direction: column;
     margin: 5px;
     background-color: #ffffff;
-    width: 200px;
-    height: 135px;
 }
 
 .ranking {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    text-align: center;
-    margin-left: 5px;
-    margin-right: 5px;
 }
 
 .bestTime {
     background-color: #ff7e7e;
     border: 2px solid #a30000;
-    border-radius: 19px;
+    border-radius: 10px;
 }
 
 .buttonSection {
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
     padding-top: 20px;
     padding-bottom: 20px;
     background-color: #fffdfd;

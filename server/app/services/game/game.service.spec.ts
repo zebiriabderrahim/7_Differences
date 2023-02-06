@@ -1,5 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { DatabaseService } from '@app/services/database/database.service';
+import { Test, TestingModule } from '@nestjs/testing';
 import { GameService } from './game.service';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { Game, GameConfigConst, CarouselPaginator } from '@common/game-interfaces';
