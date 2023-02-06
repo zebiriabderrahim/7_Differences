@@ -131,19 +131,12 @@ describe('ImageService', () => {
         expect(setLeftBackgroundSpy).toHaveBeenCalledOnceWith(image);
     });
 
-    it('setEnlargementR', () => {
-        service.leftBackground = '';
-        service.rightBackground = '';
-        const validateDifferencesSpy = spyOn(service, 'validateDifferences');
-        service.setDifferenceContext(contextStub);
-        expect(validateDifferencesSpy).not.toHaveBeenCalled();
-    });
-
     it('setDifferenceContext should not call validateDifferences if backgrounds are not set', () => {
         service.leftBackground = '';
         service.rightBackground = '';
         const validateDifferencesSpy = spyOn(service, 'validateDifferences');
-        service.setDifferenceContext(contextStub);
+        const radius = 3;
+        service.setDifferenceContext(contextStub, radius);
         expect(validateDifferencesSpy).not.toHaveBeenCalled();
     });
 
@@ -151,7 +144,8 @@ describe('ImageService', () => {
         service.leftBackground = 'leftBackground';
         service.rightBackground = '';
         const validateDifferencesSpy = spyOn(service, 'validateDifferences');
-        service.setDifferenceContext(contextStub);
+        const radius = 3;
+        service.setDifferenceContext(contextStub, radius);
         expect(validateDifferencesSpy).not.toHaveBeenCalled();
     });
 
@@ -159,7 +153,8 @@ describe('ImageService', () => {
         service.leftBackground = 'leftBackground';
         service.rightBackground = 'rightBackground';
         const validateDifferencesSpy = spyOn(service, 'validateDifferences');
-        service.setDifferenceContext(contextStub);
+        const radius = 3;
+        service.setDifferenceContext(contextStub, radius);
         expect(validateDifferencesSpy).toHaveBeenCalled();
     });
 
@@ -197,7 +192,8 @@ describe('ImageService', () => {
         const transformContextToPixelArraySpy = spyOn(service, 'transformContextToPixelArray').and.callFake(() => {
             return [];
         });
-        service.validateDifferences();
+        const radius = 3;
+        service.validateDifferences(radius);
         expect(transformContextToPixelArraySpy).toHaveBeenCalledWith(service.leftBackgroundContext);
         expect(transformContextToPixelArraySpy).toHaveBeenCalledWith(service.rightBackgroundContext);
     });
@@ -206,7 +202,8 @@ describe('ImageService', () => {
         const drawDifferencesSpy = spyOn(service, 'drawDifferences').and.callFake(() => {
             return [];
         });
-        service.validateDifferences();
+        const radius = 3;
+        service.validateDifferences(radius);
         expect(drawDifferencesSpy).toHaveBeenCalled();
     });
 

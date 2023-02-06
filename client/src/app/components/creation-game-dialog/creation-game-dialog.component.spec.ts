@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
@@ -20,7 +20,10 @@ describe('CreationGameDialogComponent', () => {
         await TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             declarations: [CreationGameDialogComponent],
-            providers: [{ provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } }],
+            providers: [
+                { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } },
+                { provide: MAT_DIALOG_DATA, useValue: [] },
+            ],
         }).compileComponents();
 
         fixture = TestBed.createComponent(CreationGameDialogComponent);
@@ -122,6 +125,7 @@ describe('CreationGameDialogComponent', () => {
         expect(component.gameNameForm.disabled).toBeFalsy();
     });
 
+    // TODO: fix this
     // it('should display the warning message when isNumberOfDifferencesValid is false', () => {
     //     differenceService.differencePackages.length = 5;
     //     fixture.detectChanges();
