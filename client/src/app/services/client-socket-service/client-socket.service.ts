@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
-import { environment } from 'src/environments/environment';
+// import { environment } from 'src/environments/environment';
 // This code belongs to Nikolay Radoev
 // https://gitlab.com/nikolayradoev/socket-io-exemple/-/tree/master
 
@@ -15,7 +15,7 @@ export class ClientSocketService {
     }
 
     connect() {
-        this.socket = io(environment.serverUrl, { transports: ['websocket'], upgrade: false });
+        this.socket = io('http://localhost:3000/', { transports: ['websocket'], upgrade: false });
     }
 
     disconnect() {
