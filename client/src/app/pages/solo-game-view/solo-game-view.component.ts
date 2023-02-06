@@ -23,6 +23,8 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     readonly homeRoute: string = '/home';
     // private canvasSize = { width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
 
+    // a enlever plus tard
+    // eslint-disable-next-line max-params
     constructor(
         public timer: TimerService,
         private gameAreaService: GameAreaService,
