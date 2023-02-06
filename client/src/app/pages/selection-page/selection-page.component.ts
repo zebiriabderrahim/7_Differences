@@ -16,14 +16,6 @@ export class SelectionPageComponent implements OnInit {
         this.gameCarrousel = { hasNext: false, hasPrevious: false, gameCards: [] };
     }
 
-    navigate() {
-        if (this.router.url === '/selection') {
-            this.titre = 'Selectionne ton jeu';
-        } else if (this.router.url === '/config') {
-            this.titre = 'Configure ton jeu';
-        }
-    }
-
     ngOnInit(): void {
         this.communicationService.loadGameCarrousel(this.index).subscribe((gameCarrousel) => {
             if (gameCarrousel) {
