@@ -34,8 +34,8 @@ describe('ConfigPageComponent', () => {
 
     it('should load a game when this one exist', () => {
         component.ngOnInit();
-        expect(component.bonusTime).toEqual(0);
-        expect(component.penaltyTime).toEqual(0);
-        expect(component.countdownTime).toEqual(0);
+        expect(component.configConstants.bonusTime).toEqual(0);
+        expect(component.configConstants.penaltyTime).toEqual(0);
+        expect(component.configConstants.countdownTime).toEqual(0);
     });
 });

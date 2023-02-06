@@ -9,13 +9,13 @@
                     <h3>Top Solo</h3>
                     <div class="topSolo" *ngFor="let player of game.soloTopTime; index as i">
                         <strong class="bestTime">&nbsp;{{ i + 1 }} </strong>
-                        &nbsp;<strong>{{ player.name }}</strong> {{ '&nbsp;&nbsp;' + player.time }}
+                        &nbsp;<strong>{{ player.name }}</strong> {{ player.time }}
                     </div>
                 </div>
                 <div class="top three section">
                     <h3>Top 1 Vs 1</h3>
                     <div *ngFor="let player of game.oneVsOneTopTime">
-                        <strong>{{ player.name }}</strong> {{ '&nbsp;&nbsp;' + player.time }}
+                        <strong>{{ player.name }}</strong> {{ player.time }}
                     </div>
                 </div>
             </div>

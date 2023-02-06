@@ -39,7 +39,7 @@ describe('SelectionPageComponent', () => {
     });
 
     it('should load a Carrousel when this one exist', () => {
-        component.ngOnInit();
+        component.ngAfterViewInit();
         expect(component.gameCarrousel).toEqual({ hasNext: false, hasPrevious: false, gameCards: [] });
     });
 
