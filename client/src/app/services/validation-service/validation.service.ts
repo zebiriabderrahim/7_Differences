@@ -26,8 +26,4 @@ export class ValidationService {
         const descriptionBuffer = Uint8Array.from(Buffer.from(imageData, 'base64'));
         return descriptionBuffer[BMP_HEADER_OFFSET] === FORMAT_IMAGE;
     }
-
-    isImageValid(event: Event, imageDescription: string): boolean {
-        return this.isImageTypeValid(imageDescription) && this.isImageSizeValid(event) && this.isImageFormatValid(imageDescription);
-    }
 }

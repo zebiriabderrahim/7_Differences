@@ -32,13 +32,17 @@ export class ImageCanvasComponent implements AfterViewInit {
             reader.onload = () => {
                 const image = new Image();
                 image.src = reader.result as string;
-                image.onload = (ev: Event) => {
-                    if (this.validationService.isImageValid(ev, image.src)) {
-                        this.imageService.setBackground(this.position, image.src);
-                    } else {
-                        this.dialog.open(ImageValidationDialogComponent);
-                    }
-                };
+                if (this.validationService.isImageTypeValid(image.src)) {
+                    image.onload = (ev: Event) => {
+                        if (this.validationService.isImageSizeValid(ev) && this.validationService.isImageFormatValid(image.src)) {
+                            this.imageService.setBackground(this.position, image.src);
+                        } else {
+                            this.dialog.open(ImageValidationDialogComponent);
+                        }
+                    };
+                } else {
+                    this.dialog.open(ImageValidationDialogComponent);
+                }
             };
         }
     }

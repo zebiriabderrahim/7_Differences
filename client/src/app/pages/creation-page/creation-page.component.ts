@@ -30,13 +30,17 @@ export class CreationPageComponent {
             reader.onload = () => {
                 const image = new Image();
                 image.src = reader.result as string;
-                image.onload = (ev: Event) => {
-                    if (this.validationService.isImageValid(ev, image.src)) {
-                        this.imageService.setBothBackgrounds(image.src);
-                    } else {
-                        this.matDialog.open(ImageValidationDialogComponent);
-                    }
-                };
+                if (this.validationService.isImageTypeValid(image.src)) {
+                    image.onload = (ev: Event) => {
+                        if (this.validationService.isImageSizeValid(ev) && this.validationService.isImageFormatValid(image.src)) {
+                            this.imageService.setBothBackgrounds(image.src);
+                        } else {
+                            this.matDialog.open(ImageValidationDialogComponent);
+                        }
+                    };
+                } else {
+                    this.matDialog.open(ImageValidationDialogComponent);
+                }
             };
         }
     }
