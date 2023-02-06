@@ -23,8 +23,7 @@ export class ClassicSystemService {
     //     this.clientSocket.send('validateCoords', { game, coords });
     // }
     requestVerification(coords: Coordinate): void {
-        // console.log('requestVerification' + coords);
-        this.clientSocket.send('validateCoords', coords);
+        this.clientSocket.send('removeDiff', coords);
     }
 
     replaceDifference(differences: Coordinate[]): void {
@@ -43,8 +42,8 @@ export class ClassicSystemService {
             this.currentGame.asObservable();
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (clientGame: ClientSideGame) => {
+            console.log(clientGame);
             this.replaceDifference(clientGame.currentDifference);
-            console.log(clientGame.gameName);
         });
 
         // TODO catcher la creation d'une game

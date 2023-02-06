@@ -62,6 +62,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
             this.isLeftCanvas = true;
             this.gameAreaService.setAllData();
             this.classicService.requestVerification(this.gameAreaService.mousePosition);
+            console.log('CLIC !');
         }
     }
 

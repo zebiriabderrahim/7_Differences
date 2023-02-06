@@ -1,15 +1,19 @@
-import { ClientSideGame, PlayRoom, ServerSideGame, GameEvents } from '@common/game-interfaces';
 import { GameService } from '@app/services/game/game.service';
 import { Coordinate } from '@common/coordinate';
+import { ClientSideGame, GameEvents, PlayRoom, ServerSideGame } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
 
 @Injectable()
 export class ClassicSoloModeService {
-    private readonly server: io.Server;
+    private server: io.Server;
     private readonly rooms: Map<string, PlayRoom> = new Map<string, PlayRoom>();
 
     constructor(private readonly gameService: GameService) {}
+
+    logServer(server: io.Server) {
+        this.server = server;
+    }
 
     createSoloRoom(socket: io.Socket, playerName: string, gameId: number): PlayRoom {
         const game = this.gameService.getGameById(gameId);
@@ -52,8 +56,9 @@ export class ClassicSoloModeService {
         } else {
             room.clientGame.currentDifference = [];
         }
+
         this.rooms.set(room.roomId, room);
-        this.server.to(room.roomId).emit(GameEvents.RemoveDiff, room.clientGame);
+        this.server.to(roomId).emit(GameEvents.RemoveDiff, room.clientGame);
     }
 
     buildClientGameVersion(playerName: string, game: ServerSideGame): ClientSideGame {

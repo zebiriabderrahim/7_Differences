@@ -1,19 +1,19 @@
 import { ClassicSoloModeService } from '@app/services/classic-solo-mode/classic-solo-mode.service';
 import { Coordinate } from '@common/coordinate';
+import { GameEvents } from '@common/game-interfaces';
 import { Injectable, Logger } from '@nestjs/common';
 import {
-    WebSocketGateway,
-    WebSocketServer,
-    SubscribeMessage,
+    ConnectedSocket,
+    MessageBody,
     OnGatewayConnection,
     OnGatewayDisconnect,
     OnGatewayInit,
-    ConnectedSocket,
-    MessageBody,
+    SubscribeMessage,
+    WebSocketGateway,
+    WebSocketServer
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID } from './game.gateway.constants';
-import { GameEvents } from '@common/game-interfaces';
 
 @WebSocketGateway(
     WebSocketGateway({
@@ -33,7 +33,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage(GameEvents.CreateSoloGame)
     createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('playerName') playerName: string, @MessageBody('gameId') gameId: number) {
         try {
-            this.logger.log('test');
+            this.classicSoloModeService.logServer(this.server);
             const room = this.classicSoloModeService.createSoloRoom(socket, playerName, gameId);
             if (room) {
                 this.server.to(room.roomId).emit(GameEvents.CreateSoloGame, room.clientGame);
@@ -44,11 +44,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameEvents.RemoveDiff)
-    validateCoords(@ConnectedSocket() socket: Socket, coords: Coordinate) {
+    validateCoords(@ConnectedSocket() socket: Socket, @MessageBody() coords: Coordinate) {
         try {
             this.classicSoloModeService.verifyCoords(socket.id, coords);
+            this.logger.log('Ca envoie bien des coords');
         } catch (error) {
             this.server.to(socket.id).emit(GameEvents.RemoveDiff, 'Erreur lors de la validation des coordonnées');
+            this.logger.log('Erreur lors de la validation des coordonnées');
         }
     }
 
