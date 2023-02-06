@@ -10,7 +10,7 @@ import {
     OnGatewayInit,
     SubscribeMessage,
     WebSocketGateway,
-    WebSocketServer
+    WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID } from './game.gateway.constants';
@@ -33,7 +33,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage(GameEvents.CreateSoloGame)
     createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('playerName') playerName: string, @MessageBody('gameId') gameId: number) {
         try {
-            this.classicSoloModeService.logServer(this.server);
             const room = this.classicSoloModeService.createSoloRoom(socket, playerName, gameId);
             if (room) {
                 this.server.to(room.roomId).emit(GameEvents.CreateSoloGame, room.clientGame);
@@ -46,11 +45,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage(GameEvents.RemoveDiff)
     validateCoords(@ConnectedSocket() socket: Socket, @MessageBody() coords: Coordinate) {
         try {
-            this.classicSoloModeService.verifyCoords(socket.id, coords);
-            this.logger.log('Ca envoie bien des coords');
+            this.classicSoloModeService.verifyCoords(socket.id, coords, this.server);
         } catch (error) {
             this.server.to(socket.id).emit(GameEvents.RemoveDiff, 'Erreur lors de la validation des coordonnées');
-            this.logger.log('Erreur lors de la validation des coordonnées');
         }
     }
 
@@ -71,6 +68,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         }
     }
 
+    @SubscribeMessage(GameEvents.TimerStarted)
+    updateTimers() {
+        // for (const room of this.classicSoloModeService['rooms']) {
+        //     this.classicSoloModeService.updateTimer(room['roomId']);
+        // }
+    }
+
     afterInit() {
         setInterval(() => {
             this.updateTimers();
@@ -79,17 +83,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     handleConnection(@ConnectedSocket() socket: Socket) {
         this.logger.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
-        // message initial
-        socket.emit(GameEvents.CheckStatus, 'Hello World!');
     }
 
     handleDisconnect(@ConnectedSocket() socket: Socket) {
         this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
-    }
-
-    private updateTimers() {
-        // for (const room of this.classicSoloModeService['rooms']) {
-        //     this.classicSoloModeService.updateTimer(room['roomId']);
-        // }
     }
 }

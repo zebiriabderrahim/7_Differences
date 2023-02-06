@@ -8,7 +8,4 @@ import { ClientSideGame } from '@common/game-interfaces';
 })
 export class GameInfosComponent {
     @Input() game: ClientSideGame;
-    @Input() mode: string;
-    @Input() penaltyTime: number;
-    @Input() bonusTime: number;
 }
