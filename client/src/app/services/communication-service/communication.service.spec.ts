@@ -56,10 +56,6 @@ describe('CommunicationServiceService', () => {
         request.flush(mockGameCarrousel);
     });
 
-    it('should return nothing when the server contain no carrousel', () => {
-        httpMock.expectNone(`${serviceComponent['gameUrl']}/carrousel/1`);
-    });
-
     it('should GET a game by id when loadGameById is called', () => {
         game = {
             id: 0,

@@ -12,7 +12,7 @@ describe('PlayerNameDialogBoxComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [ReactiveFormsModule],
-            declarations: [PlayerNameDialogBoxComponent],
+            declarations: [],
             providers: [
                 { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } },
                 { provide: MAT_DIALOG_DATA, useValue: { id: 1 } },
