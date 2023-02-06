@@ -1,10 +1,10 @@
-import { PlayerTime, GameConfigConst, CarouselPaginator, Game, GameCard } from '@common/game-interfaces';
-import { Test, TestingModule } from '@nestjs/testing';
-import { DatabaseService } from './database.service';
-import * as fs from 'fs';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameListsManagerService } from '@app/services/game-lists-manager/game-lists-manager.service';
+import { CarouselPaginator, GameCard, GameConfigConst, PlayerTime, ServerSideGame } from '@common/game-interfaces';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as fs from 'fs';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { DatabaseService } from './database.service';
 
 describe('DatabaseService', () => {
     let dataBaseService: DatabaseService;
@@ -28,7 +28,7 @@ describe('DatabaseService', () => {
         },
     ];
 
-    const testGames: Game[] = [
+    const testGames: ServerSideGame[] = [
         {
             id: 1,
             name: 'test',

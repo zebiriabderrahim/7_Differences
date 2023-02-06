@@ -1,7 +1,7 @@
-import { Game, GameCard, CarouselPaginator, PlayerTime } from '@common/game-interfaces';
-import { Injectable } from '@nestjs/common';
-import { GAME_CARROUSEL_SIZE } from '@common/constants';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
+import { GAME_CARROUSEL_SIZE } from '@common/constants';
+import { CarouselPaginator, GameCard, PlayerTime, ServerSideGame } from '@common/game-interfaces';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class GameListsManagerService {
@@ -11,7 +11,7 @@ export class GameListsManagerService {
         { name: 'the scream', time: 250 },
     ];
 
-    buildGameCardFromGame(game: Game): GameCard {
+    buildGameCardFromGame(game: ServerSideGame): GameCard {
         const gameCard: GameCard = {
             id: game.id,
             name: game.name,
@@ -49,7 +49,7 @@ export class GameListsManagerService {
             }
         }
     }
-    createGameFromGameDto(newGame: CreateGameDto): Game {
+    createGameFromGameDto(newGame: CreateGameDto): ServerSideGame {
         return {
             id: newGame.id,
             name: newGame.name,
@@ -59,6 +59,7 @@ export class GameListsManagerService {
             oneVsOneTopTime: this.defaultBestTimes,
             difficultyLevel: newGame.isHard,
             thumbnail: newGame.modifiedImage,
+            differences: newGame.differences,
             differencesCount: newGame.nDifference,
             hintList: [],
         };
