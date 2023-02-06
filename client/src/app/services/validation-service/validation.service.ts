@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BMP_HEADER_OFFSET, FORMAT_IMAGE, IMG_HEIGHT, IMG_TYPE, IMG_WIDTH } from '@app/constants/creation-page';
+import { Buffer } from 'buffer';
 import { ImageService } from '@app/services/image-service/image.service';
 @Injectable({
     providedIn: 'root',
@@ -21,11 +22,9 @@ export class ValidationService {
     }
 
     isImageFormatValid(imageDescription: string): boolean {
-        // TODO refactor atob
-        // eslint-disable-next-line deprecation/deprecation
-        const binaryFile = atob(imageDescription.split(',')[1]);
-        const bmpFormat = binaryFile.charCodeAt(BMP_HEADER_OFFSET);
-        return bmpFormat === FORMAT_IMAGE;
+        const imageData = imageDescription.split(',')[1];
+        const descriptionBuffer = Uint8Array.from(Buffer.from(imageData, 'base64'));
+        return descriptionBuffer[BMP_HEADER_OFFSET] === FORMAT_IMAGE;
     }
 
     isImageValid(event: Event, imageDescription: string): boolean {
