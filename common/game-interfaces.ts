@@ -29,6 +29,8 @@ export interface ClientSideGame {
     player: string;
     gameMode: string;
     timer: number;
+    original: string;
+    modified: string;
     differencesFound: number;
     messages: string[];
     endGameMessage: string;
@@ -36,6 +38,7 @@ export interface ClientSideGame {
     hintPenalty: number;
     soloTopTime: PlayerTime[];
     oneVsOneTopTime: PlayerTime[];
+    hintList: string[];
 }
 
 export interface GameCard {
@@ -68,4 +71,14 @@ export interface PlayRoom {
     roomId: string;
     serverGame: ServerSideGame;
     clientGame: ClientSideGame;
+}
+
+export enum GameEvents {
+    ValidateCoords = 'validateCoords',
+    Penalty = 'penalty',
+    CheckStatus = 'checkStatus',
+    CreateSoloGame = 'createSoloGame',
+    EndGame = 'endGame',
+    TimerStarted = 'timerStarted',
+    RemoveDiff = 'removeDiff',
 }

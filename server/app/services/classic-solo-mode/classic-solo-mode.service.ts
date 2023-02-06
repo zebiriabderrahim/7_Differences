@@ -1,9 +1,8 @@
-import { ClientSideGame, PlayRoom, ServerSideGame } from '@common/game-interfaces';
+import { ClientSideGame, PlayRoom, ServerSideGame, GameEvents } from '@common/game-interfaces';
 import { GameService } from '@app/services/game/game.service';
 import { Coordinate } from '@common/coordinate';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
-import { GameEvents } from '@app/gateways/game/game.gateway.events';
 
 @Injectable()
 export class ClassicSoloModeService {
@@ -71,6 +70,9 @@ export class ClassicSoloModeService {
             hintPenalty: this.gameService.getConfigConstants().penaltyTime,
             soloTopTime: game.soloTopTime,
             oneVsOneTopTime: game.oneVsOneTopTime,
+            original: game.original,
+            modified: game.modified,
+            hintList: game.hintList,
         };
         return clientGame;
     }

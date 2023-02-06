@@ -13,7 +13,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { DELAY_BEFORE_EMITTING_TIME, PRIVATE_ROOM_ID } from './game.gateway.constants';
-import { GameEvents } from './game.gateway.events';
+import { GameEvents } from '@common/game-interfaces';
 
 @WebSocketGateway(
     WebSocketGateway({
@@ -33,21 +33,22 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage(GameEvents.CreateSoloGame)
     createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('playerName') playerName: string, @MessageBody('gameId') gameId: number) {
         try {
+            this.logger.log('test');
             const room = this.classicSoloModeService.createSoloRoom(socket, playerName, gameId);
             if (room) {
-                this.server.in(room.roomId).emit(GameEvents.CreateSoloGame, room.clientGame);
+                this.server.to(room.roomId).emit(GameEvents.CreateSoloGame, room.clientGame);
             }
         } catch (error) {
-            this.server.in(socket.id).emit(GameEvents.CreateSoloGame, 'Erreur lors de la création de la partie');
+            this.server.to(socket.id).emit(GameEvents.CreateSoloGame, 'Erreur lors de la création de la partie');
         }
     }
 
-    @SubscribeMessage(GameEvents.ValidateCoords)
+    @SubscribeMessage(GameEvents.RemoveDiff)
     validateCoords(@ConnectedSocket() socket: Socket, coords: Coordinate) {
         try {
             this.classicSoloModeService.verifyCoords(socket.id, coords);
         } catch (error) {
-            this.server.in(socket.id).emit(GameEvents.ValidateCoords, 'Erreur lors de la validation des coordonnées');
+            this.server.to(socket.id).emit(GameEvents.RemoveDiff, 'Erreur lors de la validation des coordonnées');
         }
     }
 
@@ -56,7 +57,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         try {
             this.classicSoloModeService.addPenalty(socket.id);
         } catch (error) {
-            this.server.in(socket.id).emit(GameEvents.Penalty, "Erreur lors de l'application de la pénalité");
+            this.server.to(socket.id).emit(GameEvents.Penalty, "Erreur lors de l'application de la pénalité");
         }
     }
 
