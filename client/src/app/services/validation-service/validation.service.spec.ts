@@ -30,15 +30,15 @@ describe('ValidationService', () => {
     });
 
     it('areImagesSet should return true if both leftBackground and rightBackground are set', () => {
-        expect(service.areImagesSet()).toBe(true);
+        expect(service.areImagesSet()).toBeTruthy();
     });
 
     it('areImagesSet should return false if either leftBackground or rightBackground is not set', () => {
         imageService.leftBackground = '';
-        expect(service.areImagesSet()).toBe(false);
+        expect(service.areImagesSet()).toBeFalsy();
         imageService.leftBackground = 'left';
         imageService.rightBackground = '';
-        expect(service.areImagesSet()).toBe(false);
+        expect(service.areImagesSet()).toBeFalsy();
     });
 
     it('isImageTypeValid should return false when given the wrong image type', () => {
@@ -130,11 +130,11 @@ describe('ValidationService', () => {
 
     it('isImageFormatValid should return true when image format is valid', () => {
         const imageDescription = 'data:image/bmp;base64,Qk02EA4AAAAAADYAAAAoAAAAgAIAAOABAAABABgAAAAAAAAQDgDEDgAAxA4AAAAAAAAAAAAA';
-        expect(service.isImageFormatValid(imageDescription)).toBe(true);
+        expect(service.isImageFormatValid(imageDescription)).toBeTruthy();
     });
 
     it('isImageFormatValid should return false when image format is not valid', () => {
         const imageDescription = 'data:image/bmp;base64,def';
-        expect(service.isImageFormatValid(imageDescription)).toBe(false);
+        expect(service.isImageFormatValid(imageDescription)).toBeFalsy();
     });
 });

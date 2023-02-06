@@ -32,27 +32,27 @@ describe('DifferenceService', () => {
 
     it('isCoordinateValid should return true if the coordinate is valid', () => {
         const coordinate = { x: 300, y: 200 };
-        expect(service.isCoordinateValid(coordinate)).toBe(true);
+        expect(service.isCoordinateValid(coordinate)).toBeTruthy();
     });
 
     it('isCoordinateValid should return false if the x coordinate is negative', () => {
         const coordinate = { x: -100, y: 200 };
-        expect(service.isCoordinateValid(coordinate)).toBe(false);
+        expect(service.isCoordinateValid(coordinate)).toBeFalsy();
     });
 
     it('isCoordinateValid should return false if the x coordinate is greater than or equal to 640', () => {
         const coordinate = { x: 640, y: 200 };
-        expect(service.isCoordinateValid(coordinate)).toBe(false);
+        expect(service.isCoordinateValid(coordinate)).toBeFalsy();
     });
 
     it('isCoordinateValid should return false if the y coordinate is negative', () => {
         const coordinate = { x: 300, y: -100 };
-        expect(service.isCoordinateValid(coordinate)).toBe(false);
+        expect(service.isCoordinateValid(coordinate)).toBeFalsy();
     });
 
     it('isCoordinateValid should return false if the y coordinate is greater than or equal to 480', () => {
         const coordinate = { x: 300, y: 480 };
-        expect(service.isCoordinateValid(coordinate)).toBe(false);
+        expect(service.isCoordinateValid(coordinate)).toBeFalsy();
     });
 
     it('isCoordInDifferencesArray should return true if the point is in differencesArray', () => {
@@ -61,7 +61,7 @@ describe('DifferenceService', () => {
             { x: 300, y: 400 },
         ];
         const point = { x: 100, y: 200 };
-        expect(service.isCoordInDifferencesArray(point)).toBe(true);
+        expect(service.isCoordInDifferencesArray(point)).toBeTruthy();
     });
 
     it('isCoordInDifferencesArray should return false if the point is not in differencesArray', () => {
@@ -70,7 +70,7 @@ describe('DifferenceService', () => {
             { x: 300, y: 400 },
         ];
         const point = { x: 500, y: 600 };
-        expect(service.isCoordInDifferencesArray(point)).toBe(false);
+        expect(service.isCoordInDifferencesArray(point)).toBeFalsy();
     });
 
     it('findAdjacentCoords should return the correct list of adjacent coordinates', () => {
@@ -157,13 +157,13 @@ describe('DifferenceService', () => {
     it('arePixelsDifferent should return true if the two pixels have different values', () => {
         const pixel1 = { red: 100, green: 200, blue: 150, alpha: 0 };
         const pixel2 = { red: 50, green: 100, blue: 200, alpha: 1 };
-        expect(service.arePixelsDifferent(pixel1, pixel2)).toBe(true);
+        expect(service.arePixelsDifferent(pixel1, pixel2)).toBeTruthy();
     });
 
     it('arePixelsDifferent should return false if the two pixels have the same values', () => {
         const pixel1 = { red: 100, green: 200, blue: 150, alpha: 0 };
         const pixel2 = { red: 100, green: 200, blue: 150, alpha: 1 };
-        expect(service.arePixelsDifferent(pixel1, pixel2)).toBe(false);
+        expect(service.arePixelsDifferent(pixel1, pixel2)).toBeFalsy();
     });
 
     it('isNumberOfDifferencesValid should return true if the number of differences is between 3 and 9 inclusive', () => {
@@ -181,7 +181,7 @@ describe('DifferenceService', () => {
                 { x: 110, y: 120 },
             ],
         ];
-        expect(service.isNumberOfDifferencesValid()).toBe(true);
+        expect(service.isNumberOfDifferencesValid()).toBeTruthy();
     });
 
     it('isNumberOfDifferencesValid should return false if the number of differences is less than 3', () => {
@@ -195,7 +195,7 @@ describe('DifferenceService', () => {
                 { x: 70, y: 80 },
             ],
         ];
-        expect(service.isNumberOfDifferencesValid()).toBe(false);
+        expect(service.isNumberOfDifferencesValid()).toBeFalsy();
     });
 
     it('isNumberOfDifferencesValid should return false if the number of differences is greater than 9', () => {
@@ -241,7 +241,7 @@ describe('DifferenceService', () => {
                 { x: 390, y: 400 },
             ],
         ];
-        expect(service.isNumberOfDifferencesValid()).toBe(false);
+        expect(service.isNumberOfDifferencesValid()).toBeFalsy();
     });
 
     // eslint-disable-next-line max-len
@@ -280,7 +280,7 @@ describe('DifferenceService', () => {
                 { x: 4, y: 4 },
             ],
         ];
-        expect(service.isGameHard()).toBe(true);
+        expect(service.isGameHard()).toBeTruthy();
     });
 
     it('isGameHard returns false if differencePackages has less than N_DIFFERENCES_HARD_GAME = 7 elements', () => {
@@ -299,7 +299,7 @@ describe('DifferenceService', () => {
             ],
             [{ x: 5, y: 5 }],
         ];
-        expect(service.isGameHard()).toBe(false);
+        expect(service.isGameHard()).toBeFalsy();
     });
 
     it('isGameHard returns false if differencesPercentage is greater than HARD_DIFFERENCES_PERCENTAGE = 0.15', () => {
@@ -337,6 +337,6 @@ describe('DifferenceService', () => {
                 { x: 10, y: 10 },
             ],
         ];
-        expect(service.isGameHard()).toBe(false);
+        expect(service.isGameHard()).toBeFalsy();
     });
 });
