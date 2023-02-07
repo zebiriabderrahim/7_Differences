@@ -1,4 +1,4 @@
-import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageValidationDialogComponent } from '@app/components/image-validation-dialog/image-validation-dialog.component';
@@ -13,45 +13,30 @@ import { ValidationService } from '@app/services/validation-service//validation.
     styleUrls: ['./creation-page.component.scss'],
 })
 export class CreationPageComponent {
-    @Input() radius: number = DEFAULT_RADIUS;
     @ViewChild('imageNotSetDialog', { static: true })
     private readonly imageNotSetDialog: TemplateRef<HTMLElement>;
     readonly configRoute: string = '/config';
     canvasPosition: typeof CanvasPosition = CanvasPosition;
     radiusSizes: number[] = RADIUS_SIZES;
+    radius: number = DEFAULT_RADIUS;
 
     constructor(public imageService: ImageService, public validationService: ValidationService, private readonly matDialog: MatDialog) {}
 
-    onSelectFile(event: Event) {
-        const target = event.target as HTMLInputElement;
-        if (target.files && target.files[0]) {
-            const reader = new FileReader();
-            reader.readAsDataURL(target.files[0]);
-            reader.onload = () => {
-                const image = new Image();
-                image.src = reader.result as string;
-                if (this.validationService.isImageTypeValid(image.src)) {
-                    image.onload = (ev: Event) => {
-                        if (this.validationService.isImageSizeValid(ev) && this.validationService.isImageFormatValid(image.src)) {
-                            this.imageService.setBothBackgrounds(image.src);
-                        } else {
-                            this.matDialog.open(ImageValidationDialogComponent);
-                        }
-                    };
-                } else {
-                    this.matDialog.open(ImageValidationDialogComponent);
-                }
-            };
+    async onSelectFile(event: Event) {
+        if (await this.validationService.isImageUploadValid(event)) {
+            this.imageService.setBothBackgrounds(this.validationService.image);
+        } else {
+            this.matDialog.open(ImageValidationDialogComponent);
         }
     }
 
     validateDifferences() {
-        if (!this.validationService.areImagesSet()) {
-            this.matDialog.open(this.imageNotSetDialog);
-        } else {
+        if (this.imageService.areImagesSet()) {
             const dialogConfig = new MatDialogConfig();
             dialogConfig.data = this.radius;
             this.matDialog.open(CreationGameDialogComponent, dialogConfig);
+        } else {
+            this.matDialog.open(this.imageNotSetDialog);
         }
     }
 }

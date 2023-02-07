@@ -1,29 +1,48 @@
 import { Injectable } from '@angular/core';
 import { BMP_HEADER_OFFSET, FORMAT_IMAGE, IMG_HEIGHT, IMG_TYPE, IMG_WIDTH } from '@app/constants/creation-page';
 import { Buffer } from 'buffer';
-import { ImageService } from '@app/services/image-service/image.service';
 @Injectable({
     providedIn: 'root',
 })
 export class ValidationService {
-    constructor(public imageService: ImageService) {}
+    image: string = '';
 
-    areImagesSet(): boolean {
-        return this.imageService.leftBackground !== '' && this.imageService.rightBackground !== '';
+    async getImageSource(file: File): Promise<string> {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                const image = new Image();
+                image.src = reader.result as string;
+                this.image = image.src;
+                resolve(image.src);
+            };
+        });
     }
 
-    isImageTypeValid(imageDescription: string): boolean {
-        return imageDescription.includes(IMG_TYPE);
+    isImageTypeValid(file: File): boolean {
+        return file.type === IMG_TYPE;
     }
 
-    isImageSizeValid(event: Event): boolean {
-        const target = event.target as HTMLInputElement;
-        return target.width === IMG_WIDTH && target.height === IMG_HEIGHT;
+    isImageSizeValid(image: ImageBitmap): boolean {
+        return image.width === IMG_WIDTH && image.height === IMG_HEIGHT;
     }
 
     isImageFormatValid(imageDescription: string): boolean {
         const imageData = imageDescription.split(',')[1];
         const descriptionBuffer = Uint8Array.from(Buffer.from(imageData, 'base64'));
         return descriptionBuffer[BMP_HEADER_OFFSET] === FORMAT_IMAGE;
+    }
+
+    async isImageUploadValid(event: Event): Promise<boolean> {
+        const target = event.target as HTMLInputElement;
+        if (target.files && target.files[0] && this.isImageTypeValid(target.files[0])) {
+            const file: File = target.files[0];
+            const image = await createImageBitmap(file);
+            const imagesSource = await this.getImageSource(file);
+            return this.isImageSizeValid(image) && this.isImageFormatValid(imagesSource);
+        } else {
+            return false;
+        }
     }
 }
