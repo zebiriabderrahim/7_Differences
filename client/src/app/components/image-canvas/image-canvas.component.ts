@@ -16,7 +16,7 @@ export class ImageCanvasComponent implements AfterViewInit {
     @ViewChild('backgroundCanvas') backgroundCanvas: ElementRef;
     context: CanvasRenderingContext2D;
 
-    constructor(public imageService: ImageService, public validationService: ValidationService, public dialog: MatDialog) {}
+    constructor(public imageService: ImageService, public validationService: ValidationService, public matDialog: MatDialog) {}
     ngAfterViewInit(): void {
         this.backgroundCanvas.nativeElement.width = IMG_WIDTH;
         this.backgroundCanvas.nativeElement.height = IMG_HEIGHT;
@@ -24,26 +24,11 @@ export class ImageCanvasComponent implements AfterViewInit {
         this.imageService.setBackgroundContext(this.position, this.context);
     }
 
-    onSelectFile(event: Event) {
-        const target = event.target as HTMLInputElement;
-        if (target.files && target.files[0]) {
-            const reader = new FileReader();
-            reader.readAsDataURL(target.files[0]);
-            reader.onload = () => {
-                const image = new Image();
-                image.src = reader.result as string;
-                if (this.validationService.isImageTypeValid(image.src)) {
-                    image.onload = (ev: Event) => {
-                        if (this.validationService.isImageSizeValid(ev) && this.validationService.isImageFormatValid(image.src)) {
-                            this.imageService.setBackground(this.position, image.src);
-                        } else {
-                            this.dialog.open(ImageValidationDialogComponent);
-                        }
-                    };
-                } else {
-                    this.dialog.open(ImageValidationDialogComponent);
-                }
-            };
+    async onSelectFile(event: Event) {
+        if (await this.validationService.isImageUploadValid(event)) {
+            this.imageService.setBackground(this.position, this.validationService.image);
+        } else {
+            this.matDialog.open(ImageValidationDialogComponent);
         }
     }
 
