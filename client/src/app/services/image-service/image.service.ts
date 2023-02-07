@@ -31,6 +31,10 @@ export class ImageService {
         }
     }
 
+    areImagesSet(): boolean {
+        return this.leftBackground !== '' && this.rightBackground !== '';
+    }
+
     resetLeftBackground() {
         this.leftBackground = '';
         this.leftBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
