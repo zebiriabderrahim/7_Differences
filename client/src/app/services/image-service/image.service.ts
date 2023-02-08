@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
+import { GAME_ID_MAX } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { BLACK_PIXEL, N_PIXEL_ATTRIBUTE, WHITE_PIXEL } from '@app/constants/pixels';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { Coordinate } from '@app/interfaces/coordinate';
 import { GameDetails } from '@app/interfaces/game-interfaces';
 import { Pixel } from '@app/interfaces/pixel';
-import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
-import { GAME_ID_MAX } from '@app/constants/constants';
+import { DifferenceService } from '@app/services/difference-service/difference.service';
 
 @Injectable({
     providedIn: 'root',

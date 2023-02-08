@@ -29,18 +29,6 @@ describe('ValidationService', () => {
         expect(service).toBeTruthy();
     });
 
-    // it('areImagesSet should return true if both leftBackground and rightBackground are set', () => {
-    //     expect(service.areImagesSet()).toBeTruthy();
-    // });
-
-    // it('areImagesSet should return false if either leftBackground or rightBackground is not set', () => {
-    //     imageService.leftBackground = '';
-    //     expect(service.areImagesSet()).toBeFalsy();
-    //     imageService.leftBackground = 'left';
-    //     imageService.rightBackground = '';
-    //     expect(service.areImagesSet()).toBeFalsy();
-    // });
-
     // it('isImageTypeValid should return false when given the wrong image type', () => {
     //     expect(service.isImageTypeValid('png')).toBeFalsy();
     // });
