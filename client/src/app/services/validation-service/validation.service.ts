@@ -24,7 +24,10 @@ export class ValidationService {
         return file.type === IMG_TYPE;
     }
 
-    isImageSizeValid(image: ImageBitmap): boolean {
+    // isImageSizeValid(image: ImageBitmap): boolean {
+    //     return image.width === IMG_WIDTH && image.height === IMG_HEIGHT;
+    // }
+    isImageSizeValid(image: HTMLImageElement): boolean {
         return image.width === IMG_WIDTH && image.height === IMG_HEIGHT;
     }
 
@@ -38,8 +41,15 @@ export class ValidationService {
         const target = event.target as HTMLInputElement;
         if (target.files && target.files[0] && this.isImageTypeValid(target.files[0])) {
             const file: File = target.files[0];
-            const image = await createImageBitmap(file);
+            // const image = await createImageBitmap(file);
+            // console.log(image);
             const imagesSource = await this.getImageSource(file);
+            const image = new Image();
+            image.src = imagesSource;
+            console.log(imagesSource);
+            console.log(image);
+            console.log('height: ' + image.height);
+            console.log('width: ' + image.width);
             return this.isImageSizeValid(image) && this.isImageFormatValid(imagesSource);
         } else {
             return false;
