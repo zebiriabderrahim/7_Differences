@@ -43,7 +43,6 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
                 this.gameAreaService.modifiedContextFrontLayer = this.modifiedCanvasForeground.nativeElement.getContext(
                     '2d',
                 ) as CanvasRenderingContext2D;
-                this.gameAreaService.loadImage(this.gameAreaService.originalContext, './assets/modified.bmp');
                 this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, this.game.modified);
                 this.gameAreaService.setAllData();
                 this.isFirstTime = false;
