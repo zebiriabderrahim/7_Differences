@@ -15,7 +15,7 @@ export class GameListsManagerService {
         const gameCard: GameCard = {
             id: game.id,
             name: game.name,
-            difficultyLevel: game.difficultyLevel,
+            difficultyLevel: game.isHard,
             soloTopTime: game.soloTopTime,
             oneVsOneTopTime: game.oneVsOneTopTime,
             thumbnail: game.thumbnail,
@@ -57,11 +57,10 @@ export class GameListsManagerService {
             modified: newGame.modifiedImage,
             soloTopTime: this.defaultBestTimes,
             oneVsOneTopTime: this.defaultBestTimes,
-            difficultyLevel: newGame.isHard,
             thumbnail: newGame.modifiedImage,
             differences: newGame.differences,
             differencesCount: newGame.nDifference,
-            hintList: [],
+            isHard: newGame.isHard,
         };
     }
 }

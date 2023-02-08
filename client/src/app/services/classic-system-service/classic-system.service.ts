@@ -41,9 +41,9 @@ export class ClassicSystemService {
             this.currentGame.next(clientGame);
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (clientGame: ClientSideGame) => {
-            this.currentGame.next(clientGame);
-            this.currentDifference.next(clientGame.currentDifference);
+            // this.currentDifference.next(clientGame.currentDifference);
             this.replaceDifference(clientGame.currentDifference);
+            this.currentGame.next(clientGame);
         });
         // this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {});
         // this.clientSocket.on(GameEvents.TimerStarted, (timer) => {

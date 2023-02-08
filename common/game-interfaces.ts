@@ -13,32 +13,29 @@ export interface GameDetails {
 export interface ServerSideGame {
     id: number;
     name: string;
-    difficultyLevel: boolean;
     original: string;
     modified: string;
     soloTopTime: PlayerTime[];
-    oneVsOneTopTime: PlayerTime[];
+    oneVsOneTopTime : PlayerTime[];
     differences: Coordinate[][];
     differencesCount: number;
     thumbnail: string;
-    hintList: string[];
+    isHard: boolean;
 }
+
 export interface ClientSideGame {
     id: number;
-    gameName: string;
+    name: string;
     player: string;
-    gameMode: string;
+    mode: string;
     timer: number;
     original: string;
     modified: string;
     differencesFound: number;
-    messages: string[];
-    endGameMessage: string;
+    endMessage: string;
     currentDifference: Coordinate[];
-    hintPenalty: number;
-    soloTopTime: PlayerTime[];
-    oneVsOneTopTime: PlayerTime[];
-    hintList: string[];
+    differencesCount: number;
+    isHard: boolean;
 }
 
 export interface GameCard {

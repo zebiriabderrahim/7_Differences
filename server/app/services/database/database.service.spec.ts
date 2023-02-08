@@ -32,7 +32,7 @@ describe('DatabaseService', () => {
         {
             id: 1,
             name: 'test',
-            difficultyLevel: true,
+            isHard: true,
             original: 'test',
             modified: 'test',
             soloTopTime: defaultBestTimes,
@@ -40,7 +40,6 @@ describe('DatabaseService', () => {
             differencesCount: 1,
             differences: [[]],
             thumbnail: 'test',
-            hintList: [],
         },
     ];
 

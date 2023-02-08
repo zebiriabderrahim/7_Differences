@@ -24,7 +24,7 @@ describe('GameService', () => {
     const testGame: ServerSideGame = {
         id: 1,
         name: 'test',
-        difficultyLevel: true,
+        isHard: true,
         original: 'test',
         modified: 'test',
         soloTopTime: [],
@@ -32,7 +32,6 @@ describe('GameService', () => {
         differencesCount: 1,
         differences: [[]],
         thumbnail: 'test',
-        hintList: [],
     };
     beforeEach(async () => {
         databaseService = createStubInstance(DatabaseService);
