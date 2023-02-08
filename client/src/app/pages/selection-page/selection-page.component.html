@@ -1,6 +1,6 @@
 <body>
-    {{ navigate() }}
-    <h1>{{ titre }}</h1>
+    <h1 *ngIf="router.url === '/selection'">Selectionne ton jeu</h1>
+    <h1 *ngIf="router.url === '/config'">Configure ton jeu</h1>
     <mat-grid-list cols="4">
        <ng-container  *ngIf="gameCarrousel.gameCards">
             <mat-grid-tile *ngFor="let game of gameCarrousel.gameCards" class="section">

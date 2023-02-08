@@ -1,5 +1,5 @@
 body {
-    background-color: #995757;
+    background-color: #ffffff;
 }
 
 * {
@@ -7,27 +7,15 @@ body {
 }
 
 mat-grid-tile {
-    background: transparent;
+    background: rgb(255, 255, 255);
 }
 
 h1 {
-    background-color: rgb(255, 255, 255);
+    background-color: rgb(237, 237, 237);
     margin-left: auto;
     margin-right: auto;
     padding: 10px;
     text-align: center;
-}
-
-@keyframes blink-text {
-    0% {
-        opacity: 0;
-    }
-    50% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
-    }
 }
 
 .game-selection {
