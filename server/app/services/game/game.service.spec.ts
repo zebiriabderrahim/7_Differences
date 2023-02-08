@@ -30,6 +30,7 @@ describe('GameService', () => {
         soloTopTime: [],
         oneVsOneTopTime: [],
         differencesCount: 1,
+        differences: [[]],
         thumbnail: 'test',
         hintList: [],
     };
