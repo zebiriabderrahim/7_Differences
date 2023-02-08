@@ -24,6 +24,7 @@ import { ImageCanvasComponent } from './components/image-canvas/image-canvas.com
 import { ImageValidationDialogComponent } from './components/image-validation-dialog/image-validation-dialog.component';
 import { ConfigPageComponent } from './pages/config-page/config-page.component';
 import { CanvasUnderButtonsComponent } from './components/canvas-under-buttons/canvas-under-buttons.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 /**
  * Main module that is used in main.ts.
@@ -61,6 +62,7 @@ import { CanvasUnderButtonsComponent } from './components/canvas-under-buttons/c
         ReactiveFormsModule,
         MatDialogModule,
         OverlayModule,
+        MatTooltipModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

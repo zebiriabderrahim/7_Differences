@@ -7,6 +7,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
 import { CreationPageComponent } from './creation-page.component';
+import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
 
 describe('CreationPageComponent', () => {
     let component: CreationPageComponent;
@@ -14,7 +15,7 @@ describe('CreationPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [CreationPageComponent, ImageCanvasComponent],
+            declarations: [CreationPageComponent, ImageCanvasComponent, CanvasUnderButtonsComponent],
             imports: [MatDialogModule, RouterTestingModule, MatRadioModule, MatIconModule, FormsModule, HttpClientTestingModule],
             providers: [
                 {
