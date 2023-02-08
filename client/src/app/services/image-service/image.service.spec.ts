@@ -41,6 +41,22 @@ describe('ImageService', () => {
         expect(resetRightBackgroundSpy).toHaveBeenCalled();
     });
 
+    it('areImagesSet should return true if both leftBackground and rightBackground are set', () => {
+        const leftBackgroundImage = 'leftBackGroundImage';
+        const rightBackgroundImage = 'rightBackgroundImage';
+        service.leftBackground = leftBackgroundImage;
+        service.rightBackground = rightBackgroundImage;
+        expect(service.areImagesSet()).toBeTruthy();
+    });
+
+    it('areImagesSet should return false if either leftBackground or rightBackground is not set', () => {
+        service.leftBackground = '';
+        expect(service.areImagesSet()).toBeFalsy();
+        service.leftBackground = 'left';
+        service.rightBackground = '';
+        expect(service.areImagesSet()).toBeFalsy();
+    });
+
     it('resetLeftBackground should set leftBackground to empty string', () => {
         service.leftBackground = 'image';
         service.resetLeftBackground();
