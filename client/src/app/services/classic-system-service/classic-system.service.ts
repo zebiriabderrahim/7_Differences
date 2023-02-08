@@ -11,8 +11,10 @@ import { Subject } from 'rxjs';
 })
 export class ClassicSystemService {
     currentGame: Subject<ClientSideGame>;
+    currentDifference: Subject<Coordinate[]>;
     constructor(private gameCardService: GameCardService, private clientSocket: ClientSocketService, private gameAreaService: GameAreaService) {
         this.currentGame = new Subject<ClientSideGame>();
+        this.currentDifference = new Subject<Coordinate[]>();
     }
     createSoloGame(): void {
         this.gameCardService.getGameId().subscribe((id: number) => {
@@ -37,14 +39,13 @@ export class ClassicSystemService {
         this.createSoloGame();
         this.clientSocket.on(GameEvents.CreateSoloGame, (clientGame: ClientSideGame) => {
             this.currentGame.next(clientGame);
-            this.currentGame.asObservable();
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (clientGame: ClientSideGame) => {
+            this.currentGame.next(clientGame);
+            this.currentDifference.next(clientGame.currentDifference);
             this.replaceDifference(clientGame.currentDifference);
         });
-        this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {
-            console.log(endGameMessage);
-        });
+        // this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {});
         // this.clientSocket.on(GameEvents.TimerStarted, (timer) => {
         //     console.log(timer);
         // });
