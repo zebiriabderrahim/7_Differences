@@ -60,6 +60,9 @@ export class ImageService {
             case CanvasPosition.Right:
                 this.setRightBackground(image);
                 break;
+            case CanvasPosition.Both:
+                this.setBothBackgrounds(image);
+                break;
         }
     }
 
