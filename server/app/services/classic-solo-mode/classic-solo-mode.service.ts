@@ -46,7 +46,7 @@ export class ClassicSoloModeService {
         for (; index < serverGame.differences.length; index++) {
             if (serverGame.differences[index].some((coord: Coordinate) => coord.x === coords.x && coord.y === coords.y)) {
                 room.clientGame.differencesFound++;
-                room.clientGame.currentDifference = serverGame.differencesCount[index];
+                room.clientGame.currentDifference = serverGame.differences[index];
                 break;
             }
         }
