@@ -85,7 +85,6 @@ export class GameAreaService {
     }
 
     replaceDifference(differenceCoord: Coordinate[]): void {
-        this.correctSoundEffect.play();
         const imageDataIndex = this.convert2DCoordToPixelIndex(differenceCoord);
         for (const index of imageDataIndex) {
             for (let i = 0; i < this.pixelLength; i++) {
@@ -93,10 +92,52 @@ export class GameAreaService {
             }
         }
         this.modifiedContext.putImageData(this.modifiedPixelData, 0, 0);
-        // this.flashCorrectCoord(differenceCoord);
+        this.flashCorrectPixels(differenceCoord);
     }
 
-    /* flashCorrectCoord(differenceCoord: Coordinate[]): void {
+    flashCorrectPixels(differenceCoord: Coordinate[]): void {
         this.correctSoundEffect.play();
-    }*/
+        const imageDataIndexes = this.convert2DCoordToPixelIndex(differenceCoord);
+        const firstInterval = setInterval(() => {
+            const secondInterval = setInterval(() => {
+                for (const index of imageDataIndexes) {
+                    this.modifiedFrontPixelData.data[index] = 0;
+                    this.modifiedFrontPixelData.data[index + 1] = 255;
+                    this.modifiedFrontPixelData.data[index + 2] = 0;
+                    this.modifiedFrontPixelData.data[index + 3] = 255;
+                    this.originalFrontPixelData.data[index] = 0;
+                    this.originalFrontPixelData.data[index + 1] = 255;
+                    this.originalFrontPixelData.data[index + 2] = 0;
+                    this.originalFrontPixelData.data[index + 3] = 255;
+                }
+                this.modifiedContextFrontLayer.putImageData(this.modifiedFrontPixelData, 0, 0);
+                this.originalContextFrontLayer.putImageData(this.originalFrontPixelData, 0, 0);
+            }, 40);
+
+            for (const index of imageDataIndexes) {
+                this.modifiedFrontPixelData.data[index] = 255;
+                this.modifiedFrontPixelData.data[index + 1] = 244;
+                this.modifiedFrontPixelData.data[index + 2] = 0;
+                this.modifiedFrontPixelData.data[index + 3] = 255;
+                this.originalFrontPixelData.data[index] = 255;
+                this.originalFrontPixelData.data[index + 1] = 244;
+                this.originalFrontPixelData.data[index + 2] = 0;
+                this.originalFrontPixelData.data[index + 3] = 255;
+            }
+            this.modifiedContextFrontLayer.putImageData(this.modifiedFrontPixelData, 0, 0);
+            this.originalContextFrontLayer.putImageData(this.originalFrontPixelData, 0, 0);
+
+            setTimeout(() => {
+                clearInterval(secondInterval);
+                this.modifiedContextFrontLayer.clearRect(0, 0, this.maxWidth, this.maxHeight);
+                this.originalContextFrontLayer.clearRect(0, 0, this.maxWidth, this.maxHeight);
+            }, 500);
+        }, 50);
+
+        setTimeout(() => {
+            clearInterval(firstInterval);
+            this.modifiedContextFrontLayer.clearRect(0, 0, this.maxWidth, this.maxHeight);
+            this.originalContextFrontLayer.clearRect(0, 0, this.maxWidth, this.maxHeight);
+        }, 500);
+    }
 }

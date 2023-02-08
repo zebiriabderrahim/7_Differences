@@ -43,7 +43,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
                 this.gameAreaService.modifiedContextFrontLayer = this.modifiedCanvasForeground.nativeElement.getContext(
                     '2d',
                 ) as CanvasRenderingContext2D;
-                this.gameAreaService.loadImage(this.gameAreaService.originalContext, './assets/modified.bmp');
+                this.gameAreaService.loadImage(this.gameAreaService.originalContext, this.game.original);
                 this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, this.game.modified);
                 this.gameAreaService.setAllData();
                 this.isFirstTime = false;
@@ -51,26 +51,23 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         });
     }
 
-    getHint(index: number): void {
-        const hint = this.game.hintList[index];
-        window.alert(hint); // temporary until we find the best way to display it
-    }
     abandonGame(): void {
         // this.timer.stopTimer();
     }
 
     mouseClickOnOriginal(event: MouseEvent) {
         if (this.gameAreaService.detectLeftClick(event)) {
-            this.isLeftCanvas = true;
+            this.gameAreaService.setAllData();
+            this.classicService.isLeftCanvas = true;
+            this.classicService.requestVerification(this.gameAreaService.mousePosition);
         }
     }
 
     mouseClickOnModified(event: MouseEvent) {
         if (this.gameAreaService.detectLeftClick(event)) {
-            this.isLeftCanvas = false;
             this.gameAreaService.setAllData();
+            this.classicService.isLeftCanvas = false;
             this.classicService.requestVerification(this.gameAreaService.mousePosition);
-            console.log(this.game.differencesFound);
         }
     }
     ngOnDestroy(): void {
