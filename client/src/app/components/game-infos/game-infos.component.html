@@ -3,8 +3,6 @@
     <p><strong>Niveau de Difficulté:</strong> 5</p>
     <p><strong>Mode de Jeu:</strong> {{ game.gameMode }}</p>
     <p><strong>Nombre de Différences Présentes:</strong> {{ game.differencesFound }}</p>
-    <ng-template *ngIf="game.gameMode === 'Classic -> solo'">
-        <p ><strong>Temps de pénalité:</strong> {{ game.hintPenalty }}</p>
-        <mat-icon  matTooltip="Pour l'utilisation d'un indice" matTooltipPosition="above">info</mat-icon>
-    </ng-template>
+    <p><strong>Temps de pénalité:</strong> {{ game.hintPenalty }}</p>
+    <mat-icon matTooltip="Pour l'utilisation d'un indice" matTooltipPosition="above">info</mat-icon>
 </div>

@@ -38,6 +38,7 @@ describe('DatabaseService', () => {
             soloTopTime: defaultBestTimes,
             oneVsOneTopTime: defaultBestTimes,
             differencesCount: 1,
+            differences: [[]],
             thumbnail: 'test',
             hintList: [],
         },

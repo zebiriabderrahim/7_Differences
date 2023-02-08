@@ -19,9 +19,7 @@ export class ClassicSystemService {
             this.clientSocket.send('createSoloGame', { playerName: '125', gameId: id });
         });
     }
-    // requestVerification(game: Game, coords: Vec2): void {
-    //     this.clientSocket.send('validateCoords', { game, coords });
-    // }
+
     requestVerification(coords: Coordinate): void {
         this.clientSocket.send('removeDiff', coords);
     }
@@ -44,11 +42,11 @@ export class ClassicSystemService {
         this.clientSocket.on(GameEvents.RemoveDiff, (clientGame: ClientSideGame) => {
             this.replaceDifference(clientGame.currentDifference);
         });
-
-        // TODO catcher la creation d'une game
-        // this.clientSocket.on('validateCoords', (coordinate: Coordinate) => {
-        //     console.log('message received');
-        //     console.log(coordinate);
+        this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {
+            console.log(endGameMessage);
+        });
+        // this.clientSocket.on(GameEvents.TimerStarted, (timer) => {
+        //     console.log(timer);
         // });
     }
 }
