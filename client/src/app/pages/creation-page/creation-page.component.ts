@@ -1,7 +1,6 @@
 import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
-import { ImageValidationDialogComponent } from '@app/components/image-validation-dialog/image-validation-dialog.component';
 import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/creation-page';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { ImageService } from '@app/services/image-service/image.service';
@@ -17,18 +16,11 @@ export class CreationPageComponent {
     private readonly imageNotSetDialog: TemplateRef<HTMLElement>;
     readonly configRoute: string = '/config';
     canvasPosition: typeof CanvasPosition = CanvasPosition;
+    position = CanvasPosition.Both;
     radiusSizes: number[] = RADIUS_SIZES;
     radius: number = DEFAULT_RADIUS;
 
     constructor(public imageService: ImageService, public validationService: ValidationService, private readonly matDialog: MatDialog) {}
-
-    async onSelectFile(event: Event) {
-        if (await this.validationService.isImageUploadValid(event)) {
-            this.imageService.setBothBackgrounds(this.validationService.image);
-        } else {
-            this.matDialog.open(ImageValidationDialogComponent);
-        }
-    }
 
     validateDifferences() {
         if (this.imageService.areImagesSet()) {
