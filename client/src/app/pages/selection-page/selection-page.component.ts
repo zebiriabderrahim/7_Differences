@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CarouselPaginator } from '@app/interfaces/game-interfaces';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
@@ -8,7 +8,7 @@ import { CommunicationService } from '@app/services/communication-service/commun
     templateUrl: './selection-page.component.html',
     styleUrls: ['./selection-page.component.scss'],
 })
-export class SelectionPageComponent implements OnInit {
+export class SelectionPageComponent implements AfterViewInit {
     titre: string;
     gameCarrousel: CarouselPaginator;
     index: number = 0;
@@ -16,15 +16,7 @@ export class SelectionPageComponent implements OnInit {
         this.gameCarrousel = { hasNext: false, hasPrevious: false, gameCards: [] };
     }
 
-    navigate() {
-        if (this.router.url === '/selection') {
-            this.titre = 'Selectionne ton jeu';
-        } else if (this.router.url === '/config') {
-            this.titre = 'Configure ton jeu';
-        }
-    }
-
-    ngOnInit(): void {
+    ngAfterViewInit(): void {
         this.communicationService.loadGameCarrousel(this.index).subscribe((gameCarrousel) => {
             if (gameCarrousel) {
                 this.gameCarrousel = gameCarrousel;
