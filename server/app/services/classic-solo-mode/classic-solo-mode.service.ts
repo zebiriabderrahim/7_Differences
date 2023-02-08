@@ -24,8 +24,11 @@ export class ClassicSoloModeService {
 
     updateTimer(roomId: string, server: io.Server): void {
         const room = this.rooms.get(roomId);
-        room.clientGame.timer++;
-        server.to(room.roomId).emit(GameEvents.TimerStarted, room.clientGame.timer);
+        console.log(room);
+        if (room) {
+            room.clientGame.timer++;
+            server.to(room.roomId).emit(GameEvents.TimerStarted, room.clientGame.timer);
+        }
     }
 
     addPenalty(roomId: string): void {
