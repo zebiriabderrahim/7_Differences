@@ -47,25 +47,25 @@ export class DifferenceService {
         let currentDifference: Coordinate[] = [];
         let activeDifference: Coordinate;
         for (const differenceCoordinate of this.differencesArray) {
-            queue = [];
-            currentDifference = [];
             if (!visitedCoords[differenceCoordinate.x][differenceCoordinate.y]) {
+                queue = [];
+                currentDifference = [];
                 currentDifference.push(differenceCoordinate);
                 visitedCoords[differenceCoordinate.x][differenceCoordinate.y] = true;
                 queue.push(differenceCoordinate);
-            }
-            while (queue.length !== 0) {
-                activeDifference = queue.pop() as Coordinate;
-                for (const coord of this.findAdjacentCoords(activeDifference as Coordinate)) {
-                    if (!visitedCoords[coord.x][coord.y] && this.isCoordInDifferencesArray(coord)) {
-                        visitedCoords[coord.x][coord.y] = true;
-                        currentDifference.push(coord);
-                        queue.push(coord);
+                while (queue.length !== 0) {
+                    activeDifference = queue.pop() as Coordinate;
+                    for (const coord of this.findAdjacentCoords(activeDifference as Coordinate)) {
+                        if (!visitedCoords[coord.x][coord.y] && this.isCoordInDifferencesArray(coord)) {
+                            visitedCoords[coord.x][coord.y] = true;
+                            currentDifference.push(coord);
+                            queue.push(coord);
+                        }
                     }
                 }
-            }
-            if (currentDifference.length !== 0) {
-                differences.push(currentDifference);
+                if (currentDifference.length !== 0) {
+                    differences.push(currentDifference);
+                }
             }
         }
         this.differencePackages = differences;
@@ -111,7 +111,7 @@ export class DifferenceService {
     }
 
     isNumberOfDifferencesValid(): boolean {
-        const nDifferences = this.differencePackages.length;
+        const nDifferences: number = this.differencePackages.length;
         return nDifferences >= MIN_N_DIFFERENCES && nDifferences <= MAX_N_DIFFERENCES;
     }
 
