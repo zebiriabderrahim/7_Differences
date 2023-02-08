@@ -42,7 +42,6 @@ export class ClassicSystemService {
             this.currentGame.asObservable();
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (clientGame: ClientSideGame) => {
-            console.log(clientGame);
             this.replaceDifference(clientGame.currentDifference);
         });
 

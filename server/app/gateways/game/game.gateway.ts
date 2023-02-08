@@ -88,8 +88,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     private updateTimers() {
-        // for (const room of this.classicSoloModeService['rooms']) {
-        //     this.classicSoloModeService.updateTimer(room['roomId']);
-        // }
+        for (const room of this.classicSoloModeService['rooms']) {
+            this.classicSoloModeService.updateTimer(room['roomId']);
+        }
     }
 }

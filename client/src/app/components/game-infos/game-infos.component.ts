@@ -14,7 +14,7 @@ export class GameInfosComponent implements OnInit, OnDestroy {
     constructor(private readonly classicSystemService: ClassicSystemService) {}
     ngOnInit(): void {
         this.classicSystemService.currentGame.subscribe((game: ClientSideGame) => {
-            console.log('game', game);
+  
             this.game = game;
         });
     }
