@@ -4,7 +4,7 @@
     <img src="assets/img/magnifying-glass.png" id="hint3" alt="Icone d'indice" class="hintIcon" (click)="getHint(2)" />
 </div>
 <div *ngIf="game" class="infomations-header">
-    <h1>{{ game.gameName }}</h1>
+    <h1>{{ game.name }}</h1>
     <div class="game-feedback">
         <h1>Temps: {{ game.timer | date: 'mm:ss' }}</h1>
         <h1>différences trouvées: {{ game.differencesFound }}</h1>
