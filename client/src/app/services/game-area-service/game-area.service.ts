@@ -1,5 +1,15 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers */ // TO BE ERASED AFTER CREATION OF CONSTANTS FILES
 import { HostListener, Injectable } from '@angular/core';
+import {
+    CANVAS_HEIGHT,
+    CANVAS_WIDTH,
+    FLASH_WAIT_TIME,
+    GREEN_FLASH_TIME,
+    LEFT_BUTTON,
+    ONE_SECOND,
+    PIXEL_LENGTH,
+    X_CENTERING_DISTANCE,
+    YELLOW_FLASH_TIME,
+} from '@app/constants/constants';
 import { Coordinate } from '@common/coordinate';
 
 @Injectable({
@@ -18,15 +28,6 @@ export class GameAreaService {
     clickDisabled: boolean = false;
     correctSoundEffect: HTMLAudioElement = new Audio('assets/sound/WinSoundEffect.mp3');
     incorrectSoundEffect: HTMLAudioElement = new Audio('assets/sound/ErrorSoundEffect.mp3');
-    // To Be put in constants file:
-    maxWidth: number = 640;
-    maxHeight: number = 480;
-    leftButton: number = 0;
-    middleButton: number = 1;
-    rightButton: number = 2;
-    backButton: number = 3;
-    forwardButton: number = 4;
-    pixelLength: number = 4;
 
     @HostListener('keydown', ['$event'])
     loadImage(context: CanvasRenderingContext2D, path: string) {
@@ -38,10 +39,10 @@ export class GameAreaService {
     }
 
     setAllData(): void {
-        this.originalPixelData = this.originalContext.getImageData(0, 0, this.maxWidth, this.maxHeight);
-        this.modifiedPixelData = this.modifiedContext.getImageData(0, 0, this.maxWidth, this.maxHeight);
-        this.originalFrontPixelData = this.originalContextFrontLayer.getImageData(0, 0, this.maxWidth, this.maxHeight);
-        this.modifiedFrontPixelData = this.modifiedContextFrontLayer.getImageData(0, 0, this.maxWidth, this.maxHeight);
+        this.originalPixelData = this.originalContext.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        this.modifiedPixelData = this.modifiedContext.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        this.originalFrontPixelData = this.originalContextFrontLayer.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        this.modifiedFrontPixelData = this.modifiedContextFrontLayer.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     }
 
     saveCoord(event: MouseEvent): void {
@@ -49,7 +50,7 @@ export class GameAreaService {
     }
 
     detectLeftClick(event: MouseEvent): boolean {
-        if (event.button === this.leftButton && !this.clickDisabled) {
+        if (event.button === LEFT_BUTTON && !this.clickDisabled) {
             this.saveCoord(event);
             return true;
         } else {
@@ -68,17 +69,17 @@ export class GameAreaService {
         frontContext.fillStyle = 'red';
         this.clickDisabled = true;
         frontContext.font = 'bold 30px sheriff';
-        frontContext.fillText('Erreur', this.mousePosition.x - 38, this.mousePosition.y);
+        frontContext.fillText('Erreur', this.mousePosition.x - X_CENTERING_DISTANCE, this.mousePosition.y);
         setTimeout(() => {
-            frontContext.clearRect(0, 0, this.maxWidth, this.maxHeight);
+            frontContext.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             this.clickDisabled = false;
-        }, 1000);
+        }, ONE_SECOND);
     }
 
     convert2DCoordToPixelIndex(differenceCoord: Coordinate[]): number[] {
         const imageDataIndex: number[] = [];
         for (const coord of differenceCoord) {
-            const flatIndex = (coord.x + this.maxWidth * coord.y) * this.pixelLength;
+            const flatIndex = (coord.x + CANVAS_WIDTH * coord.y) * PIXEL_LENGTH;
             imageDataIndex.push(flatIndex);
         }
         return imageDataIndex;
@@ -87,7 +88,7 @@ export class GameAreaService {
     replaceDifference(differenceCoord: Coordinate[]): void {
         const imageDataIndex = this.convert2DCoordToPixelIndex(differenceCoord);
         for (const index of imageDataIndex) {
-            for (let i = 0; i < this.pixelLength; i++) {
+            for (let i = 0; i < PIXEL_LENGTH; i++) {
                 this.modifiedPixelData.data[index + i] = this.originalPixelData.data[index + i];
             }
         }
@@ -105,6 +106,7 @@ export class GameAreaService {
                     this.modifiedFrontPixelData.data[index + 1] = 255;
                     this.modifiedFrontPixelData.data[index + 2] = 0;
                     this.modifiedFrontPixelData.data[index + 3] = 255;
+
                     this.originalFrontPixelData.data[index] = 0;
                     this.originalFrontPixelData.data[index + 1] = 255;
                     this.originalFrontPixelData.data[index + 2] = 0;
@@ -112,13 +114,14 @@ export class GameAreaService {
                 }
                 this.modifiedContextFrontLayer.putImageData(this.modifiedFrontPixelData, 0, 0);
                 this.originalContextFrontLayer.putImageData(this.originalFrontPixelData, 0, 0);
-            }, 40);
+            }, GREEN_FLASH_TIME);
 
             for (const index of imageDataIndexes) {
                 this.modifiedFrontPixelData.data[index] = 255;
                 this.modifiedFrontPixelData.data[index + 1] = 244;
                 this.modifiedFrontPixelData.data[index + 2] = 0;
                 this.modifiedFrontPixelData.data[index + 3] = 255;
+
                 this.originalFrontPixelData.data[index] = 255;
                 this.originalFrontPixelData.data[index + 1] = 244;
                 this.originalFrontPixelData.data[index + 2] = 0;
@@ -129,15 +132,15 @@ export class GameAreaService {
 
             setTimeout(() => {
                 clearInterval(secondInterval);
-                this.modifiedContextFrontLayer.clearRect(0, 0, this.maxWidth, this.maxHeight);
-                this.originalContextFrontLayer.clearRect(0, 0, this.maxWidth, this.maxHeight);
-            }, 500);
-        }, 50);
+                this.modifiedContextFrontLayer.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                this.originalContextFrontLayer.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            }, FLASH_WAIT_TIME);
+        }, YELLOW_FLASH_TIME);
 
         setTimeout(() => {
             clearInterval(firstInterval);
-            this.modifiedContextFrontLayer.clearRect(0, 0, this.maxWidth, this.maxHeight);
-            this.originalContextFrontLayer.clearRect(0, 0, this.maxWidth, this.maxHeight);
-        }, 500);
+            this.modifiedContextFrontLayer.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            this.originalContextFrontLayer.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        }, FLASH_WAIT_TIME);
     }
 }
