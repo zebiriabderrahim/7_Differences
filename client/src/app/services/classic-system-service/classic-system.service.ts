@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-// import { Game } from '@app/interfaces/game-interfaces';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { GameCardService } from '@app/services/gamecard-service/gamecard.service';
@@ -12,6 +11,7 @@ import { Subject } from 'rxjs';
 export class ClassicSystemService {
     currentGame: Subject<ClientSideGame>;
     currentDifference: Subject<Coordinate[]>;
+    isLeftCanvas: boolean;
     constructor(private gameCardService: GameCardService, private clientSocket: ClientSocketService, private gameAreaService: GameAreaService) {
         this.currentGame = new Subject<ClientSideGame>();
         this.currentDifference = new Subject<Coordinate[]>();
@@ -28,7 +28,7 @@ export class ClassicSystemService {
 
     replaceDifference(differences: Coordinate[]): void {
         if (differences.length === 0) {
-            this.gameAreaService.showError(false);
+            this.gameAreaService.showError(this.isLeftCanvas);
         } else {
             this.gameAreaService.replaceDifference(differences);
         }
@@ -36,6 +36,7 @@ export class ClassicSystemService {
 
     manageSocket(): void {
         this.clientSocket.connect();
+        console.log(this.clientSocket.socket);
         this.createSoloGame();
         this.clientSocket.on(GameEvents.CreateSoloGame, (clientGame: ClientSideGame) => {
             this.currentGame.next(clientGame);
@@ -43,11 +44,12 @@ export class ClassicSystemService {
         this.clientSocket.on(GameEvents.RemoveDiff, (clientGame: ClientSideGame) => {
             this.currentGame.next(clientGame);
             this.currentDifference.next(clientGame.currentDifference);
+            console.log(clientGame.currentDifference.length);
             this.replaceDifference(clientGame.currentDifference);
         });
-        // this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {});
-        // this.clientSocket.on(GameEvents.TimerStarted, (timer) => {
-        //     console.log(timer);
-        // });
+        this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {
+            this.clientSocket.disconnect();
+            console.log(endGameMessage); // temporary to avoid error
+        });
     }
 }
