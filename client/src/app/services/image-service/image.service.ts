@@ -6,7 +6,8 @@ import { Coordinate } from '@app/interfaces/coordinate';
 import { GameDetails } from '@app/interfaces/game-interfaces';
 import { Pixel } from '@app/interfaces/pixel';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
-import { GameService } from '@app/services/game-service/game.service';
+import { CommunicationService } from '@app/services/communication-service/communication.service';
+import { GAME_ID_MAX } from '@app/constants/constants';
 
 @Injectable({
     providedIn: 'root',
@@ -18,7 +19,7 @@ export class ImageService {
     leftBackground: string = '';
     rightBackground: string = '';
 
-    constructor(public differenceService: DifferenceService, public gameService: GameService) {}
+    constructor(public differenceService: DifferenceService, public communicationService: CommunicationService) {}
 
     resetBackground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
@@ -151,7 +152,7 @@ export class ImageService {
     createGame(name: string): void {
         const differences: Coordinate[][] = this.differenceService.generateDifferencesPackages();
         const gameDetails: GameDetails = {
-            id: this.gameService.generateId(),
+            id: Math.floor(Math.random() * GAME_ID_MAX),
             name,
             originalImage: this.leftBackground,
             modifiedImage: this.rightBackground,
@@ -160,6 +161,6 @@ export class ImageService {
             isHard: this.differenceService.isGameHard(),
         };
         this.resetBothBackgrounds();
-        this.gameService.postGame(gameDetails);
+        this.communicationService.postGame(gameDetails).subscribe();
     }
 }
