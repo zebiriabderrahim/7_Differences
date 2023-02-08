@@ -76,6 +76,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     handleConnection(@ConnectedSocket() socket: Socket) {
         this.logger.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
+        setInterval(() => {
+            this.updateTimers();
+        }, DELAY_BEFORE_EMITTING_TIME);
     }
 
     handleDisconnect(@ConnectedSocket() socket: Socket) {
