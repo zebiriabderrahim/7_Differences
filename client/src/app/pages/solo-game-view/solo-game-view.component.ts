@@ -23,6 +23,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     penaltyTime: number = 1;
     bonusTime: number = 1;
     isLeftCanvas: boolean;
+    isFirstTime = true;
     readonly homeRoute: string = '/home';
     // private canvasSize = { width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
 
@@ -33,7 +34,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.classicService.manageSocket();
         this.gameSub = this.classicService.currentGame.subscribe((game) => {
             this.game = game;
-            if (this.game) {
+            if (this.game && this.isFirstTime) {
                 this.gameAreaService.originalContext = this.originalCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
                 this.gameAreaService.modifiedContext = this.modifiedCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
                 this.gameAreaService.originalContextFrontLayer = this.originalCanvasForeground.nativeElement.getContext(
@@ -42,9 +43,10 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
                 this.gameAreaService.modifiedContextFrontLayer = this.modifiedCanvasForeground.nativeElement.getContext(
                     '2d',
                 ) as CanvasRenderingContext2D;
-                this.gameAreaService.loadImage(this.gameAreaService.originalContext, this.game.original);
+                this.gameAreaService.loadImage(this.gameAreaService.originalContext, './assets/modified.bmp');
                 this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, this.game.modified);
                 this.gameAreaService.setAllData();
+                this.isFirstTime = false;
             }
         });
     }
