@@ -2,11 +2,12 @@ import { GameService } from '@app/services/game/game.service';
 import { Coordinate } from '@common/coordinate';
 import { ClientSideGame, GameEvents, PlayRoom, ServerSideGame } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
+import console from 'console';
 import * as io from 'socket.io';
 
 @Injectable()
 export class ClassicSoloModeService {
-    private readonly rooms: Map<string, PlayRoom> = new Map<string, PlayRoom>();
+    rooms: Map<string, PlayRoom> = new Map<string, PlayRoom>();
 
     constructor(private readonly gameService: GameService) {}
 
@@ -24,16 +25,10 @@ export class ClassicSoloModeService {
 
     updateTimer(roomId: string, server: io.Server): void {
         const room = this.rooms.get(roomId);
-        console.log(room);
         if (room) {
             room.clientGame.timer++;
             server.to(room.roomId).emit(GameEvents.TimerStarted, room.clientGame.timer);
         }
-    }
-
-    addPenalty(roomId: string): void {
-        const room = this.rooms.get(roomId);
-        room.clientGame.timer += room.clientGame.hintPenalty;
     }
 
     verifyCoords(roomId: string, coords: Coordinate, server: io.Server): void {
@@ -62,26 +57,23 @@ export class ClassicSoloModeService {
         const clientGame: ClientSideGame = {
             id: game.id,
             player: playerName,
-            gameName: game.name,
-            gameMode: 'Classic -> solo',
+            name: game.name,
+            mode: 'Classic -> solo',
             timer: 0,
             differencesFound: 0,
-            messages: [],
-            endGameMessage: '',
+            endMessage: '',
             currentDifference: [],
-            hintPenalty: this.gameService.getConfigConstants().penaltyTime,
-            soloTopTime: game.soloTopTime,
-            oneVsOneTopTime: game.oneVsOneTopTime,
             original: game.original,
             modified: game.modified,
-            hintList: game.hintList,
+            isHard: game.isHard,
+            differencesCount: game.differencesCount,
         };
         return clientGame;
     }
     endGame(room: PlayRoom, server: io.Server): void {
         if (room.serverGame.differencesCount === room.clientGame.differencesFound) {
-            room.clientGame.endGameMessage = `Vous avez trouver les ${room.serverGame.differencesCount} différences! Bravo!`;
-            server.to(room.roomId).emit(GameEvents.EndGame, room.clientGame.endGameMessage);
+            room.clientGame.endMessage = `Vous avez trouver les ${room.serverGame.differencesCount} différences! Bravo!`;
+            server.to(room.roomId).emit(GameEvents.EndGame, room.clientGame.endMessage);
             this.rooms.delete(room.roomId);
         }
     }

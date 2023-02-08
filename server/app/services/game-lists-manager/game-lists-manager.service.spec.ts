@@ -22,7 +22,7 @@ describe('GameListsManagerService', () => {
     const testGame: ServerSideGame = {
         id: 1,
         name: 'test',
-        difficultyLevel: true,
+        isHard: true,
         original: 'test',
         modified: 'test',
         soloTopTime: defaultBestTimes,
@@ -30,7 +30,6 @@ describe('GameListsManagerService', () => {
         differencesCount: 1,
         differences: [[]],
         thumbnail: 'test',
-        hintList: [],
     };
     const testGameCard: GameCard = {
         id: 1,

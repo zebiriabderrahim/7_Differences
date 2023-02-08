@@ -1,8 +1,7 @@
 <div id="gameInfos">
-    <p><strong>Nom du Jeu:</strong> {{ game.gameName }}</p>
-    <p><strong>Niveau de Difficulté:</strong> 5</p>
-    <p><strong>Mode de Jeu:</strong> {{ game.gameMode }}</p>
-    <p><strong>Nombre de Différences Présentes:</strong> {{ game.differencesFound }}</p>
-    <p><strong>Temps de pénalité:</strong> {{ game.hintPenalty }}</p>
+    <p><strong>Nom du Jeu:</strong> {{ game.name }}</p>
+    <p><strong>Niveau de Difficulté:</strong> {{game.isHard ? "difficile":"facile" }}</p>
+    <p><strong>Mode de Jeu:</strong> {{ game.mode }}</p>
+    <p><strong>Nombre de Différences Présentes:</strong> {{ game.differencesCount }}</p>
     <mat-icon matTooltip="Pour l'utilisation d'un indice" matTooltipPosition="above">info</mat-icon>
 </div>

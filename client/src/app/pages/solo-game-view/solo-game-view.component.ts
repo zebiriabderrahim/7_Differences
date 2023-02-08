@@ -16,12 +16,8 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     @ViewChild('modifiedCanvas', { static: false }) modifiedCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('originalCanvasFG', { static: false }) originalCanvasForeground!: ElementRef<HTMLCanvasElement>;
     @ViewChild('modifiedCanvasFG', { static: false }) modifiedCanvasForeground!: ElementRef<HTMLCanvasElement>;
-    time: string = '00:00';
     game: ClientSideGame;
     gameSub: Subscription;
-    mode: string = 'Solo';
-    penaltyTime: number = 1;
-    bonusTime: number = 1;
     isLeftCanvas: boolean;
     isFirstTime = true;
     readonly homeRoute: string = '/home';
@@ -43,7 +39,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
                 this.gameAreaService.modifiedContextFrontLayer = this.modifiedCanvasForeground.nativeElement.getContext(
                     '2d',
                 ) as CanvasRenderingContext2D;
-                this.gameAreaService.loadImage(this.gameAreaService.originalContext, './assets/modified.bmp');
+                this.gameAreaService.loadImage(this.gameAreaService.originalContext, this.game.original);
                 this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, this.game.modified);
                 this.gameAreaService.setAllData();
                 this.isFirstTime = false;
@@ -51,10 +47,6 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         });
     }
 
-    getHint(index: number): void {
-        const hint = this.game.hintList[index];
-        window.alert(hint); // temporary until we find the best way to display it
-    }
     abandonGame(): void {
         // this.timer.stopTimer();
     }
@@ -70,7 +62,6 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
             this.isLeftCanvas = false;
             this.gameAreaService.setAllData();
             this.classicService.requestVerification(this.gameAreaService.mousePosition);
-            console.log(this.game.differencesFound);
         }
     }
     ngOnDestroy(): void {
