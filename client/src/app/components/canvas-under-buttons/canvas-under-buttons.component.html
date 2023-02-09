@@ -4,7 +4,7 @@
         Téléverser une image {{position === canvasPosition.Both ? 'pour les deux zones' : ''}}
         <mat-icon>attach_file</mat-icon>
     </button>
-    <input type="file" id="upload-btn" (change)="setImage($event)" #fileUpload />
+    <input type="file" id="upload-btn" (change)="onSelectFile($event)" #fileUpload />
     <button mat-raised-button color="primary" (click)="resetBackground()">
         Réinitialiser {{position === canvasPosition.Both ? 'les arrières-plans' : 'l\'arrière-plan'}}
     </button>
