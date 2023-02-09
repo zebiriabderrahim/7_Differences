@@ -3,7 +3,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { ImageService } from '@app/services/image-service/image.service';
-import { ValidationService } from '@app/services/validation-service/validation.service';
 
 @Component({
     selector: 'app-image-canvas',
@@ -15,7 +14,7 @@ export class ImageCanvasComponent implements AfterViewInit {
     @ViewChild('backgroundCanvas') backgroundCanvas: ElementRef;
     context: CanvasRenderingContext2D;
 
-    constructor(public imageService: ImageService, public validationService: ValidationService, public matDialog: MatDialog) {}
+    constructor(public imageService: ImageService, public matDialog: MatDialog) {}
     ngAfterViewInit(): void {
         this.backgroundCanvas.nativeElement.width = IMG_WIDTH;
         this.backgroundCanvas.nativeElement.height = IMG_HEIGHT;
