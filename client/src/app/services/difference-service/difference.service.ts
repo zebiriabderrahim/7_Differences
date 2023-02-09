@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HARD_DIFFERENCES_PERCENTAGE, N_DIFFERENCES_HARD_GAME } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH, MAX_N_DIFFERENCES, MIN_N_DIFFERENCES } from '@app/constants/creation-page';
 import { Coordinate } from '@app/interfaces/coordinate';
-import { Pixel } from '@app/interfaces/pixel';
+import { Pixel, GamePixels } from '@app/interfaces/pixel';
 
 @Injectable({
     providedIn: 'root',
@@ -84,12 +84,14 @@ export class DifferenceService {
         return currentDifference;
     }
 
-    generateDifferences(pixelArray1: Pixel[], pixelArray2: Pixel[], radius: number): Coordinate[] {
+    generateDifferences(gamePixels: GamePixels, radius: number): Coordinate[] {
+        const leftImagePixels = gamePixels.leftImage;
+        const rightImagePixels = gamePixels.rightImage;
         this.resetAttributes();
         this.differenceMatrix = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
         // const differentCoordinates: Coordinate[] = [];
-        for (let i = 0; i < pixelArray1.length; i++) {
-            if (this.arePixelsDifferent(pixelArray1[i], pixelArray2[i])) {
+        for (let i = 0; i < leftImagePixels.length; i++) {
+            if (this.arePixelsDifferent(leftImagePixels[i], rightImagePixels[i])) {
                 const x = i % IMG_WIDTH;
                 const y = Math.floor(i / IMG_WIDTH);
                 this.differences.push({ x, y });
