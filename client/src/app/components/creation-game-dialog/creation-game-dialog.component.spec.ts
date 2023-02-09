@@ -1,7 +1,9 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+// import { MatFormFieldModule, MatFormFieldControl } from '@angular/material/form-field';
+// import { MatTooltipModule } from '@angular/material/tooltip';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
@@ -18,7 +20,7 @@ describe('CreationGameDialogComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
+            imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule],
             declarations: [CreationGameDialogComponent],
             providers: [
                 { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } },

@@ -1,9 +1,11 @@
 <div id="canvas-action-buttons">
-    <button mat-raised-button color="basic" matTooltip={{uploadHelpMessage}} (click)="fileUpload.click()">
+    <!-- <button mat-raised-button color="basic" matTooltip={{uploadHelpMessage}} (click)="fileUpload.click()"> -->
+    <button mat-raised-button color="basic" matTooltip="yomama" (click)="fileUpload.click()">
         Téléverser une image <mat-icon>attach_file</mat-icon>
     </button>
     <input type="file" id="upload-btn" (change)="setImage($event)" #fileUpload />
-    <button mat-raised-button color="primary" matTooltip={{resetHelpMessage}} (click)="resetBackground()">
+    <!-- <button mat-raised-button color="primary" matTooltip={{resetHelpMessage}} (click)="resetBackground()"> -->
+    <button mat-raised-button color="primary" matTooltip="yomama2" (click)="resetBackground()">
         {{resetHelpMessage}}
     </button>
 </div>
