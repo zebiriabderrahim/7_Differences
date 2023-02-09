@@ -16,10 +16,13 @@ export class ImageService {
     leftBackgroundContext: CanvasRenderingContext2D;
     rightBackgroundContext: CanvasRenderingContext2D;
     differenceContext: CanvasRenderingContext2D;
-    leftBackground: string = '';
-    rightBackground: string = '';
+    leftBackground: string;
+    rightBackground: string;
 
-    constructor(public differenceService: DifferenceService, public communicationService: CommunicationService) {}
+    constructor(public differenceService: DifferenceService, public communicationService: CommunicationService) {
+        this.leftBackground = '';
+        this.rightBackground = '';
+    }
 
     areImagesSet(): boolean {
         return this.leftBackground !== '' && this.rightBackground !== '';
