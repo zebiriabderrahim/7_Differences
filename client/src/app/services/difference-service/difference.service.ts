@@ -8,58 +8,51 @@ import { Pixel } from '@app/interfaces/pixel';
     providedIn: 'root',
 })
 export class DifferenceService {
-    differencesArray: Coordinate[] = []; // TODO link to appropriate service
-    differencePackages: Coordinate[][] = [];
+    differencesArray: Coordinate[]; // TODO link to appropriate service
+    differencePackages: Coordinate[][];
+    visitedCoordinates: boolean[][];
+    differenceMatrix: boolean[][];
 
-    setDifferencesArray(differencesArray: Coordinate[]) {
-        this.differencesArray = differencesArray;
+    constructor() {
+        this.differencesArray = [];
+        this.differencePackages = [];
+        this.visitedCoordinates = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        this.differenceMatrix = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+    }
+
+    resetVisitedCoordinates() {
+        this.visitedCoordinates = new Array(IMG_WIDTH).fill(false).map(() => new Array(IMG_HEIGHT).fill(false)) as boolean[][];
+    }
+
+    createFalseMatrix(width: number, height: number): boolean[][] {
+        return new Array(width).fill(false).map(() => new Array(height).fill(false)) as boolean[][];
     }
 
     isCoordinateValid(coordinate: Coordinate): boolean {
         return coordinate.x >= 0 && coordinate.x < IMG_WIDTH && coordinate.y >= 0 && coordinate.y < IMG_HEIGHT;
     }
 
-    isCoordInDifferencesArray(point: Coordinate): boolean {
-        return this.differencesArray.some((coord) => coord.x === point.x && coord.y === point.y);
-    }
-
     findAdjacentCoords(coord: Coordinate): Coordinate[] {
-        const adjacentCoords: Coordinate[] = [];
-        for (let x = coord.x - 1; x <= coord.x + 1; x++) {
-            for (let y = coord.y - 1; y <= coord.y + 1; y++) {
-                if (this.isCoordinateValid({ x, y })) {
-                    adjacentCoords.push({ x, y });
-                }
-            }
-        }
-        return adjacentCoords;
+        const adjacentCoordinates: Coordinate[] = [
+            { x: coord.x - 1, y: coord.y - 1 },
+            { x: coord.x - 1, y: coord.y },
+            { x: coord.x - 1, y: coord.y + 1 },
+            { x: coord.x, y: coord.y - 1 },
+            { x: coord.x, y: coord.y + 1 },
+            { x: coord.x + 1, y: coord.y - 1 },
+            { x: coord.x + 1, y: coord.y },
+            { x: coord.x + 1, y: coord.y + 1 },
+        ];
+        return adjacentCoordinates.filter((coordinate) => this.isCoordinateValid(coordinate));
     }
 
     generateDifferencesPackages(): Coordinate[][] {
         const differences: Coordinate[][] = [];
-        const visitedCoords: boolean[][] = new Array(IMG_WIDTH).fill(false).map(() => new Array(IMG_HEIGHT).fill(false)) as boolean[][];
-        let queue: Coordinate[] = [];
-        let currentDifference: Coordinate[] = [];
-        let activeDifference: Coordinate;
-        for (const differenceCoordinate of this.differencesArray) {
-            if (!visitedCoords[differenceCoordinate.x][differenceCoordinate.y]) {
-                queue = [];
-                currentDifference = [];
-                currentDifference.push(differenceCoordinate);
-                visitedCoords[differenceCoordinate.x][differenceCoordinate.y] = true;
-                queue.push(differenceCoordinate);
-                while (queue.length !== 0) {
-                    activeDifference = queue.pop() as Coordinate;
-                    for (const coord of this.findAdjacentCoords(activeDifference as Coordinate)) {
-                        if (!visitedCoords[coord.x][coord.y] && this.isCoordInDifferencesArray(coord)) {
-                            visitedCoords[coord.x][coord.y] = true;
-                            currentDifference.push(coord);
-                            queue.push(coord);
-                        }
-                    }
-                }
-                if (currentDifference.length !== 0) {
-                    differences.push(currentDifference);
+        this.resetVisitedCoordinates();
+        for (let i = 0; i < IMG_WIDTH; i++) {
+            for (let j = 0; j < IMG_HEIGHT; j++) {
+                if (!this.visitedCoordinates[i][j] && this.differenceMatrix[i][j]) {
+                    differences.push(this.bfs({ x: i, y: j }));
                 }
             }
         }
@@ -67,13 +60,35 @@ export class DifferenceService {
         return differences;
     }
 
+    bfs(difference: Coordinate): Coordinate[] {
+        const queue: Coordinate[] = [];
+        const currentDifference: Coordinate[] = [];
+        let activeDifference: Coordinate;
+        currentDifference.push(difference);
+        this.visitedCoordinates[difference.x][difference.y] = true;
+        queue.push(difference);
+        while (queue.length !== 0) {
+            activeDifference = queue.pop() as Coordinate;
+            for (const coord of this.findAdjacentCoords(activeDifference as Coordinate)) {
+                if (!this.visitedCoordinates[coord.x][coord.y] && this.differenceMatrix[coord.x][coord.y]) {
+                    this.visitedCoordinates[coord.x][coord.y] = true;
+                    currentDifference.push(coord);
+                    queue.push(coord);
+                }
+            }
+        }
+        return currentDifference;
+    }
+
     generateDifferences(pixelArray1: Pixel[], pixelArray2: Pixel[], radius: number): Coordinate[] {
+        this.differenceMatrix = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
         const differentCoordinates: Coordinate[] = [];
         for (let i = 0; i < pixelArray1.length; i++) {
             if (this.arePixelsDifferent(pixelArray1[i], pixelArray2[i])) {
                 const x = i % IMG_WIDTH;
                 const y = Math.floor(i / IMG_WIDTH);
                 differentCoordinates.push({ x, y });
+                this.differenceMatrix[x][y] = true;
             }
         }
         this.differencesArray = this.enlargeDifferences(differentCoordinates, radius);
