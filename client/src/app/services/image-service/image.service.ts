@@ -99,11 +99,8 @@ export class ImageService {
         }
     }
 
-    setDifferenceContext(context: CanvasRenderingContext2D, radius: number) {
+    setDifferenceContext(context: CanvasRenderingContext2D) {
         this.differenceContext = context;
-        if (this.areImagesSet()) {
-            this.validateDifferences(radius);
-        }
     }
 
     transformContextToPixelArray(context: CanvasRenderingContext2D): Pixel[] {

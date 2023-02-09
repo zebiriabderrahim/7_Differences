@@ -14,7 +14,7 @@ import { ImageService } from '@app/services/image-service/image.service';
 export class CreationGameDialogComponent implements OnInit {
     @Output() gameNameEvent = new EventEmitter<string>();
     @ViewChild('differenceCanvas', { static: true }) differenceCanvas: ElementRef;
-    gameName: string = '';
+    gameName: string;
     readonly routerConfig: string = '/config/';
     gameNameForm = new FormGroup({
         name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)]),
@@ -33,10 +33,12 @@ export class CreationGameDialogComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.gameName = '';
         this.differenceCanvas.nativeElement.width = IMG_WIDTH;
         this.differenceCanvas.nativeElement.height = IMG_HEIGHT;
         const differenceContext = this.differenceCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.imageService.setDifferenceContext(differenceContext, this.radius);
+        this.imageService.setDifferenceContext(differenceContext);
+        this.imageService.validateDifferences(this.radius);
     }
 
     isNumberOfDifferencesValid(): boolean {
