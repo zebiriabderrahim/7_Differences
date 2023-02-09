@@ -10,9 +10,8 @@ export class ValidationService {
         return imageDescription.includes(IMG_TYPE);
     }
 
-    isImageSizeValid(event: Event): boolean {
-        const target = event.target as HTMLInputElement;
-        return target.width === IMG_WIDTH && target.height === IMG_HEIGHT;
+    isImageSizeValid(image: HTMLImageElement): boolean {
+        return image.width === IMG_WIDTH && image.height === IMG_HEIGHT;
     }
 
     isImageFormatValid(imageDescription: string): boolean {
