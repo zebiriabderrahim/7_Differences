@@ -36,8 +36,8 @@ export class CanvasUnderButtonsComponent {
             this.matDialog.open(this.invalidImageDialog);
             return;
         }
-        image.onload = (ev: Event) => {
-            if (this.validationService.isImageSizeValid(ev) && this.validationService.isImageFormatValid(image.src)) {
+        image.onload = () => {
+            if (this.validationService.isImageSizeValid(image) && this.validationService.isImageFormatValid(image.src)) {
                 this.imageService.setBackground(this.position, image.src);
             } else {
                 this.matDialog.open(this.invalidImageDialog);
