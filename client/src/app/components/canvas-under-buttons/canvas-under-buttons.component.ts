@@ -14,8 +14,10 @@ export class CanvasUnderButtonsComponent {
     @Input() position: CanvasPosition;
     @ViewChild('invalidImageDialog', { static: true })
     private readonly invalidImageDialog: TemplateRef<HTMLElement>;
-    canvasPosition: typeof CanvasPosition = CanvasPosition;
-    constructor(public imageService: ImageService, public matDialog: MatDialog) {}
+    canvasPosition: typeof CanvasPosition;
+    constructor(public imageService: ImageService, public matDialog: MatDialog) {
+        this.canvasPosition = CanvasPosition;
+    }
 
     isImageTypeValid(imageDescription: string): boolean {
         return imageDescription.includes(IMG_TYPE);
@@ -40,14 +42,18 @@ export class CanvasUnderButtonsComponent {
             reader.onload = () => {
                 const image = new Image();
                 image.src = reader.result as string;
-                if (this.isImageTypeValid(image.src)) {
-                    image.onload = (ev: Event) => {
-                        if (this.isImageSizeValid(ev) && this.isImageFormatValid(image.src)) {
-                            this.imageService.setBackground(this.position, image.src);
-                        } else {
-                            this.matDialog.open(this.invalidImageDialog);
-                        }
-                    };
+                this.setImageIfValid(image);
+            };
+        }
+    }
+
+    setImageIfValid(image: HTMLImageElement): void {
+        if (this.isImageTypeValid(image.src)) {
+            image.onload = (ev: Event) => {
+                if (this.isImageSizeValid(ev) && this.isImageFormatValid(image.src)) {
+                    this.imageService.setBackground(this.position, image.src);
+                } else {
+                    this.matDialog.open(this.invalidImageDialog);
                 }
             };
         }

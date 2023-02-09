@@ -14,11 +14,15 @@ export class CreationPageComponent {
     @ViewChild('imageNotSetDialog', { static: true })
     private readonly imageNotSetDialog: TemplateRef<HTMLElement>;
     readonly configRoute: string = '/config';
-    canvasPosition: typeof CanvasPosition = CanvasPosition;
-    radiusSizes: number[] = RADIUS_SIZES;
-    radius: number = DEFAULT_RADIUS;
+    canvasPosition: typeof CanvasPosition;
+    radiusSizes: number[];
+    radius: number;
 
-    constructor(public imageService: ImageService, private readonly matDialog: MatDialog) {}
+    constructor(public imageService: ImageService, private readonly matDialog: MatDialog) {
+        this.canvasPosition = CanvasPosition;
+        this.radiusSizes = RADIUS_SIZES;
+        this.radius = DEFAULT_RADIUS;
+    }
 
     validateDifferences() {
         if (this.imageService.areImagesSet()) {
