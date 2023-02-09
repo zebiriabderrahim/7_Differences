@@ -136,10 +136,10 @@ export class ImageService {
         const leftPixelArray = this.transformContextToPixelArray(this.leftBackgroundContext);
         const rightPixelArray = this.transformContextToPixelArray(this.rightBackgroundContext);
         const differenceCoordinates = this.differenceService.generateDifferences(leftPixelArray, rightPixelArray, radius);
-        this.drawDifferences(differenceCoordinates);
+        this.drawDifferenceImage(differenceCoordinates);
     }
 
-    drawDifferences(differences: Coordinate[]): void {
+    drawDifferenceImage(differences: Coordinate[]): void {
         const differencePixelArray = new Array(IMG_HEIGHT * IMG_WIDTH).fill(WHITE_PIXEL);
         for (const difference of differences) {
             differencePixelArray[difference.y * IMG_WIDTH + difference.x] = BLACK_PIXEL;

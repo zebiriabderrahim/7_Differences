@@ -19,7 +19,7 @@ export class ImageCanvasComponent implements AfterViewInit {
     ngAfterViewInit(): void {
         this.backgroundCanvas.nativeElement.width = IMG_WIDTH;
         this.backgroundCanvas.nativeElement.height = IMG_HEIGHT;
-        this.context = this.backgroundCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.context = this.backgroundCanvas.nativeElement.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.imageService.setBackgroundContext(this.position, this.context);
     }
 }
