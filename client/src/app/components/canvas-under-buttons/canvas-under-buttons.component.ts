@@ -56,6 +56,8 @@ export class CanvasUnderButtonsComponent {
                     this.matDialog.open(this.invalidImageDialog);
                 }
             };
+        } else {
+            this.matDialog.open(this.invalidImageDialog);
         }
     }
 
