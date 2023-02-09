@@ -107,15 +107,14 @@ export class ImageService {
     }
 
     transformContextToPixelArray(context: CanvasRenderingContext2D): Pixel[] {
-        const imageData = context.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        const data = imageData.data;
+        const imageData = context.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data;
         const pixelArray: Pixel[] = [];
-        for (let i = 0; i < data.length; i += N_PIXEL_ATTRIBUTE) {
+        for (let i = 0; i < imageData.length; i += N_PIXEL_ATTRIBUTE) {
             const pixel: Pixel = {
-                red: data[i],
-                green: data[i + 1],
-                blue: data[i + 2],
-                alpha: data[i + 3],
+                red: imageData[i],
+                green: imageData[i + 1],
+                blue: imageData[i + 2],
+                alpha: imageData[i + 3],
             };
             pixelArray.push(pixel);
         }
@@ -123,14 +122,14 @@ export class ImageService {
     }
 
     transformPixelArrayToImageData(pixelArray: Pixel[]): Uint8ClampedArray {
-        const data = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * N_PIXEL_ATTRIBUTE);
+        const imageData = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * N_PIXEL_ATTRIBUTE);
         for (let i = 0; i < pixelArray.length; i++) {
-            data[i * N_PIXEL_ATTRIBUTE] = pixelArray[i].red;
-            data[i * N_PIXEL_ATTRIBUTE + 1] = pixelArray[i].green;
-            data[i * N_PIXEL_ATTRIBUTE + 2] = pixelArray[i].blue;
-            data[i * N_PIXEL_ATTRIBUTE + 3] = pixelArray[i].alpha;
+            imageData[i * N_PIXEL_ATTRIBUTE] = pixelArray[i].red;
+            imageData[i * N_PIXEL_ATTRIBUTE + 1] = pixelArray[i].green;
+            imageData[i * N_PIXEL_ATTRIBUTE + 2] = pixelArray[i].blue;
+            imageData[i * N_PIXEL_ATTRIBUTE + 3] = pixelArray[i].alpha;
         }
-        return data;
+        return imageData;
     }
     validateDifferences(radius: number): void {
         const leftPixelArray = this.transformContextToPixelArray(this.leftBackgroundContext);
