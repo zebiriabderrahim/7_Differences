@@ -6,7 +6,7 @@
     </button>
     <input type="file" id="upload-btn" (change)="setImage($event)" #fileUpload />
     <button mat-raised-button color="primary" (click)="resetBackground()">
-        {{position === canvasPosition.Both ? 'Réinitialiser les arrières-plans' : 'Réinitialiser l\'arrière-plan'}}
+        Réinitialiser {{position === canvasPosition.Both ? 'les arrières-plans' : 'l\'arrière-plan'}}
     </button>
 </div>
 
