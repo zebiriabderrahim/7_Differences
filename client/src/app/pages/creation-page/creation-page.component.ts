@@ -4,7 +4,6 @@ import { CreationGameDialogComponent } from '@app/components/creation-game-dialo
 import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/creation-page';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { ImageService } from '@app/services/image-service/image.service';
-import { ValidationService } from '@app/services/validation-service//validation.service';
 
 @Component({
     selector: 'app-root',
@@ -16,11 +15,10 @@ export class CreationPageComponent {
     private readonly imageNotSetDialog: TemplateRef<HTMLElement>;
     readonly configRoute: string = '/config';
     canvasPosition: typeof CanvasPosition = CanvasPosition;
-    position = CanvasPosition.Both;
     radiusSizes: number[] = RADIUS_SIZES;
     radius: number = DEFAULT_RADIUS;
 
-    constructor(public imageService: ImageService, public validationService: ValidationService, private readonly matDialog: MatDialog) {}
+    constructor(public imageService: ImageService, private readonly matDialog: MatDialog) {}
 
     validateDifferences() {
         if (this.imageService.areImagesSet()) {

@@ -1,5 +1,5 @@
 import { Coordinate } from '@app/interfaces/coordinate';
-import { CanvasPosition } from '@app/enum/canvas-position';
+
 export interface GameDetails {
     id: number;
     name: string;
@@ -47,9 +47,4 @@ export interface GameConfigConst {
 export interface PlayerTime {
     name: string;
     time: number;
-}
-
-export interface UploadInfo {
-    event: Event;
-    canvasPosition: CanvasPosition;
 }

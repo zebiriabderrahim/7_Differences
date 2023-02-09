@@ -5,13 +5,13 @@
         <app-image-canvas [position]="canvasPosition.Right"></app-image-canvas>
     </div>
 
-    <app-canvas-under-buttons [position]="this.position"></app-canvas-under-buttons>
+    <app-canvas-under-buttons [position]="canvasPosition.Both"></app-canvas-under-buttons>
 
     <div id="configuration-buttons">
         <div>
             <p>Choisissez le rayon d'élargissement :</p>
             <mat-radio-group color="primary" aria-label="Select an option" [(ngModel)]="radius">
-                <mat-radio-button *ngFor="let rad of radiusSizes" [value]="rad">{{ rad }}</mat-radio-button>
+                <mat-radio-button *ngFor="let radius of radiusSizes" [value]="radius">{{ radius }}</mat-radio-button>
             </mat-radio-group>
         </div>
     </div>
