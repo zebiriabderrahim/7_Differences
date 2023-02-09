@@ -4,3 +4,8 @@ export interface Pixel {
     green: number;
     alpha: number;
 }
+
+export interface GamePixels {
+    leftImage: Pixel[];
+    rightImage: Pixel[];
+}

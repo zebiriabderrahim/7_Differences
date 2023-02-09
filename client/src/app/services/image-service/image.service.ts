@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { GAME_ID_MAX } from '@app/constants/constants';
+// import { GAME_ID_MAX } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { BLACK_PIXEL, N_PIXEL_ATTRIBUTE, WHITE_PIXEL } from '@app/constants/pixels';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { Coordinate } from '@app/interfaces/coordinate';
-import { GameDetails } from '@app/interfaces/game-interfaces';
-import { Pixel } from '@app/interfaces/pixel';
-import { CommunicationService } from '@app/services/communication-service/communication.service';
-import { DifferenceService } from '@app/services/difference-service/difference.service';
+import { ImageSources } from '@app/interfaces/image-sources';
+import { GamePixels, Pixel } from '@app/interfaces/pixel';
+// import { CommunicationService } from '@app/services/communication-service/communication.service';
+// import { DifferenceService } from '@app/services/difference-service/difference.service';
 
 @Injectable({
     providedIn: 'root',
@@ -19,7 +19,7 @@ export class ImageService {
     leftBackground: string;
     rightBackground: string;
 
-    constructor(public differenceService: DifferenceService, public communicationService: CommunicationService) {
+    constructor() {
         this.leftBackground = '';
         this.rightBackground = '';
     }
@@ -128,12 +128,25 @@ export class ImageService {
         }
         return imageData;
     }
-    validateDifferences(radius: number): void {
-        const leftPixelArray = this.transformContextToPixelArray(this.leftBackgroundContext);
-        const rightPixelArray = this.transformContextToPixelArray(this.rightBackgroundContext);
-        const differenceCoordinates = this.differenceService.generateDifferences(leftPixelArray, rightPixelArray, radius);
-        this.drawDifferenceImage(differenceCoordinates);
+
+    getGamePixels(): GamePixels {
+        const leftImagePixels = this.transformContextToPixelArray(this.leftBackgroundContext);
+        const rightImagePixels = this.transformContextToPixelArray(this.rightBackgroundContext);
+        const gamePixels: GamePixels = { leftImage: leftImagePixels, rightImage: rightImagePixels };
+        return gamePixels;
     }
+
+    getImageSources(): ImageSources {
+        const imageSources: ImageSources = { left: this.leftBackground, right: this.rightBackground };
+        return imageSources;
+    }
+
+    // validateDifferences(radius: number): void {
+    //     const leftPixelArray = this.transformContextToPixelArray(this.leftBackgroundContext);
+    //     const rightPixelArray = this.transformContextToPixelArray(this.rightBackgroundContext);
+    //     const differenceCoordinates = this.differenceService.generateDifferences(leftPixelArray, rightPixelArray, radius);
+    //     this.drawDifferenceImage(differenceCoordinates);
+    // }
 
     drawDifferenceImage(differences: Coordinate[]): void {
         const differencePixelArray = new Array(IMG_HEIGHT * IMG_WIDTH).fill(WHITE_PIXEL);
@@ -144,18 +157,18 @@ export class ImageService {
         this.differenceContext.putImageData(new ImageData(differenceImageData, IMG_WIDTH, IMG_HEIGHT), 0, 0);
     }
 
-    createGame(name: string): void {
-        const differences: Coordinate[][] = this.differenceService.generateDifferencesPackages();
-        const gameDetails: GameDetails = {
-            id: Math.floor(Math.random() * GAME_ID_MAX),
-            name,
-            originalImage: this.leftBackground,
-            modifiedImage: this.rightBackground,
-            nDifference: differences.length,
-            differences,
-            isHard: this.differenceService.isGameHard(),
-        };
-        this.resetBothBackgrounds();
-        this.communicationService.postGame(gameDetails).subscribe();
-    }
+    // createGame(name: string): void {
+    //     const differences: Coordinate[][] = this.differenceService.generateDifferencesPackages();
+    //     const gameDetails: GameDetails = {
+    //         id: Math.floor(Math.random() * GAME_ID_MAX),
+    //         name,
+    //         originalImage: this.leftBackground,
+    //         modifiedImage: this.rightBackground,
+    //         nDifference: differences.length,
+    //         differences,
+    //         isHard: this.differenceService.isGameHard(),
+    //     };
+    //     this.resetBothBackgrounds();
+    //     this.communicationService.postGame(gameDetails).subscribe();
+    // }
 }
