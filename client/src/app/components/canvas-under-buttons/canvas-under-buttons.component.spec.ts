@@ -2,13 +2,12 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { IMG_HEIGHT, IMG_TYPE, IMG_WIDTH } from '@app/constants/creation-page';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { ImageService } from '@app/services/image-service/image.service';
 import { CanvasUnderButtonsComponent } from './canvas-under-buttons.component';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
 
 describe('CanvasUnderButtonsComponent', () => {
     let component: CanvasUnderButtonsComponent;
@@ -17,7 +16,7 @@ describe('CanvasUnderButtonsComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [MatDialogModule, MatIconModule, MatTooltipModule, HttpClientTestingModule],
+            imports: [MatDialogModule, HttpClientTestingModule, MatIconModule],
             declarations: [CanvasUnderButtonsComponent],
         }).compileComponents();
 

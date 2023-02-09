@@ -25,6 +25,7 @@ import { ImageValidationDialogComponent } from './components/image-validation-di
 import { ConfigPageComponent } from './pages/config-page/config-page.component';
 import { CanvasUnderButtonsComponent } from './components/canvas-under-buttons/canvas-under-buttons.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 /**
  * Main module that is used in main.ts.
@@ -63,6 +64,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         MatDialogModule,
         OverlayModule,
         MatTooltipModule,
+        MatFormFieldModule,
     ],
     providers: [],
     bootstrap: [AppComponent],
