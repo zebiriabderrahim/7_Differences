@@ -15,7 +15,7 @@ export class CreationGameDialogComponent implements OnInit {
     @Output() gameNameEvent = new EventEmitter<string>();
     @ViewChild('differenceCanvas', { static: true }) differenceCanvas: ElementRef;
     gameName: string = '';
-    routerConfig: string = '/config/';
+    readonly routerConfig: string = '/config/';
     gameNameForm = new FormGroup({
         name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)]),
     });

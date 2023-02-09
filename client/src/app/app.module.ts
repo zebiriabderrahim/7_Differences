@@ -27,7 +27,6 @@ import { SelectionPageComponent } from '@app/pages/selection-page/selection-page
 import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.component';
 import { CanvasUnderButtonsComponent } from './components/canvas-under-buttons/canvas-under-buttons.component';
 import { ImageCanvasComponent } from './components/image-canvas/image-canvas.component';
-import { ImageValidationDialogComponent } from './components/image-validation-dialog/image-validation-dialog.component';
 import { ConfigPageComponent } from './pages/config-page/config-page.component';
 /**
  * Main module that is used in main.ts.
@@ -50,7 +49,6 @@ import { ConfigPageComponent } from './pages/config-page/config-page.component';
         PlayerNameDialogBoxComponent,
         GameInfosComponent,
         ImageCanvasComponent,
-        ImageValidationDialogComponent,
         ConfigPageComponent,
         CreationGameDialogComponent,
         CanvasUnderButtonsComponent,
