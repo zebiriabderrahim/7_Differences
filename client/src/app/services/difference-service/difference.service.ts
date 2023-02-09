@@ -8,13 +8,17 @@ import { Pixel } from '@app/interfaces/pixel';
     providedIn: 'root',
 })
 export class DifferenceService {
-    differencesArray: Coordinate[]; // TODO link to appropriate service
+    differences: Coordinate[]; // TODO link to appropriate service
     differencePackages: Coordinate[][];
     visitedCoordinates: boolean[][];
     differenceMatrix: boolean[][];
 
     constructor() {
-        this.differencesArray = [];
+        this.resetAttributes();
+    }
+
+    resetAttributes() {
+        this.differences = [];
         this.differencePackages = [];
         this.visitedCoordinates = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
         this.differenceMatrix = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
@@ -81,19 +85,20 @@ export class DifferenceService {
     }
 
     generateDifferences(pixelArray1: Pixel[], pixelArray2: Pixel[], radius: number): Coordinate[] {
+        this.resetAttributes();
         this.differenceMatrix = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
-        const differentCoordinates: Coordinate[] = [];
+        // const differentCoordinates: Coordinate[] = [];
         for (let i = 0; i < pixelArray1.length; i++) {
             if (this.arePixelsDifferent(pixelArray1[i], pixelArray2[i])) {
                 const x = i % IMG_WIDTH;
                 const y = Math.floor(i / IMG_WIDTH);
-                differentCoordinates.push({ x, y });
+                this.differences.push({ x, y });
                 this.differenceMatrix[x][y] = true;
             }
         }
-        this.differencesArray = this.enlargeDifferences(differentCoordinates, radius);
+        this.differences = this.enlargeDifferences(this.differences, radius);
         this.generateDifferencesPackages();
-        return this.differencesArray;
+        return this.differences;
     }
 
     arePixelsDifferent(pixel1: Pixel, pixel2: Pixel): boolean {
@@ -126,7 +131,7 @@ export class DifferenceService {
     }
 
     isGameHard(): boolean {
-        const differencesPercentage = this.differencesArray.length / (IMG_WIDTH * IMG_HEIGHT);
+        const differencesPercentage = this.differences.length / (IMG_WIDTH * IMG_HEIGHT);
         return this.differencePackages.length >= N_DIFFERENCES_HARD_GAME && differencesPercentage <= HARD_DIFFERENCES_PERCENTAGE;
     }
 }
