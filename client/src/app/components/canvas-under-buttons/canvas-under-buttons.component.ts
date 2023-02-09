@@ -46,10 +46,6 @@ export class CanvasUnderButtonsComponent {
     }
 
     resetBackground(): void {
-        if (this.position === CanvasPosition.Both) {
-            this.imageService.resetBothBackgrounds();
-        } else {
-            this.imageService.resetBackground(this.position);
-        }
+        this.imageService.resetBackground(this.position);
     }
 }

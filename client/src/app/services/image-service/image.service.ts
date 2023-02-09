@@ -21,6 +21,10 @@ export class ImageService {
 
     constructor(public differenceService: DifferenceService, public communicationService: CommunicationService) {}
 
+    areImagesSet(): boolean {
+        return this.leftBackground !== '' && this.rightBackground !== '';
+    }
+
     resetBackground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
@@ -29,11 +33,10 @@ export class ImageService {
             case CanvasPosition.Right:
                 this.resetRightBackground();
                 break;
+            case CanvasPosition.Both:
+                this.resetBothBackgrounds();
+                break;
         }
-    }
-
-    areImagesSet(): boolean {
-        return this.leftBackground !== '' && this.rightBackground !== '';
     }
 
     resetLeftBackground() {
@@ -53,33 +56,31 @@ export class ImageService {
         this.resetRightBackground();
     }
 
-    setBackground(canvasPosition: CanvasPosition, image: string) {
+    setBackground(canvasPosition: CanvasPosition, imageSource: string) {
+        const imageToDraw = new Image();
+        imageToDraw.src = imageSource;
         switch (canvasPosition) {
             case CanvasPosition.Left:
-                this.setLeftBackground(image);
+                this.setLeftBackground(imageToDraw);
                 break;
             case CanvasPosition.Right:
-                this.setRightBackground(image);
+                this.setRightBackground(imageToDraw);
                 break;
             case CanvasPosition.Both:
-                this.setBothBackgrounds(image);
+                this.setLeftBackground(imageToDraw);
+                this.setRightBackground(imageToDraw);
                 break;
         }
     }
 
-    // TODO: Possible to avoid code duplication?
-    setLeftBackground(image: string) {
-        const imageToDraw = new Image();
-        imageToDraw.src = image;
-        this.leftBackground = image;
+    setLeftBackground(imageToDraw: HTMLImageElement) {
+        this.leftBackground = imageToDraw.src;
         this.leftBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.leftBackgroundContext.drawImage(imageToDraw, 0, 0);
     }
 
-    setRightBackground(image: string) {
-        const imageToDraw = new Image();
-        imageToDraw.src = image;
-        this.rightBackground = image;
+    setRightBackground(imageToDraw: HTMLImageElement) {
+        this.rightBackground = imageToDraw.src;
         this.rightBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.rightBackgroundContext.drawImage(imageToDraw, 0, 0);
     }
@@ -97,14 +98,9 @@ export class ImageService {
 
     setDifferenceContext(context: CanvasRenderingContext2D, radius: number) {
         this.differenceContext = context;
-        if (this.leftBackground && this.rightBackground) {
+        if (this.areImagesSet()) {
             this.validateDifferences(radius);
         }
-    }
-
-    setBothBackgrounds(image: string) {
-        this.setLeftBackground(image);
-        this.setRightBackground(image);
     }
 
     transformContextToPixelArray(context: CanvasRenderingContext2D): Pixel[] {
