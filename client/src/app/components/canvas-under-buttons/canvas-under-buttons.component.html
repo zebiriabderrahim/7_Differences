@@ -1,7 +1,7 @@
 <div id="canvas-action-buttons">
     <button mat-raised-button color="basic" matTooltip="L'image doit être en format BMP 24 bits et de taille 640x480"
         (click)="fileUpload.click()">
-        Téléverser une image {{position === canvasPosition.Both ? 'pour les deux canvas' : ''}}
+        Téléverser une image {{position === canvasPosition.Both ? 'pour les deux zones' : ''}}
         <mat-icon>attach_file</mat-icon>
     </button>
     <input type="file" id="upload-btn" (change)="setImage($event)" #fileUpload />
@@ -10,7 +10,7 @@
     </button>
 </div>
 
-<ng-template #imageNotValidDialog>
+<ng-template #invalidImageDialog>
     <div mat-dialog-content>
         <button mat-button mat-dialog-close>Fermer</button>
         <h1 mat-dialog-title>Image non conforme !</h1>

@@ -12,8 +12,8 @@ import { Buffer } from 'buffer';
 })
 export class CanvasUnderButtonsComponent {
     @Input() position: CanvasPosition;
-    @ViewChild('imageNotValidDialog', { static: true })
-    private readonly imageNotValidDialog: TemplateRef<HTMLElement>;
+    @ViewChild('invalidImageDialog', { static: true })
+    private readonly invalidImageDialog: TemplateRef<HTMLElement>;
     canvasPosition: typeof CanvasPosition = CanvasPosition;
     constructor(public imageService: ImageService, public matDialog: MatDialog) {}
 
@@ -45,7 +45,7 @@ export class CanvasUnderButtonsComponent {
                         if (this.isImageSizeValid(ev) && this.isImageFormatValid(image.src)) {
                             this.imageService.setBackground(this.position, image.src);
                         } else {
-                            this.matDialog.open(this.imageNotValidDialog);
+                            this.matDialog.open(this.invalidImageDialog);
                         }
                     };
                 }
