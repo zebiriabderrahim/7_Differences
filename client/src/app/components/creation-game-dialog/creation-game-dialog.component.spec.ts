@@ -1,9 +1,14 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // import { MatFormFieldModule, MatFormFieldControl } from '@angular/material/form-field';
 // import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterTestingModule } from '@angular/router/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
@@ -20,7 +25,16 @@ describe('CreationGameDialogComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+            imports: [
+                HttpClientTestingModule,
+                BrowserAnimationsModule,
+                ReactiveFormsModule,
+                FormsModule,
+                MatFormFieldModule,
+                MatInputModule,
+                MatButtonModule,
+                RouterTestingModule,
+            ],
             declarations: [CreationGameDialogComponent],
             providers: [
                 { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } },
