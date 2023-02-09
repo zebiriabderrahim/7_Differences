@@ -20,12 +20,7 @@ export class DifferenceService {
     }
 
     isCoordInDifferencesArray(point: Coordinate): boolean {
-        for (const coord of this.differencesArray) {
-            if (coord.x === point.x && coord.y === point.y) {
-                return true;
-            }
-        }
-        return false;
+        return this.differencesArray.some((coord) => coord.x === point.x && coord.y === point.y);
     }
 
     findAdjacentCoords(coord: Coordinate): Coordinate[] {
