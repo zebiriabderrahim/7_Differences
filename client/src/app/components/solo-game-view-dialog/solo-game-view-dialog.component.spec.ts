@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { SoloGameViewDialogComponent } from './solo-game-view-dialog.component';
+import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dialog/solo-game-view-dialog.component';
 
 describe('SoloGameViewDialogComponent', () => {
     let component: SoloGameViewDialogComponent;
