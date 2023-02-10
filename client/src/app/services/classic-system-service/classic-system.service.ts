@@ -1,32 +1,44 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dialog/solo-game-view-dialog.component';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
-import { GameCardService } from '@app/services/gamecard-service/gamecard.service';
 import { Coordinate } from '@common/coordinate';
-import { ClientSideGame, GameEvents } from '@common/game-interfaces';
-import { Subject } from 'rxjs';
+import { ClientSideGame, Differences, GameEvents } from '@common/game-interfaces';
+import { Subject, Subscription } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
-export class ClassicSystemService {
+export class ClassicSystemService implements OnDestroy {
+    timer: Subject<number>;
+    differencesFound: Subject<number>;
     currentGame: Subject<ClientSideGame>;
-    currentDifference: Subject<Coordinate[]>;
     isLeftCanvas: boolean;
-    constructor(
-        private gameCardService: GameCardService,
-        private clientSocket: ClientSocketService,
-        private gameAreaService: GameAreaService,
-        private readonly matDialog: MatDialog,
-    ) {
+    private playerName: Subject<string>;
+    private id: Subject<string>;
+    private idSubscription: Subscription;
+    private playerNameSubscription: Subscription;
+    constructor(private clientSocket: ClientSocketService, private gameAreaService: GameAreaService, private readonly matDialog: MatDialog) {
         this.currentGame = new Subject<ClientSideGame>();
-        this.currentDifference = new Subject<Coordinate[]>();
+        this.differencesFound = new Subject<number>();
+        this.timer = new Subject<number>();
+        this.playerName = new Subject<string>();
+        this.id = new Subject<string>();
+    }
+    ngOnDestroy(): void {
+        this.idSubscription.unsubscribe();
+        this.playerNameSubscription.unsubscribe();
     }
     createSoloGame(): void {
-        this.gameCardService.getGameId().subscribe((id: number) => {
-            this.clientSocket.send('createSoloGame', { playerName: '125', gameId: id });
+        this.playerNameSubscription = this.playerName.asObservable().subscribe((playerName: string) => {
+            this.idSubscription = this.id.asObservable().subscribe((id: string) => {
+                this.clientSocket.send('createSoloGame', { player: playerName, gameId: id });
+            });
         });
+    }
+
+    checkStatus(): void {
+        this.clientSocket.send(GameEvents.CheckStatus, this.clientSocket.socket.id);
     }
 
     requestVerification(coords: Coordinate): void {
@@ -51,17 +63,21 @@ export class ClassicSystemService {
 
     manageSocket(): void {
         this.clientSocket.connect();
-        console.log(this.clientSocket.socket);
         this.createSoloGame();
+
         this.clientSocket.on(GameEvents.CreateSoloGame, (clientGame: ClientSideGame) => {
             this.currentGame.next(clientGame);
         });
-        this.clientSocket.on(GameEvents.RemoveDiff, (clientGame: ClientSideGame) => {
-            this.currentGame.next(clientGame);
-            this.currentDifference.next(clientGame.currentDifference);
-            console.log(clientGame.currentDifference.length);
-            this.replaceDifference(clientGame.currentDifference);
+        this.clientSocket.on(GameEvents.RemoveDiff, (differencesData: Differences) => {
+            this.replaceDifference(differencesData.currentDifference);
+            this.differencesFound.next(differencesData.differencesFound);
+            this.checkStatus();
         });
+
+        this.clientSocket.on(GameEvents.TimerStarted, (timer: number) => {
+            this.timer.next(timer);
+        });
+
         this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {
             this.clientSocket.disconnect();
             this.showEndGameDialog(endGameMessage);

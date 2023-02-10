@@ -1,7 +1,7 @@
 import { Coordinate } from '@common/coordinate';
 
 export interface GameDetails {
-    id: number;
+    id?: number;
     name: string;
     originalImage: string;
     modifiedImage: string;
@@ -11,38 +11,28 @@ export interface GameDetails {
 }
 
 export interface ServerSideGame {
-    id: number;
+    id: string;
     name: string;
-    difficultyLevel: boolean;
     original: string;
     modified: string;
-    soloTopTime: PlayerTime[];
-    oneVsOneTopTime: PlayerTime[];
     differences: Coordinate[][];
     differencesCount: number;
-    thumbnail: string;
-    hintList: string[];
+    isHard: boolean;
 }
+
 export interface ClientSideGame {
-    id: number;
-    gameName: string;
+    id: string;
+    name: string;
     player: string;
-    gameMode: string;
-    timer: number;
+    mode: string;
     original: string;
     modified: string;
-    differencesFound: number;
-    messages: string[];
-    endGameMessage: string;
-    currentDifference: Coordinate[];
-    hintPenalty: number;
-    soloTopTime: PlayerTime[];
-    oneVsOneTopTime: PlayerTime[];
-    hintList: string[];
+    isHard: boolean;
+    differencesCount: number;
 }
 
 export interface GameCard {
-    id: number;
+    id: string;
     name: string;
     difficultyLevel: boolean;
     soloTopTime: PlayerTime[];
@@ -71,6 +61,14 @@ export interface PlayRoom {
     roomId: string;
     serverGame: ServerSideGame;
     clientGame: ClientSideGame;
+    endMessage: string;
+    timer: number;
+    differencesData: Differences;
+}
+
+export interface Differences {
+    currentDifference: Coordinate[];
+    differencesFound: number;
 }
 
 export enum GameEvents {
