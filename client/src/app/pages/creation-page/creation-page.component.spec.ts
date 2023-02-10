@@ -48,13 +48,13 @@ describe('CreationPageComponent', () => {
         expect(matDialogSpy.open).toHaveBeenCalledWith(CreationGameDialogComponent, dialogConfig);
     });
 
-    // it('validateDifferences should open imageNotSetDialog if images are not set', () => {
-    //     imageServiceSpy.areImagesSet.and.callFake(() => {
-    //         return false;
-    //     });
-    //     component.validateDifferences();
-    //     expect(matDialogSpy.open).toHaveBeenCalled();
-    // });
+    it('validateDifferences should open imageNotSetDialog if images are not set', () => {
+        spyOn(imageService, 'areImagesSet').and.callFake(() => {
+            return false;
+        });
+        component.validateDifferences();
+        expect(matDialogSpy.open).toHaveBeenCalled();
+    });
 
     // it('should display the number of differences when displayDifferences is defined', () => {
     //     differenceService.differencePackages.length = 5;
