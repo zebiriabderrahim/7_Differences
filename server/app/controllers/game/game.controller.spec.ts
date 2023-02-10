@@ -1,6 +1,6 @@
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameService } from '@app/services/game/game.service';
-import { CarouselPaginator, Game, GameConfigConst } from '@common/game-interfaces';
+import { CarouselPaginator, GameConfigConst, ServerSideGame } from '@common/game-interfaces';
 import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'express';
@@ -23,7 +23,7 @@ describe('GameController', () => {
         },
     ];
 
-    const testGame: Game = {
+    const testGame: ServerSideGame = {
         id: 1,
         name: 'test',
         difficultyLevel: true,

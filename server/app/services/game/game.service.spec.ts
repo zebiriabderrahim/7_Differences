@@ -1,9 +1,9 @@
-import { DatabaseService } from '@app/services/database/database.service';
-import { Test, TestingModule } from '@nestjs/testing';
-import { GameService } from './game.service';
-import { createStubInstance, SinonStubbedInstance } from 'sinon';
-import { Game, GameConfigConst, CarouselPaginator } from '@common/game-interfaces';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
+import { DatabaseService } from '@app/services/database/database.service';
+import { CarouselPaginator, GameConfigConst, ServerSideGame } from '@common/game-interfaces';
+import { Test, TestingModule } from '@nestjs/testing';
+import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { GameService } from './game.service';
 
 describe('GameService', () => {
     let gameService: GameService;
@@ -21,7 +21,7 @@ describe('GameService', () => {
         },
     ];
 
-    const testGame: Game = {
+    const testGame: ServerSideGame = {
         id: 1,
         name: 'test',
         difficultyLevel: true,

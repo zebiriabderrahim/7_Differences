@@ -9,7 +9,7 @@ const bootstrap = async () => {
     app.setGlobalPrefix('api');
     app.useGlobalPipes(new ValidationPipe());
     app.use(json({ limit: '50mb' }));
-    app.use(urlencoded({ extended: true, limit: '50mb' }));
+    app.use(urlencoded({ extended: true, limit: '5mB' }));
     app.enableCors();
     const config = new DocumentBuilder()
         .setTitle('Cadriciel Serveur')

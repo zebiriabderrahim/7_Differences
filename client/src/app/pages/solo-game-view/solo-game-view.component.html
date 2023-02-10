@@ -1,15 +1,15 @@
 <div>
-    <img src="../../../assets/img/magnifying-glass.png" id="hint1" alt="Icone d'indice" class="hintIcon" (click)="getHint(0)" />
-    <img src="../../../assets/img/magnifying-glass.png" id="hint2" alt="Icone d'indice" class="hintIcon" (click)="getHint(1)" />
-    <img src="../../../assets/img/magnifying-glass.png" id="hint3" alt="Icone d'indice" class="hintIcon" (click)="getHint(2)" />
+    <img src="assets/img/magnifying-glass.png" id="hint1" alt="Icone d'indice" class="hintIcon" />
+    <img src="assets/img/magnifying-glass.png" id="hint2" alt="Icone d'indice" class="hintIcon" />
+    <img src="assets/img/magnifying-glass.png" id="hint3" alt="Icone d'indice" class="hintIcon" />
 </div>
 <div *ngIf="game" class="infomations-header">
-    <h1>{{ game.name }}</h1>
+    <h1>{{ game.gameName }}</h1>
     <div class="game-feedback">
-        <h1>Temps: {{ timer.time }}</h1>
-        <h1>différences trouvées: {{ game.differencesCount }}</h1>
+        <h1>Temps: {{ game.timer | date: 'mm:ss' }}</h1>
+        <h1>{{ game.player }} Différences trouvées: {{ game.differencesFound }}</h1>
     </div>
-    <app-game-infos [game]="game" [mode]="mode" [penaltyTime]="penaltyTime" [bonusTime]="bonusTime"></app-game-infos>
+    <app-game-infos [game]="game"></app-game-infos>
 </div>
 <div class="canvas-container">
     <div class="game-canvas">
