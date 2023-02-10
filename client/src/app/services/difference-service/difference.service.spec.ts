@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { TestBed } from '@angular/core/testing';
-
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { DifferenceService } from './difference.service';
 
 describe('DifferenceService', () => {
@@ -24,6 +24,28 @@ describe('DifferenceService', () => {
     //     expect(service.differencesArray).toBe(differencesArray);
     // });
 
+    it('resetAttributes should reset the attributes', () => {
+        const difference = { x: 300, y: 200 };
+        service.differences = [difference];
+        service.differencePackages = [[difference]];
+        service.visitedCoordinates = [[true]];
+        service.differenceMatrix = [[true]];
+        service.resetAttributes();
+        expect(service.differences).toEqual([]);
+        expect(service.differencePackages).toEqual([]);
+        expect(service.visitedCoordinates).toEqual(service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT));
+        expect(service.differenceMatrix).toEqual(service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT));
+    });
+
+    it('createFalseMatrix should create a matrix of false values to specific sizes', () => {
+        const matrix = [
+            [false, false],
+            [false, false],
+            [false, false],
+        ];
+        expect(service.createFalseMatrix(matrix.length, matrix[0].length)).toEqual(matrix);
+    });
+
     it('isCoordinateValid should return true if the coordinate is valid', () => {
         const coordinate = { x: 300, y: 200 };
         expect(service.isCoordinateValid(coordinate)).toBeTruthy();
@@ -34,8 +56,8 @@ describe('DifferenceService', () => {
         expect(service.isCoordinateValid(coordinate)).toBeFalsy();
     });
 
-    it('isCoordinateValid should return false if the x coordinate is greater than or equal to 640', () => {
-        const coordinate = { x: 640, y: 200 };
+    it('isCoordinateValid should return false if the x coordinate is greater than or equal to Image width', () => {
+        const coordinate = { x: IMG_WIDTH + 2, y: 200 };
         expect(service.isCoordinateValid(coordinate)).toBeFalsy();
     });
 
@@ -44,28 +66,10 @@ describe('DifferenceService', () => {
         expect(service.isCoordinateValid(coordinate)).toBeFalsy();
     });
 
-    it('isCoordinateValid should return false if the y coordinate is greater than or equal to 480', () => {
-        const coordinate = { x: 300, y: 480 };
+    it('isCoordinateValid should return false if the y coordinate is greater than or equal to image height', () => {
+        const coordinate = { x: 300, y: IMG_HEIGHT + 2 };
         expect(service.isCoordinateValid(coordinate)).toBeFalsy();
     });
-
-    // it('isCoordInDifferencesArray should return true if the point is in differencesArray', () => {
-    //     service.differencesArray = [
-    //         { x: 100, y: 200 },
-    //         { x: 300, y: 400 },
-    //     ];
-    //     const point = { x: 100, y: 200 };
-    //     expect(service.isCoordInDifferencesArray(point)).toBeTruthy();
-    // });
-
-    // it('isCoordInDifferencesArray should return false if the point is not in differencesArray', () => {
-    //     service.differencesArray = [
-    //         { x: 100, y: 200 },
-    //         { x: 300, y: 400 },
-    //     ];
-    //     const point = { x: 500, y: 600 };
-    //     expect(service.isCoordInDifferencesArray(point)).toBeFalsy();
-    // });
 
     it('findAdjacentCoords should return the correct list of adjacent coordinates', () => {
         const coord = { x: 1, y: 1 };
@@ -82,40 +86,64 @@ describe('DifferenceService', () => {
         expect(service.findAdjacentCoords(coord)).toEqual(expectedAdjacentCoords);
     });
 
-    // it('generateDifferencesPackages should return differences grouped by proximity', () => {
-    //     const differencesArray = [
-    //         { x: 69, y: 0 },
-    //         { x: 70, y: 0 },
-    //         { x: 0, y: 39 },
-    //         { x: 0, y: 40 },
-    //     ];
-    //     const expectedDifferencesPackages = [
-    //         [
-    //             { x: 69, y: 0 },
-    //             { x: 70, y: 0 },
-    //         ],
-    //         [
-    //             { x: 0, y: 39 },
-    //             { x: 0, y: 40 },
-    //         ],
-    //     ];
-    //     service.setDifferencesArray(differencesArray);
-    //     expect(service.generateDifferencesPackages()).toEqual(expectedDifferencesPackages);
-    // });
+    it('generateDifferencesPackages should return differences grouped by proximity', () => {
+        service.differences = [
+            { x: 69, y: 0 },
+            { x: 70, y: 0 },
+            { x: 0, y: 39 },
+            { x: 0, y: 40 },
+        ];
 
-    // it('generateDifferences should return differences of pixels', () => {
-    //     const originalPixelArray = [
-    //         { red: 100, green: 200, blue: 150, alpha: 0 },
-    //         { red: 50, green: 100, blue: 200, alpha: 1 },
-    //     ];
-    //     const modifiedPixelArray = [
-    //         { red: 40, green: 200, blue: 150, alpha: 0 },
-    //         { red: 50, green: 100, blue: 200, alpha: 1 },
-    //     ];
-    //     const expectDifferences = [{ x: 0, y: 0 }];
-    //     const radius = 0;
-    //     expect(service.generateDifferences(originalPixelArray, modifiedPixelArray, radius)).toEqual(expectDifferences);
-    // });
+        service.differenceMatrix = service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        service.differenceMatrix[69][0] = true;
+        service.differenceMatrix[70][0] = true;
+        service.differenceMatrix[0][39] = true;
+        service.differenceMatrix[0][40] = true;
+
+        const expectedDifferencesPackages = [
+            [
+                { x: 0, y: 39 },
+                { x: 0, y: 40 },
+            ],
+            [
+                { x: 69, y: 0 },
+                { x: 70, y: 0 },
+            ],
+        ];
+        expect(service.generateDifferencesPackages()).toEqual(expectedDifferencesPackages);
+    });
+
+    it('breadthFirstSearch should return only the difference if it has no surrounding differences', () => {
+        const difference = { x: 100, y: 100 };
+        expect(service.breadthFirstSearch(difference)).toEqual([difference]);
+    });
+
+    it('breadthFirstSearch should return difference and it connected differences', () => {
+        const difference = { x: 100, y: 100 };
+        const connectedDifferences = [difference, { x: 100, y: 101 }, { x: 100, y: 102 }, { x: 101, y: 103 }];
+        service.differenceMatrix = service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        service.differenceMatrix[difference.x][difference.y] = true;
+        connectedDifferences.forEach((connectedDifference) => {
+            service.differenceMatrix[connectedDifference.x][connectedDifference.y] = true;
+        });
+        expect(service.breadthFirstSearch(difference)).toEqual(connectedDifferences);
+    });
+
+    it('generateDifferences should return differences of pixels', () => {
+        const gamesPixels = {
+            leftImage: [
+                { red: 100, green: 200, blue: 150, alpha: 0 },
+                { red: 50, green: 100, blue: 200, alpha: 1 },
+            ],
+            rightImage: [
+                { red: 40, green: 200, blue: 150, alpha: 0 },
+                { red: 50, green: 100, blue: 200, alpha: 1 },
+            ],
+        };
+        const expectDifferences = [{ x: 0, y: 0 }];
+        const radius = 0;
+        expect(service.generateDifferences(gamesPixels, radius)).toEqual(expectDifferences);
+    });
 
     it('enlargeDifferences should enlarge differences according to radius', () => {
         const differences = [
@@ -193,94 +221,49 @@ describe('DifferenceService', () => {
 
     it('isNumberOfDifferencesValid should return false if the number of differences is greater than 9', () => {
         service.differencePackages = [
-            [
-                { x: 10, y: 20 },
-                { x: 30, y: 40 },
-            ],
-            [
-                { x: 50, y: 60 },
-                { x: 70, y: 80 },
-            ],
-            [
-                { x: 90, y: 100 },
-                { x: 110, y: 120 },
-            ],
-            [
-                { x: 130, y: 140 },
-                { x: 150, y: 160 },
-            ],
-            [
-                { x: 170, y: 180 },
-                { x: 190, y: 200 },
-            ],
-            [
-                { x: 210, y: 220 },
-                { x: 230, y: 240 },
-            ],
-            [
-                { x: 250, y: 260 },
-                { x: 270, y: 280 },
-            ],
-            [
-                { x: 290, y: 300 },
-                { x: 310, y: 320 },
-            ],
-            [
-                { x: 330, y: 340 },
-                { x: 350, y: 360 },
-            ],
-            [
-                { x: 370, y: 380 },
-                { x: 390, y: 400 },
-            ],
+            [{ x: 10, y: 20 }],
+            [{ x: 20, y: 20 }],
+            [{ x: 30, y: 20 }],
+            [{ x: 40, y: 20 }],
+            [{ x: 50, y: 20 }],
+            [{ x: 60, y: 20 }],
+            [{ x: 70, y: 20 }],
+            [{ x: 80, y: 20 }],
+            [{ x: 90, y: 20 }],
+            [{ x: 100, y: 20 }],
         ];
         expect(service.isNumberOfDifferencesValid()).toBeFalsy();
     });
 
-    // eslint-disable-next-line max-len
-    it('isGameHard returns true if differencePackages has N_DIFFERENCES_HARD_GAME = 7 or more elements and differencesPercentage is less than or equal to HARD_DIFFERENCES_PERCENTAGE = 0.15', () => {
-        // service.differencesArray = [
-        //     { x: 1, y: 1 },
-        //     { x: 1, y: 4 },
-        // ];
+    // it('isGameHard returns true if differencePackages has N_DIFFERENCES_HARD_GAME = 7 or more elements
+    // and differencesPercentage is less than or equal to HARD_DIFFERENCES_PERCENTAGE = 0.15', () => {
+    it('isGameHard returns true if differencePackages has 7 differences or more and covers less than 15% of the area', () => {
+        service.differences = [
+            { x: 10, y: 20 },
+            { x: 20, y: 20 },
+            { x: 30, y: 20 },
+            { x: 40, y: 20 },
+            { x: 50, y: 20 },
+            { x: 60, y: 20 },
+            { x: 70, y: 20 },
+            { x: 80, y: 20 },
+        ];
+
         service.differencePackages = [
-            [
-                { x: 1, y: 1 },
-                { x: 2, y: 2 },
-            ],
-            [
-                { x: 3, y: 3 },
-                { x: 4, y: 4 },
-            ],
-            [
-                { x: 3, y: 3 },
-                { x: 4, y: 4 },
-            ],
-            [
-                { x: 3, y: 3 },
-                { x: 4, y: 4 },
-            ],
-            [
-                { x: 3, y: 3 },
-                { x: 4, y: 4 },
-            ],
-            [
-                { x: 3, y: 3 },
-                { x: 4, y: 4 },
-            ],
-            [
-                { x: 3, y: 3 },
-                { x: 4, y: 4 },
-            ],
+            [{ x: 10, y: 20 }],
+            [{ x: 20, y: 20 }],
+            [{ x: 30, y: 20 }],
+            [{ x: 40, y: 20 }],
+            [{ x: 50, y: 20 }],
+            [{ x: 60, y: 20 }],
+            [{ x: 70, y: 20 }],
+            [{ x: 80, y: 20 }],
         ];
         expect(service.isGameHard()).toBeTruthy();
     });
 
-    it('isGameHard returns false if differencePackages has less than N_DIFFERENCES_HARD_GAME = 7 elements', () => {
-        // service.differencesArray = [
-        //     { x: 1, y: 1 },
-        //     { x: 2, y: 2 },
-        // ];
+    // it('isGameHard returns false if differencePackages has less than 7 elements', () => {
+    it('isGameHard returns false if differencePackages has less than 7 elements', () => {
         service.differencePackages = [
             [
                 { x: 1, y: 1 },
@@ -296,39 +279,16 @@ describe('DifferenceService', () => {
     });
 
     it('isGameHard returns false if differencesPercentage is greater than HARD_DIFFERENCES_PERCENTAGE = 0.15', () => {
-        // service.differencesArray = [
-        //     { x: 1, y: 1 },
-        //     { x: 2, y: 2 },
-        //     { x: 3, y: 3 },
-        //     { x: 4, y: 4 },
-        //     { x: 5, y: 5 },
-        //     { x: 6, y: 6 },
-        //     { x: 7, y: 7 },
-        //     { x: 8, y: 8 },
-        //     { x: 9, y: 9 },
-        //     { x: 10, y: 10 },
-        // ];
+        service.differences = new Array(IMG_HEIGHT * IMG_WIDTH).fill({ x: 0, y: 0 });
         service.differencePackages = [
-            [
-                { x: 1, y: 1 },
-                { x: 2, y: 2 },
-            ],
-            [
-                { x: 3, y: 3 },
-                { x: 4, y: 4 },
-            ],
-            [
-                { x: 5, y: 5 },
-                { x: 6, y: 6 },
-            ],
-            [
-                { x: 7, y: 7 },
-                { x: 8, y: 8 },
-            ],
-            [
-                { x: 9, y: 9 },
-                { x: 10, y: 10 },
-            ],
+            [{ x: 10, y: 20 }],
+            [{ x: 20, y: 20 }],
+            [{ x: 30, y: 20 }],
+            [{ x: 40, y: 20 }],
+            [{ x: 50, y: 20 }],
+            [{ x: 60, y: 20 }],
+            [{ x: 70, y: 20 }],
+            [{ x: 80, y: 20 }],
         ];
         expect(service.isGameHard()).toBeFalsy();
     });
