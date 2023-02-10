@@ -36,7 +36,7 @@ export class CreationGameDialogComponent implements OnInit {
     ) {}
 
     get displayDifferences(): number {
-        return this.differenceService.differencePackages.length;
+        return this.differenceService['differencePackages'].length;
     }
 
     ngOnInit(): void {

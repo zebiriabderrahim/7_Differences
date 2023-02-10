@@ -8,10 +8,10 @@ import { Pixel, GamePixels } from '@app/interfaces/pixel';
     providedIn: 'root',
 })
 export class DifferenceService {
-    differences: Coordinate[];
-    differencePackages: Coordinate[][];
-    visitedCoordinates: boolean[][];
-    differenceMatrix: boolean[][];
+    private differences: Coordinate[];
+    private differencePackages: Coordinate[][];
+    private visitedCoordinates: boolean[][];
+    private differenceMatrix: boolean[][];
 
     constructor() {
         this.resetAttributes();

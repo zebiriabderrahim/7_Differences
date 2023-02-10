@@ -26,15 +26,15 @@ describe('DifferenceService', () => {
 
     it('resetAttributes should reset the attributes', () => {
         const difference = { x: 300, y: 200 };
-        service.differences = [difference];
-        service.differencePackages = [[difference]];
-        service.visitedCoordinates = [[true]];
-        service.differenceMatrix = [[true]];
+        service['differences'] = [difference];
+        service['differencePackages'] = [[difference]];
+        service['visitedCoordinates'] = [[true]];
+        service['differenceMatrix'] = [[true]];
         service.resetAttributes();
-        expect(service.differences).toEqual([]);
-        expect(service.differencePackages).toEqual([]);
-        expect(service.visitedCoordinates).toEqual(service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT));
-        expect(service.differenceMatrix).toEqual(service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT));
+        expect(service['differences']).toEqual([]);
+        expect(service['differencePackages']).toEqual([]);
+        expect(service['visitedCoordinates']).toEqual(service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT));
+        expect(service['differenceMatrix']).toEqual(service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT));
     });
 
     it('createFalseMatrix should create a matrix of false values to specific sizes', () => {
@@ -87,18 +87,18 @@ describe('DifferenceService', () => {
     });
 
     it('generateDifferencesPackages should return differences grouped by proximity', () => {
-        service.differences = [
+        service['differences'] = [
             { x: 69, y: 0 },
             { x: 70, y: 0 },
             { x: 0, y: 39 },
             { x: 0, y: 40 },
         ];
 
-        service.differenceMatrix = service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
-        service.differenceMatrix[69][0] = true;
-        service.differenceMatrix[70][0] = true;
-        service.differenceMatrix[0][39] = true;
-        service.differenceMatrix[0][40] = true;
+        service['differenceMatrix'] = service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        service['differenceMatrix'][69][0] = true;
+        service['differenceMatrix'][70][0] = true;
+        service['differenceMatrix'][0][39] = true;
+        service['differenceMatrix'][0][40] = true;
 
         const expectedDifferencesPackages = [
             [
@@ -121,10 +121,10 @@ describe('DifferenceService', () => {
     it('breadthFirstSearch should return difference and it connected differences', () => {
         const difference = { x: 100, y: 100 };
         const connectedDifferences = [difference, { x: 100, y: 101 }, { x: 100, y: 102 }, { x: 101, y: 103 }];
-        service.differenceMatrix = service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
-        service.differenceMatrix[difference.x][difference.y] = true;
+        service['differenceMatrix'] = service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        service['differenceMatrix'][difference.x][difference.y] = true;
         connectedDifferences.forEach((connectedDifference) => {
-            service.differenceMatrix[connectedDifference.x][connectedDifference.y] = true;
+            service['differenceMatrix'][connectedDifference.x][connectedDifference.y] = true;
         });
         expect(service.breadthFirstSearch(difference)).toEqual(connectedDifferences);
     });
@@ -188,7 +188,7 @@ describe('DifferenceService', () => {
     });
 
     it('isNumberOfDifferencesValid should return true if the number of differences is between 3 and 9 inclusive', () => {
-        service.differencePackages = [
+        service['differencePackages'] = [
             [
                 { x: 10, y: 20 },
                 { x: 30, y: 40 },
@@ -206,7 +206,7 @@ describe('DifferenceService', () => {
     });
 
     it('isNumberOfDifferencesValid should return false if the number of differences is less than 3', () => {
-        service.differencePackages = [
+        service['differencePackages'] = [
             [
                 { x: 10, y: 20 },
                 { x: 30, y: 40 },
@@ -220,7 +220,7 @@ describe('DifferenceService', () => {
     });
 
     it('isNumberOfDifferencesValid should return false if the number of differences is greater than 9', () => {
-        service.differencePackages = [
+        service['differencePackages'] = [
             [{ x: 10, y: 20 }],
             [{ x: 20, y: 20 }],
             [{ x: 30, y: 20 }],
@@ -238,7 +238,7 @@ describe('DifferenceService', () => {
     // it('isGameHard returns true if differencePackages has N_DIFFERENCES_HARD_GAME = 7 or more elements
     // and differencesPercentage is less than or equal to HARD_DIFFERENCES_PERCENTAGE = 0.15', () => {
     it('isGameHard returns true if differencePackages has 7 differences or more and covers less than 15% of the area', () => {
-        service.differences = [
+        service['differences'] = [
             { x: 10, y: 20 },
             { x: 20, y: 20 },
             { x: 30, y: 20 },
@@ -249,7 +249,7 @@ describe('DifferenceService', () => {
             { x: 80, y: 20 },
         ];
 
-        service.differencePackages = [
+        service['differencePackages'] = [
             [{ x: 10, y: 20 }],
             [{ x: 20, y: 20 }],
             [{ x: 30, y: 20 }],
@@ -264,7 +264,7 @@ describe('DifferenceService', () => {
 
     // it('isGameHard returns false if differencePackages has less than 7 elements', () => {
     it('isGameHard returns false if differencePackages has less than 7 elements', () => {
-        service.differencePackages = [
+        service['differencePackages'] = [
             [
                 { x: 1, y: 1 },
                 { x: 2, y: 2 },
@@ -279,8 +279,8 @@ describe('DifferenceService', () => {
     });
 
     it('isGameHard returns false if differencesPercentage is greater than HARD_DIFFERENCES_PERCENTAGE = 0.15', () => {
-        service.differences = new Array(IMG_HEIGHT * IMG_WIDTH).fill({ x: 0, y: 0 });
-        service.differencePackages = [
+        service['differences'] = new Array(IMG_HEIGHT * IMG_WIDTH).fill({ x: 0, y: 0 });
+        service['differencePackages'] = [
             [{ x: 10, y: 20 }],
             [{ x: 20, y: 20 }],
             [{ x: 30, y: 20 }],
