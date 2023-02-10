@@ -59,7 +59,7 @@ describe('CreationPageComponent', () => {
 
     it('should select a radio button', () => {
         const radioButtons = fixture.debugElement.query(By.css('mat-radio-button')).nativeElement;
-        radioButtons.click();
+        radioButtons[1]?.click();
         fixture.detectChanges();
         expect(component.radius).toEqual(component.radiusSizes[1]);
     });
