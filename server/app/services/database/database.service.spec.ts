@@ -9,7 +9,6 @@ import { DatabaseService } from './database.service';
 describe('DatabaseService', () => {
     let dataBaseService: DatabaseService;
     let listsManagerService: SinonStubbedInstance<GameListsManagerService>;
-    const mockData: Buffer = Buffer.from('');
     const defaultBestTimes: PlayerTime[] = [
         { name: 'John Doe', time: 100 },
         { name: 'Jane Doe', time: 200 },
