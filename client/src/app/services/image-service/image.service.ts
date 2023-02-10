@@ -96,12 +96,7 @@ export class ImageService {
         }
     }
 
-    setDifferenceContext(context: CanvasRenderingContext2D) {
-        this.differenceContext = context;
-    }
-
-    transformContextToPixelArray(context: CanvasRenderingContext2D): Pixel[] {
-        const imageData = context.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data;
+    transformImageDataToPixelArray(imageData: Uint8ClampedArray): Pixel[] {
         const pixelArray: Pixel[] = [];
         for (let i = 0; i < imageData.length; i += N_PIXEL_ATTRIBUTE) {
             const pixel: Pixel = {
@@ -116,7 +111,7 @@ export class ImageService {
     }
 
     transformPixelArrayToImageData(pixelArray: Pixel[]): Uint8ClampedArray {
-        const imageData = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * N_PIXEL_ATTRIBUTE);
+        const imageData = new Uint8ClampedArray(pixelArray.length * N_PIXEL_ATTRIBUTE);
         for (let i = 0; i < pixelArray.length; i++) {
             imageData[i * N_PIXEL_ATTRIBUTE] = pixelArray[i].red;
             imageData[i * N_PIXEL_ATTRIBUTE + 1] = pixelArray[i].green;
@@ -127,15 +122,16 @@ export class ImageService {
     }
 
     getGamePixels(): GamePixels {
-        const leftImagePixels = this.transformContextToPixelArray(this.leftBackgroundContext);
-        const rightImagePixels = this.transformContextToPixelArray(this.rightBackgroundContext);
+        const leftImageData = this.leftBackgroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data;
+        const rightImageData = this.rightBackgroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data;
+        const leftImagePixels = this.transformImageDataToPixelArray(leftImageData);
+        const rightImagePixels = this.transformImageDataToPixelArray(rightImageData);
         const gamePixels: GamePixels = { leftImage: leftImagePixels, rightImage: rightImagePixels };
         return gamePixels;
     }
 
     getImageSources(): ImageSources {
-        const imageSources: ImageSources = { left: this.leftBackground, right: this.rightBackground };
-        return imageSources;
+        return { left: this.leftBackground, right: this.rightBackground };
     }
 
     drawDifferenceImage(differences: Coordinate[]): void {
