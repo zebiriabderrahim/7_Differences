@@ -63,4 +63,12 @@ describe('CreationPageComponent', () => {
         fixture.detectChanges();
         expect(component.radius).toEqual(component.radiusSizes[1]);
     });
+
+    it('should call validateDifferences method on click', () => {
+        const validateButton = fixture.debugElement.query(By.css("button[name='validateButton']")).nativeElement;
+        const validateDifferencesSpy = spyOn(component, 'validateDifferences');
+        validateButton.click();
+        fixture.detectChanges();
+        expect(validateDifferencesSpy).toHaveBeenCalled();
+    });
 });
