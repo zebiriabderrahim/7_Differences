@@ -10,7 +10,7 @@ export interface GameDetails {
     isHard: boolean;
 }
 
-export interface Game {
+export interface ServerSideGame {
     id: number;
     name: string;
     difficultyLevel: boolean;
@@ -18,8 +18,26 @@ export interface Game {
     modified: string;
     soloTopTime: PlayerTime[];
     oneVsOneTopTime: PlayerTime[];
+    differences: Coordinate[][];
     differencesCount: number;
     thumbnail: string;
+    hintList: string[];
+}
+export interface ClientSideGame {
+    id: number;
+    gameName: string;
+    player: string;
+    gameMode: string;
+    timer: number;
+    original: string;
+    modified: string;
+    differencesFound: number;
+    messages: string[];
+    endGameMessage: string;
+    currentDifference: Coordinate[];
+    hintPenalty: number;
+    soloTopTime: PlayerTime[];
+    oneVsOneTopTime: PlayerTime[];
     hintList: string[];
 }
 
@@ -47,4 +65,20 @@ export interface GameConfigConst {
 export interface PlayerTime {
     name: string;
     time: number;
+}
+
+export interface PlayRoom {
+    roomId: string;
+    serverGame: ServerSideGame;
+    clientGame: ClientSideGame;
+}
+
+export enum GameEvents {
+    ValidateCoords = 'validateCoords',
+    Penalty = 'penalty',
+    CheckStatus = 'checkStatus',
+    CreateSoloGame = 'createSoloGame',
+    EndGame = 'endGame',
+    TimerStarted = 'timerStarted',
+    RemoveDiff = 'removeDiff',
 }

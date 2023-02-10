@@ -1,26 +1,28 @@
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameListsManagerService } from '@app/services/game-lists-manager/game-lists-manager.service';
 import { DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
-import { CarouselPaginator, Game, GameCard, GameConfigConst } from '@common/game-interfaces';
+import { CarouselPaginator, GameCard, GameConfigConst, ServerSideGame } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 
 @Injectable()
 export class DatabaseService {
-    private games: Game[] = [];
+    private games: ServerSideGame[] = [];
     private gameCardsList: GameCard[] = [];
     private carouselGames: CarouselPaginator[] = [];
+
     private defaultConstants: GameConfigConst = {
         countdownTime: DEFAULT_COUNTDOWN_VALUE,
         penaltyTime: DEFAULT_HINT_PENALTY,
         bonusTime: DEFAULT_BONUS_TIME,
     };
     constructor(private readonly gameListManager: GameListsManagerService) {}
+
     getGamesCarrousel(): CarouselPaginator[] {
         return this.carouselGames;
     }
 
-    getGameById(id: number): Game {
+    getGameById(id: number): ServerSideGame {
         return this.games.find((game) => game.id === +id);
     }
 
@@ -45,7 +47,7 @@ export class DatabaseService {
         this.saveFiles(newGame.name, Buffer.from(newGame.originalImage.replace(/^data:image\/\w+;base64,/, ''), 'base64'));
     }
 
-    addGameCard(game: Game): void {
+    addGameCard(game: ServerSideGame): void {
         const gameCard = this.gameListManager.buildGameCardFromGame(game);
         this.gameListManager.buildGameCarousel(this.gameCardsList, this.carouselGames);
         this.gameCardsList.push(gameCard);
