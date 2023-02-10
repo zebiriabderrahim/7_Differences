@@ -134,6 +134,7 @@ export class GameAreaService {
                 clearInterval(secondInterval);
                 this.modifiedContextFrontLayer.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
                 this.originalContextFrontLayer.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                this.clickDisabled = false;
             }, FLASH_WAIT_TIME);
         }, YELLOW_FLASH_TIME);
 
@@ -141,6 +142,7 @@ export class GameAreaService {
             clearInterval(firstInterval);
             this.modifiedContextFrontLayer.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             this.originalContextFrontLayer.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            this.clickDisabled = false;
         }, FLASH_WAIT_TIME);
     }
 }
