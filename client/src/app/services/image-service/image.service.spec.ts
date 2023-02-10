@@ -177,8 +177,6 @@ describe('ImageService', () => {
         expect(rightBackgroundContextSpy).toHaveBeenCalled();
     });
 
-    // TODO : test setBothBackgrounds
-
     it('transformImageDataToPixelArray should return an array of pixels', () => {
         const imageData = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * N_PIXEL_ATTRIBUTE).fill(0);
         const pixelArray = new Array(IMG_WIDTH * IMG_HEIGHT).fill({

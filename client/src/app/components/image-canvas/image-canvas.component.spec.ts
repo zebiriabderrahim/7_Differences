@@ -31,12 +31,4 @@ describe('ImageCanvasComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-
-    // it('resetBackground should call imageService.resetBackground with the right Position', () => {
-    //     component.position = CanvasPosition.Left;
-    //     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    //     const imageServiceResetBackgroundSpy = spyOn(imageService, 'resetBackground').and.callFake(() => {});
-    //     component.resetBackground();
-    //     expect(imageServiceResetBackgroundSpy).toHaveBeenCalledWith(component.position);
-    // });
 });
