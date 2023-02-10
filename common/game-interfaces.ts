@@ -28,14 +28,10 @@ export interface ClientSideGame {
     name: string;
     player: string;
     mode: string;
-    timer: number;
     original: string;
     modified: string;
-    differencesFound: number;
-    endMessage: string;
-    currentDifference: Coordinate[];
-    differencesCount: number;
     isHard: boolean;
+    differencesCount: number;
 }
 
 export interface GameCard {
@@ -68,6 +64,14 @@ export interface PlayRoom {
     roomId: string;
     serverGame: ServerSideGame;
     clientGame: ClientSideGame;
+    endMessage: string;
+    timer: number;
+    differencesData: Differences;
+}
+
+export interface Differences {
+    currentDifference: Coordinate[];
+    differencesFound: number;
 }
 
 export enum GameEvents {

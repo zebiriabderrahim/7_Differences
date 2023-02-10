@@ -1,25 +1,42 @@
-import { Injectable } from '@angular/core';
-// import { Game } from '@app/interfaces/game-interfaces';
+import { Injectable, OnDestroy } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
-import { GameCardService } from '@app/services/gamecard-service/gamecard.service';
 import { Coordinate } from '@common/coordinate';
-import { ClientSideGame, GameEvents } from '@common/game-interfaces';
-import { Subject } from 'rxjs';
+import { ClientSideGame, Differences, GameEvents } from '@common/game-interfaces';
+import { Subject, Subscription } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
-export class ClassicSystemService {
+export class ClassicSystemService implements OnDestroy {
+    timer: Subject<number>;
+    differencesFound: Subject<number>;
     currentGame: Subject<ClientSideGame>;
-    currentDifference: Subject<Coordinate[]>;
-    constructor(private gameCardService: GameCardService, private clientSocket: ClientSocketService, private gameAreaService: GameAreaService) {
+    isLeftCanvas: boolean;
+    private playerName: Subject<string>;
+    private id: Subject<number>;
+    private idSubscription: Subscription;
+    private playerNameSubscription: Subscription;
+    constructor(private clientSocket: ClientSocketService, private gameAreaService: GameAreaService) {
         this.currentGame = new Subject<ClientSideGame>();
-        this.currentDifference = new Subject<Coordinate[]>();
+        this.differencesFound = new Subject<number>();
+        this.timer = new Subject<number>();
+        this.playerName = new Subject<string>();
+        this.id = new Subject<number>();
+    }
+    ngOnDestroy(): void {
+        this.idSubscription.unsubscribe();
+        this.playerNameSubscription.unsubscribe();
     }
     createSoloGame(): void {
-        this.gameCardService.getGameId().subscribe((id: number) => {
-            this.clientSocket.send('createSoloGame', { playerName: '125', gameId: id });
+        this.playerNameSubscription = this.playerName.asObservable().subscribe((playerName) => {
+            this.idSubscription = this.id.asObservable().subscribe((id) => {
+                this.clientSocket.send('createSoloGame', { player: playerName, gameId: id });
+            });
         });
+    }
+
+    checkStatus(): void {
+        this.clientSocket.send(GameEvents.CheckStatus, this.clientSocket.socket.id);
     }
 
     requestVerification(coords: Coordinate): void {
@@ -28,7 +45,7 @@ export class ClassicSystemService {
 
     replaceDifference(differences: Coordinate[]): void {
         if (differences.length === 0) {
-            this.gameAreaService.showError(false);
+            this.gameAreaService.showError(this.isLeftCanvas);
         } else {
             this.gameAreaService.replaceDifference(differences);
         }
@@ -37,17 +54,22 @@ export class ClassicSystemService {
     manageSocket(): void {
         this.clientSocket.connect();
         this.createSoloGame();
+
         this.clientSocket.on(GameEvents.CreateSoloGame, (clientGame: ClientSideGame) => {
             this.currentGame.next(clientGame);
         });
-        this.clientSocket.on(GameEvents.RemoveDiff, (clientGame: ClientSideGame) => {
-            // this.currentDifference.next(clientGame.currentDifference);
-            this.replaceDifference(clientGame.currentDifference);
-            this.currentGame.next(clientGame);
+        this.clientSocket.on(GameEvents.RemoveDiff, (differencesData: Differences) => {
+            this.replaceDifference(differencesData.currentDifference);
+            this.differencesFound.next(differencesData.differencesFound);
+            this.checkStatus();
         });
-        // this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {});
-        // this.clientSocket.on(GameEvents.TimerStarted, (timer) => {
-        //     console.log(timer);
-        // });
+
+        this.clientSocket.on(GameEvents.TimerStarted, (timer: number) => {
+            this.timer.next(timer);
+        });
+
+        this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {
+            this.clientSocket.disconnect();
+        });
     }
 }

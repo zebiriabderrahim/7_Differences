@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
+import { environment } from 'src/environments/environment';
 // import { environment } from 'src/environments/environment';
 // This code belongs to Nikolay Radoev
 // https://gitlab.com/nikolayradoev/socket-io-exemple/-/tree/master
@@ -9,13 +10,14 @@ import { io, Socket } from 'socket.io-client';
 })
 export class ClientSocketService {
     socket: Socket;
+    private readonly baseUrl: string = environment.serverUrl.replace('/api', '');
 
     isSocketAlive() {
         return this.socket && this.socket.connected;
     }
 
     connect() {
-        this.socket = io('http://localhost:3000/', { transports: ['websocket'], upgrade: false });
+        this.socket = io(this.baseUrl, { transports: ['websocket'], upgrade: false });
     }
 
     disconnect() {
