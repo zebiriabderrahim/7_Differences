@@ -8,7 +8,7 @@ import { Pixel, GamePixels } from '@app/interfaces/pixel';
     providedIn: 'root',
 })
 export class DifferenceService {
-    differences: Coordinate[]; // TODO link to appropriate service
+    differences: Coordinate[];
     differencePackages: Coordinate[][];
     visitedCoordinates: boolean[][];
     differenceMatrix: boolean[][];
@@ -22,10 +22,6 @@ export class DifferenceService {
         this.differencePackages = [];
         this.visitedCoordinates = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
         this.differenceMatrix = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
-    }
-
-    resetVisitedCoordinates() {
-        this.visitedCoordinates = new Array(IMG_WIDTH).fill(false).map(() => new Array(IMG_HEIGHT).fill(false)) as boolean[][];
     }
 
     createFalseMatrix(width: number, height: number): boolean[][] {
@@ -52,11 +48,11 @@ export class DifferenceService {
 
     generateDifferencesPackages(): Coordinate[][] {
         const differences: Coordinate[][] = [];
-        this.resetVisitedCoordinates();
+        this.visitedCoordinates = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
         for (let i = 0; i < IMG_WIDTH; i++) {
             for (let j = 0; j < IMG_HEIGHT; j++) {
                 if (!this.visitedCoordinates[i][j] && this.differenceMatrix[i][j]) {
-                    differences.push(this.bfs({ x: i, y: j }));
+                    differences.push(this.breadthFirstSearch({ x: i, y: j }));
                 }
             }
         }
@@ -64,7 +60,7 @@ export class DifferenceService {
         return differences;
     }
 
-    bfs(difference: Coordinate): Coordinate[] {
+    breadthFirstSearch(difference: Coordinate): Coordinate[] {
         const queue: Coordinate[] = [];
         const currentDifference: Coordinate[] = [];
         let activeDifference: Coordinate;
