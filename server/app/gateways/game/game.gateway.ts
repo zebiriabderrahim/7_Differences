@@ -31,8 +31,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     constructor(private readonly logger: Logger, private readonly classicSoloModeService: ClassicSoloModeService) {}
 
     @SubscribeMessage(GameEvents.CreateSoloGame)
-    createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('playerName') playerName: string, @MessageBody('gameId') gameId: number) {
+    createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: number) {
         try {
+            console.log(playerName, gameId);
             const room = this.classicSoloModeService.createSoloRoom(socket, playerName, gameId);
             if (room) {
                 this.server.to(room.roomId).emit(GameEvents.CreateSoloGame, room.clientGame);
@@ -52,10 +53,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameEvents.CheckStatus)
-    roomMessage(socket: Socket, message: string) {
-        // Seulement un membre de la salle peut envoyer un message aux autres
-        if (socket.rooms.has(this.room)) {
-            this.server.to(this.room).emit(GameEvents.CheckStatus, `${socket.id} : ${message}`);
+    checkStatus(@MessageBody() socketId: string) {
+        try {
+            this.classicSoloModeService.endGame(socketId, this.server);
+        } catch (error) {
+            this.server.to(socketId).emit(GameEvents.CheckStatus, 'Erreur lors de la vérification du status');
         }
     }
 
@@ -71,10 +73,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     handleDisconnect(@ConnectedSocket() socket: Socket) {
         this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
+        this.classicSoloModeService.endGame(socket.id, this.server);
     }
 
     private updateTimers() {
-        console.log('update timers');
         for (const roomId of this.classicSoloModeService.rooms.keys()) {
             this.classicSoloModeService.updateTimer(roomId, this.server);
         }

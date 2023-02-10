@@ -3,6 +3,7 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@ang
 // import { Vec2 } from '@app/interfaces/vec2';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { CANVAS_WIDTH, CANVAS_HEIGHT } from '@common/constants';
 import { ClientSideGame } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
@@ -17,14 +18,13 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     @ViewChild('originalCanvasFG', { static: false }) originalCanvasForeground!: ElementRef<HTMLCanvasElement>;
     @ViewChild('modifiedCanvasFG', { static: false }) modifiedCanvasForeground!: ElementRef<HTMLCanvasElement>;
     game: ClientSideGame;
-    gameSub: Subscription;
-    isLeftCanvas: boolean;
-    isFirstTime = true;
-    readonly homeRoute: string = '/home';
-    // private canvasSize = { width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
-
-    // a enlever plus tard
-    // eslint-disable-next-line max-params
+    differencesFound: number = 0;
+    timer: number = 0;
+    readonly canvasSize = { width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
+    private timerSub: Subscription;
+    private gameSub: Subscription;
+    private differenceSub: Subscription;
+    private isFirstTime = true;
     constructor(private gameAreaService: GameAreaService, private classicService: ClassicSystemService) {}
     ngAfterViewInit(): void {
         this.classicService.manageSocket();
@@ -45,6 +45,12 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
                 this.isFirstTime = false;
             }
         });
+        this.timerSub = this.timerSub = this.classicService.timer.subscribe((timer) => {
+            this.timer = timer;
+        });
+        this.differenceSub = this.classicService.differencesFound.subscribe((differencesFound) => {
+            this.differencesFound = differencesFound;
+        });
     }
 
     abandonGame(): void {
@@ -53,18 +59,22 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
 
     mouseClickOnOriginal(event: MouseEvent) {
         if (this.gameAreaService.detectLeftClick(event)) {
-            this.isLeftCanvas = true;
+            this.gameAreaService.setAllData();
+            this.classicService.isLeftCanvas = true;
+            this.classicService.requestVerification(this.gameAreaService.mousePosition);
         }
     }
 
     mouseClickOnModified(event: MouseEvent) {
         if (this.gameAreaService.detectLeftClick(event)) {
-            this.isLeftCanvas = false;
             this.gameAreaService.setAllData();
+            this.classicService.isLeftCanvas = false;
             this.classicService.requestVerification(this.gameAreaService.mousePosition);
         }
     }
     ngOnDestroy(): void {
         this.gameSub.unsubscribe();
+        this.timerSub.unsubscribe();
+        this.differenceSub.unsubscribe();
     }
 }
