@@ -124,9 +124,10 @@ export class ImageService {
     getGamePixels(): GamePixels {
         const leftImageData = this.leftBackgroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data;
         const rightImageData = this.rightBackgroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data;
-        const leftImagePixels = this.transformImageDataToPixelArray(leftImageData);
-        const rightImagePixels = this.transformImageDataToPixelArray(rightImageData);
-        const gamePixels: GamePixels = { leftImage: leftImagePixels, rightImage: rightImagePixels };
+        const gamePixels: GamePixels = {
+            leftImage: this.transformImageDataToPixelArray(leftImageData),
+            rightImage: this.transformImageDataToPixelArray(rightImageData),
+        };
         return gamePixels;
     }
 
