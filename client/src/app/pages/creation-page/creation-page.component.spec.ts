@@ -1,7 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-// import { MatDialog, MatDialogConfig, MatDialogModule } from '@angular/material/dialog';
 import { MatDialog, MatDialogConfig, MatDialogModule } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { MatRadioModule } from '@angular/material/radio';
@@ -9,7 +8,6 @@ import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
-// import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
 import { ImageService } from '@app/services/image-service/image.service';
 import { CreationPageComponent } from './creation-page.component';
@@ -19,7 +17,6 @@ describe('CreationPageComponent', () => {
     let fixture: ComponentFixture<CreationPageComponent>;
     let matDialogSpy: jasmine.SpyObj<MatDialog>;
     let imageService: ImageService;
-    // let router: RouterTestingModule;
 
     beforeEach(async () => {
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
