@@ -1,41 +1,41 @@
-.images-section {
+.users-section {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space;
     border-radius: 5px;
-    padding: 10px;
+    padding: 20px;
     margin: 20px;
 }
 
-#canvas-action-buttons {
-    width: 55%;
-    display: flex;
-    justify-content: space-around;
+.mat-raised-button:first-child {
+    margin: 10px;
+    top: 800px;
+    position: relative;
 }
 
-#configuration-buttons {
+#radio-buttons {
     padding-right: 100px;
     display: flex;
     justify-content: center;
     flex-direction: column;
 }
 
-#configuration-buttons div {
+#radio-buttons div {
     margin: 5px;
     width: 100%;
     display: flex;
     justify-content: center;
 }
 
-#configuration-buttons #buttons {
+#radio-buttons #buttons {
     padding-left: 50px;
     width: 100%;
     display: flex;
     justify-content: space-between;
 }
 
-#configuration-buttons p {
+#radio-buttons p {
     margin-right: 13px;
 }
 
