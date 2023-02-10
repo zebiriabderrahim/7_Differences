@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Inject, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { GAME_ID_MAX } from '@app/constants/constants';
+import { DEFAULT_ID } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { Coordinate } from '@app/interfaces/coordinate';
 import { ImageSources } from '@app/interfaces/image-sources';
@@ -25,25 +25,26 @@ export class CreationGameDialogComponent implements OnInit {
     gameNameForm = new FormGroup({
         name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)]),
     });
+
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
     constructor(
-        public imageService: ImageService,
-        private differenceService: DifferenceService,
-        public communicationService: CommunicationService,
-        public dialogRef: MatDialogRef<CreationPageComponent>,
+        private readonly imageService: ImageService,
+        private readonly differenceService: DifferenceService,
+        private readonly communicationService: CommunicationService,
+        private readonly dialogRef: MatDialogRef<CreationPageComponent>,
         @Inject(MAT_DIALOG_DATA) public radius: number,
     ) {}
 
     get displayDifferences(): number {
-        return this.differenceService.differencePackages.length;
+        return this.differenceService['differencePackages'].length;
     }
 
     ngOnInit(): void {
         this.gameName = '';
         this.differenceCanvas.nativeElement.width = IMG_WIDTH;
         this.differenceCanvas.nativeElement.height = IMG_HEIGHT;
-        this.imageService.differenceContext = this.differenceCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.imageService.setDifferenceContext(this.differenceCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D);
     }
 
     isNumberOfDifferencesValid(): boolean {
@@ -62,7 +63,7 @@ export class CreationGameDialogComponent implements OnInit {
             const differences: Coordinate[][] = this.differenceService.generateDifferencesPackages();
             const imageSources: ImageSources = this.imageService.getImageSources();
             const gameDetails: GameDetails = {
-                id: Math.floor(Math.random() * GAME_ID_MAX),
+                id: DEFAULT_ID,
                 name: this.gameNameForm.value.name,
                 originalImage: imageSources.left,
                 modifiedImage: imageSources.right,

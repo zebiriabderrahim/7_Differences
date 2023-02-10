@@ -49,8 +49,8 @@ describe('CreationGameDialogComponent', () => {
         imageService = TestBed.inject(ImageService);
         differenceService = TestBed.inject(DifferenceService);
         contextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
-        imageService.leftBackgroundContext = contextStub;
-        imageService.rightBackgroundContext = contextStub;
+        imageService['leftBackgroundContext'] = contextStub;
+        imageService['rightBackgroundContext'] = contextStub;
     });
 
     it('should create', () => {
@@ -78,7 +78,7 @@ describe('CreationGameDialogComponent', () => {
     });
 
     it('gameNameForm should be enabled isNumberOfDifferencesValid is true', () => {
-        differenceService.differencePackages = [
+        differenceService['differencePackages'] = [
             [
                 { x: 10, y: 20 },
                 { x: 30, y: 40 },
@@ -96,7 +96,7 @@ describe('CreationGameDialogComponent', () => {
     });
 
     it('gameNameForm should be enabled isNumberOfDifferencesValid is true', () => {
-        differenceService.differencePackages = [
+        differenceService['differencePackages'] = [
             [
                 { x: 10, y: 20 },
                 { x: 30, y: 40 },
@@ -114,7 +114,7 @@ describe('CreationGameDialogComponent', () => {
     });
 
     it('gameNameForm should be enabled isNumberOfDifferencesValid is true', () => {
-        differenceService.differencePackages = [
+        differenceService['differencePackages'] = [
             [
                 { x: 10, y: 20 },
                 { x: 30, y: 40 },
@@ -132,7 +132,7 @@ describe('CreationGameDialogComponent', () => {
     });
 
     it('gameNameForm should be disabled if isNumberOfDifferencesValid is false', () => {
-        differenceService.differencePackages = [
+        differenceService['differencePackages'] = [
             [
                 { x: 10, y: 20 },
                 { x: 30, y: 40 },
