@@ -15,13 +15,13 @@ export class CreationPageComponent {
     private readonly imageNotSetDialog: TemplateRef<HTMLElement>;
     readonly configRoute: string = '/config';
     canvasPosition: typeof CanvasPosition;
-    radiusSizes: number[];
+    readonly radiusSizes: number[];
     radius: number;
 
     constructor(public imageService: ImageService, private readonly matDialog: MatDialog) {
-        this.canvasPosition = CanvasPosition;
         this.radiusSizes = RADIUS_SIZES;
         this.radius = DEFAULT_RADIUS;
+        this.canvasPosition = CanvasPosition;
     }
 
     validateDifferences() {
