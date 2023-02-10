@@ -22,16 +22,13 @@ describe('GameService', () => {
     ];
 
     const testGame: ServerSideGame = {
-        id: 1,
+        id: '1',
         name: 'test',
         isHard: true,
         original: 'test',
         modified: 'test',
-        soloTopTime: [],
-        oneVsOneTopTime: [],
         differencesCount: 1,
         differences: [[]],
-        thumbnail: 'test',
     };
     beforeEach(async () => {
         databaseService = createStubInstance(DatabaseService);
@@ -65,14 +62,14 @@ describe('GameService', () => {
 
     it('should call with the right arg getGameById() and return testGame as expected', () => {
         databaseService.getGameById.returns(testGame);
-        expect(gameService.getGameById(1)).toEqual(testGame);
+        expect(gameService.getGameById('1')).toEqual(testGame);
         expect(databaseService.getGameById.calledOnce).toBe(true);
-        expect(databaseService.getGameById.calledWith(1)).toBe(true);
+        expect(databaseService.getGameById.calledWith('1')).toBe(true);
     });
 
     it('should throw HttpException when getGameById() in databaseService unable to found Game', () => {
         databaseService.getGameById.returns(undefined);
-        expect(() => gameService.getGameById(0)).toThrowError();
+        expect(() => gameService.getGameById('0')).toThrowError();
         expect(databaseService.getGameById.calledOnce).toBe(true);
     });
 

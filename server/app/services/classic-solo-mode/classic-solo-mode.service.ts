@@ -10,7 +10,7 @@ export class ClassicSoloModeService {
 
     constructor(private readonly gameService: GameService) {}
 
-    createSoloRoom(socket: io.Socket, playerName: string, gameId: number): PlayRoom {
+    createSoloRoom(socket: io.Socket, playerName: string, gameId: string): PlayRoom {
         const game = this.gameService.getGameById(gameId);
         const diffData: Differences = {
             currentDifference: [],
