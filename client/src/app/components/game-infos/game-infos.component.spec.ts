@@ -21,6 +21,4 @@ describe('GameInfosComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-
-    // it('should have input properties set correctly', () => {});
 });
