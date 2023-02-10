@@ -35,8 +35,12 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.gameSub = this.classicService.currentGame.subscribe((game) => {
             this.game = game;
             if (this.game && this.isFirstTime) {
-                this.gameAreaService.originalContext = this.originalCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-                this.gameAreaService.modifiedContext = this.modifiedCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+                this.gameAreaService.originalContext = this.originalCanvas.nativeElement.getContext('2d', {
+                    willReadFrequently: true,
+                }) as CanvasRenderingContext2D;
+                this.gameAreaService.modifiedContext = this.modifiedCanvas.nativeElement.getContext('2d', {
+                    willReadFrequently: true,
+                }) as CanvasRenderingContext2D;
                 this.gameAreaService.originalContextFrontLayer = this.originalCanvasForeground.nativeElement.getContext(
                     '2d',
                 ) as CanvasRenderingContext2D;

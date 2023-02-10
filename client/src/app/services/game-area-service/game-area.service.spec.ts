@@ -1,4 +1,6 @@
+// Needed to get contexts from test canvas in 'setAllData should get the imageData of the two contexts'
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+// Needed for the pre-calculated expectedIndexList in 'should convert 2D coordinates to pixel indexes'
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
@@ -48,7 +50,7 @@ describe('GameAreaService', () => {
         expect(resultingIndexList).toEqual(expectedIndexList);
     });
 
-    it('should get the imagesData of the two contexts when setImageData is called', () => {
+    it('setAllData should get the imageData of the two contexts', () => {
         const originalCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
         const modifiedCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
         const originalCanvasForeground: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -71,16 +73,15 @@ describe('GameAreaService', () => {
 
         gameAreaService.setAllData();
 
-        expect(originalGetImageDataSpy).toHaveBeenCalled();
-        expect(modifiedGetImageDataSpy).toHaveBeenCalled();
-        expect(originalFrontLayerGetImageDataSpy).toHaveBeenCalled();
-        expect(modifiedFrontLayerGetImageDataSpy).toHaveBeenCalled();
-
         const expectedOriginal = gameAreaService.originalContext.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         const expectedModified = gameAreaService.modifiedContext.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         const expectedOriginalFrontLayer = gameAreaService.originalContextFrontLayer.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         const expectedModifiedFrontLayer = gameAreaService.modifiedContextFrontLayer.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
+        expect(originalGetImageDataSpy).toHaveBeenCalled();
+        expect(modifiedGetImageDataSpy).toHaveBeenCalled();
+        expect(originalFrontLayerGetImageDataSpy).toHaveBeenCalled();
+        expect(modifiedFrontLayerGetImageDataSpy).toHaveBeenCalled();
         expect(gameAreaService.originalPixelData).toEqual(expectedOriginal);
         expect(gameAreaService.modifiedPixelData).toEqual(expectedModified);
         expect(gameAreaService.originalFrontPixelData).toEqual(expectedOriginalFrontLayer);
