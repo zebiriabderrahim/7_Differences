@@ -18,7 +18,7 @@ export class CreationPageComponent {
     readonly radiusSizes: number[];
     radius: number;
 
-    constructor(public imageService: ImageService, private readonly matDialog: MatDialog) {
+    constructor(private readonly imageService: ImageService, private readonly matDialog: MatDialog) {
         this.radiusSizes = RADIUS_SIZES;
         this.radius = DEFAULT_RADIUS;
         this.canvasPosition = CanvasPosition;
