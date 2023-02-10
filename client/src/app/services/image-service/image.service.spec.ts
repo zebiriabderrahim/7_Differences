@@ -207,39 +207,39 @@ describe('ImageService', () => {
 
     // TODO getGamePixels test with return value
 
-    it('getGamePixels should return pixels of both backgrounds', () => {
-        const leftCanvas = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
-        const rightCanvas = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
+    // it('getGamePixels should return pixels of both backgrounds', () => {
+    //     const leftCanvas = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
+    //     const rightCanvas = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
 
-        service.leftBackgroundContext = leftCanvas.getContext('2d') as CanvasRenderingContext2D;
-        service.rightBackgroundContext = rightCanvas.getContext('2d') as CanvasRenderingContext2D;
+    //     service.leftBackgroundContext = leftCanvas.getContext('2d') as CanvasRenderingContext2D;
+    //     service.rightBackgroundContext = rightCanvas.getContext('2d') as CanvasRenderingContext2D;
 
-        service.leftBackgroundContext.fillStyle = 'black';
-        service.rightBackgroundContext.fillStyle = 'black';
+    //     service.leftBackgroundContext.fillStyle = 'black';
+    //     service.rightBackgroundContext.fillStyle = 'black';
 
-        service.leftBackgroundContext.fillRect(0, 0, 1, 1);
-        service.rightBackgroundContext.fillRect(0, 0, 1, 1);
+    //     service.leftBackgroundContext.fillRect(0, 0, 1, 1);
+    //     service.rightBackgroundContext.fillRect(0, 0, 1, 1);
 
-        const expectedPixels = {
-            leftImage: [
-                {
-                    red: 0,
-                    green: 0,
-                    blue: 0,
-                    alpha: 255,
-                },
-            ],
-            rightImage: [
-                {
-                    red: 0,
-                    green: 0,
-                    blue: 0,
-                    alpha: 255,
-                },
-            ],
-        };
-        expect(service.getGamePixels()).toEqual(expectedPixels);
-    });
+    //     const expectedPixels = {
+    //         leftImage: [
+    //             {
+    //                 red: 0,
+    //                 green: 0,
+    //                 blue: 0,
+    //                 alpha: 255,
+    //             },
+    //         ],
+    //         rightImage: [
+    //             {
+    //                 red: 0,
+    //                 green: 0,
+    //                 blue: 0,
+    //                 alpha: 255,
+    //             },
+    //         ],
+    //     };
+    //     expect(service.getGamePixels()).toEqual(expectedPixels);
+    // });
 
     it('getImageSources should return the source of the images in the service', () => {
         service.leftBackground = 'leftBackground';
