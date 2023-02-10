@@ -1,7 +1,6 @@
 import { Component, ElementRef, EventEmitter, Inject, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DEFAULT_ID } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { Coordinate } from '@app/interfaces/coordinate';
 import { ImageSources } from '@app/interfaces/image-sources';
@@ -63,7 +62,6 @@ export class CreationGameDialogComponent implements OnInit {
             const differences: Coordinate[][] = this.differenceService.generateDifferencesPackages();
             const imageSources: ImageSources = this.imageService.getImageSources();
             const gameDetails: GameDetails = {
-                id: DEFAULT_ID,
                 name: this.gameNameForm.value.name,
                 originalImage: imageSources.left,
                 modifiedImage: imageSources.right,
