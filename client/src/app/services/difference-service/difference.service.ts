@@ -89,7 +89,6 @@ export class DifferenceService {
         const rightImagePixels = gamePixels.rightImage;
         this.resetAttributes();
         this.differenceMatrix = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
-        // const differentCoordinates: Coordinate[] = [];
         for (let i = 0; i < leftImagePixels.length; i++) {
             if (this.arePixelsDifferent(leftImagePixels[i], rightImagePixels[i])) {
                 const x = i % IMG_WIDTH;

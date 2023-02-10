@@ -164,6 +164,9 @@ describe('CreationGameDialogComponent', () => {
 
     it('should emit the game name and close the dialog if the form is valid', () => {
         component.gameNameForm = new FormGroup({ name: new FormControl('name') });
+        spyOn(imageService, 'getImageSources').and.callFake(() => {
+            return { left: 'left', right: 'right' };
+        });
         const spy = spyOn(component.gameNameEvent, 'emit');
         component.submitForm();
         expect(spy).toHaveBeenCalledWith('name');

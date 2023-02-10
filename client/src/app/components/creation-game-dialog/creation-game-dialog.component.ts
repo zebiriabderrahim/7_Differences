@@ -5,7 +5,7 @@ import { GAME_ID_MAX } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { Coordinate } from '@app/interfaces/coordinate';
 import { ImageSources } from '@app/interfaces/image-sources';
-import { GamePixels } from '@app/interfaces/pixel';
+// import { GamePixels } from '@app/interfaces/pixel';
 import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
@@ -45,9 +45,6 @@ export class CreationGameDialogComponent implements OnInit {
         this.differenceCanvas.nativeElement.height = IMG_HEIGHT;
         const differenceContext = this.differenceCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.imageService.setDifferenceContext(differenceContext);
-        const gamePixels: GamePixels = this.imageService.getGamePixels();
-        const differences: Coordinate[] = this.differenceService.generateDifferences(gamePixels, this.radius);
-        this.imageService.drawDifferenceImage(differences);
     }
 
     isNumberOfDifferencesValid(): boolean {
@@ -62,7 +59,6 @@ export class CreationGameDialogComponent implements OnInit {
         if (this.gameNameForm.valid && this.gameNameForm.value.name) {
             this.gameNameEvent.emit(this.gameNameForm.value.name);
             this.dialogRef.close();
-            // this.imageService.createGame(this.gameNameForm.value.name);
             this.imageService.resetBothBackgrounds();
             const differences: Coordinate[][] = this.differenceService.generateDifferencesPackages();
             const imageSources: ImageSources = this.imageService.getImageSources();
