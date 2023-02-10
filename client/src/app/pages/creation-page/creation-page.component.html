@@ -1,5 +1,5 @@
-<div class="images-section">
-    <button mat-raised-button [routerLink]="configRoute">Retour à la page de Configuration</button>
+<div class="users-section">
+    <button mat-raised-button [routerLink]="configRoute">Retourner à la page de Configuration</button>
     <div id="canvas-zone">
         <app-image-canvas [position]="canvasPosition.Left"></app-image-canvas>
         <app-image-canvas [position]="canvasPosition.Right"></app-image-canvas>
@@ -7,7 +7,7 @@
 
     <app-canvas-under-buttons [position]="canvasPosition.Both"></app-canvas-under-buttons>
 
-    <div id="configuration-buttons">
+    <div id="radio-buttons">
         <div>
             <p>Choisissez le rayon d'élargissement :</p>
             <mat-radio-group color="primary" aria-label="Select an option" [(ngModel)]="radius">
