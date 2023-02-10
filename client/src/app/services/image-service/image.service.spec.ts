@@ -3,7 +3,6 @@ import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { N_PIXEL_ATTRIBUTE } from '@app/constants/pixels';
-// import { BLACK_PIXEL, N_PIXEL_ATTRIBUTE } from '@app/constants/pixels';
 import { CanvasPosition } from '@app/enum/canvas-position';
 
 import { ImageService } from './image.service';
@@ -178,42 +177,7 @@ describe('ImageService', () => {
         expect(rightBackgroundContextSpy).toHaveBeenCalled();
     });
 
-    // it('setDifferenceContext should change the differenceContext', () => {
-    //     const newContext = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
-    //     newContext.fillStyle = 'red';
-    //     newContext.fillRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-    //     service.differenceContext = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
-    //     expect(service.differenceContext).not.toEqual(newContext);
-    //     service.setDifferenceContext(newContext);
-    //     expect(service.differenceContext.getContextAttributes()).toEqual(newContext.getContextAttributes());
-    // });
-
-    // it('setDifferenceContext should not call validateDifferences if backgrounds are not set', () => {
-    //     service.leftBackground = '';
-    //     service.rightBackground = '';
-    //     const validateDifferencesSpy = spyOn(service, 'validateDifferences');
-    //     const radius = 3;
-    //     service.setDifferenceContext(contextStub, radius);
-    //     expect(validateDifferencesSpy).not.toHaveBeenCalled();
-    // });
-
-    // it('setDifferenceContext should not call validateDifferences if both backgrounds are not set', () => {
-    //     service.leftBackground = 'leftBackground';
-    //     service.rightBackground = '';
-    //     const validateDifferencesSpy = spyOn(service, 'validateDifferences');
-    //     const radius = 3;
-    //     service.setDifferenceContext(contextStub, radius);
-    //     expect(validateDifferencesSpy).not.toHaveBeenCalled();
-    // });
-
-    // it('setDifferenceContext should call validateDifferences if both backgrounds are set', () => {
-    //     service.leftBackground = 'leftBackground';
-    //     service.rightBackground = 'rightBackground';
-    //     const validateDifferencesSpy = spyOn(service, 'validateDifferences');
-    //     const radius = 3;
-    //     service.setDifferenceContext(contextStub, radius);
-    //     expect(validateDifferencesSpy).toHaveBeenCalled();
-    // });
+    // TODO : test setBothBackgrounds
 
     it('transformImageDataToPixelArray should return an array of pixels', () => {
         const imageData = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * N_PIXEL_ATTRIBUTE).fill(0);
@@ -260,8 +224,22 @@ describe('ImageService', () => {
     //     service.rightBackgroundContext.fillRect(0, 0, 1, 1);
 
     //     const expectedPixels = {
-    //         leftImage: [BLACK_PIXEL],
-    //         rightImage: [BLACK_PIXEL],
+    //         leftImage: [
+    //             {
+    //                 red: 0,
+    //                 green: 0,
+    //                 blue: 0,
+    //                 alpha: 255,
+    //             },
+    //         ],
+    //         rightImage: [
+    //             {
+    //                 red: 0,
+    //                 green: 0,
+    //                 blue: 0,
+    //                 alpha: 255,
+    //             },
+    //         ],
     //     };
     //     expect(service.getGamePixels()).toEqual(expectedPixels);
     // });
