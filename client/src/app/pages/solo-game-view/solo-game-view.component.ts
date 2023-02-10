@@ -52,7 +52,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     }
 
     abandonGame(): void {
-        // this.timer.stopTimer();
+        this.classicService.showAbandonGameDialog();
     }
 
     mouseClickOnOriginal(event: MouseEvent) {
