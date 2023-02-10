@@ -1,7 +1,9 @@
+import { Game } from '@app/model/database/game';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GAME_CARROUSEL_SIZE } from '@common/constants';
 import { CarouselPaginator, GameCard, PlayerTime, ServerSideGame } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
+import * as fs from 'fs';
 
 @Injectable()
 export class GameListsManagerService {
@@ -11,14 +13,15 @@ export class GameListsManagerService {
         { name: 'the scream', time: 250 },
     ];
 
-    buildGameCardFromGame(game: ServerSideGame): GameCard {
+    buildGameCardFromGame(game: Game): GameCard {
         const gameCard: GameCard = {
-            id: game.id,
+            // eslint-disable-next-line no-param-reassign, no-underscore-dangle
+            id: game._id,
             name: game.name,
             difficultyLevel: game.isHard,
-            soloTopTime: game.soloTopTime,
-            oneVsOneTopTime: game.oneVsOneTopTime,
-            thumbnail: game.thumbnail,
+            soloTopTime: this.defaultBestTimes,
+            oneVsOneTopTime: this.defaultBestTimes,
+            thumbnail: fs.readFileSync(`assets/${game.name}/original.bmp`, 'base64'),
         };
         return gameCard;
     }
@@ -51,13 +54,10 @@ export class GameListsManagerService {
     }
     createGameFromGameDto(newGame: CreateGameDto): ServerSideGame {
         return {
-            id: newGame.id,
+            id: '',
             name: newGame.name,
             original: newGame.originalImage,
             modified: newGame.modifiedImage,
-            soloTopTime: this.defaultBestTimes,
-            oneVsOneTopTime: this.defaultBestTimes,
-            thumbnail: newGame.modifiedImage,
             differences: newGame.differences,
             differencesCount: newGame.nDifference,
             isHard: newGame.isHard,

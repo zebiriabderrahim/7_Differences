@@ -30,16 +30,13 @@ describe('DatabaseService', () => {
 
     const testGames: ServerSideGame[] = [
         {
-            id: 1,
+            id: '1',
             name: 'test',
             isHard: true,
             original: 'test',
             modified: 'test',
-            soloTopTime: defaultBestTimes,
-            oneVsOneTopTime: defaultBestTimes,
             differencesCount: 1,
             differences: [[]],
-            thumbnail: 'test',
         },
     ];
 
@@ -54,7 +51,7 @@ describe('DatabaseService', () => {
     };
 
     const testGameCard: GameCard = {
-        id: 1,
+        id: '1',
         name: 'test',
         difficultyLevel: true,
         soloTopTime: defaultBestTimes,
@@ -82,7 +79,7 @@ describe('DatabaseService', () => {
 
     it('getGameById() should return the game as expected', () => {
         dataBaseService['games'] = testGames;
-        expect(dataBaseService.getGameById(1)).toEqual(testGames.find((game) => game.id === 1));
+        expect(dataBaseService.getGameById('1')).toEqual(testGames.find((game) => game.id === ' 1'));
     });
 
     it('getConfigConstants() should return the constants as expected', () => {
@@ -95,14 +92,14 @@ describe('DatabaseService', () => {
         const mkDirSpy = jest.spyOn(fs, 'mkdirSync');
         const writeSpy = jest.spyOn(fs, 'writeFileSync');
 
-        dataBaseService.saveFiles('mockGameName', mockData);
+        dataBaseService.saveFiles(testGames[0]);
         expect(existSpy).toBeCalled();
         expect(mkDirSpy).toBeCalled();
         expect(writeSpy).toBeCalledTimes(2);
 
         jest.clearAllMocks();
 
-        dataBaseService.saveFiles('mockGameName', mockData);
+        dataBaseService.saveFiles(testGames[0]);
         expect(existSpy).toBeCalled();
         expect(mkDirSpy).not.toBeCalled();
         expect(writeSpy).not.toBeCalled();
@@ -119,7 +116,7 @@ describe('DatabaseService', () => {
 
     it('addGameCard() should add the game card to the game card list', () => {
         listsManagerService.buildGameCardFromGame.returns(testGameCard);
-        dataBaseService.addGameCard(testGames[0]);
+        dataBaseService.addGameCard();
         expect(listsManagerService.buildGameCardFromGame.calledOnce).toBe(true);
         expect(listsManagerService.buildGameCarousel.calledOnce).toBe(true);
         expect(listsManagerService.addGameCarousel.calledOnce).toBe(true);

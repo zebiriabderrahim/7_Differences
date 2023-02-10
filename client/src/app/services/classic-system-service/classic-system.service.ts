@@ -13,7 +13,7 @@ export class ClassicSystemService implements OnDestroy {
     currentGame: Subject<ClientSideGame>;
     isLeftCanvas: boolean;
     private playerName: Subject<string>;
-    private id: Subject<number>;
+    private id: Subject<string>;
     private idSubscription: Subscription;
     private playerNameSubscription: Subscription;
     constructor(private clientSocket: ClientSocketService, private gameAreaService: GameAreaService) {
@@ -21,15 +21,15 @@ export class ClassicSystemService implements OnDestroy {
         this.differencesFound = new Subject<number>();
         this.timer = new Subject<number>();
         this.playerName = new Subject<string>();
-        this.id = new Subject<number>();
+        this.id = new Subject<string>();
     }
     ngOnDestroy(): void {
         this.idSubscription.unsubscribe();
         this.playerNameSubscription.unsubscribe();
     }
     createSoloGame(): void {
-        this.playerNameSubscription = this.playerName.asObservable().subscribe((playerName) => {
-            this.idSubscription = this.id.asObservable().subscribe((id) => {
+        this.playerNameSubscription = this.playerName.asObservable().subscribe((playerName: string) => {
+            this.idSubscription = this.id.asObservable().subscribe((id: string) => {
                 this.clientSocket.send('createSoloGame', { player: playerName, gameId: id });
             });
         });

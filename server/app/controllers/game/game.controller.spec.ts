@@ -24,17 +24,13 @@ describe('GameController', () => {
     ];
 
     const testGame: ServerSideGame = {
-        id: 1,
+        id: 'test',
         name: 'test',
-        difficultyLevel: true,
+        isHard: true,
         original: 'test',
         modified: 'test',
-        soloTopTime: [],
-        oneVsOneTopTime: [],
         differencesCount: 1,
         differences: [[]],
-        thumbnail: 'test',
-        hintList: [],
     };
 
     beforeEach(async () => {
