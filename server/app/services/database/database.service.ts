@@ -56,9 +56,9 @@ export class DatabaseService {
             differencesCount: newGame.nDifference,
             isHard: newGame.isHard,
         };
+        this.saveFiles(game);
         const gameInDB = new this.gameModel(newGameInDB);
         await gameInDB.save();
-        this.saveFiles(game);
     }
 
     async addGameCard(): Promise<void> {
@@ -66,6 +66,9 @@ export class DatabaseService {
             this.games = [];
             this.gameCardsList = [];
             this.carouselGames = [];
+            if (games.length === 0) {
+                return;
+            }
             games.forEach((game) => {
                 const gameSeverSide: ServerSideGame = {
                     // for _id from mongodb
