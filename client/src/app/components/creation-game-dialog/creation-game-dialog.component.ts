@@ -43,7 +43,7 @@ export class CreationGameDialogComponent implements OnInit {
         this.gameName = '';
         this.differenceCanvas.nativeElement.width = IMG_WIDTH;
         this.differenceCanvas.nativeElement.height = IMG_HEIGHT;
-        this.imageService.differenceContext = this.differenceCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.imageService.setDifferenceContext(this.differenceCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D);
     }
 
     isNumberOfDifferencesValid(): boolean {
