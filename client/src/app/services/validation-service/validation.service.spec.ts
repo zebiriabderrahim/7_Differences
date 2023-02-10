@@ -35,83 +35,14 @@ describe('ValidationService', () => {
         expect(service.isImageTypeValid(IMG_TYPE)).toBeTruthy();
     });
 
-    // TODO refactor isImageSizeValid tests
     it('isImageSizeValid should return true when given the right image size', () => {
-        const event: Event = {
-            target: { width: IMG_WIDTH, height: IMG_HEIGHT } as HTMLInputElement,
-            bubbles: false,
-            cancelBubble: false,
-            cancelable: false,
-            composed: false,
-            currentTarget: null,
-            defaultPrevented: false,
-            eventPhase: 0,
-            isTrusted: false,
-            returnValue: false,
-            srcElement: null,
-            timeStamp: 0,
-            type: '',
-            composedPath(): EventTarget[] {
-                throw new Error('Function not implemented.');
-            },
-            // eslint-disable-next-line no-unused-vars
-            initEvent(_type: string, _bubbles?: boolean | undefined, cancelable?: boolean | undefined): void {
-                throw new Error('Function not implemented.');
-            },
-            preventDefault(): void {
-                throw new Error('Function not implemented.');
-            },
-            stopImmediatePropagation(): void {
-                throw new Error('Function not implemented.');
-            },
-            stopPropagation(): void {
-                throw new Error('Function not implemented.');
-            },
-            AT_TARGET: 0,
-            BUBBLING_PHASE: 0,
-            CAPTURING_PHASE: 0,
-            NONE: 0,
-        };
-        expect(service.isImageSizeValid(event)).toBeTruthy();
+        const image = new Image(IMG_WIDTH, IMG_HEIGHT) as HTMLImageElement;
+        expect(service.isImageSizeValid(image)).toBeTruthy();
     });
 
     it('isImageSizeValid should return false when given the wrong image size', () => {
-        const event: Event = {
-            target: { width: IMG_WIDTH + 1, height: IMG_HEIGHT - 1 } as HTMLInputElement,
-            bubbles: false,
-            cancelBubble: false,
-            cancelable: false,
-            composed: false,
-            currentTarget: null,
-            defaultPrevented: false,
-            eventPhase: 0,
-            isTrusted: false,
-            returnValue: false,
-            srcElement: null,
-            timeStamp: 0,
-            type: '',
-            composedPath(): EventTarget[] {
-                throw new Error('Function not implemented.');
-            },
-            // eslint-disable-next-line no-unused-vars
-            initEvent(_type: string, _bubbles?: boolean | undefined, cancelable?: boolean | undefined): void {
-                throw new Error('Function not implemented.');
-            },
-            preventDefault(): void {
-                throw new Error('Function not implemented.');
-            },
-            stopImmediatePropagation(): void {
-                throw new Error('Function not implemented.');
-            },
-            stopPropagation(): void {
-                throw new Error('Function not implemented.');
-            },
-            AT_TARGET: 0,
-            BUBBLING_PHASE: 0,
-            CAPTURING_PHASE: 0,
-            NONE: 0,
-        };
-        expect(service.isImageSizeValid(event)).toBeFalsy();
+        const image = new Image() as HTMLImageElement;
+        expect(service.isImageSizeValid(image)).toBeFalsy();
     });
 
     // it('isImageSizeValid should return true when given the good image size', () => {

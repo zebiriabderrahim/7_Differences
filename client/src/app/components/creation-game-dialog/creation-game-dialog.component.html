@@ -8,7 +8,8 @@
         <p>Veuillez entrer un nom de jeu :</p>
         <form [formGroup]="gameNameForm" (ngSubmit)="submitForm()">
             <mat-form-field>
-                <input matInput type="text" placeholder="Entrer le nom de votre jeu" formControlName="gameName" />
+                <input matInput type="text" [(ngModel)]="gameName" placeholder="Entrer le nom de votre jeu"
+                    formControlName="gameNameForm" />
                 <mat-error *ngIf="gameNameForm.controls.name.errors?.required" [ngClass]="'error'"> Le nom ne peut pas
                     être vide</mat-error>
                 <mat-error *ngIf="gameNameForm.controls.name.errors?.pattern" [ngClass]="'error'">Le nom ne peut pas
