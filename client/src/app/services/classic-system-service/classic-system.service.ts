@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dialog/solo-game-view-dialog.component';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { GameCardService } from '@app/services/gamecard-service/gamecard.service';
@@ -12,7 +14,12 @@ export class ClassicSystemService {
     currentGame: Subject<ClientSideGame>;
     currentDifference: Subject<Coordinate[]>;
     isLeftCanvas: boolean;
-    constructor(private gameCardService: GameCardService, private clientSocket: ClientSocketService, private gameAreaService: GameAreaService) {
+    constructor(
+        private gameCardService: GameCardService,
+        private clientSocket: ClientSocketService,
+        private gameAreaService: GameAreaService,
+        private readonly matDialog: MatDialog,
+    ) {
         this.currentGame = new Subject<ClientSideGame>();
         this.currentDifference = new Subject<Coordinate[]>();
     }
@@ -33,6 +40,14 @@ export class ClassicSystemService {
             this.gameAreaService.replaceDifference(differences);
         }
     }
+    showAbandonGameDialog() {
+        this.matDialog.open(SoloGameViewDialogComponent, {
+            data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ?' },
+        });
+    }
+    showEndGameDialog(endingMessage: string) {
+        this.matDialog.open(SoloGameViewDialogComponent, { data: { action: 'endGame', message: endingMessage } });
+    }
 
     manageSocket(): void {
         this.clientSocket.connect();
@@ -49,7 +64,7 @@ export class ClassicSystemService {
         });
         this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {
             this.clientSocket.disconnect();
-            console.log(endGameMessage); // temporary to avoid error
+            this.showEndGameDialog(endGameMessage);
         });
     }
 }
