@@ -49,22 +49,19 @@ describe('CanvasUnderButtonsComponent', () => {
         expect(imageServiceResetBackgroundSpy).not.toHaveBeenCalled();
     });
 
-    // it('set ImageIfValid should not open the invalidImageDialog when given an valid type image and should set the image', () => {
-    //     spyOn(validationService, 'isImageSizeValid').and.callFake(() => {
-    //         return true;
-    //     });
-    //     spyOn(validationService, 'isImageTypeValid').and.callFake(() => {
-    //         return true;
-    //     });
-    //     spyOn(validationService, 'isImageFormatValid').and.callFake(() => {
-    //         return true;
-    //     });
-    //     const imageServiceResetBackgroundSpy = spyOn(imageService, 'setBackground').and.callFake(() => {});
-
-    //     component.setImageIfValid(new Image());
-    //     expect(matDialogSpy.open).not.toHaveBeenCalled();
-    //     expect(imageServiceResetBackgroundSpy).toHaveBeenCalled();
-    // });
+    it('setImageIfValid should not open the invalidImageDialog when given an valid type image', () => {
+        spyOn(validationService, 'isImageSizeValid').and.callFake(() => {
+            return true;
+        });
+        spyOn(validationService, 'isImageTypeValid').and.callFake(() => {
+            return true;
+        });
+        spyOn(validationService, 'isImageFormatValid').and.callFake(() => {
+            return true;
+        });
+        component.setImageIfValid(new Image());
+        expect(matDialogSpy.open).not.toHaveBeenCalled();
+    });
 
     it('resetBackground should call imageService.resetBackground with the right Position', () => {
         component.position = CanvasPosition.Left;
