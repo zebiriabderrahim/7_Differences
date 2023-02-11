@@ -4,6 +4,7 @@ import { CarouselPaginator, GameConfigConst, ServerSideGame } from '@common/game
 import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'express';
+import { async } from 'rxjs';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { GameController } from './game.controller';
 
@@ -51,8 +52,8 @@ describe('GameController', () => {
     it('should be defined', () => {
         expect(controller).toBeDefined();
     });
-    it('getGameCarrousel() should call getGameCarrousel() in gameService', () => {
-        gameService.getGameCarousel.returns(testCarousel);
+    it('getGameCarrousel() should call getGameCarrousel() in gameService', async () => {
+        gameService.getGameCarousel.resolves(testCarousel);
         const res = {} as unknown as Response;
         res.status = (code) => {
             expect(code).toEqual(HttpStatus.OK);
@@ -63,20 +64,19 @@ describe('GameController', () => {
             return res;
         };
         res.send = () => res;
-        controller.getGameCarrousel(0, res);
+        await controller.getGameCarrousel(0, res);
         expect(gameService.getGameCarousel.calledOnce).toBe(true);
     });
 
-    it('getGameCarrousel() should return NOT_FOUND when service unable to fetch GameCarrousel', () => {
-        gameService.getGameCarousel.throwsException();
+    it('getGameCarrousel() should return NOT_FOUND when service unable to fetch GameCarrousel', async () => {
+        gameService.getGameCarousel.rejects();
         const res = {} as unknown as Response;
         res.status = (code) => {
             expect(code).toEqual(HttpStatus.NOT_FOUND);
             return res;
         };
         res.send = () => res;
-        controller.getGameCarrousel(0, res);
-        expect(gameService.getGameCarousel).toThrow();
+        await controller.getGameCarrousel(0, res);
         expect(gameService.getGameCarousel.called).toBe(true);
     });
 
