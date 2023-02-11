@@ -1,8 +1,9 @@
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameService } from '@app/services/game/game.service';
 import { Body, Controller, Get, HttpStatus, Param, Post, Res } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { GameConfigConst } from '@common/game-interfaces';
 
 @ApiTags('Games')
 @Controller('games')
@@ -30,9 +31,9 @@ export class GameController {
     }
 
     @Get('carousel/:index')
-    getGameCarrousel(@Param('index') index: number, @Res() response: Response) {
+    async getGameCarrousel(@Param('index') index: number, @Res() response: Response) {
         try {
-            const gameCarrousel = this.gameService.getGameCarousel();
+            const gameCarrousel = await this.gameService.getGameCarousel();
             response.status(HttpStatus.OK).json(gameCarrousel[+index]);
         } catch (error) {
             response.status(HttpStatus.NOT_FOUND).send(error.message);

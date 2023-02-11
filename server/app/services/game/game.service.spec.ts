@@ -54,9 +54,15 @@ describe('GameService', () => {
         expect(() => gameService.getConfigConstants()).toThrowError();
         expect(databaseService.getConfigConstants.calledOnce).toBe(true);
     });
-    it('should call getGamesCarousel() and return testCarousel as expected ', () => {
-        databaseService.getGamesCarrousel.returns(testCarousel);
-        expect(gameService.getGameCarousel()).toEqual(testCarousel);
+    it('should call getGamesCarousel() and return testCarousel as expected ', async () => {
+        databaseService.getGamesCarrousel.resolves(testCarousel);
+        expect(await gameService.getGameCarousel()).toEqual(testCarousel);
+        expect(databaseService.getGamesCarrousel.calledOnce).toBe(true);
+    });
+
+    it('should throw NotFoundException when getGamesCarrousel() in databaseService unable to found GamesCarrousel ', async () => {
+        databaseService.getGamesCarrousel.rejects(new Error('No games found'));
+        expect(async () => await gameService.getGameCarousel()).rejects.toThrowError();
         expect(databaseService.getGamesCarrousel.calledOnce).toBe(true);
     });
 
@@ -76,7 +82,7 @@ describe('GameService', () => {
     it('should call with the fakeGame arg addGame() ', () => {
         const fakeGame = new CreateGameDto();
         gameService.addGame(fakeGame);
-        expect(databaseService.addGame.calledOnce).toBe(true);
-        expect(databaseService.addGame.calledWith(fakeGame)).toBe(true);
+        expect(databaseService.addGameInDb.calledOnce).toBe(true);
+        expect(databaseService.addGameInDb.calledWith(fakeGame)).toBe(true);
     });
 });
