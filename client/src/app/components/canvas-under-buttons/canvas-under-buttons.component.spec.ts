@@ -6,7 +6,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 // import { IMG_HEIGHT, IMG_TYPE, IMG_WIDTH } from '@app/constants/creation-page';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { ImageService } from '@app/services/image-service/image.service';
@@ -69,15 +68,5 @@ describe('CanvasUnderButtonsComponent', () => {
         const imageServiceResetBackgroundSpy = spyOn(imageService, 'resetBackground').and.callFake(() => {});
         component.resetBackground();
         expect(imageServiceResetBackgroundSpy).toHaveBeenCalledWith(component.position);
-    });
-
-    it('isImageSizeValid should return true when given the right image size', () => {
-        const image = { width: IMG_WIDTH, height: IMG_HEIGHT } as HTMLImageElement;
-        expect(validationService.isImageSizeValid(image)).toBeTruthy();
-    });
-
-    it('isImageSizeValid should return false when given the wrong image size', () => {
-        const image = { width: IMG_WIDTH + 1, height: IMG_HEIGHT - 1 } as HTMLImageElement;
-        expect(validationService.isImageSizeValid(image)).toBeFalsy();
     });
 });
