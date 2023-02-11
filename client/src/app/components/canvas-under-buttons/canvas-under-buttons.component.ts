@@ -13,10 +13,13 @@ export class CanvasUnderButtonsComponent {
     @Input() position: CanvasPosition;
     @ViewChild('invalidImageDialog', { static: true })
     private readonly invalidImageDialog: TemplateRef<HTMLElement>;
-    canvasPosition: typeof CanvasPosition;
-    constructor(public imageService: ImageService, public validationService: ValidationService, public matDialog: MatDialog) {
-        this.canvasPosition = CanvasPosition;
-    }
+    readonly canvasPosition: typeof CanvasPosition = CanvasPosition;
+
+    constructor(
+        private readonly imageService: ImageService,
+        private readonly validationService: ValidationService,
+        private readonly matDialog: MatDialog,
+    ) {}
 
     onSelectFile(event: Event): void {
         const target = event.target as HTMLInputElement;
