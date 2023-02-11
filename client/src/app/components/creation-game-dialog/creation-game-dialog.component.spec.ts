@@ -49,8 +49,8 @@ describe('CreationGameDialogComponent', () => {
         imageService = TestBed.inject(ImageService);
         differenceService = TestBed.inject(DifferenceService);
         contextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
-        imageService.leftBackgroundContext = contextStub;
-        imageService.rightBackgroundContext = contextStub;
+        imageService['leftBackgroundContext'] = contextStub;
+        imageService['rightBackgroundContext'] = contextStub;
     });
 
     it('should create', () => {

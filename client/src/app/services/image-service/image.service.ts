@@ -10,11 +10,11 @@ import { GamePixels, Pixel } from '@app/interfaces/pixel';
     providedIn: 'root',
 })
 export class ImageService {
-    leftBackgroundContext: CanvasRenderingContext2D;
-    rightBackgroundContext: CanvasRenderingContext2D;
-    differenceContext: CanvasRenderingContext2D;
-    leftBackground: string;
-    rightBackground: string;
+    private leftBackgroundContext: CanvasRenderingContext2D;
+    private rightBackgroundContext: CanvasRenderingContext2D;
+    private differenceContext: CanvasRenderingContext2D;
+    private leftBackground: string;
+    private rightBackground: string;
 
     constructor() {
         this.leftBackground = '';
@@ -94,6 +94,10 @@ export class ImageService {
                 this.rightBackgroundContext = context;
                 break;
         }
+    }
+
+    setDifferenceContext(context: CanvasRenderingContext2D) {
+        this.differenceContext = context;
     }
 
     transformImageDataToPixelArray(imageData: Uint8ClampedArray): Pixel[] {
