@@ -67,6 +67,7 @@ export class ClassicSystemService implements OnDestroy {
 
         this.clientSocket.on(GameEvents.CreateSoloGame, (clientGame: ClientSideGame) => {
             this.currentGame.next(clientGame);
+            console.log(clientGame);
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (differencesData: Differences) => {
             this.replaceDifference(differencesData.currentDifference);
