@@ -18,6 +18,10 @@ describe('CanvasUnderButtonsComponent', () => {
     let imageService: ImageService;
     let matDialogSpy: jasmine.SpyObj<MatDialog>;
     let validationService: ValidationService;
+    let event: Event;
+    // let target: HTMLInputElement;
+    let reader: FileReader;
+    // let image: HTMLImageElement;
 
     beforeEach(async () => {
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
@@ -68,5 +72,23 @@ describe('CanvasUnderButtonsComponent', () => {
         const imageServiceResetBackgroundSpy = spyOn(imageService, 'resetBackground').and.callFake(() => {});
         component.resetBackground();
         expect(imageServiceResetBackgroundSpy).toHaveBeenCalledWith(component.position);
+    });
+
+    it('onSelectFile does nothing if no file is selected', () => {
+        event = {
+            target: {
+                files: [new Blob(['data'])],
+            } as unknown as HTMLInputElement,
+        } as unknown as Event;
+        reader = new FileReader();
+        // refactor?
+        spyOn(window, 'FileReader').and.callThrough();
+        // spyOn(reader, 'readAsDataURL').and.callThrough();
+        // spyOn(reader, 'onload').and.callThrough();
+        spyOn(component, 'setImageIfValid').and.callThrough();
+        component.onSelectFile(event);
+        expect(reader.readAsDataURL).not.toHaveBeenCalled();
+        expect(reader.onload).not.toHaveBeenCalled();
+        expect(component.setImageIfValid).not.toHaveBeenCalled();
     });
 });
