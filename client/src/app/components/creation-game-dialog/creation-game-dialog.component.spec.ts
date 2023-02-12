@@ -6,11 +6,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-// import { MatFormFieldModule, MatFormFieldControl } from '@angular/material/form-field';
-// import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterTestingModule } from '@angular/router/testing';
-// import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-// import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { CreationGameDialogComponent } from './creation-game-dialog.component';
@@ -18,12 +14,9 @@ import { CreationGameDialogComponent } from './creation-game-dialog.component';
 describe('CreationGameDialogComponent', () => {
     let component: CreationGameDialogComponent;
     let fixture: ComponentFixture<CreationGameDialogComponent>;
-    // let imageService: ImageService;
     let imageServiceSpy: jasmine.SpyObj<ImageService>;
     let differenceServiceSpy: jasmine.SpyObj<DifferenceService>;
-    // let differenceService: DifferenceService;
     let dialogRef: MatDialogRef<CreationGameDialogComponent, unknown>;
-    // let contextStub: CanvasRenderingContext2D;
 
     beforeEach(async () => {
         imageServiceSpy = jasmine.createSpyObj('ImageService', [
@@ -66,11 +59,6 @@ describe('CreationGameDialogComponent', () => {
         component = fixture.componentInstance;
         fixture.detectChanges();
         dialogRef = TestBed.inject(MatDialogRef<CreationGameDialogComponent, unknown>);
-        // imageServiceSpy = TestBed.inject(ImageService);
-        // differenceService = TestBed.inject(DifferenceService);
-        // contextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
-        // imageService['leftBackgroundContext'] = contextStub;
-        // imageService['rightBackgroundContext'] = contextStub;
     });
 
     it('should create', () => {
@@ -82,102 +70,59 @@ describe('CreationGameDialogComponent', () => {
         expect(component.gameNameForm.controls.name instanceof FormControl).toBeTruthy();
     });
 
+    // TODO : fix test
     // it('should display the number of differences when displayDifferences is defined', () => {
-    //     differenceService.differencePackages.length = 5;
-    //     fixture.detectChanges();
+    //     const nDifference = 6;
+    //     differenceServiceSpy.getNumberOfDifferences.and.callFake(() => {
+    //         return nDifference;
+    //     });
+
+    //     spyOn(component, 'displayDifferences' as never).and.returnValue(1 as never);
     //     const bannerElement: HTMLElement = fixture.nativeElement;
-    //     const p = bannerElement.querySelector('div > p');
-    //     expect(p?.textContent).toContain(component.displayDifferences);
+    //     const p = bannerElement.querySelector('canvas > p');
+    //     expect(p).toContain(nDifference);
     // });
 
     it('should not display the number of differences when displayDifferences is not defined', () => {
         fixture.detectChanges();
         const bannerElement: HTMLElement = fixture.nativeElement;
-        const p = bannerElement.querySelector('div > p');
+        const p = bannerElement.querySelector('canvas > p');
         expect(p?.textContent).not.toContain(component.displayDifferences);
     });
 
     it('gameNameForm should be enabled isNumberOfDifferencesValid is true', () => {
         differenceServiceSpy.isNumberOfDifferencesValid.and.returnValue(true);
-        // differenceService['differencePackages'] = [
-        //     [
-        //         { x: 10, y: 20 },
-        //         { x: 30, y: 40 },
-        //     ],
-        //     [
-        //         { x: 50, y: 60 },
-        //         { x: 70, y: 80 },
-        //     ],
-        //     [
-        //         { x: 90, y: 100 },
-        //         { x: 110, y: 120 },
-        //     ],
-        // ];
         expect(component.gameNameForm.enabled).toBeTruthy();
     });
 
     it('gameNameForm should be enabled isNumberOfDifferencesValid is true', () => {
         differenceServiceSpy.isNumberOfDifferencesValid.and.returnValue(true);
-        // differenceService['differencePackages'] = [
-        //     [
-        //         { x: 10, y: 20 },
-        //         { x: 30, y: 40 },
-        //     ],
-        //     [
-        //         { x: 50, y: 60 },
-        //         { x: 70, y: 80 },
-        //     ],
-        //     [
-        //         { x: 90, y: 100 },
-        //         { x: 110, y: 120 },
-        //     ],
-        // ];
         expect(component.gameNameForm.enabled).toBeTruthy();
     });
 
     it('gameNameForm should be enabled isNumberOfDifferencesValid is true', () => {
         differenceServiceSpy.isNumberOfDifferencesValid.and.returnValue(true);
-        // differenceService['differencePackages'] = [
-        //     [
-        //         { x: 10, y: 20 },
-        //         { x: 30, y: 40 },
-        //     ],
-        //     [
-        //         { x: 50, y: 60 },
-        //         { x: 70, y: 80 },
-        //     ],
-        //     [
-        //         { x: 90, y: 100 },
-        //         { x: 110, y: 120 },
-        //     ],
-        // ];
         expect(component.gameNameForm.enabled).toBeTruthy();
     });
 
     it('gameNameForm should be disabled if isNumberOfDifferencesValid is false', () => {
         differenceServiceSpy.isNumberOfDifferencesValid.and.returnValue(false);
-        // differenceService['differencePackages'] = [
-        //     [
-        //         { x: 10, y: 20 },
-        //         { x: 30, y: 40 },
-        //     ],
-        // ];
         expect(component.gameNameForm.disabled).toBeFalsy();
     });
 
-    // TODO: fix this
-    // it('should display the warning message when isNumberOfDifferencesValid is false', () => {
-    //     differenceService.differencePackages.length = 5;
-    //     fixture.detectChanges();
-    //     const bannerElement: HTMLElement = fixture.nativeElement;
-    //     const p = bannerElement.querySelector('ng-template > p');
-    //     expect(p?.textContent).toEqual('Il doit y avoir entre 3 et 9 différences. Veuillez recommencer le processus');
-    // });
+    it('should display the warning message when isNumberOfDifferencesValid is false', () => {
+        differenceServiceSpy.isNumberOfDifferencesValid.and.returnValue(false);
+        fixture.detectChanges();
+        const bannerElement: HTMLElement = fixture.nativeElement;
+        const p = bannerElement.querySelector('div > p');
+        expect(p?.textContent).toEqual('Il doit y avoir entre 3 et 9 différences. Veuillez recommencer le processus');
+    });
 
+    // TODO: fix this
     // it('should not display the warning message when isNumberOfDifferencesValid is true', () => {
-    //     differenceService.differencePackages.length = 1;
+    //     differenceServiceSpy.isNumberOfDifferencesValid.and.returnValue(true);
     //     const bannerElement: HTMLElement = fixture.nativeElement;
-    //     const p = bannerElement.querySelector('ng-template > p');
+    //     const p = bannerElement.querySelector('div > p');
     //     expect(p).toBeUndefined();
     // });
 
@@ -190,8 +135,8 @@ describe('CreationGameDialogComponent', () => {
         component.gameNameForm = new FormGroup({ name: new FormControl('name') });
         imageServiceSpy.getImageSources.and.returnValue({ left: 'left', right: 'right' });
         differenceServiceSpy.generateDifferencesPackages.and.returnValue([]);
-        // spyOn(imageService, 'getImageSources').and.callThrough();
         const spy = spyOn(component.gameNameEvent, 'emit');
+
         component.submitForm();
         expect(spy).toHaveBeenCalledWith('name');
         expect(dialogRef.close).toHaveBeenCalledWith('name');
