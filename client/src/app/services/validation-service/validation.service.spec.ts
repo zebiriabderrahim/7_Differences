@@ -1,6 +1,6 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { TestBed } from '@angular/core/testing';
-import { BMP_HEADER_OFFSET, IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
+import { ARRAY_BUFFER_OFFSET, BMP_HEADER_OFFSET, FORMAT_IMAGE, IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 // import { IMG_HEIGHT, IMG_TYPE, IMG_WIDTH } from '@app/constants/creation-page';
 import { ImageService } from '@app/services/image-service/image.service';
 import { of } from 'rxjs';
@@ -59,37 +59,23 @@ describe('ValidationService', () => {
         expect(service.isImageSizeValid(image)).toBeFalsy();
     });
 
-    it('isImageFormatValid should return false if the image format is invalid', async () => {
-        const file = new File([new ArrayBuffer(54)], 'test.bmp');
-        const bmpHeader = new DataView(await file.arrayBuffer());
-        bmpHeader.setUint16(BMP_HEADER_OFFSET, BMP_HEADER_OFFSET + 1, true);
+    it('isImageFormatValid should return true if the image format is valid', async () => {
+        const file = {
+            arrayBuffer: async () => Promise.resolve(new ArrayBuffer(ARRAY_BUFFER_OFFSET)),
+        };
+        spyOn(DataView.prototype, 'getUint16').and.returnValue(FORMAT_IMAGE);
 
-        const result = await service.isImageFormatValid(file);
-
-        expect(result).toBe(false);
+        const result = await service.isImageFormatValid(file as File);
+        expect(result).toBeTruthy();
     });
 
-    // it('isImageSizeValid should return true when given the good image size', () => {
-    //     const goodSizeImageSource = 'data:image/bmp;base64,Qk02EA4AAAAAADYAAAAoAAAAgAIAAOABAAABABgAAAAAAAAQDgDEDgAAxA4AAAAAAAAAAAAA';
-    //     const goodSizeImage = new Image();
-    //     goodSizeImage.src = goodSizeImageSource;
-    //     expect(service.isImageSizeValid(goodSizeImage)).toBeTruthy();
-    // });
+    it('isImageFormatValid should return false if the image format is invalid', async () => {
+        const file = {
+            arrayBuffer: async () => Promise.resolve(new ArrayBuffer(ARRAY_BUFFER_OFFSET)),
+        };
+        spyOn(DataView.prototype, 'getUint16').and.returnValue(BMP_HEADER_OFFSET + 1);
 
-    // it('isImageSizeValid should return false when given the wrong image size', () => {
-    //     const wrongSizeImageSource = 'data:image/bmp;base64,Qk02EA4AAAAAADYAAAAoAAAAgAIAAOABAAABABgAAAAAAAAQDgDEDgAAxA4AAAAAAAAAAAAA';
-    //     const wrongSizeImage = new Image();
-    //     wrongSizeImage.src = badSizeImageSource;
-    //     expect(service.isImageSizeValid(wrongSizeImage)).toBeTruthy();
-    // });
-
-    // it('isImageFormatValid should return true when image format is valid', () => {
-    //     const imageDescription = 'data:image/bmp;base64,Qk02EA4AAAAAADYAAAAoAAAAgAIAAOABAAABABgAAAAAAAAQDgDEDgAAxA4AAAAAAAAAAAAA';
-    //     expect(service.isImageFormatValid(imageDescription)).toBeTruthy();
-    // });
-
-    // it('isImageFormatValid should return false when image format is not valid', () => {
-    //     const imageDescription = 'data:image/bmp;base64,def';
-    //     expect(service.isImageFormatValid(imageDescription)).toBeFalsy();
-    // });
+        const result = await service.isImageFormatValid(file as File);
+        expect(result).toBeFalsy();
+    });
 });
