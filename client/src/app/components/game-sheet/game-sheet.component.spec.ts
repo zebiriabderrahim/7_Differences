@@ -2,10 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
+import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { GameCardService } from '@app/services/gamecard-service/gamecard.service';
 import { of } from 'rxjs';
-import { PlayerNameDialogBoxComponent } from '../player-name-dialog-box/player-name-dialog-box.component';
 import { GameSheetComponent } from './game-sheet.component';
 
 describe('GameSheetComponent', () => {
@@ -53,8 +53,8 @@ describe('GameSheetComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should open dialog box', () => {
-        const gameServiceSpy = spyOn(gameCardService, 'redirection').and.callFake((gameId: number) => {});
+    it('OpenDialog should open dialog box and call gameCardService with game id', () => {
+        const gameServiceSpy = spyOn(gameCardService, 'redirection');
         const popUpSpy = spyOn(component.dialog, 'open').and.returnValue({
             afterClosed: () => of('test'),
         } as MatDialogRef<PlayerNameDialogBoxComponent>);

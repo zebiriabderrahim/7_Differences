@@ -45,7 +45,7 @@ export class ClassicSystemService {
             this.currentDifference.next(clientGame.currentDifference);
             this.replaceDifference(clientGame.currentDifference);
         });
-        this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {
+        this.clientSocket.on(GameEvents.EndGame, () => {
             this.clientSocket.disconnect();
         });
     }
