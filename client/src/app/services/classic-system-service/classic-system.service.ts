@@ -10,10 +10,10 @@ import { Subject, Subscription } from 'rxjs';
     providedIn: 'root',
 })
 export class ClassicSystemService implements OnDestroy {
-    timer: Subject<number>;
-    differencesFound: Subject<number>;
-    currentGame: Subject<ClientSideGame>;
-    isLeftCanvas: boolean;
+    private timer: Subject<number>;
+    private differencesFound: Subject<number>;
+    private currentGame: Subject<ClientSideGame>;
+    private isLeftCanvas: boolean;
     private playerName: Subject<string>;
     private id: Subject<string>;
     private idSubscription: Subscription;
@@ -55,10 +55,26 @@ export class ClassicSystemService implements OnDestroy {
     showAbandonGameDialog() {
         this.matDialog.open(SoloGameViewDialogComponent, {
             data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ?' },
+            disableClose: true,
         });
     }
     showEndGameDialog(endingMessage: string) {
-        this.matDialog.open(SoloGameViewDialogComponent, { data: { action: 'endGame', message: endingMessage } });
+        this.matDialog.open(SoloGameViewDialogComponent, { data: { action: 'endGame', message: endingMessage }, disableClose: true });
+    }
+
+    getCurrentGame(): Subject<ClientSideGame> {
+        return this.currentGame;
+    }
+
+    getTimer(): Subject<number> {
+        return this.timer;
+    }
+
+    getDifferencesFound(): Subject<number> {
+        return this.differencesFound;
+    }
+    setIsLeftCanvas(isLeft: boolean): void {
+        this.isLeftCanvas = isLeft;
     }
 
     manageSocket(): void {
@@ -67,7 +83,6 @@ export class ClassicSystemService implements OnDestroy {
 
         this.clientSocket.on(GameEvents.CreateSoloGame, (clientGame: ClientSideGame) => {
             this.currentGame.next(clientGame);
-            console.log(clientGame);
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (differencesData: Differences) => {
             this.replaceDifference(differencesData.currentDifference);
