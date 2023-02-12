@@ -1,4 +1,3 @@
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { TestBed } from '@angular/core/testing';
 import { ARRAY_BUFFER_OFFSET, BMP_HEADER_OFFSET, FORMAT_IMAGE, IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { ImageService } from '@app/services/image-service/image.service';
@@ -40,7 +39,8 @@ describe('ValidationService', () => {
         const image: ImageBitmap = {
             width: IMG_WIDTH,
             height: IMG_HEIGHT,
-            close(): void {
+            // eslint-disable-next-line prefer-arrow/prefer-arrow-functions -- needed to create bitmap Image
+            close(): () => void {
                 throw new Error('Function not implemented.');
             },
         };
@@ -51,6 +51,7 @@ describe('ValidationService', () => {
         const image: ImageBitmap = {
             width: IMG_WIDTH + 1,
             height: IMG_HEIGHT - 1,
+            // eslint-disable-next-line prefer-arrow/prefer-arrow-functions -- needed to create bitmap Image
             close(): void {
                 throw new Error('Function not implemented.');
             },
