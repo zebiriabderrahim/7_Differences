@@ -37,7 +37,7 @@ describe('ImageCanvasComponent', () => {
     });
 
     it('should call imageService.setBackgroundContext with appropriate values', () => {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for spy
         const imageServiceSpy = spyOn(imageService, 'setBackgroundContext').and.callFake(() => {});
 
         component.ngAfterViewInit();

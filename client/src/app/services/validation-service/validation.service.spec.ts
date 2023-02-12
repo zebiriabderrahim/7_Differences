@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { TestBed } from '@angular/core/testing';
 // import { IMG_HEIGHT, IMG_TYPE, IMG_WIDTH } from '@app/constants/creation-page';
 import { ImageService } from '@app/services/image-service/image.service';
