@@ -21,31 +21,25 @@ export class CanvasUnderButtonsComponent {
         private readonly matDialog: MatDialog,
     ) {}
 
-    onSelectFile(event: Event): void {
+    async onSelectFile(event: Event): Promise<void> {
         const target = event.target as HTMLInputElement;
         if (target.files && target.files[0]) {
-            const reader = new FileReader();
-            reader.readAsDataURL(target.files[0]);
-            reader.onload = () => {
-                const image = new Image();
-                image.src = reader.result as string;
-                this.setImageIfValid(image);
-            };
+            const file = target.files[0];
+            if (!this.validationService.isImageTypeValid(file)) {
+                this.matDialog.open(this.invalidImageDialog);
+            } else {
+                await this.setImageIfValid(file);
+            }
         }
     }
 
-    setImageIfValid(image: HTMLImageElement): void {
-        if (!this.validationService.isImageTypeValid(image.src)) {
+    async setImageIfValid(file: File): Promise<void> {
+        const image = await createImageBitmap(file);
+        if (this.validationService.isImageSizeValid(image) && (await this.validationService.isImageFormatValid(file))) {
+            this.imageService.setBackground(this.position, image);
+        } else {
             this.matDialog.open(this.invalidImageDialog);
-            return;
         }
-        image.onload = () => {
-            if (this.validationService.isImageSizeValid(image) && this.validationService.isImageFormatValid(image.src)) {
-                this.imageService.setBackground(this.position, image.src);
-            } else {
-                this.matDialog.open(this.invalidImageDialog);
-            }
-        };
     }
 
     resetBackground(): void {
