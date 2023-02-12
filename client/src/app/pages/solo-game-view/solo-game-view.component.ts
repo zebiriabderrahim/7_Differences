@@ -25,9 +25,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     isLeftCanvas: boolean;
     isFirstTime = true;
     readonly homeRoute: string = '/home';
-    // private canvasSize = { width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
 
-    // a enlever plus tard
     // eslint-disable-next-line max-params
     constructor(private gameAreaService: GameAreaService, private classicService: ClassicSystemService) {}
     ngAfterViewInit(): void {
@@ -49,10 +47,6 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
                 this.isFirstTime = false;
             }
         });
-    }
-
-    abandonGame(): void {
-        // this.timer.stopTimer();
     }
 
     mouseClickOnOriginal(event: MouseEvent) {

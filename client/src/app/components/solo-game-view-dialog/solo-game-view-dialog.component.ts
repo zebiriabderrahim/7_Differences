@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./solo-game-view-dialog.component.scss'],
 })
 export class SoloGameViewDialogComponent implements OnInit {
-    constructor() {}
-
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        throw new Error('Method not implemented.');
+    }
 }

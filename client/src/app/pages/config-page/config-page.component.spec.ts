@@ -34,6 +34,7 @@ describe('ConfigPageComponent', () => {
     it('should load a game when this one exist', () => {
         spyOn(component['communicationService'], 'loadConfigConstants').and.returnValue(of({ countdownTime: 0, penaltyTime: 0, bonusTime: 0 }));
         component.ngOnInit();
+        expect(component['communicationService'].loadConfigConstants).toHaveBeenCalled();
         expect(component.configConstants).toEqual({ countdownTime: 0, penaltyTime: 0, bonusTime: 0 });
     });
 });
