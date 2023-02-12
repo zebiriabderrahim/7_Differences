@@ -70,6 +70,15 @@ describe('CreationGameDialogComponent', () => {
         expect(component.gameNameForm.controls.name instanceof FormControl).toBeTruthy();
     });
 
+    // it('ngOnInit should generate differences and call drawDifferences on the image service', () => {
+    //     const differenceCanvas = component.differenceCanvas;
+    //     const differenceContext = differenceCanvas.nativeElement.getContext('2d');
+    //     component.ngOnInit();
+
+    //     expect(differenceServiceSpy.generateDifferences).toHaveBeenCalledWith(imageServiceSpy.getGamePixels(), component.radius);
+    //     expect(imageServiceSpy.drawDifferences).toHaveBeenCalledWith(differenceContext, []);
+    // });
+
     // TODO : fix test
     // it('should display the number of differences when displayDifferences is defined', () => {
     //     const nDifference = 6;
