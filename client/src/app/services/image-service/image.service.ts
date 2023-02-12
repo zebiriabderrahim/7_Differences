@@ -120,13 +120,18 @@ export class ImageService {
         return imageData;
     }
 
-    getGamePixels(): GamePixels {
+    getLeftPixels(): Pixel[] {
         const leftImageData = this.leftBackgroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data;
+        return this.transformImageDataToPixelArray(leftImageData);
+    }
+
+    getRightPixels(): Pixel[] {
         const rightImageData = this.rightBackgroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data;
-        const leftImagePixels = this.transformImageDataToPixelArray(leftImageData);
-        const rightImagePixels = this.transformImageDataToPixelArray(rightImageData);
-        const gamePixels: GamePixels = { leftImage: leftImagePixels, rightImage: rightImagePixels };
-        return gamePixels;
+        return this.transformImageDataToPixelArray(rightImageData);
+    }
+
+    getGamePixels(): GamePixels {
+        return { leftImage: this.getLeftPixels(), rightImage: this.getRightPixels() };
     }
 
     getImageSources(): ImageSources {
