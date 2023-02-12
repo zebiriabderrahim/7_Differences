@@ -55,33 +55,33 @@ export class ImageService {
         this.resetRightBackground();
     }
 
-    setBackground(canvasPosition: CanvasPosition, imageSource: string) {
-        const imageToDraw = new Image();
-        imageToDraw.src = imageSource;
+    setBackground(canvasPosition: CanvasPosition, image: ImageBitmap) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
-                this.setLeftBackground(imageToDraw);
+                this.setLeftBackground(image);
                 break;
             case CanvasPosition.Right:
-                this.setRightBackground(imageToDraw);
+                this.setRightBackground(image);
                 break;
             case CanvasPosition.Both:
-                this.setLeftBackground(imageToDraw);
-                this.setRightBackground(imageToDraw);
+                this.setLeftBackground(image);
+                this.setRightBackground(image);
                 break;
         }
     }
 
-    setLeftBackground(imageToDraw: HTMLImageElement) {
-        this.leftBackground = imageToDraw.src;
+    setLeftBackground(imageToDraw: ImageBitmap) {
         this.leftBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.leftBackgroundContext.drawImage(imageToDraw, 0, 0);
+        this.leftBackground = this.leftBackgroundContext.canvas.toDataURL();
+        console.log(this.leftBackground);
     }
 
-    setRightBackground(imageToDraw: HTMLImageElement) {
-        this.rightBackground = imageToDraw.src;
+    setRightBackground(imageToDraw: ImageBitmap) {
         this.rightBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.rightBackgroundContext.drawImage(imageToDraw, 0, 0);
+        this.rightBackground = this.rightBackgroundContext.canvas.toDataURL();
+        console.log(this.rightBackground);
     }
 
     setBackgroundContext(canvasPosition: CanvasPosition, context: CanvasRenderingContext2D) {
