@@ -37,6 +37,13 @@ describe('GameAreaService', () => {
         expect(saveCoordSpy).toHaveBeenCalled();
     });
 
+    it('saveCoord should properly save mouse position', () => {
+        const expectedMousePosition = { x: 15, y: 18 };
+        const clickEvent: MouseEvent = { offsetX: 15, offsetY: 18 } as MouseEvent;
+        gameAreaService.saveCoord(clickEvent);
+        expect(gameAreaService['mousePosition']).toEqual(expectedMousePosition);
+    });
+
     it('should not detect left click if clicking is disabled', () => {
         gameAreaService['clickDisabled'] = true;
         expect(gameAreaService.detectLeftClick({ button: LEFT_BUTTON } as MouseEvent)).toBeFalse();
@@ -145,7 +152,7 @@ describe('GameAreaService', () => {
         );
     });
 
-    it('showError should display the word ERREUR and play error sound effect', () => {
+    it('showError should display an error on the left canvas and play error sound effect', () => {
         const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService['originalContextFrontLayer'] = context;
@@ -159,8 +166,26 @@ describe('GameAreaService', () => {
         expect(playErrorSoundSpy).toHaveBeenCalled();
     });
 
-    it('flashCorrectPixels should flash the difference pixels on both canvas', (done) => {
-        const currentDifference = [{ x: 100, y: 150 }];
+    it('showError should display an error on the right canvas and play error sound effect', () => {
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
+        gameAreaService['modifiedContextFrontLayer'] = context;
+        const initialImageData: ImageData = context.createImageData(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const playErrorSoundSpy = spyOn(gameAreaService, 'playErrorSound').and.callFake(() => {});
+        const methodSpy = spyOn(context, 'fillText');
+        gameAreaService['mousePosition'] = { x: 100, y: 150 };
+        gameAreaService.showError(false);
+        expect(context.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)).toEqual(initialImageData);
+        expect(methodSpy).toHaveBeenCalled();
+        expect(playErrorSoundSpy).toHaveBeenCalled();
+    });
+
+    it('flashCorrectPixels should flash the difference pixels on both canvas and play correct sound effect', (done) => {
+        const currentDifference = [
+            { x: 100, y: 150 },
+            { x: 100, y: 200 },
+            { x: 126, y: 154 },
+        ];
         const originalCanvasFrontLayer: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
         gameAreaService['originalContextFrontLayer'] = originalCanvasFrontLayer.getContext('2d')!;
         const modifiedCanvasFrontLayer: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -168,7 +193,7 @@ describe('GameAreaService', () => {
         const ogPutImageDataSpy = spyOn(gameAreaService['originalContextFrontLayer'], 'putImageData');
         const mdPutImageDataSpy = spyOn(gameAreaService['modifiedContextFrontLayer'], 'putImageData');
         const ogClearRect = spyOn(gameAreaService['originalContextFrontLayer'], 'clearRect');
-        const mdClearRect = spyOn(gameAreaService['originalContextFrontLayer'], 'clearRect');
+        const mdClearRect = spyOn(gameAreaService['modifiedContextFrontLayer'], 'clearRect');
         const ogInitialImageData = (gameAreaService['originalFrontPixelData'] = gameAreaService['originalContextFrontLayer'].createImageData(
             CANVAS_WIDTH,
             CANVAS_HEIGHT,
@@ -177,6 +202,7 @@ describe('GameAreaService', () => {
             CANVAS_WIDTH,
             CANVAS_HEIGHT,
         ));
+        const playCorrectSoundSpy = spyOn(gameAreaService, 'playCorrectSound').and.callFake(() => {});
 
         gameAreaService.flashCorrectPixels(currentDifference);
 
@@ -185,9 +211,87 @@ describe('GameAreaService', () => {
             expect(mdPutImageDataSpy).toHaveBeenCalled();
             expect(ogClearRect).toHaveBeenCalled();
             expect(mdClearRect).toHaveBeenCalled();
+            expect(playCorrectSoundSpy).toHaveBeenCalled();
             expect(gameAreaService['originalFrontPixelData']).toEqual(ogInitialImageData);
             expect(gameAreaService['modifiedFrontPixelData']).toEqual(mdInitialImageData);
             done();
         }, FLASH_WAIT_TIME);
+    });
+
+    it('playErrorSound should call play on incorrectSoundEffect', () => {
+        const playSpy = spyOn(gameAreaService['incorrectSoundEffect'], 'play').and.returnValue(Promise.resolve());
+        gameAreaService.playErrorSound();
+        expect(playSpy).toHaveBeenCalled();
+    });
+    it('playCorrectSound should call play on correctSoundEffect', () => {
+        const playSpy = spyOn(gameAreaService['correctSoundEffect'], 'play').and.returnValue(Promise.resolve());
+        gameAreaService.playCorrectSound();
+        expect(playSpy).toHaveBeenCalled();
+    });
+
+    it('getOgContext should return originalContext', () => {
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
+        gameAreaService['originalContext'] = context;
+        const returnedContext = gameAreaService.getOgContext();
+        expect(returnedContext).toEqual(context);
+    });
+
+    it('getMdContext should return modifiedContext', () => {
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
+        gameAreaService['modifiedContext'] = context;
+        const returnedContext = gameAreaService.getMdContext();
+        expect(returnedContext).toEqual(context);
+    });
+
+    it('getOgFrontContext should return originalContextFrontLayer', () => {
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
+        gameAreaService['originalContextFrontLayer'] = context;
+        const returnedContext = gameAreaService.getOgFrontContext();
+        expect(returnedContext).toEqual(context);
+    });
+
+    it('getMdFrontContext should return modifiedContextFrontLayer', () => {
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
+        gameAreaService['modifiedContextFrontLayer'] = context;
+        const returnedContext = gameAreaService.getMdFrontContext();
+        expect(returnedContext).toEqual(context);
+    });
+
+    it('getMousePosition should return mousePosition', () => {
+        gameAreaService['mousePosition'] = { x: 15, y: 150 };
+        const returnedMousePosition = gameAreaService.getMousePosition();
+        expect(returnedMousePosition).toEqual(gameAreaService['mousePosition']);
+    });
+
+    it('setOgContext should set originalContext', () => {
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
+        gameAreaService.setOgContext(context);
+        expect(gameAreaService['originalContext']).toEqual(context);
+    });
+
+    it('setOgFrontContext should set originalContextFrontLayer', () => {
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
+        gameAreaService.setOgFrontContext(context);
+        expect(gameAreaService['originalContextFrontLayer']).toEqual(context);
+    });
+
+    it('setMdContext should set modifiedContext', () => {
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
+        gameAreaService.setMdContext(context);
+        expect(gameAreaService['modifiedContext']).toEqual(context);
+    });
+
+    it('setMdFrontContext should set modifiedContextFrontLayer', () => {
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
+        gameAreaService.setMdFrontContext(context);
+        expect(gameAreaService['modifiedContextFrontLayer']).toEqual(context);
     });
 });
