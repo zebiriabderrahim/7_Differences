@@ -15,15 +15,6 @@ describe('DifferenceService', () => {
         expect(service).toBeTruthy();
     });
 
-    // it('setDifferencesArray should set the differencesArray', () => {
-    //     const differencesArray = [
-    //         { x: 300, y: 200 },
-    //         { x: 400, y: 300 },
-    //     ];
-    //     service.setDifferencesArray(differencesArray);
-    //     expect(service.differencesArray).toBe(differencesArray);
-    // });
-
     it('resetAttributes should reset the attributes', () => {
         const difference = { x: 300, y: 200 };
         service['differences'] = [difference];
@@ -35,6 +26,18 @@ describe('DifferenceService', () => {
         expect(service['differencePackages']).toEqual([]);
         expect(service['visitedCoordinates']).toEqual(service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT));
         expect(service['differenceMatrix']).toEqual(service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT));
+    });
+
+    it('getDifferences should return the differences', () => {
+        const differences = [{ x: 300, y: 200 }];
+        service['differences'] = differences;
+        expect(service.getDifferences()).toEqual(differences);
+    });
+
+    it('getNumberOfDifferences should return the number of differences', () => {
+        const differencesPackages = [[{ x: 300, y: 200 }]];
+        service['differencePackages'] = differencesPackages;
+        expect(service.getNumberOfDifferences()).toEqual(differencesPackages.length);
     });
 
     it('createFalseMatrix should create a matrix of false values to specific sizes', () => {
@@ -235,8 +238,6 @@ describe('DifferenceService', () => {
         expect(service.isNumberOfDifferencesValid()).toBeFalsy();
     });
 
-    // it('isGameHard returns true if differencePackages has N_DIFFERENCES_HARD_GAME = 7 or more elements
-    // and differencesPercentage is less than or equal to HARD_DIFFERENCES_PERCENTAGE = 0.15', () => {
     it('isGameHard returns true if differencePackages has 7 differences or more and covers less than 15% of the area', () => {
         service['differences'] = [
             { x: 10, y: 20 },
@@ -262,7 +263,6 @@ describe('DifferenceService', () => {
         expect(service.isGameHard()).toBeTruthy();
     });
 
-    // it('isGameHard returns false if differencePackages has less than 7 elements', () => {
     it('isGameHard returns false if differencePackages has less than 7 elements', () => {
         service['differencePackages'] = [
             [
