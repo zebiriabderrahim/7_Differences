@@ -25,6 +25,7 @@ export class ClassicSoloModeService {
             differencesData: diffData,
         };
         this.rooms.set(room.roomId, room);
+        socket.join(room.roomId);
         return room;
     }
 
@@ -78,7 +79,7 @@ export class ClassicSoloModeService {
     endGame(roomId: string, server: io.Server): void {
         const room = this.rooms.get(roomId);
         if (room && room.serverGame.differencesCount === room.differencesData.differencesFound) {
-            room.endMessage = `Vous avez trouver les ${room.serverGame.differencesCount} différences! Bravo!`;
+            room.endMessage = `Vous avez trouvé les ${room.serverGame.differencesCount} différences! Bravo!`;
             server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
             this.rooms.delete(room.roomId);
         }

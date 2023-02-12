@@ -4,7 +4,6 @@ import { CarouselPaginator, GameConfigConst, ServerSideGame } from '@common/game
 import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'express';
-import { async } from 'rxjs';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { GameController } from './game.controller';
 
