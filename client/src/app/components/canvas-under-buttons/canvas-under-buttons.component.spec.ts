@@ -19,9 +19,6 @@ describe('CanvasUnderButtonsComponent', () => {
     let imageService: ImageService;
     let matDialogSpy: jasmine.SpyObj<MatDialog>;
     let validationService: ValidationService;
-    // let event: Event;
-    // let setImageIfValidSpy: jasmine.Spy;
-    // let target: HTMLInputElement;
 
     beforeEach(async () => {
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
@@ -36,7 +33,6 @@ describe('CanvasUnderButtonsComponent', () => {
         fixture.detectChanges();
         imageService = TestBed.inject(ImageService);
         validationService = TestBed.inject(ValidationService);
-        // setImageIfValidSpy = jasmine.createSpy('setImageIfValid');
     });
 
     it('should create', () => {
