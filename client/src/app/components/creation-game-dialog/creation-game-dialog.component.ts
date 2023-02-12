@@ -1,11 +1,9 @@
 import { Component, ElementRef, EventEmitter, Inject, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DEFAULT_ID } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { Coordinate } from '@app/interfaces/coordinate';
 import { ImageSources } from '@app/interfaces/image-sources';
-// import { GamePixels } from '@app/interfaces/pixel';
 import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
@@ -37,14 +35,16 @@ export class CreationGameDialogComponent implements OnInit {
     ) {}
 
     get displayDifferences(): number {
-        return this.differenceService['differencePackages'].length;
+        return this.differenceService.getNumberOfDifferences();
     }
 
     ngOnInit(): void {
         this.gameName = '';
         this.differenceCanvas.nativeElement.width = IMG_WIDTH;
         this.differenceCanvas.nativeElement.height = IMG_HEIGHT;
-        this.imageService.setDifferenceContext(this.differenceCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D);
+        const differences = this.differenceService.generateDifferences(this.imageService.getGamePixels(), this.radius);
+        const differenceContext = this.differenceCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.imageService.drawDifferences(differenceContext, differences);
     }
 
     isNumberOfDifferencesValid(): boolean {
@@ -58,12 +58,11 @@ export class CreationGameDialogComponent implements OnInit {
     submitForm() {
         if (this.gameNameForm.valid && this.gameNameForm.value.name) {
             this.gameNameEvent.emit(this.gameNameForm.value.name);
-            this.dialogRef.close();
+            this.dialogRef.close(this.gameNameForm.value.name);
             this.imageService.resetBothBackgrounds();
             const differences: Coordinate[][] = this.differenceService.generateDifferencesPackages();
             const imageSources: ImageSources = this.imageService.getImageSources();
             const gameDetails: GameDetails = {
-                id: DEFAULT_ID,
                 name: this.gameNameForm.value.name,
                 originalImage: imageSources.left,
                 modifiedImage: imageSources.right,

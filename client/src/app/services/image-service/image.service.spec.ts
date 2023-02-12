@@ -2,7 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
-import { BLACK_PIXEL, N_PIXEL_ATTRIBUTE, WHITE_PIXEL } from '@app/constants/pixels';
+import { N_PIXEL_ATTRIBUTE } from '@app/constants/pixels';
 import { CanvasPosition } from '@app/enum/canvas-position';
 
 import { ImageService } from './image.service';
@@ -19,7 +19,6 @@ describe('ImageService', () => {
         contextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
         service['leftBackgroundContext'] = contextStub;
         service['rightBackgroundContext'] = contextStub;
-        service['differenceContext'] = contextStub;
     });
 
     it('should be created', () => {
@@ -199,10 +198,56 @@ describe('ImageService', () => {
         expect(service.transformPixelArrayToImageData(pixelArray)).toEqual(expectedArray);
     });
 
-    it('getGamePixels should call transformContextToPixelArray with appropriate values', () => {
-        const transformContextToPixelArraySpy = spyOn(service, 'transformImageDataToPixelArray' as never).and.callThrough();
-        service.getGamePixels();
-        expect(transformContextToPixelArraySpy).toHaveBeenCalled();
+    it('getLeftPixels should call getImageData of leftBackgroundContext', () => {
+        const leftBackgroundContextSpy = spyOn(service['leftBackgroundContext'], 'getImageData').and.callThrough();
+        service.getLeftPixels();
+        expect(leftBackgroundContextSpy).toHaveBeenCalledWith(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    });
+
+    it('getLeftPixels should call transformImageDataToPixelArray with leftDataImage', () => {
+        const leftImageData = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * N_PIXEL_ATTRIBUTE).fill(0);
+        spyOn(service['leftBackgroundContext'], 'getImageData').and.callFake(() => {
+            return { data: leftImageData, colorSpace: 'srgb', width: IMG_WIDTH, height: IMG_HEIGHT };
+        });
+        const transformImageDataToPixelArraySpy = spyOn(service, 'transformImageDataToPixelArray').and.callFake(() => {
+            return [];
+        });
+
+        service.getLeftPixels();
+        expect(transformImageDataToPixelArraySpy).toHaveBeenCalledWith(leftImageData);
+    });
+
+    it('getRightPixels should call getImageData of rightBackgroundContext', () => {
+        const rightBackgroundContextSpy = spyOn(service['rightBackgroundContext'], 'getImageData').and.callThrough();
+        service.getRightPixels();
+        expect(rightBackgroundContextSpy).toHaveBeenCalledWith(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    });
+
+    it('getRightPixels should call transformImageDataToPixelArray with rightDataImage', () => {
+        const rightImageData = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * N_PIXEL_ATTRIBUTE).fill(1);
+        spyOn(service['rightBackgroundContext'], 'getImageData').and.callFake(() => {
+            return { data: rightImageData, colorSpace: 'srgb', width: IMG_WIDTH, height: IMG_HEIGHT };
+        });
+
+        const transformImageDataToPixelArraySpy = spyOn(service, 'transformImageDataToPixelArray').and.callFake(() => {
+            return [];
+        });
+
+        service.getRightPixels();
+        expect(transformImageDataToPixelArraySpy).toHaveBeenCalledWith(rightImageData);
+    });
+
+    it('getGamePixels should return pixels of both images', () => {
+        const leftPixels = new Array(IMG_WIDTH * IMG_HEIGHT).fill({ red: 0, green: 0, blue: 0, alpha: 0 });
+        const rightPixels = new Array(IMG_WIDTH * IMG_HEIGHT).fill({ red: 1, green: 1, blue: 1, alpha: 1 });
+        spyOn(service, 'getLeftPixels').and.callFake(() => {
+            return leftPixels;
+        });
+        spyOn(service, 'getRightPixels').and.callFake(() => {
+            return rightPixels;
+        });
+
+        expect(service.getGamePixels()).toEqual({ leftImage: leftPixels, rightImage: rightPixels });
     });
 
     it('getImageSources should return the source of the images in the service', () => {
@@ -214,26 +259,30 @@ describe('ImageService', () => {
         });
     });
 
-    it('drawDifference should call transformContextToPixelArray with appropriate values', () => {
-        const differencePixelArray = new Array(IMG_HEIGHT * IMG_WIDTH).fill(WHITE_PIXEL);
-        const differenceImageData = service.transformPixelArrayToImageData(differencePixelArray);
-        service.drawDifferenceImage(differencePixelArray);
-        expect(differenceImageData).toEqual(differenceImageData);
+    it('drawDifference should call transformPixelArrayToImageData', () => {
+        const transformPixelArrayToImageDataSpy = spyOn(service, 'transformPixelArrayToImageData').and.callFake(() => {
+            return new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * N_PIXEL_ATTRIBUTE).fill(0);
+        });
+
+        const mockDifferences = [
+            { x: 0, y: 0 },
+            { x: 1, y: 1 },
+        ];
+
+        service.drawDifferences(contextStub, mockDifferences);
+        expect(transformPixelArrayToImageDataSpy).toHaveBeenCalled();
     });
 
-    it('drawDifference should call putImageData and not change a image fill with WHITE_PIXEL', () => {
-        const differencePixelArray = new Array(IMG_HEIGHT * IMG_WIDTH).fill(WHITE_PIXEL);
-        spyOn(contextStub, 'putImageData');
-        service.drawDifferenceImage(differencePixelArray);
-        expect(contextStub.putImageData).toHaveBeenCalled();
-        expect(differencePixelArray).toContain(WHITE_PIXEL);
-    });
+    it('drawDifference should call putImageData on provided context', () => {
+        const mockDifferences = [
+            { x: 0, y: 0 },
+            { x: 1, y: 1 },
+        ];
 
-    it('drawDifference should call putImageData and fill pixel with difference by BLACK_PIXEL', () => {
-        const differencePixelArray = new Array(IMG_HEIGHT * IMG_WIDTH).fill({ red: 0, green: 0, blue: 0, alpha: 255 });
-        spyOn(contextStub, 'putImageData');
-        service.drawDifferenceImage(differencePixelArray);
-        expect(contextStub.putImageData).toHaveBeenCalled();
-        expect(differencePixelArray).toContain(BLACK_PIXEL);
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        const putImageDataSpy = spyOn(contextStub, 'putImageData').and.callFake(() => {});
+
+        service.drawDifferences(contextStub, mockDifferences);
+        expect(putImageDataSpy).toHaveBeenCalled();
     });
 });
