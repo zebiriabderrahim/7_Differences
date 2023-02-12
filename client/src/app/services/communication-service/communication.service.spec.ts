@@ -78,6 +78,7 @@ describe('CommunicationService', () => {
 
     it('should send a POST request to the server when postGame is called', () => {
         gameDetails = {
+            id: 0,
             name: '',
             originalImage: '',
             modifiedImage: '',

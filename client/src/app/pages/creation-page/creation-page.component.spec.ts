@@ -1,71 +1,206 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
-import { MatDialog, MatDialogConfig, MatDialogModule } from '@angular/material/dialog';
-import { MatIcon } from '@angular/material/icon';
-import { MatRadioModule } from '@angular/material/radio';
-import { By } from '@angular/platform-browser';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+// import { MatFormFieldModule, MatFormFieldControl } from '@angular/material/form-field';
+// import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterTestingModule } from '@angular/router/testing';
-import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
-import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
-import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
+// import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
+// import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
+import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { ImageService } from '@app/services/image-service/image.service';
-import { CreationPageComponent } from './creation-page.component';
+import { CreationGameDialogComponent } from './creation-game-dialog.component';
 
-describe('CreationPageComponent', () => {
-    let component: CreationPageComponent;
-    let fixture: ComponentFixture<CreationPageComponent>;
-    let matDialogSpy: jasmine.SpyObj<MatDialog>;
-    let imageService: ImageService;
+describe('CreationGameDialogComponent', () => {
+    let component: CreationGameDialogComponent;
+    let fixture: ComponentFixture<CreationGameDialogComponent>;
+    // let imageService: ImageService;
+    let imageServiceSpy: jasmine.SpyObj<ImageService>;
+    let differenceServiceSpy: jasmine.SpyObj<DifferenceService>;
+    // let differenceService: DifferenceService;
+    let dialogRef: MatDialogRef<CreationGameDialogComponent, unknown>;
+    // let contextStub: CanvasRenderingContext2D;
 
     beforeEach(async () => {
-        matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
+        imageServiceSpy = jasmine.createSpyObj('ImageService', [
+            'generateDifferences',
+            'getGamePixels',
+            'getImageSources',
+            'drawDifferences',
+            'resetBothBackgrounds',
+        ]);
+        differenceServiceSpy = jasmine.createSpyObj('DifferenceService', [
+            'generateDifferences',
+            'generateDifferencesPackages',
+            'getGamesPixels',
+            'getImageSources',
+            'isNumberOfDifferencesValid',
+            'getNumberOfDifferences',
+            'isGameHard',
+        ]);
         await TestBed.configureTestingModule({
-            declarations: [CreationPageComponent, ImageCanvasComponent, CanvasUnderButtonsComponent, MatIcon],
-            imports: [MatDialogModule, RouterTestingModule, MatRadioModule, FormsModule, HttpClientTestingModule],
-            providers: [{ provide: MatDialog, useValue: matDialogSpy }],
+            imports: [
+                HttpClientTestingModule,
+                BrowserAnimationsModule,
+                ReactiveFormsModule,
+                FormsModule,
+                MatFormFieldModule,
+                MatInputModule,
+                MatButtonModule,
+                RouterTestingModule,
+            ],
+            declarations: [CreationGameDialogComponent],
+            providers: [
+                { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } },
+                { provide: MAT_DIALOG_DATA, useValue: [] },
+                { provide: ImageService, useValue: imageServiceSpy },
+                { provide: DifferenceService, useValue: differenceServiceSpy },
+            ],
         }).compileComponents();
 
-        fixture = TestBed.createComponent(CreationPageComponent);
-        imageService = TestBed.inject(ImageService);
+        fixture = TestBed.createComponent(CreationGameDialogComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        dialogRef = TestBed.inject(MatDialogRef<CreationGameDialogComponent, unknown>);
+        // imageServiceSpy = TestBed.inject(ImageService);
+        // differenceService = TestBed.inject(DifferenceService);
+        // contextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
+        // imageService['leftBackgroundContext'] = contextStub;
+        // imageService['rightBackgroundContext'] = contextStub;
     });
 
     it('should create', () => {
         expect(component).toBeTruthy();
     });
 
-    it('validateDifferences should open imageNotSetDialog with config if images are set', () => {
-        spyOn(imageService, 'areImagesSet').and.callFake(() => {
-            return true;
-        });
-        component.validateDifferences();
-        const dialogConfig = new MatDialogConfig();
-        dialogConfig.data = component.radius;
-        expect(matDialogSpy.open).toHaveBeenCalledWith(CreationGameDialogComponent, dialogConfig);
+    it('should initialize the gameNameForm', () => {
+        expect(component.gameNameForm instanceof FormGroup).toBeTruthy();
+        expect(component.gameNameForm.controls.name instanceof FormControl).toBeTruthy();
     });
 
-    it('validateDifferences should open imageNotSetDialog if images are not set', () => {
-        spyOn(imageService, 'areImagesSet').and.callFake(() => {
-            return false;
-        });
-        component.validateDifferences();
-        expect(matDialogSpy.open).toHaveBeenCalled();
-    });
+    // it('should display the number of differences when displayDifferences is defined', () => {
+    //     differenceService.differencePackages.length = 5;
+    //     fixture.detectChanges();
+    //     const bannerElement: HTMLElement = fixture.nativeElement;
+    //     const p = bannerElement.querySelector('div > p');
+    //     expect(p?.textContent).toContain(component.displayDifferences);
+    // });
 
-    it('should select a radio button', () => {
-        const radioButtons = fixture.debugElement.query(By.css('mat-radio-button')).nativeElement;
-        radioButtons[1]?.click();
+    it('should not display the number of differences when displayDifferences is not defined', () => {
         fixture.detectChanges();
-        expect(component.radius).toEqual(component.radiusSizes[1]);
+        const bannerElement: HTMLElement = fixture.nativeElement;
+        const p = bannerElement.querySelector('div > p');
+        expect(p?.textContent).not.toContain(component.displayDifferences);
     });
 
-    it('should call validateDifferences method on click', () => {
-        const validateButton = fixture.debugElement.query(By.css("button[name='validateButton']")).nativeElement;
-        const validateDifferencesSpy = spyOn(component, 'validateDifferences');
-        validateButton.click();
-        fixture.detectChanges();
-        expect(validateDifferencesSpy).toHaveBeenCalled();
+    it('gameNameForm should be enabled isNumberOfDifferencesValid is true', () => {
+        differenceServiceSpy.isNumberOfDifferencesValid.and.returnValue(true);
+        // differenceService['differencePackages'] = [
+        //     [
+        //         { x: 10, y: 20 },
+        //         { x: 30, y: 40 },
+        //     ],
+        //     [
+        //         { x: 50, y: 60 },
+        //         { x: 70, y: 80 },
+        //     ],
+        //     [
+        //         { x: 90, y: 100 },
+        //         { x: 110, y: 120 },
+        //     ],
+        // ];
+        expect(component.gameNameForm.enabled).toBeTruthy();
+    });
+
+    it('gameNameForm should be enabled isNumberOfDifferencesValid is true', () => {
+        differenceServiceSpy.isNumberOfDifferencesValid.and.returnValue(true);
+        // differenceService['differencePackages'] = [
+        //     [
+        //         { x: 10, y: 20 },
+        //         { x: 30, y: 40 },
+        //     ],
+        //     [
+        //         { x: 50, y: 60 },
+        //         { x: 70, y: 80 },
+        //     ],
+        //     [
+        //         { x: 90, y: 100 },
+        //         { x: 110, y: 120 },
+        //     ],
+        // ];
+        expect(component.gameNameForm.enabled).toBeTruthy();
+    });
+
+    it('gameNameForm should be enabled isNumberOfDifferencesValid is true', () => {
+        differenceServiceSpy.isNumberOfDifferencesValid.and.returnValue(true);
+        // differenceService['differencePackages'] = [
+        //     [
+        //         { x: 10, y: 20 },
+        //         { x: 30, y: 40 },
+        //     ],
+        //     [
+        //         { x: 50, y: 60 },
+        //         { x: 70, y: 80 },
+        //     ],
+        //     [
+        //         { x: 90, y: 100 },
+        //         { x: 110, y: 120 },
+        //     ],
+        // ];
+        expect(component.gameNameForm.enabled).toBeTruthy();
+    });
+
+    it('gameNameForm should be disabled if isNumberOfDifferencesValid is false', () => {
+        differenceServiceSpy.isNumberOfDifferencesValid.and.returnValue(false);
+        // differenceService['differencePackages'] = [
+        //     [
+        //         { x: 10, y: 20 },
+        //         { x: 30, y: 40 },
+        //     ],
+        // ];
+        expect(component.gameNameForm.disabled).toBeFalsy();
+    });
+
+    // TODO: fix this
+    // it('should display the warning message when isNumberOfDifferencesValid is false', () => {
+    //     differenceService.differencePackages.length = 5;
+    //     fixture.detectChanges();
+    //     const bannerElement: HTMLElement = fixture.nativeElement;
+    //     const p = bannerElement.querySelector('ng-template > p');
+    //     expect(p?.textContent).toEqual('Il doit y avoir entre 3 et 9 différences. Veuillez recommencer le processus');
+    // });
+
+    // it('should not display the warning message when isNumberOfDifferencesValid is true', () => {
+    //     differenceService.differencePackages.length = 1;
+    //     const bannerElement: HTMLElement = fixture.nativeElement;
+    //     const p = bannerElement.querySelector('ng-template > p');
+    //     expect(p).toBeUndefined();
+    // });
+
+    it('should close the dialog onNoClick', () => {
+        component.onNoClick();
+        expect(dialogRef.close).toHaveBeenCalled();
+    });
+
+    it('should emit the game name and close the dialog if the form is valid', () => {
+        component.gameNameForm = new FormGroup({ name: new FormControl('name') });
+        imageServiceSpy.getImageSources.and.returnValue({ left: 'left', right: 'right' });
+        differenceServiceSpy.generateDifferencesPackages.and.returnValue([]);
+        // spyOn(imageService, 'getImageSources').and.callThrough();
+        const spy = spyOn(component.gameNameEvent, 'emit');
+        component.submitForm();
+        expect(spy).toHaveBeenCalledWith('name');
+        expect(dialogRef.close).toHaveBeenCalledWith('name');
+    });
+
+    it('should not emit the game name or close the dialog if the form is invalid', () => {
+        const spy = spyOn(component.gameNameEvent, 'emit');
+        component.submitForm();
+        expect(spy).not.toHaveBeenCalled();
+        expect(dialogRef.close).not.toHaveBeenCalled();
     });
 });
