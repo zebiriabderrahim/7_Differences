@@ -223,6 +223,7 @@ describe('GameAreaService', () => {
         gameAreaService.playErrorSound();
         expect(playSpy).toHaveBeenCalled();
     });
+    
     it('playCorrectSound should call play on correctSoundEffect', () => {
         const playSpy = spyOn(gameAreaService['correctSoundEffect'], 'play').and.returnValue(Promise.resolve());
         gameAreaService.playCorrectSound();
