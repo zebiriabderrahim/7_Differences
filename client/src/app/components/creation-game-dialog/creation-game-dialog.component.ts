@@ -30,7 +30,7 @@ export class CreationGameDialogComponent implements OnInit {
         private readonly imageService: ImageService,
         private readonly differenceService: DifferenceService,
         private readonly communicationService: CommunicationService,
-        public dialogRef: MatDialogRef<CreationPageComponent>,
+        private readonly dialogRef: MatDialogRef<CreationPageComponent>,
         @Inject(MAT_DIALOG_DATA) public radius: number,
     ) {}
 
