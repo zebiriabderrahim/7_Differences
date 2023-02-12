@@ -1,3 +1,4 @@
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { TestBed } from '@angular/core/testing';
 // import { IMG_HEIGHT, IMG_TYPE, IMG_WIDTH } from '@app/constants/creation-page';
 import { ImageService } from '@app/services/image-service/image.service';
@@ -35,10 +36,17 @@ describe('ValidationService', () => {
         expect(service.isImageTypeValid(file)).toBeTruthy();
     });
 
-    // it('isImageSizeValid should return true when given the right image size', () => {
-    //     const image = new Image(IMG_WIDTH, IMG_HEIGHT) as HTMLImageElement;
-    //     expect(service.isImageSizeValid(image)).toBeTruthy();
-    // });
+    it('isImageSizeValid should return true when given the right image size', async () => {
+        // const image = await createImageBitmap(new ImageBitmap(), 0, 0, IMG_WIDTH, IMG_HEIGHT);
+        const image: ImageBitmap = {
+            width: 640,
+            height: 480,
+            close(): void {
+                throw new Error('Function not implemented.');
+            },
+        };
+        expect(service.isImageSizeValid(image)).toBeTruthy();
+    });
 
     // it('isImageSizeValid should return false when given the wrong image size', () => {
     //     const image = new Image() as HTMLImageElement;
