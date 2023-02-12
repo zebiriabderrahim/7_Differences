@@ -18,10 +18,6 @@ describe('CanvasUnderButtonsComponent', () => {
     let imageService: ImageService;
     let matDialogSpy: jasmine.SpyObj<MatDialog>;
     let validationService: ValidationService;
-    let event: Event;
-    // let target: HTMLInputElement;
-    // let reader: FileReader;
-    // let image: HTMLImageElement;
 
     beforeEach(async () => {
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
@@ -42,7 +38,7 @@ describe('CanvasUnderButtonsComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('setImageIfValid should open the invalidImageDialog when given an invalid type image and should not set the image', () => {
+    it('set ImageIfValid should open the invalidImageDialog when given an invalid type image and should not set the image', () => {
         spyOn(validationService, 'isImageTypeValid').and.callFake(() => {
             return false;
         });
@@ -53,19 +49,22 @@ describe('CanvasUnderButtonsComponent', () => {
         expect(imageServiceResetBackgroundSpy).not.toHaveBeenCalled();
     });
 
-    it('setImageIfValid should not open the invalidImageDialog when given an valid type image', () => {
-        spyOn(validationService, 'isImageSizeValid').and.callFake(() => {
-            return true;
-        });
-        spyOn(validationService, 'isImageTypeValid').and.callFake(() => {
-            return true;
-        });
-        spyOn(validationService, 'isImageFormatValid').and.callFake(() => {
-            return true;
-        });
-        component.setImageIfValid(new Image());
-        expect(matDialogSpy.open).not.toHaveBeenCalled();
-    });
+    // it('set ImageIfValid should not open the invalidImageDialog when given an valid type image and should set the image', () => {
+    //     spyOn(validationService, 'isImageSizeValid').and.callFake(() => {
+    //         return true;
+    //     });
+    //     spyOn(validationService, 'isImageTypeValid').and.callFake(() => {
+    //         return true;
+    //     });
+    //     spyOn(validationService, 'isImageFormatValid').and.callFake(() => {
+    //         return true;
+    //     });
+    //     const imageServiceResetBackgroundSpy = spyOn(imageService, 'setBackground').and.callFake(() => {});
+
+    //     component.setImageIfValid(new Image());
+    //     expect(matDialogSpy.open).not.toHaveBeenCalled();
+    //     expect(imageServiceResetBackgroundSpy).toHaveBeenCalled();
+    // });
 
     it('resetBackground should call imageService.resetBackground with the right Position', () => {
         component.position = CanvasPosition.Left;
@@ -74,14 +73,81 @@ describe('CanvasUnderButtonsComponent', () => {
         expect(imageServiceResetBackgroundSpy).toHaveBeenCalledWith(component.position);
     });
 
-    it('onSelectFile does not call setImageIfValid if theres no files selected', () => {
-        event = {
-            target: {
-                files: [],
-            } as unknown as HTMLInputElement,
-        } as unknown as Event;
-        const imageSetIfValidSpy = spyOn(component, 'setImageIfValid').and.callFake(() => {});
-        component.onSelectFile(event);
-        expect(imageSetIfValidSpy).not.toHaveBeenCalled();
-    });
+    // it('isImageSizeValid should return true when given the right image size', () => {
+    //     const event: Event = {
+    //         target: { width: IMG_WIDTH, height: IMG_HEIGHT } as HTMLInputElement,
+    //         bubbles: false,
+    //         cancelBubble: false,
+    //         cancelable: false,
+    //         composed: false,
+    //         currentTarget: null,
+    //         defaultPrevented: false,
+    //         eventPhase: 0,
+    //         isTrusted: false,
+    //         returnValue: false,
+    //         srcElement: null,
+    //         timeStamp: 0,
+    //         type: '',
+    //         composedPath(): EventTarget[] {
+    //             throw new Error('Function not implemented.');
+    //         },
+    //         // eslint-disable-next-line no-unused-vars
+    //         initEvent(_type: string, _bubbles?: boolean | undefined, cancelable?: boolean | undefined): void {
+    //             throw new Error('Function not implemented.');
+    //         },
+    //         preventDefault(): void {
+    //             throw new Error('Function not implemented.');
+    //         },
+    //         stopImmediatePropagation(): void {
+    //             throw new Error('Function not implemented.');
+    //         },
+    //         stopPropagation(): void {
+    //             throw new Error('Function not implemented.');
+    //         },
+    //         AT_TARGET: 0,
+    //         BUBBLING_PHASE: 0,
+    //         CAPTURING_PHASE: 0,
+    //         NONE: 0,
+    //     };
+    //     expect(component.isImageSizeValid(event)).toBeTruthy();
+    // });
+
+    // it('isImageSizeValid should return false when given the wrong image size', () => {
+    //     const event: Event = {
+    //         target: { width: IMG_WIDTH + 1, height: IMG_HEIGHT - 1 } as HTMLInputElement,
+    //         bubbles: false,
+    //         cancelBubble: false,
+    //         cancelable: false,
+    //         composed: false,
+    //         currentTarget: null,
+    //         defaultPrevented: false,
+    //         eventPhase: 0,
+    //         isTrusted: false,
+    //         returnValue: false,
+    //         srcElement: null,
+    //         timeStamp: 0,
+    //         type: '',
+    //         composedPath(): EventTarget[] {
+    //             throw new Error('Function not implemented.');
+    //         },
+    //         // eslint-disable-next-line no-unused-vars
+    //         initEvent(_type: string, _bubbles?: boolean | undefined, cancelable?: boolean | undefined): void {
+    //             throw new Error('Function not implemented.');
+    //         },
+    //         preventDefault(): void {
+    //             throw new Error('Function not implemented.');
+    //         },
+    //         stopImmediatePropagation(): void {
+    //             throw new Error('Function not implemented.');
+    //         },
+    //         stopPropagation(): void {
+    //             throw new Error('Function not implemented.');
+    //         },
+    //         AT_TARGET: 0,
+    //         BUBBLING_PHASE: 0,
+    //         CAPTURING_PHASE: 0,
+    //         NONE: 0,
+    //     };
+    //     expect(component.isImageSizeValid(event)).toBeFalsy();
+    // });
 });

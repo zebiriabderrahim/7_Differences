@@ -1,6 +1,7 @@
 import { Coordinate } from '@app/interfaces/coordinate';
 
 export interface GameDetails {
+    id: number;
     name: string;
     originalImage: string;
     modifiedImage: string;
