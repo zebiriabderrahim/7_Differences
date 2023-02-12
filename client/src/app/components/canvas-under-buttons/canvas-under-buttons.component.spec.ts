@@ -111,23 +111,23 @@ describe('CanvasUnderButtonsComponent', () => {
         expect(imageServiceSetBackgroundSpy).not.toHaveBeenCalled();
     });
 
-    // it('setImageIfValid should not open the invalidImageDialog when given an valid type image and setBackGround', async () => {
-    //     const mockImage = {} as ImageBitmap;
-    //     spyOn(window, 'createImageBitmap').and.callFake(async () => {
-    //         return mockImage;
-    //     });
-    //     spyOn(validationService, 'isImageSizeValid').and.callFake(() => {
-    //         return true;
-    //     });
-    //     spyOn(validationService, 'isImageFormatValid').and.callFake(async () => {
-    //         return true;
-    //     });
-    //     const imageServiceSetBackgroundSpy = spyOn(imageService, 'setBackground').and.callFake(() => {});
+    it('setImageIfValid should not open the invalidImageDialog when given an valid type image and setBackGround', async () => {
+        const mockImage = {} as ImageBitmap;
+        spyOn(window, 'createImageBitmap').and.callFake(async () => {
+            return mockImage;
+        });
+        spyOn(validationService, 'isImageSizeValid').and.callFake(() => {
+            return true;
+        });
+        spyOn(validationService, 'isImageFormatValid').and.callFake(async () => {
+            return true;
+        });
+        const imageServiceSetBackgroundSpy = spyOn(imageService, 'setBackground').and.callFake(() => {});
 
-    //     component.setImageIfValid(new File([''], 'filename', { type: IMG_TYPE }));
-    //     expect(matDialogSpy.open).not.toHaveBeenCalled();
-    //     expect(imageServiceSetBackgroundSpy).toHaveBeenCalledOnceWith(component.position, mockImage);
-    // });
+        await component.setImageIfValid(new File([''], 'filename', { type: IMG_TYPE }));
+        expect(matDialogSpy.open).not.toHaveBeenCalled();
+        expect(imageServiceSetBackgroundSpy).toHaveBeenCalledOnceWith(component.position, mockImage);
+    });
 
     it('resetBackground should call imageService.resetBackground with the right Position', () => {
         component.position = CanvasPosition.Left;
