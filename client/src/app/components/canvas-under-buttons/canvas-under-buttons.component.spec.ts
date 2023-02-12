@@ -19,9 +19,8 @@ describe('CanvasUnderButtonsComponent', () => {
     let matDialogSpy: jasmine.SpyObj<MatDialog>;
     let validationService: ValidationService;
     let event: Event;
+    let setImageIfValidSpy: jasmine.Spy;
     // let target: HTMLInputElement;
-    // let reader: FileReader;
-    // let image: HTMLImageElement;
 
     beforeEach(async () => {
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
@@ -36,6 +35,7 @@ describe('CanvasUnderButtonsComponent', () => {
         fixture.detectChanges();
         imageService = TestBed.inject(ImageService);
         validationService = TestBed.inject(ValidationService);
+        setImageIfValidSpy = jasmine.createSpy('setImageIfValid');
     });
 
     it('should create', () => {
@@ -74,14 +74,24 @@ describe('CanvasUnderButtonsComponent', () => {
         expect(imageServiceResetBackgroundSpy).toHaveBeenCalledWith(component.position);
     });
 
+    it('onSelectFile should call readAsDataURL of file reader', () => {
+        event = {
+            target: {
+                files: [new Blob()],
+            } as unknown as HTMLInputElement,
+        } as unknown as Event;
+        const fileReaderSpy = spyOn(FileReader.prototype, 'readAsDataURL').and.callFake(() => {});
+        component.onSelectFile(event);
+        expect(fileReaderSpy).toHaveBeenCalled();
+    });
+
     it('onSelectFile does not call setImageIfValid if theres no files selected', () => {
         event = {
             target: {
                 files: [],
             } as unknown as HTMLInputElement,
         } as unknown as Event;
-        const imageSetIfValidSpy = spyOn(component, 'setImageIfValid').and.callFake(() => {});
         component.onSelectFile(event);
-        expect(imageSetIfValidSpy).not.toHaveBeenCalled();
+        expect(setImageIfValidSpy).not.toHaveBeenCalled();
     });
 });
