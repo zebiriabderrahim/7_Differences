@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
+import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { CreationGameDialogComponent } from './creation-game-dialog.component';
@@ -70,14 +71,20 @@ describe('CreationGameDialogComponent', () => {
         expect(component.gameNameForm.controls.name instanceof FormControl).toBeTruthy();
     });
 
-    // it('ngOnInit should generate differences and call drawDifferences on the image service', () => {
-    //     const differenceCanvas = component.differenceCanvas;
-    //     const differenceContext = differenceCanvas.nativeElement.getContext('2d');
-    //     component.ngOnInit();
+    it('ngOnInit should generate differences and call drawDifferences and get differenceContext on the image service', () => {
+        differenceServiceSpy.generateDifferences.and.callFake(() => {
+            return [];
+        });
+        const context = CanvasTestHelper.createCanvas(0, 0).getContext('2d') as CanvasRenderingContext2D;
+        const getContextSpy = spyOn(component.differenceCanvas.nativeElement, 'getContext').and.callFake(() => {
+            return context;
+        });
+        component.ngOnInit();
 
-    //     expect(differenceServiceSpy.generateDifferences).toHaveBeenCalledWith(imageServiceSpy.getGamePixels(), component.radius);
-    //     expect(imageServiceSpy.drawDifferences).toHaveBeenCalledWith(differenceContext, []);
-    // });
+        expect(differenceServiceSpy.generateDifferences).toHaveBeenCalledWith(imageServiceSpy.getGamePixels(), component.radius);
+        expect(getContextSpy).toHaveBeenCalled();
+        expect(imageServiceSpy.drawDifferences).toHaveBeenCalledWith(context, []);
+    });
 
     // TODO : fix test
     // it('should display the number of differences when displayDifferences is defined', () => {
