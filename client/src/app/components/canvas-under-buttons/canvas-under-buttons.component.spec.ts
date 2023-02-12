@@ -80,15 +80,8 @@ describe('CanvasUnderButtonsComponent', () => {
                 files: [],
             } as unknown as HTMLInputElement,
         } as unknown as Event;
-        // reader = new FileReader();
-        // refactor?
-        // spyOn(window, 'FileReader').and.callThrough();
-        // spyOn(reader, 'readAsDataURL').and.callThrough();
-        // spyOn(reader, 'onload').and.callThrough();
         const imageSetIfValidSpy = spyOn(component, 'setImageIfValid').and.callFake(() => {});
         component.onSelectFile(event);
-        // expect(reader.readAsDataURL).not.toHaveBeenCalled();
-        // expect(reader.onload).not.toHaveBeenCalled();
         expect(imageSetIfValidSpy).not.toHaveBeenCalled();
     });
 });
