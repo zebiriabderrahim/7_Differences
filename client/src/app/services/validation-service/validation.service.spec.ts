@@ -1,6 +1,6 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { TestBed } from '@angular/core/testing';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
+import { BMP_HEADER_OFFSET, IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 // import { IMG_HEIGHT, IMG_TYPE, IMG_WIDTH } from '@app/constants/creation-page';
 import { ImageService } from '@app/services/image-service/image.service';
 import { of } from 'rxjs';
@@ -57,6 +57,16 @@ describe('ValidationService', () => {
             },
         };
         expect(service.isImageSizeValid(image)).toBeFalsy();
+    });
+
+    it('isImageFormatValid should return false if the image format is invalid', async () => {
+        const file = new File([new ArrayBuffer(54)], 'test.bmp');
+        const bmpHeader = new DataView(await file.arrayBuffer());
+        bmpHeader.setUint16(BMP_HEADER_OFFSET, BMP_HEADER_OFFSET + 1, true);
+
+        const result = await service.isImageFormatValid(file);
+
+        expect(result).toBe(false);
     });
 
     // it('isImageSizeValid should return true when given the good image size', () => {
