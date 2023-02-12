@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HARD_DIFFERENCES_PERCENTAGE, N_DIFFERENCES_HARD_GAME } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH, MAX_N_DIFFERENCES, MIN_N_DIFFERENCES } from '@app/constants/creation-page';
 import { Coordinate } from '@app/interfaces/coordinate';
-import { GamePixels, Pixel } from '@app/interfaces/pixel';
+import { Pixel, GamePixels } from '@app/interfaces/pixel';
 
 @Injectable({
     providedIn: 'root',
@@ -22,14 +22,6 @@ export class DifferenceService {
         this.differencePackages = [];
         this.visitedCoordinates = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
         this.differenceMatrix = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
-    }
-
-    getDifferences(): Coordinate[] {
-        return this.differences;
-    }
-
-    getNumberOfDifferences(): number {
-        return this.differencePackages.length;
     }
 
     createFalseMatrix(width: number, height: number): boolean[][] {
@@ -101,7 +93,6 @@ export class DifferenceService {
                 this.differenceMatrix[x][y] = true;
             }
         }
-        this.visitedCoordinates = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
         this.differences = this.enlargeDifferences(this.differences, radius);
         this.generateDifferencesPackages();
         return this.differences;
@@ -112,19 +103,18 @@ export class DifferenceService {
     }
 
     enlargeDifferences(differenceCoordinates: Coordinate[], radius: number): Coordinate[] {
+        const visitedDifferences: boolean[][] = new Array(IMG_WIDTH).fill(false).map(() => new Array(IMG_HEIGHT).fill(false)) as boolean[][];
         const enlargedDifferenceCoordinates: Coordinate[] = [];
         for (const coordinate of differenceCoordinates) {
             for (let i = -radius; i <= radius; i++) {
                 for (let j = -radius; j <= radius; j++) {
-                    const largerCoordinate: Coordinate = { x: coordinate.x + i, y: coordinate.y + j };
                     const distance = Math.sqrt(i * i + j * j);
-                    if (
-                        distance <= radius &&
-                        this.isCoordinateValid(largerCoordinate) &&
-                        !this.visitedCoordinates[largerCoordinate.x][largerCoordinate.y]
-                    ) {
-                        enlargedDifferenceCoordinates.push(largerCoordinate);
-                        this.visitedCoordinates[largerCoordinate.x][largerCoordinate.y] = true;
+                    if (distance <= radius) {
+                        const largerCoordinate: Coordinate = { x: coordinate.x + i, y: coordinate.y + j };
+                        if (this.isCoordinateValid(largerCoordinate) && !visitedDifferences[largerCoordinate.x][largerCoordinate.y]) {
+                            enlargedDifferenceCoordinates.push(largerCoordinate);
+                            visitedDifferences[largerCoordinate.x][largerCoordinate.y] = true;
+                        }
                     }
                 }
             }
