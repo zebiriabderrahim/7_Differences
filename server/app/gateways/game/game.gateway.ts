@@ -32,8 +32,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     @SubscribeMessage(GameEvents.CreateSoloGame)
     createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: string) {
+        const room = this.classicSoloModeService.createSoloRoom(socket, playerName, gameId);
+        console.log(room);
         try {
-            const room = this.classicSoloModeService.createSoloRoom(socket, playerName, gameId);
             if (room) {
                 this.server.to(room.roomId).emit(GameEvents.CreateSoloGame, room.clientGame);
             }
