@@ -1,10 +1,10 @@
-import { PlayerTime, GameConfigConst, CarouselPaginator, Game, GameCard } from '@common/game-interfaces';
-import { Test, TestingModule } from '@nestjs/testing';
-import { DatabaseService } from './database.service';
-import * as fs from 'fs';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameListsManagerService } from '@app/services/game-lists-manager/game-lists-manager.service';
+import { CarouselPaginator, Game, GameCard, GameConfigConst, PlayerTime } from '@common/game-interfaces';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as fs from 'fs';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { DatabaseService } from './database.service';
 
 describe('DatabaseService', () => {
     let dataBaseService: DatabaseService;
@@ -112,7 +112,7 @@ describe('DatabaseService', () => {
         listsManagerService.createGameFromGameDto.returns(testGames[0]);
         const addGameCardSpy = jest.spyOn(dataBaseService, 'addGameCard');
         dataBaseService.addGame(testGameDto);
-        expect(listsManagerService.createGameFromGameDto.calledOnce).toBe(true);
+        expect(listsManagerService.createGameFromGameDto.calledOnce).toBeTruthy();
         expect(addGameCardSpy).toBeCalledTimes(1);
         expect(dataBaseService['games']).toEqual(testGames);
     });
@@ -120,9 +120,9 @@ describe('DatabaseService', () => {
     it('addGameCard() should add the game card to the game card list', () => {
         listsManagerService.buildGameCardFromGame.returns(testGameCard);
         dataBaseService.addGameCard(testGames[0]);
-        expect(listsManagerService.buildGameCardFromGame.calledOnce).toBe(true);
-        expect(listsManagerService.buildGameCarousel.calledOnce).toBe(true);
-        expect(listsManagerService.addGameCarousel.calledOnce).toBe(true);
+        expect(listsManagerService.buildGameCardFromGame.calledOnce).toBeTruthy();
+        expect(listsManagerService.buildGameCarousel.calledOnce).toBeTruthy();
+        expect(listsManagerService.addGameCarousel.calledOnce).toBeTruthy();
         expect(dataBaseService['gameCardsList'][0]).toEqual(testGameCard);
     });
 });

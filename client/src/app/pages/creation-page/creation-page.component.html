@@ -1,32 +1,21 @@
-<div class="images-section">
-    <button mat-raised-button [routerLink]="configRoute">Retour à la page de Configuration</button>
+<div class="users-section">
+    <button mat-raised-button [routerLink]="configRoute">Retourner à la page de Configuration</button>
     <div id="canvas-zone">
         <app-image-canvas [position]="canvasPosition.Left"></app-image-canvas>
         <app-image-canvas [position]="canvasPosition.Right"></app-image-canvas>
     </div>
-    <div id="canvas-action-buttons">
-        <button mat-raised-button color="basic"
-            matTooltip="Téléverser une image en format BMP et de taille 640x480 sur les deux zones"
-            (click)="fileUpload.click()">
-            Téléverser la même image sur les deux zones <mat-icon>attach_file</mat-icon>
-        </button>
-        <button mat-raised-button color="basic" matTooltip="Réinitialise les arrières-plans"
-            (click)="imageService.resetBothBackgrounds()">
-            Réinitialiser les arrières-plans
-        </button>
-    </div>
 
-    <input type="file" id="upload-btn" (change)="onSelectFile($event)" #fileUpload />
+    <app-canvas-under-buttons [position]="canvasPosition.Both"></app-canvas-under-buttons>
 
-    <div id="configuration-buttons">
+    <div id="radio-buttons">
         <div>
             <p>Choisissez le rayon d'élargissement :</p>
             <mat-radio-group color="primary" aria-label="Select an option" [(ngModel)]="radius">
-                <mat-radio-button *ngFor="let rad of radiusSizes" [value]="rad">{{ rad }}</mat-radio-button>
+                <mat-radio-button *ngFor="let radius of radiusSizes" [value]="radius">{{ radius }}</mat-radio-button>
             </mat-radio-group>
         </div>
     </div>
-    <button mat-raised-button color="basic" matTooltip="Vous devez avoir téléversé deux images"
+    <button mat-raised-button name="validateButton" color="basic" matTooltip="Vous devez avoir téléversé deux images"
         (click)="validateDifferences()">
         Valider les différences
     </button>
