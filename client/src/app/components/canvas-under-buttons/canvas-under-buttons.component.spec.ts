@@ -20,7 +20,7 @@ describe('CanvasUnderButtonsComponent', () => {
     let validationService: ValidationService;
     let event: Event;
     // let target: HTMLInputElement;
-    let reader: FileReader;
+    // let reader: FileReader;
     // let image: HTMLImageElement;
 
     beforeEach(async () => {
@@ -74,21 +74,21 @@ describe('CanvasUnderButtonsComponent', () => {
         expect(imageServiceResetBackgroundSpy).toHaveBeenCalledWith(component.position);
     });
 
-    it('onSelectFile does nothing if no file is selected', () => {
+    it('onSelectFile does not call setImageIfValid if theres no files selected', () => {
         event = {
             target: {
-                files: [new Blob(['data'])],
+                files: [],
             } as unknown as HTMLInputElement,
         } as unknown as Event;
-        reader = new FileReader();
+        // reader = new FileReader();
         // refactor?
-        spyOn(window, 'FileReader').and.callThrough();
+        // spyOn(window, 'FileReader').and.callThrough();
         // spyOn(reader, 'readAsDataURL').and.callThrough();
         // spyOn(reader, 'onload').and.callThrough();
-        spyOn(component, 'setImageIfValid').and.callThrough();
+        const imageSetIfValidSpy = spyOn(component, 'setImageIfValid').and.callFake(() => {});
         component.onSelectFile(event);
-        expect(reader.readAsDataURL).not.toHaveBeenCalled();
-        expect(reader.onload).not.toHaveBeenCalled();
-        expect(component.setImageIfValid).not.toHaveBeenCalled();
+        // expect(reader.readAsDataURL).not.toHaveBeenCalled();
+        // expect(reader.onload).not.toHaveBeenCalled();
+        expect(imageSetIfValidSpy).not.toHaveBeenCalled();
     });
 });
