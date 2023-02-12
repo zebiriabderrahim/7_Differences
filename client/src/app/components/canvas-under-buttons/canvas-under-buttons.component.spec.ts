@@ -56,7 +56,7 @@ describe('CanvasUnderButtonsComponent', () => {
         expect(matDialogSpy.open).not.toHaveBeenCalled();
     });
 
-    it('onSelect should open the invalidImageDialog when given an invalid type image and should not call setImageIfValid', () => {
+    it('onSelectFile should open the invalidImageDialog when given an invalid type image and should not call setImageIfValid', () => {
         const event = {
             target: {
                 files: [new Blob()],
@@ -73,7 +73,7 @@ describe('CanvasUnderButtonsComponent', () => {
         expect(setImageIfValidSpy).not.toHaveBeenCalled();
     });
 
-    it('onSelect should not open the invalidImageDialog when given an valid image and should call setImageIfValid', () => {
+    it('onSelectFile should not open the invalidImageDialog when given an valid image and should call setImageIfValid', () => {
         const mockFile = new File([''], 'filename', { type: IMG_TYPE });
         const event = {
             target: {
@@ -94,22 +94,22 @@ describe('CanvasUnderButtonsComponent', () => {
         expect(setImageIfValidSpy).toHaveBeenCalledOnceWith(mockFile);
     });
 
-    // it('setImageIfValid should open the invalidImageDialog when given an invalid type image and should not set the image', () => {
-    //     spyOn(validationService, 'isImageSizeValid').and.callFake(() => {
-    //         return false;
-    //     });
-    //     spyOn(validationService, 'isImageFormatValid').and.callFake(async () => {
-    //         return false;
-    //     });
-    //     const mockImage = {} as ImageBitmap;
-    //     spyOn(window, 'createImageBitmap').and.callFake(async () => {
-    //         return mockImage;
-    //     });
-    //     const imageServiceSetBackgroundSpy = spyOn(imageService, 'setBackground').and.callFake(() => {});
-    //     component.setImageIfValid(new File([''], 'filename', { type: 'pdf' }));
-    //     expect(matDialogSpy.open).toHaveBeenCalled();
-    //     expect(imageServiceSetBackgroundSpy).not.toHaveBeenCalled();
-    // });
+    it('setImageIfValid should open the invalidImageDialog when given an invalid type image and should not set the image', async () => {
+        spyOn(validationService, 'isImageSizeValid').and.callFake(() => {
+            return false;
+        });
+        spyOn(validationService, 'isImageFormatValid').and.callFake(async () => {
+            return false;
+        });
+        const mockImage = {} as ImageBitmap;
+        spyOn(window, 'createImageBitmap').and.callFake(async () => {
+            return mockImage;
+        });
+        const imageServiceSetBackgroundSpy = spyOn(imageService, 'setBackground').and.callFake(() => {});
+        await component.setImageIfValid(new File([''], 'filename', { type: 'pdf' }));
+        expect(matDialogSpy.open).toHaveBeenCalled();
+        expect(imageServiceSetBackgroundSpy).not.toHaveBeenCalled();
+    });
 
     // it('setImageIfValid should not open the invalidImageDialog when given an valid type image and setBackGround', async () => {
     //     const mockImage = {} as ImageBitmap;
