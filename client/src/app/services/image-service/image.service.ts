@@ -12,7 +12,6 @@ import { GamePixels, Pixel } from '@app/interfaces/pixel';
 export class ImageService {
     private leftBackgroundContext: CanvasRenderingContext2D;
     private rightBackgroundContext: CanvasRenderingContext2D;
-    private differenceContext: CanvasRenderingContext2D;
     private leftBackground: string;
     private rightBackground: string;
 
@@ -96,10 +95,6 @@ export class ImageService {
         }
     }
 
-    setDifferenceContext(context: CanvasRenderingContext2D) {
-        this.differenceContext = context;
-    }
-
     transformImageDataToPixelArray(imageData: Uint8ClampedArray): Pixel[] {
         const pixelArray: Pixel[] = [];
         for (let i = 0; i < imageData.length; i += N_PIXEL_ATTRIBUTE) {
@@ -138,12 +133,12 @@ export class ImageService {
         return { left: this.leftBackground, right: this.rightBackground };
     }
 
-    drawDifferenceImage(differences: Coordinate[]): void {
+    drawDifferences(differenceContext: CanvasRenderingContext2D, differences: Coordinate[]): void {
         const differencePixelArray = new Array(IMG_HEIGHT * IMG_WIDTH).fill(WHITE_PIXEL);
         for (const difference of differences) {
             differencePixelArray[difference.y * IMG_WIDTH + difference.x] = BLACK_PIXEL;
         }
         const differenceImageData = this.transformPixelArrayToImageData(differencePixelArray);
-        this.differenceContext.putImageData(new ImageData(differenceImageData, IMG_WIDTH, IMG_HEIGHT), 0, 0);
+        differenceContext.putImageData(new ImageData(differenceImageData, IMG_WIDTH, IMG_HEIGHT), 0, 0);
     }
 }

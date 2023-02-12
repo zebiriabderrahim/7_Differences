@@ -4,7 +4,6 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { Coordinate } from '@app/interfaces/coordinate';
 import { ImageSources } from '@app/interfaces/image-sources';
-// import { GamePixels } from '@app/interfaces/pixel';
 import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
@@ -43,7 +42,9 @@ export class CreationGameDialogComponent implements OnInit {
         this.gameName = '';
         this.differenceCanvas.nativeElement.width = IMG_WIDTH;
         this.differenceCanvas.nativeElement.height = IMG_HEIGHT;
-        this.imageService.setDifferenceContext(this.differenceCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D);
+        const differences = this.differenceService.getDifferences();
+        const differenceContext = this.differenceCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.imageService.drawDifferences(differenceContext, differences);
     }
 
     isNumberOfDifferencesValid(): boolean {
