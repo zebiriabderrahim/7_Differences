@@ -24,14 +24,6 @@ export class DifferenceService {
         this.differenceMatrix = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
     }
 
-    getDifferences(): Coordinate[] {
-        return this.differences;
-    }
-
-    getNumberOfDifferences(): number {
-        return this.differencePackages.length;
-    }
-
     createFalseMatrix(width: number, height: number): boolean[][] {
         return new Array(width).fill(false).map(() => new Array(height).fill(false)) as boolean[][];
     }
