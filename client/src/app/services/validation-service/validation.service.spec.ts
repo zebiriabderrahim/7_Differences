@@ -27,13 +27,15 @@ describe('ValidationService', () => {
         expect(service).toBeTruthy();
     });
 
-    // it('isImageTypeValid should return false when given the wrong image type', () => {
-    //     expect(service.isImageTypeValid('image/png')).toBeFalsy();
-    // });
+    it('isImageTypeValid should return false when given the wrong image type', () => {
+        const file = new File([''], 'filename', { type: 'image/png' });
+        expect(service.isImageTypeValid(file)).toBeFalsy();
+    });
 
-    // it('isImageTypeValid should return true when given the right image type', () => {
-    //     expect(service.isImageTypeValid(IMG_TYPE)).toBeTruthy();
-    // });
+    it('isImageTypeValid should return true when given the right image type', () => {
+        const file = new File([''], 'filename', { type: 'image/bmp' });
+        expect(service.isImageTypeValid(file)).toBeTruthy();
+    });
 
     // it('isImageSizeValid should return true when given the right image size', () => {
     //     const image = new Image(IMG_WIDTH, IMG_HEIGHT) as HTMLImageElement;
