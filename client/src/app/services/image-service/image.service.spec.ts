@@ -10,6 +10,7 @@ import { ImageService } from './image.service';
 describe('ImageService', () => {
     let service: ImageService;
     let contextStub: CanvasRenderingContext2D;
+    let imageBitmap: ImageBitmap;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -19,6 +20,10 @@ describe('ImageService', () => {
         contextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
         service['leftBackgroundContext'] = contextStub;
         service['rightBackgroundContext'] = contextStub;
+    });
+
+    beforeEach(async () => {
+        imageBitmap = await createImageBitmap(new ImageData(IMG_WIDTH, IMG_HEIGHT));
     });
 
     it('should be created', () => {
@@ -103,78 +108,69 @@ describe('ImageService', () => {
         expect(resetRightBackgroundSpy).toHaveBeenCalled();
     });
 
-    // // it('setBackground called with leftCanvasPosition should call resetLeftBackground with appropriate image', () => {
-    // //     const image = new Image();
-    // //     const imageSource = 'image';
-    // //     image.src = imageSource;
-    // //     const setLeftBackgroundSpy = spyOn(service, 'setLeftBackground');
-    // //     service.setBackground(CanvasPosition.Left, imageSource);
-    // //     expect(setLeftBackgroundSpy).toHaveBeenCalledOnceWith(image);
-    // // });
+    it('setBackground called with leftCanvasPosition should call resetLeftBackground with appropriate image', () => {
+        const setLeftBackgroundSpy = spyOn(service, 'setLeftBackground');
+        service.setBackground(CanvasPosition.Left, imageBitmap);
+        expect(setLeftBackgroundSpy).toHaveBeenCalledOnceWith(imageBitmap);
+    });
 
-    // it('setBackground called with rightCanvasPosition should call resetRightBackground with appropriate image', () => {
-    //     const image = new Image();
-    //     const imageSource = 'image';
-    //     image.src = imageSource;
-    //     const setRightBackgroundSpy = spyOn(service, 'setRightBackground');
-    //     service.setBackground(CanvasPosition.Right, imageSource);
-    //     expect(setRightBackgroundSpy).toHaveBeenCalledOnceWith(image);
-    // });
+    it('setBackground called with rightCanvasPosition should call resetRightBackground with appropriate image', () => {
+        const setRightBackgroundSpy = spyOn(service, 'setRightBackground');
+        service.setBackground(CanvasPosition.Right, imageBitmap);
+        expect(setRightBackgroundSpy).toHaveBeenCalledOnceWith(imageBitmap);
+    });
 
-    // it('setBackground called with bothCanvasPosition should call resetLeftBackground and resetRightBackground with appropriate image', () => {
-    //     const image = new Image();
-    //     const imageSource = 'image';
-    //     image.src = imageSource;
-    //     const setLeftBackgroundSpy = spyOn(service, 'setLeftBackground');
-    //     const setRightBackgroundSpy = spyOn(service, 'setRightBackground');
-    //     service.setBackground(CanvasPosition.Both, imageSource);
-    //     expect(setLeftBackgroundSpy).toHaveBeenCalledOnceWith(image);
-    //     expect(setRightBackgroundSpy).toHaveBeenCalledOnceWith(image);
-    // });
+    it('setBackground called with bothCanvasPosition should call resetLeftBackground and resetRightBackground with appropriate image', () => {
+        const setLeftBackgroundSpy = spyOn(service, 'setLeftBackground');
+        const setRightBackgroundSpy = spyOn(service, 'setRightBackground');
+        service.setBackground(CanvasPosition.Both, imageBitmap);
+        expect(setLeftBackgroundSpy).toHaveBeenCalledOnceWith(imageBitmap);
+        expect(setRightBackgroundSpy).toHaveBeenCalledOnceWith(imageBitmap);
+    });
 
-    // it('setLeftBackground should set leftBackground to appropriate image', () => {
-    //     const rightBackgroundImage = 'leftBackGroundImage';
-    //     const image = new Image();
-    //     image.src = rightBackgroundImage;
-    //     expect(service['leftBackground']).not.toEqual(image.src);
-    //     service.setLeftBackground(image);
-    //     expect(service['leftBackground']).toEqual(image.src);
-    // });
+    it('setLeftBackground should set leftBackground to appropriate image', () => {
+        const newContextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
+        newContextStub.drawImage(imageBitmap, 0, 0);
+        const leftBackground = newContextStub.canvas.toDataURL();
 
-    // it('setLeftBackground should clear the leftBackgroundContext', () => {
-    //     const leftBackgroundImage = new Image();
-    //     const leftBackgroundContextSpy = spyOn(service['leftBackgroundContext'], 'clearRect');
-    //     service.setLeftBackground(leftBackgroundImage);
-    //     expect(leftBackgroundContextSpy).toHaveBeenCalledOnceWith(0, 0, IMG_WIDTH, IMG_HEIGHT);
-    // });
+        expect(service['leftBackground']).not.toEqual(leftBackground);
+        service.setLeftBackground(imageBitmap);
+        expect(service['leftBackground']).toEqual(leftBackground);
+    });
 
-    // it('setLeftBackground should draw a new image in leftBackgroundContext', () => {
-    //     const leftBackgroundContextSpy = spyOn(service['leftBackgroundContext'], 'drawImage');
-    //     service.setLeftBackground(new Image());
-    //     expect(leftBackgroundContextSpy).toHaveBeenCalled();
-    // });
+    it('setLeftBackground should clear the leftBackgroundContext', () => {
+        const leftBackgroundContextSpy = spyOn(service['leftBackgroundContext'], 'clearRect');
+        service.setLeftBackground(imageBitmap);
+        expect(leftBackgroundContextSpy).toHaveBeenCalledOnceWith(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    });
 
-    // it('setRightBackground should set rightBackground to appropriate image', () => {
-    //     const rightBackgroundImage = 'rightBackGroundImage';
-    //     const image = new Image();
-    //     image.src = rightBackgroundImage;
-    //     expect(service['rightBackground']).not.toEqual(rightBackgroundImage);
-    //     service.setRightBackground(image);
-    //     expect(service['rightBackground']).toEqual(image.src);
-    // });
+    it('setLeftBackground should draw a new image in leftBackgroundContext', () => {
+        const leftBackgroundContextSpy = spyOn(service['leftBackgroundContext'], 'drawImage');
+        service.setLeftBackground(imageBitmap);
+        expect(leftBackgroundContextSpy).toHaveBeenCalled();
+    });
 
-    // it('setRightBackground should clear the rightBackgroundContext', () => {
-    //     const rightBackgroundImage = new Image();
-    //     const rightBackgroundContextSpy = spyOn(service['rightBackgroundContext'], 'clearRect');
-    //     service.setLeftBackground(rightBackgroundImage);
-    //     expect(rightBackgroundContextSpy).toHaveBeenCalledOnceWith(0, 0, IMG_WIDTH, IMG_HEIGHT);
-    // });
+    it('setRightBackground should set rightBackground to appropriate image', () => {
+        const newContextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
+        newContextStub.drawImage(imageBitmap, 0, 0);
+        const rightBackground = newContextStub.canvas.toDataURL();
 
-    // it('setRightBackground should draw a new image in rightBackgroundContext', () => {
-    //     const rightBackgroundContextSpy = spyOn(service['rightBackgroundContext'], 'drawImage');
-    //     service.setRightBackground(new Image());
-    //     expect(rightBackgroundContextSpy).toHaveBeenCalled();
-    // });
+        expect(service['rightBackground']).not.toEqual(rightBackground);
+        service.setRightBackground(imageBitmap);
+        expect(service['rightBackground']).toEqual(rightBackground);
+    });
+
+    it('setRightBackground should clear the rightBackgroundContext', () => {
+        const rightBackgroundContextSpy = spyOn(service['rightBackgroundContext'], 'clearRect');
+        service.setLeftBackground(imageBitmap);
+        expect(rightBackgroundContextSpy).toHaveBeenCalledOnceWith(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    });
+
+    it('setRightBackground should draw a new image in rightBackgroundContext', () => {
+        const rightBackgroundContextSpy = spyOn(service['rightBackgroundContext'], 'drawImage');
+        service.setRightBackground(imageBitmap);
+        expect(rightBackgroundContextSpy).toHaveBeenCalled();
+    });
 
     it('transformImageDataToPixelArray should return an array of pixels', () => {
         const imageData = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * N_PIXEL_ATTRIBUTE).fill(0);

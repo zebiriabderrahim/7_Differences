@@ -74,14 +74,12 @@ export class ImageService {
         this.leftBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.leftBackgroundContext.drawImage(imageToDraw, 0, 0);
         this.leftBackground = this.leftBackgroundContext.canvas.toDataURL();
-        console.log(this.leftBackground);
     }
 
     setRightBackground(imageToDraw: ImageBitmap) {
         this.rightBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.rightBackgroundContext.drawImage(imageToDraw, 0, 0);
         this.rightBackground = this.rightBackgroundContext.canvas.toDataURL();
-        console.log(this.rightBackground);
     }
 
     setBackgroundContext(canvasPosition: CanvasPosition, context: CanvasRenderingContext2D) {
