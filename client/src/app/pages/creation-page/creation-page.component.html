@@ -16,8 +16,19 @@
             <button mat-button (click)="onNoClick()">Quitter</button>
         </form>
     </div>
-    <ng-template #differencesInvalid>
-        <p>Il doit y avoir entre 3 et 9 différences. Veuillez recommencer le processus</p>
-        <button mat-button mat-dialog-close>Fermer</button>
-    </ng-template>
+
+    <app-canvas-under-buttons [position]="canvasPosition.Both"></app-canvas-under-buttons>
+
+    <div id="radio-buttons">
+        <div>
+            <p>Choisissez le rayon d'élargissement :</p>
+            <mat-radio-group color="primary" aria-label="Select an option" [(ngModel)]="radius">
+                <mat-radio-button *ngFor="let radius of radiusSizes" [value]="radius">{{ radius }}</mat-radio-button>
+            </mat-radio-group>
+        </div>
+    </div>
+    <button mat-raised-button color="basic" matTooltip="Vous devez avoir téléversé deux images"
+        (click)="validateDifferences()">
+        Valider les différences
+    </button>
 </div>

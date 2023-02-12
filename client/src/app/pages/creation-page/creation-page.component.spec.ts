@@ -1,17 +1,14 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-// import { MatFormFieldModule, MatFormFieldControl } from '@angular/material/form-field';
-// import { MatTooltipModule } from '@angular/material/tooltip';
+import { FormsModule } from '@angular/forms';
+import { MatDialog, MatDialogConfig, MatDialogModule } from '@angular/material/dialog';
+import { MatIcon } from '@angular/material/icon';
+import { MatRadioModule } from '@angular/material/radio';
+import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-// import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-// import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
-import { DifferenceService } from '@app/services/difference-service/difference.service';
+import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
+import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
+import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
 import { ImageService } from '@app/services/image-service/image.service';
 import { CreationGameDialogComponent } from './creation-game-dialog.component';
 
@@ -24,6 +21,7 @@ describe('CreationGameDialogComponent', () => {
     // let differenceService: DifferenceService;
     let dialogRef: MatDialogRef<CreationGameDialogComponent, unknown>;
     // let contextStub: CanvasRenderingContext2D;
+    // let router: RouterTestingModule;
 
     beforeEach(async () => {
         imageServiceSpy = jasmine.createSpyObj('ImageService', [
@@ -186,21 +184,18 @@ describe('CreationGameDialogComponent', () => {
         expect(dialogRef.close).toHaveBeenCalled();
     });
 
-    it('should emit the game name and close the dialog if the form is valid', () => {
-        component.gameNameForm = new FormGroup({ name: new FormControl('name') });
-        imageServiceSpy.getImageSources.and.returnValue({ left: 'left', right: 'right' });
-        differenceServiceSpy.generateDifferencesPackages.and.returnValue([]);
-        // spyOn(imageService, 'getImageSources').and.callThrough();
-        const spy = spyOn(component.gameNameEvent, 'emit');
-        component.submitForm();
-        expect(spy).toHaveBeenCalledWith('name');
-        expect(dialogRef.close).toHaveBeenCalledWith('name');
+    it('should select a radio button', () => {
+        const radioButtons = fixture.debugElement.query(By.css('mat-radio-button')).nativeElement;
+        radioButtons[1]?.click();
+        fixture.detectChanges();
+        expect(component.radius).toEqual(component.radiusSizes[1]);
     });
 
-    it('should not emit the game name or close the dialog if the form is invalid', () => {
-        const spy = spyOn(component.gameNameEvent, 'emit');
-        component.submitForm();
-        expect(spy).not.toHaveBeenCalled();
-        expect(dialogRef.close).not.toHaveBeenCalled();
+    it('should call validateDifferences method on click', () => {
+        const validateButton = fixture.debugElement.query(By.css("button[name='validateButton']")).nativeElement;
+        const validateDifferencesSpy = spyOn(component, 'validateDifferences');
+        validateButton.click();
+        fixture.detectChanges();
+        expect(validateDifferencesSpy).toHaveBeenCalled();
     });
 });
