@@ -16,18 +16,23 @@ import { Coordinate } from '@common/coordinate';
     providedIn: 'root',
 })
 export class GameAreaService {
-    originalPixelData: ImageData;
-    modifiedPixelData: ImageData;
-    originalFrontPixelData: ImageData;
-    modifiedFrontPixelData: ImageData;
-    originalContext: CanvasRenderingContext2D;
-    modifiedContext: CanvasRenderingContext2D;
-    originalContextFrontLayer: CanvasRenderingContext2D;
-    modifiedContextFrontLayer: CanvasRenderingContext2D;
-    mousePosition: Coordinate = { x: 0, y: 0 };
-    clickDisabled: boolean = false;
-    correctSoundEffect: HTMLAudioElement = new Audio('assets/sound/WinSoundEffect.mp3');
-    incorrectSoundEffect: HTMLAudioElement = new Audio('assets/sound/ErrorSoundEffect.mp3');
+    private originalPixelData: ImageData;
+    private modifiedPixelData: ImageData;
+    private originalFrontPixelData: ImageData;
+    private modifiedFrontPixelData: ImageData;
+    private originalContext: CanvasRenderingContext2D;
+    private modifiedContext: CanvasRenderingContext2D;
+    private originalContextFrontLayer: CanvasRenderingContext2D;
+    private modifiedContextFrontLayer: CanvasRenderingContext2D;
+    private mousePosition: Coordinate = { x: 0, y: 0 };
+    private clickDisabled: boolean = false;
+    private correctSoundEffect: HTMLAudioElement;
+    private incorrectSoundEffect: HTMLAudioElement;
+
+    constructor() {
+        this.correctSoundEffect = new Audio('assets/sound/WinSoundEffect.mp3');
+        this.incorrectSoundEffect = new Audio('assets/sound/ErrorSoundEffect.mp3');
+    }
 
     @HostListener('keydown', ['$event'])
     loadImage(context: CanvasRenderingContext2D, path: string) {
@@ -65,11 +70,11 @@ export class GameAreaService {
         } else {
             frontContext = this.modifiedContextFrontLayer;
         }
-        this.incorrectSoundEffect.play();
+        this.playErrorSound();
         frontContext.fillStyle = 'red';
         this.clickDisabled = true;
         frontContext.font = 'bold 30px sheriff';
-        frontContext.fillText('Erreur', this.mousePosition.x - X_CENTERING_DISTANCE, this.mousePosition.y);
+        frontContext.fillText('ERREUR', this.mousePosition.x - X_CENTERING_DISTANCE, this.mousePosition.y);
         setTimeout(() => {
             frontContext.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             this.clickDisabled = false;
@@ -97,7 +102,7 @@ export class GameAreaService {
     }
 
     flashCorrectPixels(differenceCoord: Coordinate[]): void {
-        this.correctSoundEffect.play();
+        this.playCorrectSound();
         const imageDataIndexes = this.convert2DCoordToPixelIndex(differenceCoord);
         const firstInterval = setInterval(() => {
             const secondInterval = setInterval(() => {
@@ -134,6 +139,7 @@ export class GameAreaService {
                 clearInterval(secondInterval);
                 this.modifiedContextFrontLayer.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
                 this.originalContextFrontLayer.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                this.clickDisabled = false;
             }, FLASH_WAIT_TIME);
         }, YELLOW_FLASH_TIME);
 
@@ -141,6 +147,50 @@ export class GameAreaService {
             clearInterval(firstInterval);
             this.modifiedContextFrontLayer.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             this.originalContextFrontLayer.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            this.clickDisabled = false;
         }, FLASH_WAIT_TIME);
+    }
+
+    playErrorSound(): void {
+        this.incorrectSoundEffect.play();
+    }
+
+    playCorrectSound(): void {
+        this.correctSoundEffect.play();
+    }
+    getOgContext(): CanvasRenderingContext2D {
+        return this.originalContext;
+    }
+
+    getOgFrontContext(): CanvasRenderingContext2D {
+        return this.originalContextFrontLayer;
+    }
+
+    setOgContext(context: CanvasRenderingContext2D): void {
+        this.originalContext = context;
+    }
+
+    setOgFrontContext(context: CanvasRenderingContext2D): void {
+        this.originalContextFrontLayer = context;
+    }
+
+    getMdContext(): CanvasRenderingContext2D {
+        return this.modifiedContext;
+    }
+
+    getMdFrontContext(): CanvasRenderingContext2D {
+        return this.modifiedContextFrontLayer;
+    }
+
+    setMdContext(context: CanvasRenderingContext2D): void {
+        this.modifiedContext = context;
+    }
+
+    setMdFrontContext(context: CanvasRenderingContext2D): void {
+        this.modifiedContextFrontLayer = context;
+    }
+
+    getMousePosition(): Coordinate {
+        return this.mousePosition;
     }
 }

@@ -1,24 +1,19 @@
-<div>
-    <img src="assets/img/magnifying-glass.png" id="hint1" alt="Icone d'indice" class="hintIcon" />
-    <img src="assets/img/magnifying-glass.png" id="hint2" alt="Icone d'indice" class="hintIcon" />
-    <img src="assets/img/magnifying-glass.png" id="hint3" alt="Icone d'indice" class="hintIcon" />
-</div>
 <div *ngIf="game" class="infomations-header">
-    <h1>{{ game.gameName }}</h1>
+    <h1>{{ game.name }}</h1>
     <div class="game-feedback">
-        <h1>Temps: {{ game.timer | date: 'mm:ss' }}</h1>
-        <h1>{{ game.player }} Différences trouvées: {{ game.differencesFound }}</h1>
+        <h1>Temps: {{ timer*1000 | date: 'mm:ss' }}</h1>
+        <h1> Différences trouvées: {{ differencesFound }}</h1>
     </div>
-    <app-game-infos [game]="game"></app-game-infos>
+    <app-game-infos [game]="game" [differencesCount]="game.differencesCount"></app-game-infos>
 </div>
 <div class="canvas-container">
     <div class="game-canvas">
-        <canvas id="originalFG" [attr.height]="'480'" [attr.width]="'640'" #originalCanvasFG (click)="mouseClickOnOriginal($event)"></canvas>
-        <canvas id="original" [attr.height]="'480'" [attr.width]="'640'" #originalCanvas (click)="mouseClickOnOriginal($event)"></canvas>
+        <canvas id="originalFG"  [attr.height]="canvasSize.height" [attr.width]="canvasSize.width" #originalCanvasFG (click)="mouseClickOnOriginal($event)"></canvas>
+        <canvas id="original" [attr.height]="canvasSize.height" [attr.width]="canvasSize.width" #originalCanvas (click)="mouseClickOnOriginal($event)"></canvas>
     </div>
     <div class="game-canvas">
-        <canvas id="modifiedFG" [attr.height]="'480'" [attr.width]="'640'" #modifiedCanvasFG (click)="mouseClickOnModified($event)"></canvas>
-        <canvas id="modified" [attr.height]="'480'" [attr.width]="'640'" #modifiedCanvas (click)="mouseClickOnModified($event)"></canvas>
+        <canvas id="modifiedFG" [attr.height]="canvasSize.height" [attr.width]="canvasSize.width" #modifiedCanvasFG (click)="mouseClickOnModified($event)"></canvas>
+        <canvas id="modified" [attr.height]="canvasSize.height" [attr.width]="canvasSize.width" #modifiedCanvas (click)="mouseClickOnModified($event)"></canvas>
     </div>
 </div>
-<button class="importantButton" (click)="abandonGame()" routerLink="homeRoute">Abandonner la partie</button>
+<button class="importantButton" (click)="abandonGame()">Abandonner la partie</button>

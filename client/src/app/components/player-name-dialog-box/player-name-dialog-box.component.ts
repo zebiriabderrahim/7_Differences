@@ -29,7 +29,6 @@ export class PlayerNameDialogBoxComponent implements OnInit {
 
     submitForm() {
         if (this.playerNameForm.valid && this.playerNameForm.value.name) {
-            this.playerNameEvent.emit(this.playerNameForm.value.name);
             this.dialogRef.close(this.playerNameForm.value.name);
         }
     }

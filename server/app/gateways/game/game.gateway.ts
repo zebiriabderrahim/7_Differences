@@ -31,9 +31,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     constructor(private readonly logger: Logger, private readonly classicSoloModeService: ClassicSoloModeService) {}
 
     @SubscribeMessage(GameEvents.CreateSoloGame)
-    createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('playerName') playerName: string, @MessageBody('gameId') gameId: number) {
+    createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: string) {
+        const room = this.classicSoloModeService.createSoloRoom(socket, playerName, gameId);
+        console.log(room);
         try {
-            const room = this.classicSoloModeService.createSoloRoom(socket, playerName, gameId);
             if (room) {
                 this.server.to(room.roomId).emit(GameEvents.CreateSoloGame, room.clientGame);
             }
@@ -51,28 +52,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         }
     }
 
-    @SubscribeMessage(GameEvents.Penalty)
-    applyPenalty(@ConnectedSocket() socket: Socket) {
-        try {
-            this.classicSoloModeService.addPenalty(socket.id);
-        } catch (error) {
-            this.server.to(socket.id).emit(GameEvents.Penalty, "Erreur lors de l'application de la pénalité");
-        }
-    }
-
     @SubscribeMessage(GameEvents.CheckStatus)
-    roomMessage(socket: Socket, message: string) {
-        // Seulement un membre de la salle peut envoyer un message aux autres
-        if (socket.rooms.has(this.room)) {
-            this.server.to(this.room).emit(GameEvents.CheckStatus, `${socket.id} : ${message}`);
+    checkStatus(@MessageBody() socketId: string) {
+        try {
+            this.classicSoloModeService.endGame(socketId, this.server);
+        } catch (error) {
+            this.server.to(socketId).emit(GameEvents.CheckStatus, 'Erreur lors de la vérification du status');
         }
-    }
-
-    @SubscribeMessage(GameEvents.TimerStarted)
-    updateTimers() {
-        // for (const room of this.classicSoloModeService['rooms']) {
-        //     this.classicSoloModeService.updateTimer(room['roomId']);
-        // }
     }
 
     afterInit() {
@@ -87,5 +73,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     handleDisconnect(@ConnectedSocket() socket: Socket) {
         this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
+        this.classicSoloModeService.endGame(socket.id, this.server);
+    }
+
+    private updateTimers() {
+        for (const roomId of this.classicSoloModeService.rooms.keys()) {
+            this.classicSoloModeService.updateTimer(roomId, this.server);
+        }
     }
 }

@@ -19,7 +19,7 @@ export class GameService {
         return this.databaseService.getGamesCarrousel();
     }
 
-    getGameById(id: number): ServerSideGame {
+    getGameById(id: string): ServerSideGame {
         const game = this.databaseService.getGameById(id);
         if (game) {
             return game;
