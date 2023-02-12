@@ -275,7 +275,7 @@ describe('ImageService', () => {
             { x: 1, y: 1 },
         ];
 
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed to callFake
         const putImageDataSpy = spyOn(contextStub, 'putImageData').and.callFake(() => {});
 
         service.drawDifferences(contextStub, mockDifferences);
