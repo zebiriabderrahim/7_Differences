@@ -1,3 +1,4 @@
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { TestBed } from '@angular/core/testing';
 import { ARRAY_BUFFER_OFFSET, BMP_HEADER_OFFSET, FORMAT_IMAGE, IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { ImageService } from '@app/services/image-service/image.service';
