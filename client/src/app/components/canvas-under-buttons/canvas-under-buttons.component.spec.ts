@@ -97,6 +97,7 @@ describe('CanvasUnderButtonsComponent', () => {
         spyOn(window, 'createImageBitmap').and.callFake(async () => {
             return mockImage;
         });
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const imageServiceSetBackgroundSpy = spyOn(imageService, 'setBackground').and.callFake(() => {});
         await component.setImageIfValid(new File([''], 'filename', { type: 'pdf' }));
         expect(matDialogSpy.open).toHaveBeenCalled();
