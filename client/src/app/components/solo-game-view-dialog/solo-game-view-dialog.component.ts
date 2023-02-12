@@ -1,12 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 @Component({
     selector: 'app-solo-game-view-dialog',
     templateUrl: './solo-game-view-dialog.component.html',
     styleUrls: ['./solo-game-view-dialog.component.scss'],
 })
-export class SoloGameViewDialogComponent implements OnInit {
-    ngOnInit(): void {
-        throw new Error('Method not implemented.');
-    }
+export class SoloGameViewDialogComponent {
+    constructor(@Inject(MAT_DIALOG_DATA) public data: { action: string; message: string }) {}
 }

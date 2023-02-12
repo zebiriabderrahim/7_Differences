@@ -1,3 +1,4 @@
+import { Game } from '@app/model/database/game';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { CarouselPaginator, GameCard, PlayerTime, ServerSideGame } from '@common/game-interfaces';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -19,20 +20,16 @@ describe('GameListsManagerService', () => {
         },
     ];
 
-    const testGame: ServerSideGame = {
-        id: 1,
+    const testGame: Game = {
         name: 'test',
-        difficultyLevel: true,
+        isHard: true,
         original: 'test',
         modified: 'test',
-        soloTopTime: defaultBestTimes,
-        oneVsOneTopTime: defaultBestTimes,
         differencesCount: 1,
-        thumbnail: 'test',
-        hintList: [],
+        differences: 'test',
     };
     const testGameCard: GameCard = {
-        id: 1,
+        id: '1',
         name: 'test',
         difficultyLevel: true,
         soloTopTime: defaultBestTimes,

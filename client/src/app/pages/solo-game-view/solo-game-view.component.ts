@@ -3,6 +3,7 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@ang
 // import { Vec2 } from '@app/interfaces/vec2';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from '@common/constants';
 import { ClientSideGame } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
@@ -16,55 +17,76 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     @ViewChild('modifiedCanvas', { static: false }) modifiedCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('originalCanvasFG', { static: false }) originalCanvasForeground!: ElementRef<HTMLCanvasElement>;
     @ViewChild('modifiedCanvasFG', { static: false }) modifiedCanvasForeground!: ElementRef<HTMLCanvasElement>;
-    time: string = '00:00';
     game: ClientSideGame;
-    gameSub: Subscription;
-    mode: string = 'Solo';
-    penaltyTime: number = 1;
-    bonusTime: number = 1;
-    isLeftCanvas: boolean;
-    isFirstTime = true;
-    readonly homeRoute: string = '/home';
-
-    // eslint-disable-next-line max-params
+    differencesFound: number = 0;
+    timer: number = 0;
+    readonly canvasSize = { width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
+    private timerSub: Subscription;
+    private gameSub: Subscription;
+    private differenceSub: Subscription;
+    private isFirstTime = true;
     constructor(private gameAreaService: GameAreaService, private classicService: ClassicSystemService) {}
     ngAfterViewInit(): void {
         this.classicService.manageSocket();
-        this.gameSub = this.classicService.currentGame.subscribe((game) => {
+        this.gameSub = this.classicService.getCurrentGame().subscribe((game) => {
             this.game = game;
             if (this.game && this.isFirstTime) {
-                this.gameAreaService.originalContext = this.originalCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-                this.gameAreaService.modifiedContext = this.modifiedCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-                this.gameAreaService.originalContextFrontLayer = this.originalCanvasForeground.nativeElement.getContext(
-                    '2d',
-                ) as CanvasRenderingContext2D;
-                this.gameAreaService.modifiedContextFrontLayer = this.modifiedCanvasForeground.nativeElement.getContext(
-                    '2d',
-                ) as CanvasRenderingContext2D;
-                this.gameAreaService.loadImage(this.gameAreaService.originalContext, this.game.original);
-                this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, this.game.modified);
+                this.gameAreaService.setOgContext(
+                    this.originalCanvas.nativeElement.getContext('2d', {
+                        willReadFrequently: true,
+                    }) as CanvasRenderingContext2D,
+                );
+                this.gameAreaService.setMdContext(
+                    this.modifiedCanvas.nativeElement.getContext('2d', {
+                        willReadFrequently: true,
+                    }) as CanvasRenderingContext2D,
+                );
+                this.gameAreaService.setOgFrontContext(
+                    this.originalCanvasForeground.nativeElement.getContext('2d', {
+                        willReadFrequently: true,
+                    }) as CanvasRenderingContext2D,
+                );
+                this.gameAreaService.setMdFrontContext(
+                    this.modifiedCanvasForeground.nativeElement.getContext('2d', {
+                        willReadFrequently: true,
+                    }) as CanvasRenderingContext2D,
+                );
+                this.gameAreaService.loadImage(this.gameAreaService.getOgContext(), this.game.original);
+                this.gameAreaService.loadImage(this.gameAreaService.getMdContext(), this.game.modified);
                 this.gameAreaService.setAllData();
                 this.isFirstTime = false;
             }
         });
+        this.timerSub = this.timerSub = this.classicService.getTimer().subscribe((timer) => {
+            this.timer = timer;
+        });
+        this.differenceSub = this.classicService.getDifferencesFound().subscribe((differencesFound) => {
+            this.differencesFound = differencesFound;
+        });
+    }
+
+    abandonGame(): void {
+        this.classicService.showAbandonGameDialog();
     }
 
     mouseClickOnOriginal(event: MouseEvent) {
         if (this.gameAreaService.detectLeftClick(event)) {
             this.gameAreaService.setAllData();
-            this.classicService.isLeftCanvas = true;
-            this.classicService.requestVerification(this.gameAreaService.mousePosition);
+            this.classicService.setIsLeftCanvas(true);
+            this.classicService.requestVerification(this.gameAreaService.getMousePosition());
         }
     }
 
     mouseClickOnModified(event: MouseEvent) {
         if (this.gameAreaService.detectLeftClick(event)) {
             this.gameAreaService.setAllData();
-            this.classicService.isLeftCanvas = false;
-            this.classicService.requestVerification(this.gameAreaService.mousePosition);
+            this.classicService.setIsLeftCanvas(false);
+            this.classicService.requestVerification(this.gameAreaService.getMousePosition());
         }
     }
     ngOnDestroy(): void {
         this.gameSub.unsubscribe();
+        this.timerSub.unsubscribe();
+        this.differenceSub.unsubscribe();
     }
 }
