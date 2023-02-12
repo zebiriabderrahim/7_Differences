@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonModule } from '@angular/material/button';
@@ -115,6 +114,7 @@ describe('CanvasUnderButtonsComponent', () => {
         spyOn(validationService, 'isImageFormatValid').and.callFake(async () => {
             return true;
         });
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const imageServiceSetBackgroundSpy = spyOn(imageService, 'setBackground').and.callFake(() => {});
 
         await component.setImageIfValid(new File([''], 'filename', { type: IMG_TYPE }));
@@ -124,6 +124,7 @@ describe('CanvasUnderButtonsComponent', () => {
 
     it('resetBackground should call imageService.resetBackground with the right Position', () => {
         component.position = CanvasPosition.Left;
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const imageServiceResetBackgroundSpy = spyOn(imageService, 'resetBackground').and.callFake(() => {});
         component.resetBackground();
         expect(imageServiceResetBackgroundSpy).toHaveBeenCalledWith(component.position);
