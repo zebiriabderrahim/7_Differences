@@ -86,19 +86,6 @@ describe('CreationGameDialogComponent', () => {
         expect(imageServiceSpy.drawDifferences).toHaveBeenCalledWith(context, []);
     });
 
-    // TODO : fix test
-    // it('should display the number of differences when displayDifferences is defined', () => {
-    //     const nDifference = 6;
-    //     differenceServiceSpy.getNumberOfDifferences.and.callFake(() => {
-    //         return nDifference;
-    //     });
-
-    //     spyOn(component, 'displayDifferences' as never).and.returnValue(1 as never);
-    //     const bannerElement: HTMLElement = fixture.nativeElement;
-    //     const p = bannerElement.querySelector('canvas > p');
-    //     expect(p).toContain(nDifference);
-    // });
-
     it('should not display the number of differences when displayDifferences is not defined', () => {
         fixture.detectChanges();
         const bannerElement: HTMLElement = fixture.nativeElement;
@@ -133,14 +120,6 @@ describe('CreationGameDialogComponent', () => {
         const p = bannerElement.querySelector('div > p');
         expect(p?.textContent).toEqual('Il doit y avoir entre 3 et 9 différences. Veuillez recommencer le processus');
     });
-
-    // TODO: fix this
-    // it('should not display the warning message when isNumberOfDifferencesValid is true', () => {
-    //     differenceServiceSpy.isNumberOfDifferencesValid.and.returnValue(true);
-    //     const bannerElement: HTMLElement = fixture.nativeElement;
-    //     const p = bannerElement.querySelector('div > p');
-    //     expect(p).toBeUndefined();
-    // });
 
     it('should close the dialog onNoClick', () => {
         component.onNoClick();
