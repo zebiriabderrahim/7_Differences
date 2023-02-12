@@ -28,6 +28,10 @@ export class DifferenceService {
         return this.differences;
     }
 
+    getNumberOfDifferences(): number {
+        return this.differencePackages.length;
+    }
+
     createFalseMatrix(width: number, height: number): boolean[][] {
         return new Array(width).fill(false).map(() => new Array(height).fill(false)) as boolean[][];
     }

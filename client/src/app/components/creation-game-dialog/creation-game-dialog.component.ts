@@ -30,19 +30,19 @@ export class CreationGameDialogComponent implements OnInit {
         private readonly imageService: ImageService,
         private readonly differenceService: DifferenceService,
         private readonly communicationService: CommunicationService,
-        private readonly dialogRef: MatDialogRef<CreationPageComponent>,
+        public dialogRef: MatDialogRef<CreationPageComponent>,
         @Inject(MAT_DIALOG_DATA) public radius: number,
     ) {}
 
     get displayDifferences(): number {
-        return this.differenceService['differencePackages'].length;
+        return this.differenceService.getNumberOfDifferences();
     }
 
     ngOnInit(): void {
         this.gameName = '';
         this.differenceCanvas.nativeElement.width = IMG_WIDTH;
         this.differenceCanvas.nativeElement.height = IMG_HEIGHT;
-        const differences = this.differenceService.getDifferences();
+        const differences = this.differenceService.generateDifferences(this.imageService.getGamePixels(), this.radius);
         const differenceContext = this.differenceCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.imageService.drawDifferences(differenceContext, differences);
     }
@@ -58,7 +58,7 @@ export class CreationGameDialogComponent implements OnInit {
     submitForm() {
         if (this.gameNameForm.valid && this.gameNameForm.value.name) {
             this.gameNameEvent.emit(this.gameNameForm.value.name);
-            this.dialogRef.close();
+            this.dialogRef.close(this.gameNameForm.value.name);
             this.imageService.resetBothBackgrounds();
             const differences: Coordinate[][] = this.differenceService.generateDifferencesPackages();
             const imageSources: ImageSources = this.imageService.getImageSources();

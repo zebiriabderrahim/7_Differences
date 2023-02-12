@@ -9,8 +9,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // import { MatFormFieldModule, MatFormFieldControl } from '@angular/material/form-field';
 // import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterTestingModule } from '@angular/router/testing';
-import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
+// import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
+// import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { CreationGameDialogComponent } from './creation-game-dialog.component';
@@ -18,12 +18,30 @@ import { CreationGameDialogComponent } from './creation-game-dialog.component';
 describe('CreationGameDialogComponent', () => {
     let component: CreationGameDialogComponent;
     let fixture: ComponentFixture<CreationGameDialogComponent>;
-    let imageService: ImageService;
-    let differenceService: DifferenceService;
+    // let imageService: ImageService;
+    let imageServiceSpy: jasmine.SpyObj<ImageService>;
+    let differenceServiceSpy: jasmine.SpyObj<DifferenceService>;
+    // let differenceService: DifferenceService;
     let dialogRef: MatDialogRef<CreationGameDialogComponent, unknown>;
-    let contextStub: CanvasRenderingContext2D;
+    // let contextStub: CanvasRenderingContext2D;
 
     beforeEach(async () => {
+        imageServiceSpy = jasmine.createSpyObj('ImageService', [
+            'generateDifferences',
+            'getGamePixels',
+            'getImageSources',
+            'drawDifferences',
+            'resetBothBackgrounds',
+        ]);
+        differenceServiceSpy = jasmine.createSpyObj('DifferenceService', [
+            'generateDifferences',
+            'generateDifferencesPackages',
+            'getGamesPixels',
+            'getImageSources',
+            'isNumberOfDifferencesValid',
+            'getNumberOfDifferences',
+            'isGameHard',
+        ]);
         await TestBed.configureTestingModule({
             imports: [
                 HttpClientTestingModule,
@@ -39,6 +57,8 @@ describe('CreationGameDialogComponent', () => {
             providers: [
                 { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } },
                 { provide: MAT_DIALOG_DATA, useValue: [] },
+                { provide: ImageService, useValue: imageServiceSpy },
+                { provide: DifferenceService, useValue: differenceServiceSpy },
             ],
         }).compileComponents();
 
@@ -46,11 +66,11 @@ describe('CreationGameDialogComponent', () => {
         component = fixture.componentInstance;
         fixture.detectChanges();
         dialogRef = TestBed.inject(MatDialogRef<CreationGameDialogComponent, unknown>);
-        imageService = TestBed.inject(ImageService);
-        differenceService = TestBed.inject(DifferenceService);
-        contextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
-        imageService['leftBackgroundContext'] = contextStub;
-        imageService['rightBackgroundContext'] = contextStub;
+        // imageServiceSpy = TestBed.inject(ImageService);
+        // differenceService = TestBed.inject(DifferenceService);
+        // contextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
+        // imageService['leftBackgroundContext'] = contextStub;
+        // imageService['rightBackgroundContext'] = contextStub;
     });
 
     it('should create', () => {
@@ -78,66 +98,70 @@ describe('CreationGameDialogComponent', () => {
     });
 
     it('gameNameForm should be enabled isNumberOfDifferencesValid is true', () => {
-        differenceService['differencePackages'] = [
-            [
-                { x: 10, y: 20 },
-                { x: 30, y: 40 },
-            ],
-            [
-                { x: 50, y: 60 },
-                { x: 70, y: 80 },
-            ],
-            [
-                { x: 90, y: 100 },
-                { x: 110, y: 120 },
-            ],
-        ];
+        differenceServiceSpy.isNumberOfDifferencesValid.and.returnValue(true);
+        // differenceService['differencePackages'] = [
+        //     [
+        //         { x: 10, y: 20 },
+        //         { x: 30, y: 40 },
+        //     ],
+        //     [
+        //         { x: 50, y: 60 },
+        //         { x: 70, y: 80 },
+        //     ],
+        //     [
+        //         { x: 90, y: 100 },
+        //         { x: 110, y: 120 },
+        //     ],
+        // ];
         expect(component.gameNameForm.enabled).toBeTruthy();
     });
 
     it('gameNameForm should be enabled isNumberOfDifferencesValid is true', () => {
-        differenceService['differencePackages'] = [
-            [
-                { x: 10, y: 20 },
-                { x: 30, y: 40 },
-            ],
-            [
-                { x: 50, y: 60 },
-                { x: 70, y: 80 },
-            ],
-            [
-                { x: 90, y: 100 },
-                { x: 110, y: 120 },
-            ],
-        ];
+        differenceServiceSpy.isNumberOfDifferencesValid.and.returnValue(true);
+        // differenceService['differencePackages'] = [
+        //     [
+        //         { x: 10, y: 20 },
+        //         { x: 30, y: 40 },
+        //     ],
+        //     [
+        //         { x: 50, y: 60 },
+        //         { x: 70, y: 80 },
+        //     ],
+        //     [
+        //         { x: 90, y: 100 },
+        //         { x: 110, y: 120 },
+        //     ],
+        // ];
         expect(component.gameNameForm.enabled).toBeTruthy();
     });
 
     it('gameNameForm should be enabled isNumberOfDifferencesValid is true', () => {
-        differenceService['differencePackages'] = [
-            [
-                { x: 10, y: 20 },
-                { x: 30, y: 40 },
-            ],
-            [
-                { x: 50, y: 60 },
-                { x: 70, y: 80 },
-            ],
-            [
-                { x: 90, y: 100 },
-                { x: 110, y: 120 },
-            ],
-        ];
+        differenceServiceSpy.isNumberOfDifferencesValid.and.returnValue(true);
+        // differenceService['differencePackages'] = [
+        //     [
+        //         { x: 10, y: 20 },
+        //         { x: 30, y: 40 },
+        //     ],
+        //     [
+        //         { x: 50, y: 60 },
+        //         { x: 70, y: 80 },
+        //     ],
+        //     [
+        //         { x: 90, y: 100 },
+        //         { x: 110, y: 120 },
+        //     ],
+        // ];
         expect(component.gameNameForm.enabled).toBeTruthy();
     });
 
     it('gameNameForm should be disabled if isNumberOfDifferencesValid is false', () => {
-        differenceService['differencePackages'] = [
-            [
-                { x: 10, y: 20 },
-                { x: 30, y: 40 },
-            ],
-        ];
+        differenceServiceSpy.isNumberOfDifferencesValid.and.returnValue(false);
+        // differenceService['differencePackages'] = [
+        //     [
+        //         { x: 10, y: 20 },
+        //         { x: 30, y: 40 },
+        //     ],
+        // ];
         expect(component.gameNameForm.disabled).toBeFalsy();
     });
 
@@ -164,7 +188,9 @@ describe('CreationGameDialogComponent', () => {
 
     it('should emit the game name and close the dialog if the form is valid', () => {
         component.gameNameForm = new FormGroup({ name: new FormControl('name') });
-        spyOn(imageService, 'getImageSources').and.callThrough();
+        imageServiceSpy.getImageSources.and.returnValue({ left: 'left', right: 'right' });
+        differenceServiceSpy.generateDifferencesPackages.and.returnValue([]);
+        // spyOn(imageService, 'getImageSources').and.callThrough();
         const spy = spyOn(component.gameNameEvent, 'emit');
         component.submitForm();
         expect(spy).toHaveBeenCalledWith('name');
