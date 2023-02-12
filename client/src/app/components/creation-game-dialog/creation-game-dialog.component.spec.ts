@@ -194,7 +194,7 @@ describe('CreationGameDialogComponent', () => {
         const spy = spyOn(component.gameNameEvent, 'emit');
         component.submitForm();
         expect(spy).toHaveBeenCalledWith('name');
-        expect(dialogRef.close).toHaveBeenCalledWith();
+        expect(dialogRef.close).toHaveBeenCalledWith('name');
     });
 
     it('should not emit the game name or close the dialog if the form is invalid', () => {
