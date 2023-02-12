@@ -1,5 +1,5 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { MINUTE_CONVERSION, START_TIME, ONE_SECOND } from '@common/constants';
+import { MINUTE_CONVERSION, ONE_SECOND, START_TIME } from '@common/constants';
 import { TimerService } from './timer.service';
 
 describe('TimerService', () => {
@@ -15,9 +15,9 @@ describe('TimerService', () => {
     });
     it('should start and stop the timer', () => {
         service.startTimer();
-        expect(service.isRunning).toBe(true);
+        expect(service.isRunning).toBeTruthy();
         service.stopTimer();
-        expect(service.isRunning).toBe(false);
+        expect(service.isRunning).toBeFalsy();
     });
     it('timer should start at 00:00 seconds', fakeAsync(() => {
         service.startTimer();
