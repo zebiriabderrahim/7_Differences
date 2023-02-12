@@ -19,7 +19,6 @@ describe('ImageService', () => {
         contextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
         service['leftBackgroundContext'] = contextStub;
         service['rightBackgroundContext'] = contextStub;
-        service['differenceContext'] = contextStub;
     });
 
     it('should be created', () => {
