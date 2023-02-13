@@ -14,7 +14,6 @@ import { DifferenceService } from '@app/services/difference-service/difference.s
 import { ImageService } from '@app/services/image-service/image.service';
 import { CreationGameDialogComponent } from './creation-game-dialog.component';
 
-
 describe('CreationGameDialogComponent', () => {
     let component: CreationGameDialogComponent;
     let fixture: ComponentFixture<CreationGameDialogComponent>;
