@@ -6,7 +6,7 @@ import * as io from 'socket.io';
 
 @Injectable()
 export class ClassicSoloModeService {
-    rooms: Map<string, PlayRoom> = new Map<string, PlayRoom>();
+    private rooms: Map<string, PlayRoom> = new Map<string, PlayRoom>();
 
     constructor(private readonly gameService: GameService) {}
 
