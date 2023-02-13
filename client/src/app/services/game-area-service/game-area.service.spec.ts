@@ -118,7 +118,7 @@ describe('GameAreaService', () => {
         }, 350);
     });
 
-    it('should properly remove the difference from the modified canvas', () => {
+    it('should correctly eliminate disparities from the altered canvas', () => {
         const originalCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
         const modifiedCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
 
@@ -128,21 +128,23 @@ describe('GameAreaService', () => {
         const putImageDataSpy = spyOn(gameAreaService['modifiedContext'], 'putImageData');
         const flashCorrectPixelsSpy = spyOn(gameAreaService, 'flashCorrectPixels').and.callFake(() => {});
 
-        gameAreaService['originalContext'].fillStyle = 'blue';
-        gameAreaService['originalContext'].fillRect(0, 0, 1, 1);
-
+        gameAreaService['originalContext'].fillRect(0, 0, 3, 1);
         gameAreaService['modifiedContext'].createImageData(CANVAS_WIDTH, CANVAS_HEIGHT);
 
-        const squareDifference = [
+        const rectangleDifference = [
             { x: 0, y: 0 },
             { x: 1, y: 0 },
+            { x: 2, y: 0 },
+            { x: 3, y: 0 },
             { x: 0, y: 1 },
             { x: 1, y: 1 },
+            { x: 1, y: 2 },
+            { x: 1, y: 3 },
         ];
 
         gameAreaService['originalPixelData'] = gameAreaService['originalContext'].getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         gameAreaService['modifiedPixelData'] = gameAreaService['modifiedContext'].getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        gameAreaService.replaceDifference(squareDifference);
+        gameAreaService.replaceDifference(rectangleDifference);
 
         expect(putImageDataSpy).toHaveBeenCalled();
         expect(flashCorrectPixelsSpy).toHaveBeenCalled();
