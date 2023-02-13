@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Game } from '@app/interfaces/game-interfaces';
+import { ClientSideGame } from '@common/game-interfaces';
 
 @Component({
     selector: 'app-game-infos',
@@ -7,8 +7,6 @@ import { Game } from '@app/interfaces/game-interfaces';
     styleUrls: ['./game-infos.component.scss'],
 })
 export class GameInfosComponent {
-    @Input() game: Game;
-    @Input() mode: string;
-    @Input() penaltyTime: number;
-    @Input() bonusTime: number;
+    @Input() game: ClientSideGame;
+    @Input() differencesCount: number;
 }

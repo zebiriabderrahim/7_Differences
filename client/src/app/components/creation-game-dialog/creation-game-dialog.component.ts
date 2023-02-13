@@ -3,12 +3,12 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { Coordinate } from '@app/interfaces/coordinate';
+import { GameDetails } from '@app/interfaces/game-interfaces';
 import { ImageSources } from '@app/interfaces/image-sources';
 import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { ImageService } from '@app/services/image-service/image.service';
-import { GameDetails } from '@app/interfaces/game-interfaces';
 
 @Component({
     selector: 'app-creation-game-dialog',
@@ -59,7 +59,6 @@ export class CreationGameDialogComponent implements OnInit {
         if (this.gameNameForm.valid && this.gameNameForm.value.name) {
             this.gameNameEvent.emit(this.gameNameForm.value.name);
             this.dialogRef.close(this.gameNameForm.value.name);
-            this.imageService.resetBothBackgrounds();
             const differences: Coordinate[][] = this.differenceService.generateDifferencesPackages();
             const imageSources: ImageSources = this.imageService.getImageSources();
             const gameDetails: GameDetails = {
@@ -71,6 +70,7 @@ export class CreationGameDialogComponent implements OnInit {
                 isHard: this.differenceService.isGameHard(),
             };
             this.communicationService.postGame(gameDetails).subscribe();
+            this.imageService.resetBothBackgrounds();
         }
     }
 }
