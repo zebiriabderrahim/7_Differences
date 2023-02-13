@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
-// import { Vec2 } from '@app/interfaces/vec2';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '@common/constants';
