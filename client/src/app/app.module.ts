@@ -8,14 +8,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { GameInfosComponent } from '@app/components/game-infos/game-infos.component';
 import { GameSheetComponent } from '@app/components/game-sheet/game-sheet.component';
-import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
-import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
@@ -35,10 +33,8 @@ import { SoloGameViewDialogComponent } from './components/solo-game-view-dialog/
     declarations: [
         AppComponent,
         CreationPageComponent,
-        GamePageComponent,
         MainPageComponent,
         MaterialPageComponent,
-        PlayAreaComponent,
         SidebarComponent,
         SelectionPageComponent,
         SoloGameViewComponent,
