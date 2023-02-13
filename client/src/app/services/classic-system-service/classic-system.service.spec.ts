@@ -5,13 +5,16 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { SocketTestHelper } from '@app/services/client-socket-service/client-socket.service.spec';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
-import { ClientSideGame } from '@common/game-interfaces';
+import { ClientSideGame, Differences, GameEvents } from '@common/game-interfaces';
 import { Subject } from 'rxjs';
 import { Socket } from 'socket.io-client';
 import { ClassicSystemService } from './classic-system.service';
 
 class SocketClientServiceMock extends ClientSocketService {
     override connect() {
+        return;
+    }
+    override disconnect() {
         return;
     }
 }
@@ -26,6 +29,13 @@ describe('ClassicSystemService', () => {
         isHard: true,
         differencesCount: 0,
     };
+
+    const mockDifferences: Differences = {
+        currentDifference: [],
+        differencesFound: 0,
+    };
+
+    const mockTimer = 0;
 
     let service: ClassicSystemService;
     let gameAreaService: GameAreaService;
@@ -51,7 +61,6 @@ describe('ClassicSystemService', () => {
     beforeEach(() => {
         service = TestBed.inject(ClassicSystemService);
         gameAreaService = TestBed.inject(GameAreaService);
-        service.manageSocket();
         service['currentGame'].next(mockClientSideGame);
     });
 
@@ -112,5 +121,61 @@ describe('ClassicSystemService', () => {
         });
         service.getCurrentGame();
         expect(classicServiceGetCurrentGameSpy).toEqual(service['currentGame']);
+    });
+
+    it('manageSocket should connect the client socket', () => {
+        const socketConnectSpy = spyOn(socketServiceMock, 'connect');
+        service.manageSocket();
+        expect(socketConnectSpy).toHaveBeenCalled();
+    });
+
+    it('manageSocket should call createSoloGame function', () => {
+        const createSoloGameSpy = spyOn(service, 'createSoloGame');
+        service.manageSocket();
+        expect(createSoloGameSpy).toHaveBeenCalled();
+    });
+
+    it('manageSocket should add the events listeners to CreateSoloGame, RemoveDiff and TimerStarted events', () => {
+        const socketOnSpy = spyOn(socketServiceMock, 'on');
+        service.manageSocket();
+        expect(socketOnSpy).toHaveBeenCalledWith(GameEvents.CreateSoloGame, jasmine.any(Function));
+        expect(socketOnSpy).toHaveBeenCalledWith(GameEvents.RemoveDiff, jasmine.any(Function));
+        expect(socketOnSpy).toHaveBeenCalledWith(GameEvents.TimerStarted, jasmine.any(Function));
+        expect(socketOnSpy).toHaveBeenCalledWith(GameEvents.EndGame, jasmine.any(Function));
+    });
+
+    it('manageSocket should update client game when CreateSoloGame linked event is sent from server', () => {
+        service.manageSocket();
+        const currentGameSubjectNextSpy = spyOn(service['currentGame'], 'next');
+        socketHelper.peerSideEmit(GameEvents.CreateSoloGame, mockClientSideGame);
+        expect(currentGameSubjectNextSpy).toHaveBeenCalledWith(mockClientSideGame);
+    });
+
+    it('manageSocket should update client game when RemoveDiff linked event is sent from server', () => {
+        service.manageSocket();
+        const replaceDifferenceSpy = spyOn(service, 'replaceDifference');
+        const differencesFoundSpy = spyOn(service['differencesFound'], 'next');
+        const checkStatusSpy = spyOn(service, 'checkStatus');
+        socketHelper.peerSideEmit(GameEvents.RemoveDiff, mockDifferences);
+        expect(replaceDifferenceSpy).toHaveBeenCalledWith(mockDifferences.currentDifference);
+        expect(differencesFoundSpy).toHaveBeenCalledWith(mockDifferences.differencesFound);
+        expect(checkStatusSpy).toHaveBeenCalled();
+    });
+
+    it('manageSocket should update client game when TimerStarted linked event is sent from server', () => {
+        service.manageSocket();
+        const timerSpy = spyOn(service['timer'], 'next');
+        socketHelper.peerSideEmit(GameEvents.TimerStarted, mockTimer);
+        expect(timerSpy).toHaveBeenCalledWith(mockTimer);
+    });
+
+    it('manageSocket should disconnect clientSocket when EndGame linked event is sent from server', () => {
+        service.manageSocket();
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        const showEndSpy = spyOn(service, 'showEndGameDialog').and.callFake(() => {});
+        const socketDisconnectSpy = spyOn(socketServiceMock, 'disconnect');
+        socketHelper.peerSideEmit(GameEvents.EndGame, '');
+        expect(socketDisconnectSpy).toHaveBeenCalled();
+        expect(showEndSpy).toHaveBeenCalled();
     });
 });
