@@ -1,6 +1,6 @@
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameService } from '@app/services/game/game.service';
-import { CarouselPaginator, Game, GameConfigConst } from '@common/game-interfaces';
+import { CarouselPaginator, GameConfigConst, ServerSideGame } from '@common/game-interfaces';
 import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'express';
@@ -23,17 +23,14 @@ describe('GameController', () => {
         },
     ];
 
-    const testGame: Game = {
-        id: 1,
+    const testGame: ServerSideGame = {
+        id: 'test',
         name: 'test',
-        difficultyLevel: true,
+        isHard: true,
         original: 'test',
         modified: 'test',
-        soloTopTime: [],
-        oneVsOneTopTime: [],
         differencesCount: 1,
-        thumbnail: 'test',
-        hintList: [],
+        differences: [[]],
     };
 
     beforeEach(async () => {
@@ -54,8 +51,8 @@ describe('GameController', () => {
     it('should be defined', () => {
         expect(controller).toBeDefined();
     });
-    it('getGameCarrousel() should call getGameCarrousel() in gameService', () => {
-        gameService.getGameCarousel.returns(testCarousel);
+    it('getGameCarrousel() should call getGameCarrousel() in gameService', async () => {
+        gameService.getGameCarousel.resolves(testCarousel);
         const res = {} as unknown as Response;
         res.status = (code) => {
             expect(code).toEqual(HttpStatus.OK);
@@ -66,21 +63,20 @@ describe('GameController', () => {
             return res;
         };
         res.send = () => res;
-        controller.getGameCarrousel(0, res);
-        expect(gameService.getGameCarousel.calledOnce).toBeTruthy();
+        await controller.getGameCarrousel(0, res);
+        expect(gameService.getGameCarousel.calledOnce).toBe(true);
     });
 
-    it('getGameCarrousel() should return NOT_FOUND when service unable to fetch GameCarrousel', () => {
-        gameService.getGameCarousel.throwsException();
+    it('getGameCarrousel() should return NOT_FOUND when service unable to fetch GameCarrousel', async () => {
+        gameService.getGameCarousel.rejects();
         const res = {} as unknown as Response;
         res.status = (code) => {
             expect(code).toEqual(HttpStatus.NOT_FOUND);
             return res;
         };
         res.send = () => res;
-        controller.getGameCarrousel(0, res);
-        expect(gameService.getGameCarousel).toThrow();
-        expect(gameService.getGameCarousel.called).toBeTruthy();
+        await controller.getGameCarrousel(0, res);
+        expect(gameService.getGameCarousel.called).toBe(true);
     });
 
     it('getGameById() should call getGameById() in gameService', () => {
