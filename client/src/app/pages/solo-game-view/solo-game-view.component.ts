@@ -26,6 +26,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     private differenceSub: Subscription;
     private isFirstTime = true;
     constructor(private gameAreaService: GameAreaService, private classicService: ClassicSystemService) {}
+
     ngAfterViewInit(): void {
         this.classicService.manageSocket();
         this.gameSub = this.classicService.getCurrentGame().subscribe((game) => {

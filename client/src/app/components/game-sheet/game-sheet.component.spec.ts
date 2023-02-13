@@ -3,15 +3,15 @@ import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angu
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
+import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
-import { GameCardService } from '@app/services/gamecard-service/gamecard.service';
 import { of } from 'rxjs';
 import { GameSheetComponent } from './game-sheet.component';
 
 describe('GameSheetComponent', () => {
     let component: GameSheetComponent;
     let fixture: ComponentFixture<GameSheetComponent>;
-    let gameCardService: GameCardService;
+    let gameCardService: ClassicSystemService;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -38,9 +38,9 @@ describe('GameSheetComponent', () => {
         fixture = TestBed.createComponent(GameSheetComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        gameCardService = TestBed.inject(GameCardService);
+        gameCardService = TestBed.inject(ClassicSystemService);
         component.game = {
-            id: 1,
+            id: '',
             name: 'test',
             difficultyLevel: true,
             soloTopTime: [],
@@ -53,13 +53,15 @@ describe('GameSheetComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('OpenDialog should open dialog box and call gameCardService with game id', () => {
-        const gameServiceSpy = spyOn(gameCardService, 'redirection');
+    it('OpenDialog should open dialog box and call gameCardService with game id and name', () => {
+        const gameServicePlayerNameSpy = spyOn(gameCardService['playerName'], 'next');
+        const gameServicePlayerIdSpy = spyOn(gameCardService['id'], 'next');
         const popUpSpy = spyOn(component.dialog, 'open').and.returnValue({
             afterClosed: () => of('test'),
         } as MatDialogRef<PlayerNameDialogBoxComponent>);
         component.openDialog();
         expect(popUpSpy).toHaveBeenCalled();
-        expect(gameServiceSpy).toHaveBeenCalledWith(component.game.id);
+        expect(gameServicePlayerNameSpy).toHaveBeenCalledWith(component.game.name);
+        expect(gameServicePlayerIdSpy).toHaveBeenCalledWith(component.game.id);
     });
 });
