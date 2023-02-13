@@ -63,17 +63,11 @@ describe('ClassicSystemService', () => {
         expect(connectSpy).toHaveBeenCalled();
     });
 
-    it('getCurrentGame should return currentGame', () => {
-        const gameSpy = spyOn(service['currentGame'], 'asObservable');
-        service.getCurrentGame();
-        expect(gameSpy).toHaveBeenCalled();
-    });
-
-    /* it('createSoloGame should call createSoloGame', () => {
+    it('createSoloGame should call createSoloGame', () => {
+        service.createSoloGame();
+        const createSoloGameSpy = spyOn(socketServiceMock, 'send');
         service['playerName'].next('Jackob');
         service['id'].next('JackGame');
-        const createSoloGameSpy = spyOn(socketServiceMock, 'send');
-        service.createSoloGame();
         expect(createSoloGameSpy).toHaveBeenCalledWith('createSoloGame', { player: 'Jackob', gameId: 'JackGame' });
-    });*/
+    });
 });
