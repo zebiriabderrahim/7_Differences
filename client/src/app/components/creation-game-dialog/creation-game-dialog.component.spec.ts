@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+// Needed for window.location.reload()
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -11,6 +13,7 @@ import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { CreationGameDialogComponent } from './creation-game-dialog.component';
+
 
 describe('CreationGameDialogComponent', () => {
     let component: CreationGameDialogComponent;

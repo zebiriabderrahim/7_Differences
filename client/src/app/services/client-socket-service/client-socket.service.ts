@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
-// import { environment } from 'src/environments/environment';
 // This code belongs to Nikolay Radoev
 // https://gitlab.com/nikolayradoev/socket-io-exemple/-/tree/master
 
