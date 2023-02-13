@@ -12,8 +12,6 @@ import { ClassicSystemService } from '@app/services/classic-system-service/class
 })
 export class GameSheetComponent {
     @Input() game: GameCard;
-    buttonPlay: string;
-    buttonJoin: string;
     constructor(public dialog: MatDialog, public router: Router, private classicSystemService: ClassicSystemService) {}
 
     openDialog() {
