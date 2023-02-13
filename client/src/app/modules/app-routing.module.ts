@@ -10,7 +10,7 @@ import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.
 export const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: MainPageComponent },
-    { path: 'game/:id', component: SoloGameViewComponent },
+    { path: 'game', component: SoloGameViewComponent },
     { path: 'material', component: MaterialPageComponent },
     { path: 'create', component: CreationPageComponent },
     { path: 'selection', component: SelectionPageComponent },
