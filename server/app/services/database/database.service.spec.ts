@@ -108,7 +108,7 @@ describe('DatabaseService', () => {
         listsManagerService.createGameFromGameDto.returns(testGames[0]);
         const addGameCardSpy = jest.spyOn(dataBaseService, 'addGameCard');
         dataBaseService.addGame(testGameDto);
-        expect(listsManagerService.createGameFromGameDto.calledOnce).toBe(true);
+        expect(listsManagerService.createGameFromGameDto.calledOnce).toBeTruthy();
         expect(addGameCardSpy).toBeCalledTimes(1);
         expect(dataBaseService['games']).toEqual(testGames);
     });

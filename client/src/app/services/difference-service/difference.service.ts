@@ -1,113 +1,130 @@
 import { Injectable } from '@angular/core';
-import { DEFAULT_RADIUS, IMG_HEIGHT, IMG_WIDTH, MAX_N_DIFFERENCES, MIN_N_DIFFERENCES } from '@app/constants/creation-page';
-import { N_DIFFERENCES_HARD_GAME, HARD_DIFFERENCES_PERCENTAGE } from '@app/constants/constants';
+import { HARD_DIFFERENCES_PERCENTAGE, N_DIFFERENCES_HARD_GAME } from '@app/constants/constants';
+import { IMG_HEIGHT, IMG_WIDTH, MAX_N_DIFFERENCES, MIN_N_DIFFERENCES } from '@app/constants/creation-page';
 import { Coordinate } from '@app/interfaces/coordinate';
-import { Pixel } from '@app/interfaces/pixel';
+import { GamePixels, Pixel } from '@app/interfaces/pixel';
 
 @Injectable({
     providedIn: 'root',
 })
 export class DifferenceService {
-    differencesArray: Coordinate[] = []; // TODO link to appropriate service
-    differencePackages: Coordinate[][] = [];
-    enlargementRadius: number = DEFAULT_RADIUS;
+    private differences: Coordinate[];
+    private differencePackages: Coordinate[][];
+    private visitedCoordinates: boolean[][];
+    private differenceMatrix: boolean[][];
 
-    setEnlargementRadius(radius: number) {
-        this.enlargementRadius = radius;
+    constructor() {
+        this.resetAttributes();
     }
 
-    setDifferencesArray(differencesArray: Coordinate[]) {
-        this.differencesArray = differencesArray;
+    resetAttributes() {
+        this.differences = [];
+        this.differencePackages = [];
+        this.visitedCoordinates = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        this.differenceMatrix = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+    }
+
+    getDifferences(): Coordinate[] {
+        return this.differences;
+    }
+
+    getNumberOfDifferences(): number {
+        return this.differencePackages.length;
+    }
+
+    createFalseMatrix(width: number, height: number): boolean[][] {
+        return new Array(width).fill(false).map(() => new Array(height).fill(false)) as boolean[][];
     }
 
     isCoordinateValid(coordinate: Coordinate): boolean {
         return coordinate.x >= 0 && coordinate.x < IMG_WIDTH && coordinate.y >= 0 && coordinate.y < IMG_HEIGHT;
     }
 
-    isCoordInDifferencesArray(point: Coordinate): boolean {
-        for (const coord of this.differencesArray) {
-            if (coord.x === point.x && coord.y === point.y) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     findAdjacentCoords(coord: Coordinate): Coordinate[] {
-        const adjacentCoords: Coordinate[] = [];
-        for (let x = coord.x - 1; x <= coord.x + 1; x++) {
-            for (let y = coord.y - 1; y <= coord.y + 1; y++) {
-                if (this.isCoordinateValid({ x, y })) {
-                    adjacentCoords.push({ x, y });
-                }
-            }
-        }
-        return adjacentCoords;
+        const adjacentCoordinates: Coordinate[] = [
+            { x: coord.x - 1, y: coord.y - 1 },
+            { x: coord.x - 1, y: coord.y },
+            { x: coord.x - 1, y: coord.y + 1 },
+            { x: coord.x, y: coord.y - 1 },
+            { x: coord.x, y: coord.y + 1 },
+            { x: coord.x + 1, y: coord.y - 1 },
+            { x: coord.x + 1, y: coord.y },
+            { x: coord.x + 1, y: coord.y + 1 },
+        ];
+        return adjacentCoordinates.filter((coordinate) => this.isCoordinateValid(coordinate));
     }
 
     generateDifferencesPackages(): Coordinate[][] {
         const differences: Coordinate[][] = [];
-        const visitedCoords: boolean[][] = new Array(IMG_WIDTH).fill(false).map(() => new Array(IMG_HEIGHT).fill(false)) as boolean[][];
-        let queue: Coordinate[] = [];
-        let currentDifference: Coordinate[] = [];
-        let activeDifference: Coordinate;
-        for (const differenceCoordinate of this.differencesArray) {
-            queue = [];
-            currentDifference = [];
-            if (!visitedCoords[differenceCoordinate.x][differenceCoordinate.y]) {
-                currentDifference.push(differenceCoordinate);
-                visitedCoords[differenceCoordinate.x][differenceCoordinate.y] = true;
-                queue.push(differenceCoordinate);
-            }
-            while (queue.length !== 0) {
-                activeDifference = queue.pop() as Coordinate;
-                for (const coord of this.findAdjacentCoords(activeDifference as Coordinate)) {
-                    if (!visitedCoords[coord.x][coord.y] && this.isCoordInDifferencesArray(coord)) {
-                        visitedCoords[coord.x][coord.y] = true;
-                        currentDifference.push(coord);
-                        queue.push(coord);
-                    }
+        this.visitedCoordinates = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        for (let i = 0; i < IMG_WIDTH; i++) {
+            for (let j = 0; j < IMG_HEIGHT; j++) {
+                if (!this.visitedCoordinates[i][j] && this.differenceMatrix[i][j]) {
+                    differences.push(this.breadthFirstSearch({ x: i, y: j }));
                 }
-            }
-            if (currentDifference.length !== 0) {
-                differences.push(currentDifference);
             }
         }
         this.differencePackages = differences;
         return differences;
     }
 
-    generateDifferences(pixelArray1: Pixel[], pixelArray2: Pixel[]): Coordinate[] {
-        const differentCoordinates: Coordinate[] = [];
-        for (let i = 0; i < pixelArray1.length; i++) {
-            if (this.arePixelsDifferent(pixelArray1[i], pixelArray2[i])) {
-                const x = i % IMG_WIDTH;
-                const y = Math.floor(i / IMG_WIDTH);
-                differentCoordinates.push({ x, y });
+    breadthFirstSearch(difference: Coordinate): Coordinate[] {
+        const queue: Coordinate[] = [];
+        const currentDifference: Coordinate[] = [];
+        let activeDifference: Coordinate;
+        currentDifference.push(difference);
+        this.visitedCoordinates[difference.x][difference.y] = true;
+        queue.push(difference);
+        while (queue.length !== 0) {
+            activeDifference = queue.pop() as Coordinate;
+            for (const coord of this.findAdjacentCoords(activeDifference as Coordinate)) {
+                if (!this.visitedCoordinates[coord.x][coord.y] && this.differenceMatrix[coord.x][coord.y]) {
+                    this.visitedCoordinates[coord.x][coord.y] = true;
+                    currentDifference.push(coord);
+                    queue.push(coord);
+                }
             }
         }
-        this.differencesArray = this.enlargeDifferences(differentCoordinates);
+        return currentDifference;
+    }
+
+    generateDifferences(gamePixels: GamePixels, radius: number): Coordinate[] {
+        const leftImagePixels = gamePixels.leftImage;
+        const rightImagePixels = gamePixels.rightImage;
+        this.resetAttributes();
+        this.differenceMatrix = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        for (let i = 0; i < leftImagePixels.length; i++) {
+            if (this.arePixelsDifferent(leftImagePixels[i], rightImagePixels[i])) {
+                const x = i % IMG_WIDTH;
+                const y = Math.floor(i / IMG_WIDTH);
+                this.differences.push({ x, y });
+                this.differenceMatrix[x][y] = true;
+            }
+        }
+        this.visitedCoordinates = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        this.differences = this.enlargeDifferences(this.differences, radius);
         this.generateDifferencesPackages();
-        return this.differencesArray;
+        return this.differences;
     }
 
     arePixelsDifferent(pixel1: Pixel, pixel2: Pixel): boolean {
         return !(pixel1.red === pixel2.red && pixel1.green === pixel2.green && pixel1.blue === pixel2.blue);
     }
 
-    enlargeDifferences(differenceCoordinates: Coordinate[]): Coordinate[] {
-        const visitedDifferences: boolean[][] = new Array(IMG_WIDTH).fill(false).map(() => new Array(IMG_HEIGHT).fill(false)) as boolean[][];
+    enlargeDifferences(differenceCoordinates: Coordinate[], radius: number): Coordinate[] {
         const enlargedDifferenceCoordinates: Coordinate[] = [];
         for (const coordinate of differenceCoordinates) {
-            for (let i = -this.enlargementRadius; i <= this.enlargementRadius; i++) {
-                for (let j = -this.enlargementRadius; j <= this.enlargementRadius; j++) {
+            for (let i = -radius; i <= radius; i++) {
+                for (let j = -radius; j <= radius; j++) {
+                    const largerCoordinate: Coordinate = { x: coordinate.x + i, y: coordinate.y + j };
                     const distance = Math.sqrt(i * i + j * j);
-                    if (distance <= this.enlargementRadius) {
-                        const largerCoordinate: Coordinate = { x: coordinate.x + i, y: coordinate.y + j };
-                        if (this.isCoordinateValid(largerCoordinate) && !visitedDifferences[largerCoordinate.x][largerCoordinate.y]) {
-                            enlargedDifferenceCoordinates.push(largerCoordinate);
-                            visitedDifferences[largerCoordinate.x][largerCoordinate.y] = true;
-                        }
+                    if (
+                        distance <= radius &&
+                        this.isCoordinateValid(largerCoordinate) &&
+                        !this.visitedCoordinates[largerCoordinate.x][largerCoordinate.y]
+                    ) {
+                        enlargedDifferenceCoordinates.push(largerCoordinate);
+                        this.visitedCoordinates[largerCoordinate.x][largerCoordinate.y] = true;
                     }
                 }
             }
@@ -116,12 +133,12 @@ export class DifferenceService {
     }
 
     isNumberOfDifferencesValid(): boolean {
-        const nDifferences = this.differencePackages.length;
+        const nDifferences: number = this.differencePackages.length;
         return nDifferences >= MIN_N_DIFFERENCES && nDifferences <= MAX_N_DIFFERENCES;
     }
 
     isGameHard(): boolean {
-        const differencesPercentage = this.differencesArray.length / (IMG_WIDTH * IMG_HEIGHT);
+        const differencesPercentage = this.differences.length / (IMG_WIDTH * IMG_HEIGHT);
         return this.differencePackages.length >= N_DIFFERENCES_HARD_GAME && differencesPercentage <= HARD_DIFFERENCES_PERCENTAGE;
     }
 }

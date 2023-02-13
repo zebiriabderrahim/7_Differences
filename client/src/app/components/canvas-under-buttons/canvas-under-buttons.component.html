@@ -1,0 +1,22 @@
+<div id="canvas-action-buttons">
+    <button mat-raised-button color="basic" matTooltip="L'image doit être en format BMP 24 bits et de taille 640x480"
+        (click)="fileUpload.click()">
+        Téléverser une image {{position === canvasPosition.Both ? 'pour les deux zones' : ''}}
+        <mat-icon>attach_file</mat-icon>
+    </button>
+    <input type="file" id="upload-btn" (change)="onSelectFile($event)" #fileUpload />
+    <button mat-raised-button color="primary" (click)="resetBackground()">
+        Réinitialiser {{position === canvasPosition.Both ? 'les arrières-plans' : 'l\'arrière-plan'}}
+    </button>
+</div>
+
+<ng-template #invalidImageDialog>
+    <div mat-dialog-content>
+        <button mat-button mat-dialog-close>Fermer</button>
+        <h1 mat-dialog-title>Image non conforme !</h1>
+        <p>L'image doit respecter les spécifications suivantes :</p>
+        <mat-error> Le type d'image doit être un <strong>bitmap</strong> </mat-error> <br>
+        <mat-error> La taille de l'image doit être de <strong>640x480</strong> </mat-error> <br>
+        <mat-error> Le format d'image doit être de <strong>24-bits</strong> </mat-error>
+    </div>
+</ng-template>
