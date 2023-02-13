@@ -1,8 +1,11 @@
-import { HttpClient, HttpHandler } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
+import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
-
 import { of } from 'rxjs';
 import { ConfigPageComponent } from './config-page.component';
 
@@ -12,20 +15,13 @@ describe('ConfigPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule],
-            declarations: [ConfigPageComponent],
-            providers: [
-                HttpClient,
-                HttpHandler,
-                {
-                    provide: CommunicationService,
-                    useValue: jasmine.createSpyObj('CommunicationService', {
-                        loadConfigConstants: of({ countdownTime: 0, penaltyTime: 0, bonusTime: 0 }),
-                    }),
-                },
-            ],
+            imports: [RouterTestingModule, MatGridListModule, MatExpansionModule, BrowserAnimationsModule, HttpClientTestingModule],
+            declarations: [ConfigPageComponent, SelectionPageComponent],
+            providers: [CommunicationService],
         }).compileComponents();
+    });
 
+    beforeEach(() => {
         fixture = TestBed.createComponent(ConfigPageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
@@ -36,9 +32,9 @@ describe('ConfigPageComponent', () => {
     });
 
     it('should load a game when this one exist', () => {
+        spyOn(component['communicationService'], 'loadConfigConstants').and.returnValue(of({ countdownTime: 0, penaltyTime: 0, bonusTime: 0 }));
         component.ngOnInit();
-        expect(component.bonusTime).toEqual(0);
-        expect(component.penaltyTime).toEqual(0);
-        expect(component.countdownTime).toEqual(0);
+        expect(component['communicationService'].loadConfigConstants).toHaveBeenCalled();
+        expect(component.configConstants).toEqual({ countdownTime: 0, penaltyTime: 0, bonusTime: 0 });
     });
 });

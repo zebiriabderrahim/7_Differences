@@ -18,6 +18,7 @@ export class ClassicSystemService implements OnDestroy {
     private id: Subject<string>;
     private idSubscription: Subscription;
     private playerNameSubscription: Subscription;
+
     constructor(private clientSocket: ClientSocketService, private gameAreaService: GameAreaService, private readonly matDialog: MatDialog) {
         this.currentGame = new Subject<ClientSideGame>();
         this.differencesFound = new Subject<number>();
@@ -25,9 +26,12 @@ export class ClassicSystemService implements OnDestroy {
         this.playerName = new Subject<string>();
         this.id = new Subject<string>();
     }
+
     ngOnDestroy(): void {
-        this.idSubscription.unsubscribe();
-        this.playerNameSubscription.unsubscribe();
+        if (this.idSubscription && this.playerNameSubscription) {
+            this.idSubscription.unsubscribe();
+            this.playerNameSubscription.unsubscribe();
+        }
     }
     createSoloGame(): void {
         this.playerNameSubscription = this.playerName.asObservable().subscribe((playerName: string) => {
