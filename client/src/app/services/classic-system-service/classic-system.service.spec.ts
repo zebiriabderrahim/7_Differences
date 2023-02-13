@@ -29,5 +29,5 @@ describe('ClassicSystemService', () => {
         const socketSpy = spyOn(service['clientSocket'], 'send').and.callThrough();
         service.createSoloGame();
         expect(socketSpy).toHaveBeenCalledWith('createSoloGame', { player: 'Jack', gameId: '' });
-    }
+    });
 });
