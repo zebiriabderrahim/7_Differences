@@ -4,10 +4,6 @@ import { Coordinate } from '@common/coordinate';
 
 export class CreateGameDto {
     @ApiProperty()
-    @IsNumber()
-    id: number;
-
-    @ApiProperty()
     @IsString()
     name: string;
 
