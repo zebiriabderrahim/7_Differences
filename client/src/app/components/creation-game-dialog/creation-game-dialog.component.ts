@@ -71,7 +71,6 @@ export class CreationGameDialogComponent implements OnInit {
             };
             this.communicationService.postGame(gameDetails).subscribe();
             this.imageService.resetBothBackgrounds();
-            window.location.reload();
         }
     }
 }

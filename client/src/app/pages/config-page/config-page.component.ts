@@ -26,6 +26,7 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
         });
     }
 
+    // not needed
     ngOnDestroy() {
         this.commSub.unsubscribe();
     }

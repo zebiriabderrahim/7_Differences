@@ -10,7 +10,6 @@ export const MIDDLE_BUTTON = 1;
 export const RIGHT_BUTTON = 2;
 export const BACK_BUTTON = 3;
 export const FORWARD_BUTTON = 4;
-export const GAME_ID_MAX = 1000000;
 export const N_DIFFERENCES_HARD_GAME = 7;
 export const HARD_DIFFERENCES_PERCENTAGE = 0.15;
 export const PIXEL_LENGTH = 4;
