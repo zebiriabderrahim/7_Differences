@@ -17,6 +17,9 @@
         </form>
     </div>
     <ng-template #differencesInvalid>
+        <div *ngIf="this.nDifferences === 0">
+            <p>Les deux images téléversées sont identiques. Veuillez mettre deux images différentes</p>
+        </div>
         <p>Il doit y avoir entre 3 et 9 différences. Veuillez recommencer le processus</p>
         <button mat-button mat-dialog-close>Fermer</button>
     </ng-template>
