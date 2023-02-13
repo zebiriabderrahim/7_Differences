@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
+import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dialog/solo-game-view-dialog.component';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { SocketTestHelper } from '@app/services/client-socket-service/client-socket.service.spec';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
-import { ClientSideGame, Differences, GameEvents } from '@common/game-interfaces';
-import { Subject } from 'rxjs';
+import { Coordinate } from '@common/coordinate';
+import { Differences, GameEvents } from '@common/game-interfaces';
 import { Socket } from 'socket.io-client';
 import { ClassicSystemService } from './classic-system.service';
 
@@ -41,7 +43,7 @@ describe('ClassicSystemService', () => {
     let gameAreaService: GameAreaService;
     let socketHelper: SocketTestHelper;
     let socketServiceMock: SocketClientServiceMock;
-    let classicServiceGetCurrentGameSpy: () => Subject<ClientSideGame>;
+    let dialogService: MatDialog;
 
     beforeEach(async () => {
         socketHelper = new SocketTestHelper();
@@ -53,7 +55,14 @@ describe('ClassicSystemService', () => {
             declarations: [],
             providers: [
                 { provide: ClientSocketService, useValue: socketServiceMock },
-                { provide: GameAreaService, useValue: gameAreaService },
+                { provide: GameAreaService, useValue: jasmine.createSpyObj('GameAreaService', ['replaceDifference', 'showError']) },
+                {
+                    provide: MatDialog,
+                },
+                {
+                    provide: MAT_DIALOG_DATA,
+                    useValue: {},
+                },
             ],
         }).compileComponents();
     });
@@ -61,6 +70,7 @@ describe('ClassicSystemService', () => {
     beforeEach(() => {
         service = TestBed.inject(ClassicSystemService);
         gameAreaService = TestBed.inject(GameAreaService);
+        dialogService = TestBed.inject(MatDialog);
         service['currentGame'].next(mockClientSideGame);
     });
 
@@ -98,11 +108,9 @@ describe('ClassicSystemService', () => {
         expect(requestVerificationSpy).toHaveBeenCalledWith('removeDiff', { x: 1, y: 1 });
     });
 
-    /*
     it('replaceDifference should throw an error if Coordinate length is 0', () => {
-        const replaceDifferenceSpy = spyOn(gameAreaService, 'showError');
         service.replaceDifference([]);
-        expect(replaceDifferenceSpy).toHaveBeenCalled();
+        expect(gameAreaService.showError).toHaveBeenCalled();
     });
 
     it('replaceDifference should modify coordinate if coordinate length is greater than 0', () => {
@@ -110,17 +118,29 @@ describe('ClassicSystemService', () => {
             { x: 1, y: 1 },
             { x: 2, y: 2 },
         ];
-        const replaceDifferenceSpy = spyOn(service['gameAreaService'], 'replaceDifference');
+        service['isLeftCanvas'] = true;
         service.replaceDifference(cord);
-        expect(replaceDifferenceSpy).toHaveBeenCalledWith(cord);
+        expect(gameAreaService.replaceDifference).toHaveBeenCalledWith(cord);
+        expect(gameAreaService.showError).not.toHaveBeenCalled();
     });
-    */
-    it('getCurrentGame should call return currentgame', () => {
-        classicServiceGetCurrentGameSpy = spyOn(service, 'getCurrentGame').and.callFake(() => {
-            return service['currentGame'];
+
+    it('showAbandonGameDialog should open Dialog to abandon the game', () => {
+        const popUpSpy = spyOn(dialogService, 'open');
+        service.showAbandonGameDialog();
+        expect(popUpSpy).toHaveBeenCalledWith(SoloGameViewDialogComponent, {
+            data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ?' },
+            disableClose: true,
         });
-        service.getCurrentGame();
-        expect(classicServiceGetCurrentGameSpy).toEqual(service['currentGame']);
+    });
+
+    it('showEndGameDialog should open Dialog when the game is finish', () => {
+        const popUpSpy = spyOn(dialogService, 'open');
+        service.showEndGameDialog('Le jeu est terminé');
+        expect(popUpSpy).toHaveBeenCalled();
+        expect(popUpSpy).toHaveBeenCalledWith(SoloGameViewDialogComponent, {
+            data: { action: 'endGame', message: 'Le jeu est terminé' },
+            disableClose: true,
+        });
     });
 
     it('manageSocket should connect the client socket', () => {
@@ -171,7 +191,6 @@ describe('ClassicSystemService', () => {
 
     it('manageSocket should disconnect clientSocket when EndGame linked event is sent from server', () => {
         service.manageSocket();
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
         const showEndSpy = spyOn(service, 'showEndGameDialog').and.callFake(() => {});
         const socketDisconnectSpy = spyOn(socketServiceMock, 'disconnect');
         socketHelper.peerSideEmit(GameEvents.EndGame, '');
