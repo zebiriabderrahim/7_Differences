@@ -30,9 +30,9 @@ export class GameController {
     }
 
     @Get('carousel/:index')
-    getGameCarrousel(@Param('index') index: number, @Res() response: Response) {
+    async getGameCarrousel(@Param('index') index: number, @Res() response: Response) {
         try {
-            const gameCarrousel = this.gameService.getGameCarousel();
+            const gameCarrousel = await this.gameService.getGameCarousel();
             response.status(HttpStatus.OK).json(gameCarrousel[+index]);
         } catch (error) {
             response.status(HttpStatus.NOT_FOUND).send(error.message);
