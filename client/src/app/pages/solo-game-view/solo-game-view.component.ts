@@ -1,9 +1,9 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
-import { Game } from '@app/interfaces/game-interfaces';
-import { CommunicationService } from '@app/services/communication-service/communication.service';
+import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
-import { GameCardService } from '@app/services/gamecard-service/gamecard.service';
-import { TimerService } from '@app/services/timer-service/timer.service';
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from '@common/constants';
+import { ClientSideGame } from '@common/game-interfaces';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-solo-game-view',
@@ -15,70 +15,77 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     @ViewChild('modifiedCanvas', { static: false }) modifiedCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('originalCanvasFG', { static: false }) originalCanvasForeground!: ElementRef<HTMLCanvasElement>;
     @ViewChild('modifiedCanvasFG', { static: false }) modifiedCanvasForeground!: ElementRef<HTMLCanvasElement>;
-    time: string = '00:00';
-    game: Game;
-    mode: string = 'Solo';
-    penaltyTime: number = 1;
-    bonusTime: number = 1;
-    readonly homeRoute: string = '/home';
-    // private canvasSize = { width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
-
-    // eslint-disable-next-line max-params -- services are needed
-    constructor(
-        public timer: TimerService,
-        private gameAreaService: GameAreaService,
-        private gameCardService: GameCardService,
-        private communication: CommunicationService,
-    ) {}
+    game: ClientSideGame;
+    differencesFound: number = 0;
+    timer: number = 0;
+    readonly canvasSize = { width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
+    private timerSub: Subscription;
+    private gameSub: Subscription;
+    private differenceSub: Subscription;
+    private isFirstTime = true;
+    constructor(private gameAreaService: GameAreaService, private classicService: ClassicSystemService) {}
 
     ngAfterViewInit(): void {
-        this.timer.startTimer();
-        this.time = this.timer.time;
-
-        this.gameCardService.getGameId().subscribe((id) => {
-            this.communication.loadGameById(id).subscribe((game) => {
-                if (game) {
-                    this.game = game;
-                    this.gameAreaService.originalContext = this.originalCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-                    this.gameAreaService.modifiedContext = this.modifiedCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-                    this.gameAreaService.originalContextFrontLayer = this.originalCanvasForeground.nativeElement.getContext(
-                        '2d',
-                    ) as CanvasRenderingContext2D;
-                    this.gameAreaService.modifiedContextFrontLayer = this.modifiedCanvasForeground.nativeElement.getContext(
-                        '2d',
-                    ) as CanvasRenderingContext2D;
-                    this.gameAreaService.loadImage(this.gameAreaService.originalContext, this.game.original);
-                    this.gameAreaService.loadImage(this.gameAreaService.modifiedContext, this.game.modified);
-                }
-            });
+        this.classicService.manageSocket();
+        this.gameSub = this.classicService.getCurrentGame().subscribe((game) => {
+            this.game = game;
+            if (this.game && this.isFirstTime) {
+                this.gameAreaService.setOgContext(
+                    this.originalCanvas.nativeElement.getContext('2d', {
+                        willReadFrequently: true,
+                    }) as CanvasRenderingContext2D,
+                );
+                this.gameAreaService.setMdContext(
+                    this.modifiedCanvas.nativeElement.getContext('2d', {
+                        willReadFrequently: true,
+                    }) as CanvasRenderingContext2D,
+                );
+                this.gameAreaService.setOgFrontContext(
+                    this.originalCanvasForeground.nativeElement.getContext('2d', {
+                        willReadFrequently: true,
+                    }) as CanvasRenderingContext2D,
+                );
+                this.gameAreaService.setMdFrontContext(
+                    this.modifiedCanvasForeground.nativeElement.getContext('2d', {
+                        willReadFrequently: true,
+                    }) as CanvasRenderingContext2D,
+                );
+                this.gameAreaService.loadImage(this.gameAreaService.getOgContext(), this.game.original);
+                this.gameAreaService.loadImage(this.gameAreaService.getMdContext(), this.game.modified);
+                this.gameAreaService.setAllData();
+                this.isFirstTime = false;
+            }
+        });
+        this.timerSub = this.timerSub = this.classicService.getTimer().subscribe((timer) => {
+            this.timer = timer;
+        });
+        this.differenceSub = this.classicService.getDifferencesFound().subscribe((differencesFound) => {
+            this.differencesFound = differencesFound;
         });
     }
 
-    finish() {
-        this.timer.resetTimer();
-    }
-    getHint(index: number): void {
-        const hint = this.game.hintList[index];
-        window.alert(hint); // temporary until we find the best way to display it
-    }
     abandonGame(): void {
-        // this.timer.stopTimer();
+        this.classicService.showAbandonGameDialog();
     }
-    displayError(isMain: boolean): void {
-        this.gameAreaService.showError(isMain);
-    }
+
     mouseClickOnOriginal(event: MouseEvent) {
         if (this.gameAreaService.detectLeftClick(event)) {
-            this.displayError(true);
+            this.gameAreaService.setAllData();
+            this.classicService.setIsLeftCanvas(true);
+            this.classicService.requestVerification(this.gameAreaService.getMousePosition());
         }
     }
 
     mouseClickOnModified(event: MouseEvent) {
         if (this.gameAreaService.detectLeftClick(event)) {
-            this.displayError(false);
+            this.gameAreaService.setAllData();
+            this.classicService.setIsLeftCanvas(false);
+            this.classicService.requestVerification(this.gameAreaService.getMousePosition());
         }
     }
     ngOnDestroy(): void {
-        this.timer.stopTimer();
+        this.gameSub.unsubscribe();
+        this.timerSub.unsubscribe();
+        this.differenceSub.unsubscribe();
     }
 }
