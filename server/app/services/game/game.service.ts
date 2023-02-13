@@ -15,8 +15,8 @@ export class GameService {
         throw new NotFoundException('No game config constants found');
     }
 
-    getGameCarousel(): CarouselPaginator[] {
-        return this.databaseService.getGamesCarrousel();
+    async getGameCarousel(): Promise<CarouselPaginator[]> {
+        return await this.databaseService.getGamesCarrousel();
     }
 
     getGameById(id: string): ServerSideGame {
@@ -28,6 +28,6 @@ export class GameService {
     }
 
     addGame(newGame: CreateGameDto): void {
-        this.databaseService.addGame(newGame);
+        this.databaseService.addGameInDb(newGame);
     }
 }

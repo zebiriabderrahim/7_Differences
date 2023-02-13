@@ -21,8 +21,8 @@ export class DatabaseService {
     };
     constructor(@InjectModel(Game.name) private readonly gameModel: Model<GameDocument>, private readonly gameListManager: GameListsManagerService) {}
 
-    getGamesCarrousel(): CarouselPaginator[] {
-        this.addGameCard();
+    async getGamesCarrousel(): Promise<CarouselPaginator[]> {
+        await this.addGameCard();
         return this.carouselGames;
     }
 
@@ -46,47 +46,56 @@ export class DatabaseService {
         }
     }
 
-    async addGame(newGame: CreateGameDto): Promise<void> {
-        const game = this.gameListManager.createGameFromGameDto(newGame);
-        const newGameInDB: Game = {
-            name: newGame.name,
-            original: `assets/${newGame.name}/original.bmp`,
-            modified: `assets/${newGame.name}/modified.bmp`,
-            differences: `assets/${newGame.name}/differences.json`,
-            differencesCount: newGame.nDifference,
-            isHard: newGame.isHard,
-        };
-        this.saveFiles(game);
-        const gameInDB = new this.gameModel(newGameInDB);
-        await gameInDB.save();
+    async addGameInDb(newGame: CreateGameDto): Promise<void> {
+        try {
+            const game = this.gameListManager.createGameFromGameDto(newGame);
+            const newGameInDB: Game = {
+                name: newGame.name,
+                original: `assets/${newGame.name}/original.bmp`,
+                modified: `assets/${newGame.name}/modified.bmp`,
+                differences: `assets/${newGame.name}/differences.json`,
+                differencesCount: newGame.nDifference,
+                isHard: newGame.isHard,
+            };
+            this.saveFiles(game);
+            await this.gameModel.create(newGameInDB);
+        } catch (error) {
+            return Promise.reject(`Failed to insert game: ${error}`);
+        }
     }
 
     async addGameCard(): Promise<void> {
+        // for _id from mongodb
         await this.gameModel.find().then((games) => {
-            this.games = [];
-            this.gameCardsList = [];
-            this.carouselGames = [];
             if (games.length === 0) {
                 return;
             }
             games.forEach((game) => {
-                const gameSeverSide: ServerSideGame = {
-                    // for _id from mongodb
-                    // eslint-disable-next-line no-param-reassign, no-underscore-dangle
-                    id: game._id.toString(),
-                    name: game.name,
-                    original: 'data:image/png;base64,'.concat(fs.readFileSync(`assets/${game.name}/original.bmp`, 'base64')),
-                    modified: 'data:image/png;base64,'.concat(fs.readFileSync(`assets/${game.name}/modified.bmp`, 'base64')),
-                    differences: JSON.parse(fs.readFileSync(`assets/${game.name}/differences.json`, 'utf-8')),
-                    differencesCount: game.differencesCount,
-                    isHard: game.isHard,
-                };
-                this.games.push(gameSeverSide);
-                const gameCard = this.gameListManager.buildGameCardFromGame(game);
-                this.gameListManager.buildGameCarousel(this.gameCardsList, this.carouselGames);
-                this.gameCardsList.push(gameCard);
-                this.gameListManager.addGameCarousel(gameCard, this.carouselGames);
+                // eslint-disable-next-line no-param-reassign, no-underscore-dangle
+                const gameToSave = this.games.find((gameInArray) => gameInArray.id === game._id.toString());
+                if (!gameToSave) {
+                    const gameSeverSide = this.gameInDbToServerSideGame(game);
+                    this.games.push(gameSeverSide);
+                    const gameCard = this.gameListManager.buildGameCardFromGame(game);
+                    this.gameListManager.buildGameCarousel(this.gameCardsList, this.carouselGames);
+                    this.gameCardsList.push(gameCard);
+                    this.gameListManager.addGameCarousel(gameCard, this.carouselGames);
+                }
             });
         });
+    }
+
+    gameInDbToServerSideGame(game: Game): ServerSideGame {
+        const gameSeverSide: ServerSideGame = {
+            // eslint-disable-next-line no-param-reassign, no-underscore-dangle
+            id: game._id.toString(),
+            name: game.name,
+            original: 'data:image/png;base64,'.concat(fs.readFileSync(`assets/${game.name}/original.bmp`, 'base64')),
+            modified: 'data:image/png;base64,'.concat(fs.readFileSync(`assets/${game.name}/modified.bmp`, 'base64')),
+            differences: JSON.parse(fs.readFileSync(`assets/${game.name}/differences.json`, 'utf-8')),
+            differencesCount: game.differencesCount,
+            isHard: game.isHard,
+        };
+        return gameSeverSide;
     }
 }

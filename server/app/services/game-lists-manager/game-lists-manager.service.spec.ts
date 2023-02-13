@@ -3,6 +3,7 @@ import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { CarouselPaginator, GameCard, PlayerTime, ServerSideGame } from '@common/game-interfaces';
 import { Test, TestingModule } from '@nestjs/testing';
 import { GameListsManagerService } from './game-lists-manager.service';
+import * as fs from 'fs';
 
 describe('GameListsManagerService', () => {
     let service: GameListsManagerService;
@@ -21,6 +22,7 @@ describe('GameListsManagerService', () => {
     ];
 
     const testGame: Game = {
+        _id: '1',
         name: 'test',
         isHard: true,
         original: 'test',
@@ -28,6 +30,17 @@ describe('GameListsManagerService', () => {
         differencesCount: 1,
         differences: 'test',
     };
+    const testGames: ServerSideGame[] = [
+        {
+            id: '',
+            name: 'test',
+            isHard: true,
+            original: 'test',
+            modified: 'test',
+            differencesCount: 1,
+            differences: [[]],
+        },
+    ];
     const testGameCard: GameCard = {
         id: '1',
         name: 'test',
@@ -37,7 +50,6 @@ describe('GameListsManagerService', () => {
         thumbnail: 'test',
     };
     const testGameDto: CreateGameDto = {
-        id: 1,
         name: 'test',
         originalImage: 'test',
         modifiedImage: 'test',
@@ -59,7 +71,9 @@ describe('GameListsManagerService', () => {
     });
 
     it('buildGameCardFromGame() should call buildGameCarrousel()', () => {
+        const readFileSyncSpy = jest.spyOn(fs, 'readFileSync').mockReturnValue('test');
         const testGameCardFromGame = service.buildGameCardFromGame(testGame);
+        expect(readFileSyncSpy).toBeCalled();
         expect(testGameCardFromGame).toEqual(testGameCard);
     });
     it('getGamesCarrousel() should return the carrousel as expected', () => {
@@ -74,7 +88,7 @@ describe('GameListsManagerService', () => {
         expect(testCarousel).toEqual(testCarousel2);
     });
     it('createGameFromGameDto() should create the game from the game dto', () => {
-        expect(service.createGameFromGameDto(testGameDto)).toEqual(testGame);
+        expect(service.createGameFromGameDto(testGameDto)).toEqual(testGames[0]);
     });
     it('buildGameCarrousel() should build the game carrousel when it is empty', () => {
         const testCarousel2: CarouselPaginator[] = [];

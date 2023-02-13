@@ -51,8 +51,8 @@ describe('GameController', () => {
     it('should be defined', () => {
         expect(controller).toBeDefined();
     });
-    it('getGameCarrousel() should call getGameCarrousel() in gameService', () => {
-        gameService.getGameCarousel.returns(testCarousel);
+    it('getGameCarrousel() should call getGameCarrousel() in gameService', async () => {
+        gameService.getGameCarousel.resolves(testCarousel);
         const res = {} as unknown as Response;
         res.status = (code) => {
             expect(code).toEqual(HttpStatus.OK);
@@ -63,21 +63,20 @@ describe('GameController', () => {
             return res;
         };
         res.send = () => res;
-        controller.getGameCarrousel(0, res);
-        expect(gameService.getGameCarousel.calledOnce).toBeTruthy();
+        await controller.getGameCarrousel(0, res);
+        expect(gameService.getGameCarousel.calledOnce).toBe(true);
     });
 
-    it('getGameCarrousel() should return NOT_FOUND when service unable to fetch GameCarrousel', () => {
-        gameService.getGameCarousel.throwsException();
+    it('getGameCarrousel() should return NOT_FOUND when service unable to fetch GameCarrousel', async () => {
+        gameService.getGameCarousel.rejects();
         const res = {} as unknown as Response;
         res.status = (code) => {
             expect(code).toEqual(HttpStatus.NOT_FOUND);
             return res;
         };
         res.send = () => res;
-        controller.getGameCarrousel(0, res);
-        expect(gameService.getGameCarousel).toThrow();
-        expect(gameService.getGameCarousel.called).toBeTruthy();
+        await controller.getGameCarrousel(0, res);
+        expect(gameService.getGameCarousel.called).toBe(true);
     });
 
     it('getGameById() should call getGameById() in gameService', () => {
