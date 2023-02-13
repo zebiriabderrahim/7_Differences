@@ -22,6 +22,8 @@ import { ImageCanvasComponent } from './components/image-canvas/image-canvas.com
 import { ImageValidationDialogComponent } from './components/image-validation-dialog/image-validation-dialog.component';
 import { ConfigPageComponent } from './pages/config-page/config-page.component';
 import { SoloGameViewDialogComponent } from './components/solo-game-view-dialog/solo-game-view-dialog.component';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 /**
  * Main module that is used in main.ts.
@@ -57,6 +59,8 @@ import { SoloGameViewDialogComponent } from './components/solo-game-view-dialog/
         ReactiveFormsModule,
         MatDialogModule,
         OverlayModule,
+        MatGridListModule,
+        MatExpansionModule,
     ],
     providers: [],
     bootstrap: [AppComponent],
