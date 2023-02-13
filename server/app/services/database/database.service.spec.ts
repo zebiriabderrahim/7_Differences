@@ -60,7 +60,7 @@ describe('DatabaseService', () => {
         differencesCount: 0,
         isHard: true,
     };
-    const DELAY_BEFORE_CLOSING_CONNECTION = 200;
+    const DELAY_BEFORE_CLOSING_CONNECTION = 10;
 
     beforeEach(async () => {
         mongoServer = await MongoMemoryServer.create();

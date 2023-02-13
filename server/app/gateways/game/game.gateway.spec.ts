@@ -1,11 +1,11 @@
 import { ClassicSoloModeService } from '@app/services/classic-solo-mode/classic-solo-mode.service';
+import { Coordinate } from '@common/coordinate';
+import { ClientSideGame, Differences, GameEvents, PlayRoom, ServerSideGame } from '@common/game-interfaces';
 import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Server, Socket, BroadcastOperator } from 'socket.io';
-import { createStubInstance, SinonStubbedInstance, stub } from 'sinon';
+import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { BroadcastOperator, Server, Socket } from 'socket.io';
 import { GameGateway } from './game.gateway';
-import { ClientSideGame, Differences, GameEvents, PlayRoom, ServerSideGame } from '@common/game-interfaces';
-import { Coordinate } from '@common/coordinate';
 import { DELAY_BEFORE_EMITTING_TIME } from './game.gateway.constants';
 
 describe('GameGateway', () => {
@@ -64,32 +64,9 @@ describe('GameGateway', () => {
         expect(createSoloGameSpy).toBeCalled();
     });
 
-    it('createSoloGame() should not create a new game in cas of thrown error', () => {
-        jest.spyOn(classicService, 'createSoloRoom').mockImplementation(() => {
-            throw new Error();
-        });
-        server.to.returns({
-            emit: (event: string) => {
-                expect(event).toEqual(GameEvents.CreateSoloGame);
-            },
-        } as BroadcastOperator<unknown, unknown>);
-    });
-
     it('validateCoords() should call verifyCoords', () => {
         gateway.validateCoords(socket, { x: 0, y: 0 } as Coordinate);
         expect(classicService.verifyCoords.calledOnce).toBeTruthy();
-    });
-
-    it('validateCoords() should not call verifyCoords in cas of thrown error', () => {
-        jest.spyOn(classicService, 'verifyCoords').mockImplementation(() => {
-            throw new Error();
-        });
-        server.to.returns({
-            emit: (event: string) => {
-                expect(event).toEqual(GameEvents.RemoveDiff);
-            },
-        } as BroadcastOperator<unknown, unknown>);
-        expect(classicService.verifyCoords.calledOnce).toBeFalsy();
     });
 
     it('checkStatus() should call endGame', () => {

@@ -1,7 +1,6 @@
 import { Logger, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-// import { ChatGateway } from '@app/gateways/chat/chat.gateway';
 import { GameService } from './services/game/game.service';
 import { GameController } from './controllers/game/game.controller';
 import { DatabaseService } from './services/database/database.service';
