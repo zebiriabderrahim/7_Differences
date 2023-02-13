@@ -1,0 +1,55 @@
+.users-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 20px;
+}
+
+.mat-raised-button:first-child {
+    margin: 10px;
+    top: 800px;
+    position: relative;
+}
+
+#radio-buttons {
+    padding-right: 100px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#radio-buttons div {
+    margin: 5px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+#radio-buttons #buttons {
+    padding-left: 50px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+#radio-buttons p {
+    margin-right: 13px;
+}
+
+.mat-radio-button~.mat-radio-button {
+    margin-left: 13px;
+}
+
+#canvas-zone {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    flex-direction: row;
+}
+
+#upload-btn {
+    display: none;
+}
