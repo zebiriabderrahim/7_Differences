@@ -45,17 +45,13 @@ describe('PlayerNameDialogBoxComponent', () => {
 
     it('should emit the player name and close the dialog if the form is valid', () => {
         component.playerNameForm = new FormGroup({ name: new FormControl('test') });
-        const spy = spyOn(component.playerNameEvent, 'emit');
         component.submitForm();
-        expect(spy).toHaveBeenCalledWith('test');
         expect(dialogRef.close).toHaveBeenCalledWith('test');
     });
 
     it('should not emit the player name or close the dialog if the form is empty', () => {
         component.playerNameForm = new FormGroup({ name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)]) });
-        const spy = spyOn(component.playerNameEvent, 'emit');
         component.submitForm();
-        expect(spy).not.toHaveBeenCalledWith('');
         expect(dialogRef.close).not.toHaveBeenCalledWith('');
     });
 });

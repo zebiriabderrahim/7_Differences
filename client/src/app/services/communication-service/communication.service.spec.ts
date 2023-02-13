@@ -40,7 +40,7 @@ describe('CommunicationService', () => {
             hasPrevious: false,
             gameCards: [
                 {
-                    id: 0,
+                    id: '',
                     name: '',
                     difficultyLevel: true,
                     soloTopTime: [],
