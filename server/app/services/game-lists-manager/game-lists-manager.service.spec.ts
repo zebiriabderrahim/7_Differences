@@ -50,7 +50,6 @@ describe('GameListsManagerService', () => {
         thumbnail: 'test',
     };
     const testGameDto: CreateGameDto = {
-        id: 1,
         name: 'test',
         originalImage: 'test',
         modifiedImage: 'test',

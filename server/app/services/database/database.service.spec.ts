@@ -43,7 +43,6 @@ describe('DatabaseService', () => {
     ];
 
     const testGameDto: CreateGameDto = {
-        id: 1,
         name: 'test',
         originalImage: 'test',
         modifiedImage: 'test',
