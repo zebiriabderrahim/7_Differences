@@ -134,7 +134,6 @@ describe('CreationGameDialogComponent', () => {
         imageServiceSpy.getImageSources.and.returnValue({ left: 'left', right: 'right' });
         differenceServiceSpy.generateDifferencesPackages.and.returnValue([]);
         const spy = spyOn(component.gameNameEvent, 'emit');
-
         component.submitForm();
         expect(spy).toHaveBeenCalledWith('name');
         expect(dialogRef.close).toHaveBeenCalledWith('name');
