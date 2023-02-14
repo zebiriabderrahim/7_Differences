@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { IMG_TYPE } from '@app/constants/creation-page';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { ImageService } from '@app/services/image-service/image.service';
@@ -19,7 +20,7 @@ describe('CanvasUnderButtonsComponent', () => {
     beforeEach(async () => {
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
-            imports: [MatDialogModule, HttpClientTestingModule, MatIconModule, MatButtonModule],
+            imports: [MatDialogModule, HttpClientTestingModule, MatIconModule, MatButtonModule, MatTooltipModule],
             declarations: [CanvasUnderButtonsComponent],
             providers: [{ provide: MatDialog, useValue: matDialogSpy }],
         }).compileComponents();
