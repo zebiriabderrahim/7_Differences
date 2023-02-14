@@ -4,7 +4,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
-import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { of } from 'rxjs';
 import { GameSheetComponent } from './game-sheet.component';
 
@@ -18,7 +17,11 @@ describe('GameSheetComponent', () => {
             imports: [RouterTestingModule, BrowserAnimationsModule, MatDialogModule],
             declarations: [GameSheetComponent],
             providers: [
-                CommunicationService,
+                {
+                    provide: ClassicSystemService,
+                    // eslint-disable-next-line @typescript-eslint/no-empty-function
+                    useValue: { playerName: { next: () => {} }, id: { next: () => {} } },
+                },
                 {
                     provide: MatDialogRef,
                     useValue: {},
