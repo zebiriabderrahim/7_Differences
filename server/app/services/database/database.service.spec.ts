@@ -146,7 +146,7 @@ describe('DatabaseService', () => {
     });
 
     it('addGameCard() should add games to the games list from database', async () => {
-        // eslint-disable-next-line no-param-reassign, no-underscore-dangle
+        // eslint-disable-next-line no-param-reassign, no-underscore-dangle -- needed for mongoDB _id
         const id = await (await gameModel.create(newGameInDB))._id.toString();
         const gameInDbToServerSideGameSpy = jest.spyOn(dataBaseService, 'gameInDbToServerSideGame');
         await dataBaseService.addGameCard();
@@ -158,7 +158,7 @@ describe('DatabaseService', () => {
 
     it('addGameCard() should add card and game to the game card', async () => {
         dataBaseService['games'].push(testGames[0]);
-        // eslint-disable-next-line no-param-reassign, no-underscore-dangle
+        // eslint-disable-next-line no-param-reassign, no-underscore-dangle -- needed for mongoDB _id
         await (await gameModel.create(newGameInDB))._id.toString();
         await dataBaseService.addGameCard();
         expect(listsManagerService.buildGameCardFromGame.calledOnce).toBe(true);

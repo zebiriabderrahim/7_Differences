@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -191,6 +190,7 @@ describe('ClassicSystemService', () => {
 
     it('manageSocket should disconnect clientSocket when EndGame linked event is sent from server', () => {
         service.manageSocket();
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for mock call
         const showEndSpy = spyOn(service, 'showEndGameDialog').and.callFake(() => {});
         const socketDisconnectSpy = spyOn(socketServiceMock, 'disconnect');
         socketHelper.peerSideEmit(GameEvents.EndGame, '');
