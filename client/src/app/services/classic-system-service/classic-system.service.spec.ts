@@ -197,8 +197,4 @@ describe('ClassicSystemService', () => {
         expect(socketDisconnectSpy).toHaveBeenCalled();
         expect(showEndSpy).toHaveBeenCalled();
     });
-
-    afterEach(() => {
-        socketServiceMock.disconnect();
-    });
 });
