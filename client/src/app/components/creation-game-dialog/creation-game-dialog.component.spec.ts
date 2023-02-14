@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-// Needed for window.location.reload()
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -122,23 +120,24 @@ describe('CreationGameDialogComponent', () => {
     });
 
     it('should emit the game and close the dialog if the form is valid', () => {
+        const imageSources = { left: 'left', right: 'right' };
         const gameDetails: GameDetails = {
             name: 'name',
-            originalImage: 'left',
-            modifiedImage: 'right',
+            originalImage: imageSources.left,
+            modifiedImage: imageSources.right,
             nDifference: 0,
             differences: [],
             isHard: true,
         };
         differenceServiceSpy.isGameHard.and.returnValue(true);
         component.gameNameForm = new FormGroup({ name: new FormControl('name') });
-        imageServiceSpy.getImageSources.and.returnValue({ left: 'left', right: 'right' });
+        imageServiceSpy.getImageSources.and.returnValue(imageSources);
         differenceServiceSpy.generateDifferencesPackages.and.returnValue([]);
         component.submitForm();
         expect(dialogRef.close).toHaveBeenCalledWith(gameDetails);
     });
 
-    it('should close the dialog if the form is invalid', () => {
+    it('should not close the dialog if the form is invalid', () => {
         component.submitForm();
         expect(dialogRef.close).not.toHaveBeenCalled();
     });
