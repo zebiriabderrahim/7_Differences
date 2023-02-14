@@ -48,29 +48,31 @@ export class DatabaseService {
 
     async addGameInDb(newGame: CreateGameDto): Promise<void> {
         try {
-            const game = this.gameListManager.createGameFromGameDto(newGame);
-            const newGameInDB: Game = {
-                name: newGame.name,
-                original: `assets/${newGame.name}/original.bmp`,
-                modified: `assets/${newGame.name}/modified.bmp`,
-                differences: `assets/${newGame.name}/differences.json`,
-                differencesCount: newGame.nDifference,
-                isHard: newGame.isHard,
-            };
-            this.saveFiles(game);
-            await this.gameModel.create(newGameInDB);
+            if (!(await this.gameModel.exists({ name: newGame.name }))) {
+                const game = this.gameListManager.createGameFromGameDto(newGame);
+                const newGameInDB: Game = {
+                    name: newGame.name,
+                    original: `assets/${newGame.name}/original.bmp`,
+                    modified: `assets/${newGame.name}/modified.bmp`,
+                    differences: `assets/${newGame.name}/differences.json`,
+                    differencesCount: newGame.nDifference,
+                    isHard: newGame.isHard,
+                };
+                this.saveFiles(game);
+                await this.gameModel.create(newGameInDB);
+            }
         } catch (error) {
             return Promise.reject(`Failed to insert game: ${error}`);
         }
     }
 
     async addGameCard(): Promise<void> {
-        // for _id from mongodb
         await this.gameModel.find().then((games) => {
             if (games.length === 0) {
                 return;
             }
             games.forEach((game) => {
+                // Id comes from database to allow _id
                 // eslint-disable-next-line no-param-reassign, no-underscore-dangle
                 const gameToSave = this.games.find((gameInArray) => gameInArray.id === game._id.toString());
                 if (!gameToSave) {
@@ -87,6 +89,7 @@ export class DatabaseService {
 
     gameInDbToServerSideGame(game: Game): ServerSideGame {
         const gameSeverSide: ServerSideGame = {
+            // Id comes from database to allow _id
             // eslint-disable-next-line no-param-reassign, no-underscore-dangle
             id: game._id.toString(),
             name: game.name,

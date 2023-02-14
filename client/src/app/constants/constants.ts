@@ -17,3 +17,4 @@ export const X_CENTERING_DISTANCE = 38;
 export const GREEN_FLASH_TIME = 40;
 export const YELLOW_FLASH_TIME = 50;
 export const FLASH_WAIT_TIME = 500;
+export const SUBMIT_WAIT_TIME = 200;
