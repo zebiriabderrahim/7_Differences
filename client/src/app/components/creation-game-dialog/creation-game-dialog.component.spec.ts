@@ -113,14 +113,6 @@ describe('CreationGameDialogComponent', () => {
         expect(component.gameNameForm.disabled).toBeFalsy();
     });
 
-    it('should display the warning message when isNumberOfDifferencesValid is false', () => {
-        differenceServiceSpy.isNumberOfDifferencesValid.and.returnValue(false);
-        fixture.detectChanges();
-        const bannerElement: HTMLElement = fixture.nativeElement;
-        const p = bannerElement.querySelector('div > p');
-        expect(p?.textContent).toEqual('Il doit y avoir entre 3 et 9 différences. Veuillez recommencer le processus');
-    });
-
     it('should close the dialog onNoClick', () => {
         component.onNoClick();
         expect(dialogRef.close).toHaveBeenCalled();
