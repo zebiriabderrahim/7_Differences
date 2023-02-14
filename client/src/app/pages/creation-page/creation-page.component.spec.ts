@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { MatDialog, MatDialogConfig, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { MatRadioModule } from '@angular/material/radio';
 import { By } from '@angular/platform-browser';
@@ -9,7 +9,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
+import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { ImageService } from '@app/services/image-service/image.service';
+import { of } from 'rxjs';
 import { CreationPageComponent } from './creation-page.component';
 
 describe('CreationPageComponent', () => {
@@ -40,6 +42,11 @@ describe('CreationPageComponent', () => {
         spyOn(imageService, 'areImagesSet').and.callFake(() => {
             return true;
         });
+        const popUpSpy = spyOn(component['matDialog'], 'open').and.returnValue({
+            afterClosed: () => of('test'),
+        } as MatDialogRef<PlayerNameDialogBoxComponent>);
+        expect(popUpSpy).toHaveBeenCalled();
+        expect(imageService).toHaveBeenCalled();
         component.validateDifferences();
         const dialogConfig = new MatDialogConfig();
         dialogConfig.data = component.radius;

@@ -1,14 +1,11 @@
-import { Component, ElementRef, EventEmitter, Inject, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Router } from '@angular/router';
-import { SUBMIT_WAIT_TIME } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { Coordinate } from '@app/interfaces/coordinate';
 import { GameDetails } from '@app/interfaces/game-interfaces';
 import { ImageSources } from '@app/interfaces/image-sources';
 import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
-import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { ImageService } from '@app/services/image-service/image.service';
 
@@ -18,7 +15,6 @@ import { ImageService } from '@app/services/image-service/image.service';
     styleUrls: ['./creation-game-dialog.component.scss'],
 })
 export class CreationGameDialogComponent implements OnInit {
-    @Output() gameNameEvent = new EventEmitter<string>();
     @ViewChild('differenceCanvas', { static: true }) differenceCanvas: ElementRef;
     gameName: string;
     nDifferences: number;
@@ -32,9 +28,7 @@ export class CreationGameDialogComponent implements OnInit {
     constructor(
         private readonly imageService: ImageService,
         private readonly differenceService: DifferenceService,
-        private readonly communicationService: CommunicationService,
         private readonly dialogRef: MatDialogRef<CreationPageComponent>,
-        private readonly router: Router,
         @Inject(MAT_DIALOG_DATA) public radius: number,
     ) {}
 
@@ -60,10 +54,8 @@ export class CreationGameDialogComponent implements OnInit {
         this.dialogRef.close();
     }
 
-    async submitForm() {
+    submitForm() {
         if (this.gameNameForm.valid && this.gameNameForm.value.name) {
-            this.gameNameEvent.emit(this.gameNameForm.value.name);
-            this.dialogRef.close(this.gameNameForm.value.name);
             const differences: Coordinate[][] = this.differenceService.generateDifferencesPackages();
             const imageSources: ImageSources = this.imageService.getImageSources();
             const gameDetails: GameDetails = {
@@ -74,16 +66,8 @@ export class CreationGameDialogComponent implements OnInit {
                 differences,
                 isHard: this.differenceService.isGameHard(),
             };
-            this.communicationService.postGame(gameDetails).subscribe();
+            this.dialogRef.close(gameDetails);
             this.imageService.resetBothBackgrounds();
         }
-    }
-
-    submitAndNavigate() {
-        this.submitForm().then(() => {
-            setTimeout(() => {
-                this.router.navigate(['/config']);
-            }, SUBMIT_WAIT_TIME);
-        });
     }
 }

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 // Needed for window.location.reload()
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-import { SUBMIT_WAIT_TIME } from '@app/constants/constants';
+import { GameDetails } from '@app/interfaces/game-interfaces';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { CreationGameDialogComponent } from './creation-game-dialog.component';
@@ -121,30 +121,25 @@ describe('CreationGameDialogComponent', () => {
         expect(dialogRef.close).toHaveBeenCalled();
     });
 
-    it('should emit the game name and close the dialog if the form is valid', () => {
+    it('should emit the game and close the dialog if the form is valid', () => {
+        const gameDetails: GameDetails = {
+            name: 'name',
+            originalImage: 'left',
+            modifiedImage: 'right',
+            nDifference: 0,
+            differences: [],
+            isHard: true,
+        };
+        differenceServiceSpy.isGameHard.and.returnValue(true);
         component.gameNameForm = new FormGroup({ name: new FormControl('name') });
         imageServiceSpy.getImageSources.and.returnValue({ left: 'left', right: 'right' });
         differenceServiceSpy.generateDifferencesPackages.and.returnValue([]);
-        const spy = spyOn(component.gameNameEvent, 'emit');
         component.submitForm();
-        expect(spy).toHaveBeenCalledWith('name');
-        expect(dialogRef.close).toHaveBeenCalledWith('name');
+        expect(dialogRef.close).toHaveBeenCalledWith(gameDetails);
     });
 
-    it('should not emit the game name or close the dialog if the form is invalid', () => {
-        const spy = spyOn(component.gameNameEvent, 'emit');
+    it('should close the dialog if the form is invalid', () => {
         component.submitForm();
-        expect(spy).not.toHaveBeenCalled();
         expect(dialogRef.close).not.toHaveBeenCalled();
     });
-
-    it('should call submitAndNavigate correctlty when confirmation button is pressed', fakeAsync(() => {
-        const submitAndNavigateSpy = spyOn(component, 'submitAndNavigate').and.callThrough();
-        const submitFormSpy = spyOn(component, 'submitForm').and.returnValue(Promise.resolve());
-        spyOn(component['router'], 'navigate').and.returnValue(Promise.resolve(true));
-        component.submitAndNavigate();
-        tick(SUBMIT_WAIT_TIME);
-        expect(submitAndNavigateSpy).toHaveBeenCalled();
-        expect(submitFormSpy).toHaveBeenCalled();
-    }));
 });
