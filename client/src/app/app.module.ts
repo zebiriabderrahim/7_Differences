@@ -16,7 +16,6 @@ import { CreationGameDialogComponent } from '@app/components/creation-game-dialo
 import { GameInfosComponent } from '@app/components/game-infos/game-infos.component';
 import { GameSheetComponent } from '@app/components/game-sheet/game-sheet.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
-import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
@@ -41,7 +40,6 @@ import { ConfigPageComponent } from './pages/config-page/config-page.component';
         CreationPageComponent,
         MainPageComponent,
         MaterialPageComponent,
-        SidebarComponent,
         SelectionPageComponent,
         SoloGameViewComponent,
         GameSheetComponent,
