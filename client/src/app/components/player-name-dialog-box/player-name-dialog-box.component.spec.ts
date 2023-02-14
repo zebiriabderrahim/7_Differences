@@ -33,11 +33,6 @@ describe('PlayerNameDialogBoxComponent', () => {
         expect(component.playerNameForm.controls.name instanceof FormControl).toBeTruthy();
     });
 
-    it('should initialize the routerPlay', () => {
-        component.ngOnInit();
-        expect(component.routerPlay).toEqual('/game/1');
-    });
-
     it('should close the dialog onNoClick', () => {
         component.onNoClick();
         expect(dialogRef.close).toHaveBeenCalled();

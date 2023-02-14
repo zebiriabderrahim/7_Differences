@@ -6,13 +6,13 @@
     </p>
     <div *ngIf="isNumberOfDifferencesValid(); else differencesInvalid">
         <p>Veuillez entrer un nom de jeu :</p>
-        <form [formGroup]="gameNameForm" (ngSubmit)="submitForm()">
+        <form [formGroup]="gameNameForm" (ngSubmit)="submitAndNavigate()">
             <mat-form-field>
                 <input matInput type="text" placeholder="Entrer le nom de votre jeu" formControlName="name" />
                 <mat-error *ngIf="gameNameForm.controls.name.errors?.required" [ngClass]="'error'"> Le nom ne peut pas être vide</mat-error>
                 <mat-error *ngIf="gameNameForm.controls.name.errors?.pattern" [ngClass]="'error'">Le nom ne peut pas contenir d'espaces</mat-error>
             </mat-form-field>
-            <button mat-raised-button type="submit" [routerLink]="routerConfig" [disabled]="gameNameForm.invalid">Créer un jeu</button>
+            <button mat-raised-button type="submit" [disabled]="gameNameForm.invalid">Créer un jeu</button>
             <button mat-button (click)="onNoClick()">Quitter</button>
         </form>
     </div>

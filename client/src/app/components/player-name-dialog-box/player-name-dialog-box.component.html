@@ -7,7 +7,7 @@
             <mat-error *ngIf="playerNameForm.controls.name.errors?.required" [ngClass]="'error'"> Le nom ne peut être vide!</mat-error>
             <mat-error *ngIf="playerNameForm.controls.name.errors?.pattern" [ngClass]="'error'">Le nom ne peut contenir d'espaces!</mat-error>
         </mat-form-field>
-        <button mat-raised-button type="submit" [routerLink]="routerPlay" [disabled]="playerNameForm.invalid">Ok</button>
+        <button mat-raised-button type="submit" routerLink="/game" [disabled]="playerNameForm.invalid">Ok</button>
         <button mat-button (click)="onNoClick()">Non merci</button>
     </form>
 </div>
