@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
 export class ConfigPageComponent implements OnInit, OnDestroy {
     readonly titre: string = 'Configure ton jeu';
     readonly createRoute: string = '/create';
+    readonly homeRoute: string = '/home';
     configConstants: GameConfigConst;
     private commSub: Subscription;
 
