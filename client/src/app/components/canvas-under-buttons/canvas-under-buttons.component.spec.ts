@@ -77,8 +77,8 @@ describe('CanvasUnderButtonsComponent', () => {
         spyOn(validationService, 'isImageTypeValid').and.callFake(() => {
             return true;
         });
-        spyOn(validationService, 'isImageFormatValid').and.callFake(async () => {
-            return true as unknown as Promise<boolean>;
+        spyOn(validationService, 'isImageFormatValid').and.callFake(() => {
+            return true;
         });
         const setImageIfValidSpy = spyOn(component, 'setImageIfValid');
 
@@ -91,7 +91,7 @@ describe('CanvasUnderButtonsComponent', () => {
         spyOn(validationService, 'isImageSizeValid').and.callFake(() => {
             return false;
         });
-        spyOn(validationService, 'isImageFormatValid').and.callFake(async () => {
+        spyOn(validationService, 'isImageFormatValid').and.callFake(() => {
             return false;
         });
         const mockImage = {} as ImageBitmap;
@@ -113,7 +113,7 @@ describe('CanvasUnderButtonsComponent', () => {
         spyOn(validationService, 'isImageSizeValid').and.callFake(() => {
             return true;
         });
-        spyOn(validationService, 'isImageFormatValid').and.callFake(async () => {
+        spyOn(validationService, 'isImageFormatValid').and.callFake(() => {
             return true;
         });
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake

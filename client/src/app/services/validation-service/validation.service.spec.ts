@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { ARRAY_BUFFER_OFFSET, BMP_HEADER_OFFSET, FORMAT_IMAGE, IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
+import { VALID_BMP_SIZE } from '@app/constants/constants';
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { ImageService } from '@app/services/image-service/image.service';
 import { of } from 'rxjs';
 import { ValidationService } from './validation.service';
@@ -59,23 +60,13 @@ describe('ValidationService', () => {
         expect(service.isImageSizeValid(image)).toBeFalsy();
     });
 
-    it('isImageFormatValid should return true if the image format is valid', async () => {
-        const file = {
-            arrayBuffer: async () => Promise.resolve(new ArrayBuffer(ARRAY_BUFFER_OFFSET)),
-        };
-        spyOn(DataView.prototype, 'getUint16').and.returnValue(FORMAT_IMAGE);
-
-        const result = await service.isImageFormatValid(file as File);
-        expect(result).toBeTruthy();
+    it('isImageFormatValid should return true when given an valid image', () => {
+        const file = new File([new Uint8Array(VALID_BMP_SIZE)], 'example.bmp');
+        expect(service.isImageFormatValid(file)).toBeTruthy();
     });
 
-    it('isImageFormatValid should return false if the image format is invalid', async () => {
-        const file = {
-            arrayBuffer: async () => Promise.resolve(new ArrayBuffer(ARRAY_BUFFER_OFFSET)),
-        };
-        spyOn(DataView.prototype, 'getUint16').and.returnValue(BMP_HEADER_OFFSET + 1);
-
-        const result = await service.isImageFormatValid(file as File);
-        expect(result).toBeFalsy();
+    it('isImageFormatValid should return false when given an invalid image', () => {
+        const file = new File([], 'filename.png', { type: 'image/png' });
+        expect(service.isImageFormatValid(file)).toBeFalsy();
     });
 });
