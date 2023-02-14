@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { TestBed } from '@angular/core/testing';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { DifferenceService } from './difference.service';

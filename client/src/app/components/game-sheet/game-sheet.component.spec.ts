@@ -19,7 +19,7 @@ describe('GameSheetComponent', () => {
             providers: [
                 {
                     provide: ClassicSystemService,
-                    // eslint-disable-next-line @typescript-eslint/no-empty-function
+                    // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for fake
                     useValue: { playerName: { next: () => {} }, id: { next: () => {} } },
                 },
                 {
