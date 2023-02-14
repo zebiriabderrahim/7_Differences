@@ -1,4 +1,4 @@
-import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { ImageService } from '@app/services/image-service/image.service';
@@ -11,6 +11,7 @@ import { ValidationService } from '@app/services/validation-service/validation.s
 })
 export class CanvasUnderButtonsComponent {
     @Input() position: CanvasPosition;
+    @ViewChild('uploadEl') uploadElRef: ElementRef;
     @ViewChild('invalidImageDialog', { static: true })
     private readonly invalidImageDialog: TemplateRef<HTMLElement>;
     readonly canvasPosition: typeof CanvasPosition = CanvasPosition;
@@ -43,6 +44,7 @@ export class CanvasUnderButtonsComponent {
     }
 
     resetBackground(): void {
+        this.uploadElRef.nativeElement.value = '';
         this.imageService.resetBackground(this.position);
     }
 }
