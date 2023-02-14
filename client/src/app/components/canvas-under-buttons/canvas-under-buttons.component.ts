@@ -35,7 +35,7 @@ export class CanvasUnderButtonsComponent {
 
     async setImageIfValid(file: File): Promise<void> {
         const image = await createImageBitmap(file);
-        if (this.validationService.isImageSizeValid(image) && (await this.validationService.isImageFormatValid(file))) {
+        if (this.validationService.isImageSizeValid(image) && this.validationService.isImageFormatValid(file)) {
             this.imageService.setBackground(this.position, image);
         } else {
             this.matDialog.open(this.invalidImageDialog);

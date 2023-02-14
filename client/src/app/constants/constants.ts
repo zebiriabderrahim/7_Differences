@@ -7,3 +7,4 @@ export const START_TIME = 0;
 export const GAME_CARROUSEL_SIZE = 4;
 export const N_DIFFERENCES_HARD_GAME = 7;
 export const HARD_DIFFERENCES_PERCENTAGE = 0.15;
+export const VALID_BMP_SIZE = 921654;
