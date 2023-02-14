@@ -1,6 +1,6 @@
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { DatabaseService } from '@app/services/database/database.service';
-import { CarouselPaginator, Game, GameConfigConst } from '@common/game-interfaces';
+import { CarouselPaginator, GameConfigConst, ServerSideGame } from '@common/game-interfaces';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
@@ -15,11 +15,11 @@ export class GameService {
         throw new NotFoundException('No game config constants found');
     }
 
-    getGameCarousel(): CarouselPaginator[] {
-        return this.databaseService.getGamesCarrousel();
+    async getGameCarousel(): Promise<CarouselPaginator[]> {
+        return await this.databaseService.getGamesCarrousel();
     }
 
-    getGameById(id: number): Game {
+    getGameById(id: string): ServerSideGame {
         const game = this.databaseService.getGameById(id);
         if (game) {
             return game;
@@ -28,6 +28,6 @@ export class GameService {
     }
 
     addGame(newGame: CreateGameDto): void {
-        this.databaseService.addGame(newGame);
+        this.databaseService.addGameInDb(newGame);
     }
 }

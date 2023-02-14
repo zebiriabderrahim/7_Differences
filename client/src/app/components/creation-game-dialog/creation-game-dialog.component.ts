@@ -1,6 +1,8 @@
 import { Component, ElementRef, EventEmitter, Inject, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { SUBMIT_WAIT_TIME } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { Coordinate } from '@app/interfaces/coordinate';
 import { GameDetails } from '@app/interfaces/game-interfaces';
@@ -32,6 +34,7 @@ export class CreationGameDialogComponent implements OnInit {
         private readonly differenceService: DifferenceService,
         private readonly communicationService: CommunicationService,
         private readonly dialogRef: MatDialogRef<CreationPageComponent>,
+        private readonly router: Router,
         @Inject(MAT_DIALOG_DATA) public radius: number,
     ) {}
 
@@ -57,11 +60,10 @@ export class CreationGameDialogComponent implements OnInit {
         this.dialogRef.close();
     }
 
-    submitForm() {
+    async submitForm() {
         if (this.gameNameForm.valid && this.gameNameForm.value.name) {
             this.gameNameEvent.emit(this.gameNameForm.value.name);
             this.dialogRef.close(this.gameNameForm.value.name);
-            this.imageService.resetBothBackgrounds();
             const differences: Coordinate[][] = this.differenceService.generateDifferencesPackages();
             const imageSources: ImageSources = this.imageService.getImageSources();
             const gameDetails: GameDetails = {
@@ -73,6 +75,15 @@ export class CreationGameDialogComponent implements OnInit {
                 isHard: this.differenceService.isGameHard(),
             };
             this.communicationService.postGame(gameDetails).subscribe();
+            this.imageService.resetBothBackgrounds();
         }
+    }
+
+    submitAndNavigate() {
+        this.submitForm().then(() => {
+            setTimeout(() => {
+                this.router.navigate(['/config']);
+            }, SUBMIT_WAIT_TIME);
+        });
     }
 }

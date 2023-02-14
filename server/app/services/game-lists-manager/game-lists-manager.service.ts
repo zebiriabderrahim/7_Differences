@@ -1,7 +1,9 @@
-import { Game, GameCard, CarouselPaginator, PlayerTime } from '@common/game-interfaces';
-import { Injectable } from '@nestjs/common';
-import { GAME_CARROUSEL_SIZE } from '@common/constants';
+import { Game } from '@app/model/database/game';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
+import { GAME_CARROUSEL_SIZE } from '@common/constants';
+import { CarouselPaginator, GameCard, PlayerTime, ServerSideGame } from '@common/game-interfaces';
+import { Injectable } from '@nestjs/common';
+import * as fs from 'fs';
 
 @Injectable()
 export class GameListsManagerService {
@@ -13,12 +15,13 @@ export class GameListsManagerService {
 
     buildGameCardFromGame(game: Game): GameCard {
         const gameCard: GameCard = {
-            id: game.id,
+            // eslint-disable-next-line no-param-reassign, no-underscore-dangle
+            id: game._id,
             name: game.name,
-            difficultyLevel: game.difficultyLevel,
-            soloTopTime: game.soloTopTime,
-            oneVsOneTopTime: game.oneVsOneTopTime,
-            thumbnail: game.thumbnail,
+            difficultyLevel: game.isHard,
+            soloTopTime: this.defaultBestTimes,
+            oneVsOneTopTime: this.defaultBestTimes,
+            thumbnail: fs.readFileSync(`assets/${game.name}/original.bmp`, 'base64'),
         };
         return gameCard;
     }
@@ -49,18 +52,15 @@ export class GameListsManagerService {
             }
         }
     }
-    createGameFromGameDto(newGame: CreateGameDto): Game {
+    createGameFromGameDto(newGame: CreateGameDto): ServerSideGame {
         return {
-            id: newGame.id,
+            id: '',
             name: newGame.name,
             original: newGame.originalImage,
             modified: newGame.modifiedImage,
-            soloTopTime: this.defaultBestTimes,
-            oneVsOneTopTime: this.defaultBestTimes,
-            difficultyLevel: newGame.isHard,
-            thumbnail: newGame.modifiedImage,
+            differences: newGame.differences,
             differencesCount: newGame.nDifference,
-            hintList: [],
+            isHard: newGame.isHard,
         };
     }
 }
