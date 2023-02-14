@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { MatDialog, MatDialogConfig, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { MatRadioModule } from '@angular/material/radio';
 import { By } from '@angular/platform-browser';
@@ -10,13 +10,14 @@ import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-button
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
 import { ImageService } from '@app/services/image-service/image.service';
+import { of } from 'rxjs';
 import { CreationPageComponent } from './creation-page.component';
 
 describe('CreationPageComponent', () => {
     let component: CreationPageComponent;
     let fixture: ComponentFixture<CreationPageComponent>;
-    let matDialogSpy: jasmine.SpyObj<MatDialog>;
     let imageService: ImageService;
+    let matDialogSpy: jasmine.SpyObj<MatDialog>;
 
     beforeEach(async () => {
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
@@ -36,10 +37,19 @@ describe('CreationPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('validateDifferences should open imageNotSetDialog with config if images are set', () => {
+    it('validateDifferences should open imageNotSetDialog with config if images are set', async () => {
+        matDialogSpy.open.and.returnValue({
+            afterClosed: () => of('test'),
+        } as MatDialogRef<CreationGameDialogComponent>);
         spyOn(imageService, 'areImagesSet').and.callFake(() => {
             return true;
         });
+
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for mock
+        spyOn(component['router'], 'navigate').and.callFake(async () => {
+            return {} as Promise<boolean>;
+        });
+
         component.validateDifferences();
         const dialogConfig = new MatDialogConfig();
         dialogConfig.data = component.radius;

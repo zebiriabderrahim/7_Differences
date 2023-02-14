@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { IMG_TYPE } from '@app/constants/creation-page';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { ImageService } from '@app/services/image-service/image.service';
@@ -19,7 +20,7 @@ describe('CanvasUnderButtonsComponent', () => {
     beforeEach(async () => {
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
-            imports: [MatDialogModule, HttpClientTestingModule, MatIconModule, MatButtonModule],
+            imports: [MatDialogModule, HttpClientTestingModule, MatIconModule, MatButtonModule, MatTooltipModule],
             declarations: [CanvasUnderButtonsComponent],
             providers: [{ provide: MatDialog, useValue: matDialogSpy }],
         }).compileComponents();
@@ -76,8 +77,8 @@ describe('CanvasUnderButtonsComponent', () => {
         spyOn(validationService, 'isImageTypeValid').and.callFake(() => {
             return true;
         });
-        spyOn(validationService, 'isImageFormatValid').and.callFake(async () => {
-            return true as unknown as Promise<boolean>;
+        spyOn(validationService, 'isImageFormatValid').and.callFake(() => {
+            return true;
         });
         const setImageIfValidSpy = spyOn(component, 'setImageIfValid');
 
@@ -90,7 +91,7 @@ describe('CanvasUnderButtonsComponent', () => {
         spyOn(validationService, 'isImageSizeValid').and.callFake(() => {
             return false;
         });
-        spyOn(validationService, 'isImageFormatValid').and.callFake(async () => {
+        spyOn(validationService, 'isImageFormatValid').and.callFake(() => {
             return false;
         });
         const mockImage = {} as ImageBitmap;
@@ -112,7 +113,7 @@ describe('CanvasUnderButtonsComponent', () => {
         spyOn(validationService, 'isImageSizeValid').and.callFake(() => {
             return true;
         });
-        spyOn(validationService, 'isImageFormatValid').and.callFake(async () => {
+        spyOn(validationService, 'isImageFormatValid').and.callFake(() => {
             return true;
         });
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake

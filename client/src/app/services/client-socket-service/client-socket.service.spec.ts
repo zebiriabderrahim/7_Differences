@@ -1,11 +1,8 @@
-/* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable no-unused-vars */
 import { TestBed } from '@angular/core/testing';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { Socket } from 'socket.io-client';
 
-type CallbackSignature = (params: unknown) => {};
+type CallbackSignature = (params: unknown) => unknown;
 
 export class SocketTestHelper {
     private callbacks = new Map<string, CallbackSignature[]>();
@@ -18,6 +15,7 @@ export class SocketTestHelper {
         this.callbacks.get(event)?.push(callback);
     }
 
+    // eslint-disable-next-line no-unused-vars -- needed for testing
     emit(event: string, params: unknown) {
         return;
     }
@@ -31,6 +29,7 @@ export class SocketTestHelper {
             return;
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- needed for mock
         for (const callback of this.callbacks.get(event)!) {
             callback(params);
         }
@@ -76,7 +75,7 @@ describe('ClientSocketService', () => {
 
     it('should call socket.on with an event', () => {
         const event = 'helloWorld';
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for fake function
         const action = () => {};
         const spy = spyOn(service.socket, 'on');
         service.on(event, action);

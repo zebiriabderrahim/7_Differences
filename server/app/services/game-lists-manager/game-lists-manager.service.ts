@@ -15,6 +15,7 @@ export class GameListsManagerService {
 
     buildGameCardFromGame(game: Game): GameCard {
         const gameCard: GameCard = {
+            // Id comes from database to allow _id
             // eslint-disable-next-line no-param-reassign, no-underscore-dangle
             id: game._id,
             name: game.name,
