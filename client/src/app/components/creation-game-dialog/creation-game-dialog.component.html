@@ -1,7 +1,7 @@
 <div mat-dialog-content>
     <h1 mat-dialog-title>Voici l'image des différences :</h1>
     <canvas #differenceCanvas></canvas>
-    <p *ngIf="displayDifferences">
+    <p>
         Il y a : <strong> {{ displayDifferences }} </strong> différences
     </p>
     <div *ngIf="isNumberOfDifferencesValid(); else differencesInvalid">
@@ -18,9 +18,6 @@
         </form>
     </div>
     <ng-template #differencesInvalid>
-        <div *ngIf="this.nDifferences === 0">
-            <p>Les deux images téléversées sont <strong>identiques</strong>. Veuillez mettre deux images <strong>différentes</strong>.</p>
-        </div>
         <p>Il doit y avoir entre 3 et 9 différences. Veuillez recommencer le processus</p>
         <button mat-button mat-dialog-close>Fermer</button>
     </ng-template>
