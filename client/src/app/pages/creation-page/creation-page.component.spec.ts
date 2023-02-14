@@ -9,7 +9,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
-import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { ImageService } from '@app/services/image-service/image.service';
 import { of } from 'rxjs';
 import { CreationPageComponent } from './creation-page.component';
@@ -17,15 +16,13 @@ import { CreationPageComponent } from './creation-page.component';
 describe('CreationPageComponent', () => {
     let component: CreationPageComponent;
     let fixture: ComponentFixture<CreationPageComponent>;
-    let matDialogSpy: jasmine.SpyObj<MatDialog>;
     let imageService: ImageService;
 
     beforeEach(async () => {
-        matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
             declarations: [CreationPageComponent, ImageCanvasComponent, CanvasUnderButtonsComponent, MatIcon],
             imports: [MatDialogModule, RouterTestingModule, MatRadioModule, FormsModule, HttpClientTestingModule],
-            providers: [{ provide: MatDialog, useValue: matDialogSpy }],
+            providers: [{ provide: MatDialog }],
         }).compileComponents();
 
         fixture = TestBed.createComponent(CreationPageComponent);
@@ -39,26 +36,26 @@ describe('CreationPageComponent', () => {
     });
 
     it('validateDifferences should open imageNotSetDialog with config if images are set', () => {
+        const matDialogOpenSpy = spyOn(component['matDialog'], 'open').and.returnValue({
+            afterClosed: () => of('test'),
+        } as MatDialogRef<CreationGameDialogComponent>);
         spyOn(imageService, 'areImagesSet').and.callFake(() => {
             return true;
         });
-        const popUpSpy = spyOn(component['matDialog'], 'open').and.returnValue({
-            afterClosed: () => of('test'),
-        } as MatDialogRef<PlayerNameDialogBoxComponent>);
-        expect(popUpSpy).toHaveBeenCalled();
-        expect(imageService).toHaveBeenCalled();
+
         component.validateDifferences();
         const dialogConfig = new MatDialogConfig();
         dialogConfig.data = component.radius;
-        expect(matDialogSpy.open).toHaveBeenCalledWith(CreationGameDialogComponent, dialogConfig);
+        expect(matDialogOpenSpy).toHaveBeenCalledWith(CreationGameDialogComponent, dialogConfig);
     });
 
     it('validateDifferences should open imageNotSetDialog if images are not set', () => {
+        const matDialogOpenSpy = spyOn(component['matDialog'], 'open');
         spyOn(imageService, 'areImagesSet').and.callFake(() => {
             return false;
         });
         component.validateDifferences();
-        expect(matDialogSpy.open).toHaveBeenCalled();
+        expect(matDialogOpenSpy).toHaveBeenCalled();
     });
 
     it('should select a radio button', () => {

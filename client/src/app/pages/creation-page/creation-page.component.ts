@@ -22,7 +22,7 @@ export class CreationPageComponent {
     readonly radiusSizes: number[];
     radius: number;
 
-    // Services are needed for the dialog and dialog needs to talk to the parent component
+    // Services are needed for the page and page needs to dialog component
     // eslint-disable-next-line max-params
     constructor(
         private readonly imageService: ImageService,
