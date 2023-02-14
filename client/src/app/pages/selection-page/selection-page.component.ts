@@ -10,6 +10,7 @@ import { CommunicationService } from '@app/services/communication-service/commun
 })
 export class SelectionPageComponent implements AfterViewInit {
     gameCarrousel: CarouselPaginator;
+    readonly homeRoute: string = '/home';
     private index: number = 0;
     constructor(private readonly communicationService: CommunicationService, public router: Router) {
         this.gameCarrousel = { hasNext: false, hasPrevious: false, gameCards: [] };
