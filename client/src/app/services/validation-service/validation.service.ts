@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BMP_HEADER_OFFSET, FORMAT_IMAGE, IMG_HEIGHT, IMG_TYPE, IMG_WIDTH } from '@app/constants/creation-page';
+import { VALID_BMP_SIZE } from '@app/constants/constants';
+import { IMG_HEIGHT, IMG_TYPE, IMG_WIDTH } from '@app/constants/creation-page';
 
 @Injectable({
     providedIn: 'root',
@@ -13,8 +14,7 @@ export class ValidationService {
         return image.width === IMG_WIDTH && image.height === IMG_HEIGHT;
     }
 
-    async isImageFormatValid(file: File): Promise<boolean> {
-        const bmpHeader = new DataView(await file.arrayBuffer());
-        return bmpHeader.getUint16(BMP_HEADER_OFFSET, true) === FORMAT_IMAGE;
+    isImageFormatValid(file: File): boolean {
+        return file.size === VALID_BMP_SIZE;
     }
 }
