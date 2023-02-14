@@ -6,6 +6,7 @@
     </p>
     <div *ngIf="isNumberOfDifferencesValid(); else differencesInvalid">
         <p>Veuillez entrer un nom de jeu :</p>
+        <p><strong>Attention : si le nom du jeu existe déjà, le jeu ne sera pas créé</strong></p>
         <form [formGroup]="gameNameForm" (ngSubmit)="submitForm()">
             <mat-form-field>
                 <input matInput type="text" [(ngModel)]="gameName" placeholder="Entrer le nom de votre jeu" formControlName="name" />
