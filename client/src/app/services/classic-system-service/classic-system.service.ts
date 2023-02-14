@@ -32,7 +32,9 @@ export class ClassicSystemService implements OnDestroy {
             this.idSubscription.unsubscribe();
             this.playerNameSubscription.unsubscribe();
         }
+        this.clientSocket.disconnect();
     }
+
     createSoloGame(): void {
         this.playerNameSubscription = this.playerName.asObservable().subscribe((playerName: string) => {
             this.idSubscription = this.id.asObservable().subscribe((id: string) => {
