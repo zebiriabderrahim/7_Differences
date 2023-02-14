@@ -17,12 +17,14 @@ describe('CreationPageComponent', () => {
     let component: CreationPageComponent;
     let fixture: ComponentFixture<CreationPageComponent>;
     let imageService: ImageService;
+    let matDialogSpy: jasmine.SpyObj<MatDialog>;
 
     beforeEach(async () => {
+        matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
             declarations: [CreationPageComponent, ImageCanvasComponent, CanvasUnderButtonsComponent, MatIcon],
             imports: [MatDialogModule, RouterTestingModule, MatRadioModule, FormsModule, HttpClientTestingModule],
-            providers: [{ provide: MatDialog }],
+            providers: [{ provide: MatDialog, useValue: matDialogSpy }],
         }).compileComponents();
 
         fixture = TestBed.createComponent(CreationPageComponent);
@@ -35,27 +37,31 @@ describe('CreationPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('validateDifferences should open imageNotSetDialog with config if images are set', () => {
-        const matDialogOpenSpy = spyOn(component['matDialog'], 'open').and.returnValue({
+    it('validateDifferences should open imageNotSetDialog with config if images are set', async () => {
+        matDialogSpy.open.and.returnValue({
             afterClosed: () => of('test'),
         } as MatDialogRef<CreationGameDialogComponent>);
         spyOn(imageService, 'areImagesSet').and.callFake(() => {
             return true;
         });
 
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for mock
+        spyOn(component['router'], 'navigate').and.callFake(async () => {
+            return {} as Promise<boolean>;
+        });
+
         component.validateDifferences();
         const dialogConfig = new MatDialogConfig();
         dialogConfig.data = component.radius;
-        expect(matDialogOpenSpy).toHaveBeenCalledWith(CreationGameDialogComponent, dialogConfig);
+        expect(matDialogSpy.open).toHaveBeenCalledWith(CreationGameDialogComponent, dialogConfig);
     });
 
     it('validateDifferences should open imageNotSetDialog if images are not set', () => {
-        const matDialogOpenSpy = spyOn(component['matDialog'], 'open');
         spyOn(imageService, 'areImagesSet').and.callFake(() => {
             return false;
         });
         component.validateDifferences();
-        expect(matDialogOpenSpy).toHaveBeenCalled();
+        expect(matDialogSpy.open).toHaveBeenCalled();
     });
 
     it('should select a radio button', () => {
