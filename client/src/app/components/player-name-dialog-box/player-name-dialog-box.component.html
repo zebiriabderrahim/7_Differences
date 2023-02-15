@@ -1,0 +1,13 @@
+<h1 mat-dialog-title>Bonjour</h1>
+<div mat-dialog-content>
+    <p>Veuillez entrer un nom valide</p>
+    <form [formGroup]="playerNameForm" (ngSubmit)="submitForm()">
+        <mat-form-field>
+            <input matInput type="text" placeholder="Entrer votre nom" formControlName="name" />
+            <mat-error *ngIf="playerNameForm.controls.name.errors?.required" [ngClass]="'error'"> Le nom ne peut être vide!</mat-error>
+            <mat-error *ngIf="playerNameForm.controls.name.errors?.pattern" [ngClass]="'error'">Le nom ne peut contenir d'espaces!</mat-error>
+        </mat-form-field>
+        <button mat-raised-button type="submit" routerLink="/game" [disabled]="playerNameForm.invalid">Ok</button>
+        <button mat-button (click)="onNoClick()">Non merci</button>
+    </form>
+</div>

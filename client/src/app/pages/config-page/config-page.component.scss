@@ -1,0 +1,41 @@
+.create_button {
+    font-size: 20px;
+    width: 500px;
+    height: 90px;
+    background-color: white;
+}
+
+.menu_button {
+    font-size: 20px;
+    width: 600px;
+    height: 100px;
+    background-color: white;
+}
+
+.under-game-list {
+    text-align: center;
+}
+
+.Back-menu {
+    text-align: center;
+}
+
+.game-constants {
+    display: inline-block;
+    margin-left: 6%;
+    margin-right: 6%;
+    float: none;
+}
+
+.game-constants {
+    width: 80%;
+}
+
+.game-constants * * {
+    margin: 2% 2%;
+    font-size: 20px;
+}
+
+.upper-list-game {
+    background-color: rgb(255, 255, 255);
+}

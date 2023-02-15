@@ -9,5 +9,11 @@
     "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
     "eslint.workingDirectories": ["./client", "./server"],
     "eslint.probe": ["javascript", "typescript", "html", "vue", "markdown"],
-    "eslint.validate": ["javascript", "typescript", "html", "vue", "markdown"]
+    "eslint.validate": ["javascript", "typescript", "html", "vue", "markdown"],
+    "[html]": {
+        "editor.defaultFormatter": "ms-vsliveshare.vsliveshare"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }

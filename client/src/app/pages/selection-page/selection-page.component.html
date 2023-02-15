@@ -1,0 +1,22 @@
+<div class="selection-component">
+    <h1 *ngIf="router.url === '/selection'">Selectionne ton jeu</h1>
+    <h1 *ngIf="router.url === '/config'">Configure ton jeu</h1>
+    <mat-grid-list cols="4">
+       <ng-container  *ngIf="gameCarrousel.gameCards">
+            <mat-grid-tile *ngFor="let game of gameCarrousel.gameCards" class="section">
+                <app-game-sheet  [game]="game"></app-game-sheet>
+            </mat-grid-tile>
+        </ng-container>
+    </mat-grid-list>
+    <div class="buttonContainer">
+        <button mat-raised-button *ngIf="gameCarrousel.hasPrevious" mat-raised-button class="previous_button" (click)="hasPrevious()"><< Précedent</button>
+        <button mat-raised-button *ngIf="gameCarrousel.hasNext" mat-raised-button class="next_button" (click)="hasNext()">Suivant >></button>
+    </div>
+    <mat-grid-list *ngIf="router.url === '/selection'" cols="1" rowHeight="300px">
+        <mat-grid-tile>
+            <div class="Back-menu">
+                <button mat-raised-button [routerLink]="homeRoute" class="menu_button">Retourner au menu</button>
+            </div>    
+        </mat-grid-tile>
+    </mat-grid-list>
+</div>
