@@ -45,7 +45,7 @@ describe('CreationPageComponent', () => {
             return true;
         });
 
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for mock
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for the mock
         spyOn(component['router'], 'navigate').and.callFake(async () => {
             return {} as Promise<boolean>;
         });
