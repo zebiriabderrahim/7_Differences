@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
 import { BLACK_PIXEL, N_PIXEL_ATTRIBUTE, WHITE_PIXEL } from '@app/constants/pixels';
 import { CanvasPosition } from '@app/enum/canvas-position';
-import { Coordinate } from '@app/interfaces/coordinate';
+import { Coordinate } from '@common/coordinate';
 import { ImageSources } from '@app/interfaces/image-sources';
 import { GamePixels, Pixel } from '@app/interfaces/pixel';
 
