@@ -21,7 +21,6 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
-import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
 import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.component';
 import { CanvasUnderButtonsComponent } from './components/canvas-under-buttons/canvas-under-buttons.component';
@@ -39,7 +38,6 @@ import { ConfigPageComponent } from './pages/config-page/config-page.component';
         AppComponent,
         CreationPageComponent,
         MainPageComponent,
-        MaterialPageComponent,
         SelectionPageComponent,
         SoloGameViewComponent,
         GameSheetComponent,
