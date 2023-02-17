@@ -1,4 +1,4 @@
-import { Coordinate } from '@app/interfaces/coordinate';
+import { Coordinate } from '@common/coordinate';
 
 export interface GameDetails {
     name: string;

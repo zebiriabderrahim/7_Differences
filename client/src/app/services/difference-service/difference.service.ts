@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HARD_DIFFERENCES_PERCENTAGE, N_DIFFERENCES_HARD_GAME } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH, MAX_N_DIFFERENCES, MIN_N_DIFFERENCES } from '@app/constants/creation-page';
-import { Coordinate } from '@app/interfaces/coordinate';
+import { Coordinate } from '@common/coordinate';
 import { GamePixels, Pixel } from '@app/interfaces/pixel';
 
 @Injectable({
