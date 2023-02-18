@@ -1,15 +1,5 @@
 import { Coordinate } from '@common/coordinate';
 
-export interface GameDetails {
-    id?: number;
-    name: string;
-    originalImage: string;
-    modifiedImage: string;
-    nDifference: number;
-    differences: Coordinate[][];
-    isHard: boolean;
-}
-
 export interface ServerSideGame {
     id: string;
     name: string;

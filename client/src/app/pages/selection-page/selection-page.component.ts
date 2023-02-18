@@ -1,6 +1,6 @@
 import { AfterViewInit, Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { CarouselPaginator } from '@app/interfaces/game-interfaces';
+import { CarouselPaginator } from '@common/game-interfaces';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 
 @Component({
