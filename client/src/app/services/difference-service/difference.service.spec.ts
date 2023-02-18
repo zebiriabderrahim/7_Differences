@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { DifferenceService } from './difference.service';
 
 describe('DifferenceService', () => {

@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { N_PIXEL_ATTRIBUTE } from '@app/constants/pixels';
 import { CanvasPosition } from '@app/enum/canvas-position';
 
