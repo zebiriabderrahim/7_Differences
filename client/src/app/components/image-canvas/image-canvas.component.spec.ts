@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ImageCanvasComponent } from './image-canvas.component';
 

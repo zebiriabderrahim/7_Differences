@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { VALID_BMP_SIZE } from '@app/constants/constants';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
+import { IMG_HEIGHT, IMG_WIDTH, VALID_BMP_SIZE } from '@app/constants/image';
 import { ImageService } from '@app/services/image-service/image.service';
 import { of } from 'rxjs';
 import { ValidationService } from './validation.service';

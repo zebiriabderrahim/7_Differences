@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { IMG_TYPE } from '@app/constants/creation-page';
+import { IMG_TYPE } from '@app/constants/image';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ValidationService } from '@app/services/validation-service/validation.service';
