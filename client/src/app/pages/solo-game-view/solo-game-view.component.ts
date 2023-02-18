@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from '@common/constants';
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from '@app/constants/constants';
 import { ClientSideGame } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
