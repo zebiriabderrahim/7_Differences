@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
-import { GameCard } from '@app/interfaces/game-interfaces';
+import { GameCard } from '@common/game-interfaces';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 
 @Component({

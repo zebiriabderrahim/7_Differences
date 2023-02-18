@@ -1,6 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { CarouselPaginator, Game, GameConfigConst, GameDetails } from '@app/interfaces/game-interfaces';
+import { Game, GameDetails } from '@app/interfaces/game-interfaces';
+import { CarouselPaginator, GameConfigConst } from '@common/game-interfaces';
 
 import { CommunicationService } from './communication.service';
 

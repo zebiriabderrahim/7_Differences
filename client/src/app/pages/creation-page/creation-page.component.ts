@@ -3,7 +3,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { SUBMIT_WAIT_TIME } from '@app/constants/constants';
-import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/creation-page';
+import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/difference';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { GameDetails } from '@app/interfaces/game-interfaces';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
