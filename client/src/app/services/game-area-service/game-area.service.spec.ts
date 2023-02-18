@@ -6,16 +6,8 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-import {
-    BACK_BUTTON,
-    CANVAS_HEIGHT,
-    CANVAS_WIDTH,
-    FLASH_WAIT_TIME,
-    FORWARD_BUTTON,
-    LEFT_BUTTON,
-    MIDDLE_BUTTON,
-    RIGHT_BUTTON,
-} from '@app/constants/constants';
+import { BACK_BUTTON, FLASH_WAIT_TIME, FORWARD_BUTTON, LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON } from '@app/constants/constants';
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { Coordinate } from '@common/coordinate';
 import { GameAreaService } from './game-area.service';
 
@@ -69,20 +61,20 @@ describe('GameAreaService', () => {
     });
 
     it('setAllData should get the imageData of the two contexts', () => {
-        const originalCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-        const modifiedCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-        const originalCanvasForeground: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-        const modifiedCanvasForeground: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const originalCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
+        const modifiedCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
+        const originalCanvasForeground: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
+        const modifiedCanvasForeground: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
 
         gameAreaService['originalContext'] = originalCanvas.getContext('2d')!;
         gameAreaService['modifiedContext'] = modifiedCanvas.getContext('2d')!;
         gameAreaService['originalContextFrontLayer'] = originalCanvasForeground.getContext('2d')!;
         gameAreaService['modifiedContextFrontLayer'] = modifiedCanvasForeground.getContext('2d')!;
 
-        gameAreaService['originalContext'].createImageData(CANVAS_WIDTH, CANVAS_HEIGHT);
-        gameAreaService['modifiedContext'].createImageData(CANVAS_WIDTH, CANVAS_HEIGHT);
-        gameAreaService['originalContextFrontLayer'].createImageData(CANVAS_WIDTH, CANVAS_HEIGHT);
-        gameAreaService['modifiedContextFrontLayer'].createImageData(CANVAS_WIDTH, CANVAS_HEIGHT);
+        gameAreaService['originalContext'].createImageData(IMG_WIDTH, IMG_HEIGHT);
+        gameAreaService['modifiedContext'].createImageData(IMG_WIDTH, IMG_HEIGHT);
+        gameAreaService['originalContextFrontLayer'].createImageData(IMG_WIDTH, IMG_HEIGHT);
+        gameAreaService['modifiedContextFrontLayer'].createImageData(IMG_WIDTH, IMG_HEIGHT);
 
         const originalGetImageDataSpy = spyOn(gameAreaService['originalContext'], 'getImageData');
         const modifiedGetImageDataSpy = spyOn(gameAreaService['modifiedContext'], 'getImageData');
@@ -91,10 +83,10 @@ describe('GameAreaService', () => {
 
         gameAreaService.setAllData();
 
-        const expectedOriginal = gameAreaService['originalContext'].getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        const expectedModified = gameAreaService['modifiedContext'].getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        const expectedOriginalFrontLayer = gameAreaService['originalContextFrontLayer'].getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        const expectedModifiedFrontLayer = gameAreaService['modifiedContextFrontLayer'].getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        const expectedOriginal = gameAreaService['originalContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        const expectedModified = gameAreaService['modifiedContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        const expectedOriginalFrontLayer = gameAreaService['originalContextFrontLayer'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        const expectedModifiedFrontLayer = gameAreaService['modifiedContextFrontLayer'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
 
         expect(originalGetImageDataSpy).toHaveBeenCalled();
         expect(modifiedGetImageDataSpy).toHaveBeenCalled();
@@ -107,7 +99,7 @@ describe('GameAreaService', () => {
     });
 
     it('loadImage should properly load an image', (done) => {
-        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d') as CanvasRenderingContext2D;
         const drawImageSpy = spyOn(context, 'drawImage').and.callFake(() => {});
 
@@ -119,8 +111,8 @@ describe('GameAreaService', () => {
     });
 
     it('should correctly eliminate disparities from the altered canvas', () => {
-        const originalCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-        const modifiedCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const originalCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
+        const modifiedCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
 
         gameAreaService['originalContext'] = originalCanvas.getContext('2d')!;
         gameAreaService['modifiedContext'] = modifiedCanvas.getContext('2d')!;
@@ -129,7 +121,7 @@ describe('GameAreaService', () => {
         const flashCorrectPixelsSpy = spyOn(gameAreaService, 'flashCorrectPixels').and.callFake(() => {});
 
         gameAreaService['originalContext'].fillRect(0, 0, 3, 1);
-        gameAreaService['modifiedContext'].createImageData(CANVAS_WIDTH, CANVAS_HEIGHT);
+        gameAreaService['modifiedContext'].createImageData(IMG_WIDTH, IMG_HEIGHT);
 
         const rectangleDifference = [
             { x: 0, y: 0 },
@@ -142,42 +134,42 @@ describe('GameAreaService', () => {
             { x: 1, y: 3 },
         ];
 
-        gameAreaService['originalPixelData'] = gameAreaService['originalContext'].getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        gameAreaService['modifiedPixelData'] = gameAreaService['modifiedContext'].getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        gameAreaService['originalPixelData'] = gameAreaService['originalContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        gameAreaService['modifiedPixelData'] = gameAreaService['modifiedContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         gameAreaService.replaceDifference(rectangleDifference);
 
         expect(putImageDataSpy).toHaveBeenCalled();
         expect(flashCorrectPixelsSpy).toHaveBeenCalled();
 
-        expect(gameAreaService['modifiedContext'].getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)).toEqual(
-            gameAreaService['modifiedContext'].getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT),
+        expect(gameAreaService['modifiedContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT)).toEqual(
+            gameAreaService['modifiedContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT),
         );
     });
 
     it('showError should display an error on the left canvas and play error sound effect', () => {
-        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService['originalContextFrontLayer'] = context;
-        const initialImageData: ImageData = context.createImageData(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const initialImageData: ImageData = context.createImageData(IMG_WIDTH, IMG_HEIGHT);
         const playErrorSoundSpy = spyOn(gameAreaService, 'playErrorSound').and.callFake(() => {});
         const methodSpy = spyOn(context, 'fillText');
         gameAreaService['mousePosition'] = { x: 100, y: 150 };
         gameAreaService.showError(true);
-        expect(context.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)).toEqual(initialImageData);
+        expect(context.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT)).toEqual(initialImageData);
         expect(methodSpy).toHaveBeenCalled();
         expect(playErrorSoundSpy).toHaveBeenCalled();
     });
 
     it('showError should display an error on the right canvas and play error sound effect', () => {
-        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService['modifiedContextFrontLayer'] = context;
-        const initialImageData: ImageData = context.createImageData(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const initialImageData: ImageData = context.createImageData(IMG_WIDTH, IMG_HEIGHT);
         const playErrorSoundSpy = spyOn(gameAreaService, 'playErrorSound').and.callFake(() => {});
         const methodSpy = spyOn(context, 'fillText');
         gameAreaService['mousePosition'] = { x: 100, y: 150 };
         gameAreaService.showError(false);
-        expect(context.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)).toEqual(initialImageData);
+        expect(context.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT)).toEqual(initialImageData);
         expect(methodSpy).toHaveBeenCalled();
         expect(playErrorSoundSpy).toHaveBeenCalled();
     });
@@ -188,21 +180,21 @@ describe('GameAreaService', () => {
             { x: 100, y: 200 },
             { x: 126, y: 154 },
         ];
-        const originalCanvasFrontLayer: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const originalCanvasFrontLayer: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         gameAreaService['originalContextFrontLayer'] = originalCanvasFrontLayer.getContext('2d')!;
-        const modifiedCanvasFrontLayer: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const modifiedCanvasFrontLayer: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         gameAreaService['modifiedContextFrontLayer'] = modifiedCanvasFrontLayer.getContext('2d')!;
         const ogPutImageDataSpy = spyOn(gameAreaService['originalContextFrontLayer'], 'putImageData');
         const mdPutImageDataSpy = spyOn(gameAreaService['modifiedContextFrontLayer'], 'putImageData');
         const ogClearRect = spyOn(gameAreaService['originalContextFrontLayer'], 'clearRect');
         const mdClearRect = spyOn(gameAreaService['modifiedContextFrontLayer'], 'clearRect');
         const ogInitialImageData = (gameAreaService['originalFrontPixelData'] = gameAreaService['originalContextFrontLayer'].createImageData(
-            CANVAS_WIDTH,
-            CANVAS_HEIGHT,
+            IMG_WIDTH,
+            IMG_HEIGHT,
         ));
         const mdInitialImageData = (gameAreaService['modifiedFrontPixelData'] = gameAreaService['modifiedContextFrontLayer'].createImageData(
-            CANVAS_WIDTH,
-            CANVAS_HEIGHT,
+            IMG_WIDTH,
+            IMG_HEIGHT,
         ));
         const playCorrectSoundSpy = spyOn(gameAreaService, 'playCorrectSound').and.callFake(() => {});
 
@@ -233,7 +225,7 @@ describe('GameAreaService', () => {
     });
 
     it('getOgContext should return originalContext', () => {
-        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService['originalContext'] = context;
         const returnedContext = gameAreaService.getOgContext();
@@ -241,7 +233,7 @@ describe('GameAreaService', () => {
     });
 
     it('getMdContext should return modifiedContext', () => {
-        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService['modifiedContext'] = context;
         const returnedContext = gameAreaService.getMdContext();
@@ -249,7 +241,7 @@ describe('GameAreaService', () => {
     });
 
     it('getOgFrontContext should return originalContextFrontLayer', () => {
-        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService['originalContextFrontLayer'] = context;
         const returnedContext = gameAreaService.getOgFrontContext();
@@ -257,7 +249,7 @@ describe('GameAreaService', () => {
     });
 
     it('getMdFrontContext should return modifiedContextFrontLayer', () => {
-        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService['modifiedContextFrontLayer'] = context;
         const returnedContext = gameAreaService.getMdFrontContext();
@@ -271,28 +263,28 @@ describe('GameAreaService', () => {
     });
 
     it('setOgContext should set originalContext', () => {
-        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService.setOgContext(context);
         expect(gameAreaService['originalContext']).toEqual(context);
     });
 
     it('setOgFrontContext should set originalContextFrontLayer', () => {
-        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService.setOgFrontContext(context);
         expect(gameAreaService['originalContextFrontLayer']).toEqual(context);
     });
 
     it('setMdContext should set modifiedContext', () => {
-        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService.setMdContext(context);
         expect(gameAreaService['modifiedContext']).toEqual(context);
     });
 
     it('setMdFrontContext should set modifiedContextFrontLayer', () => {
-        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService.setMdFrontContext(context);
         expect(gameAreaService['modifiedContextFrontLayer']).toEqual(context);
