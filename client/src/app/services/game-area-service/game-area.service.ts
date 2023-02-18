@@ -1,15 +1,7 @@
 import { HostListener, Injectable } from '@angular/core';
-import {
-    CANVAS_HEIGHT,
-    CANVAS_WIDTH,
-    FLASH_WAIT_TIME,
-    GREEN_FLASH_TIME,
-    LEFT_BUTTON,
-    ONE_SECOND,
-    PIXEL_LENGTH,
-    X_CENTERING_DISTANCE,
-    YELLOW_FLASH_TIME,
-} from '@app/constants/constants';
+import { FLASH_WAIT_TIME, GREEN_FLASH_TIME, LEFT_BUTTON, ONE_SECOND, X_CENTERING_DISTANCE, YELLOW_FLASH_TIME } from '@app/constants/constants';
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
+import { N_PIXEL_ATTRIBUTE } from '@app/constants/pixels';
 import { Coordinate } from '@common/coordinate';
 
 @Injectable({
@@ -44,10 +36,10 @@ export class GameAreaService {
     }
 
     setAllData(): void {
-        this.originalPixelData = this.originalContext.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        this.modifiedPixelData = this.modifiedContext.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        this.originalFrontPixelData = this.originalContextFrontLayer.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        this.modifiedFrontPixelData = this.modifiedContextFrontLayer.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        this.originalPixelData = this.originalContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        this.modifiedPixelData = this.modifiedContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        this.originalFrontPixelData = this.originalContextFrontLayer.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        this.modifiedFrontPixelData = this.modifiedContextFrontLayer.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
     }
 
     saveCoord(event: MouseEvent): void {
@@ -76,7 +68,7 @@ export class GameAreaService {
         frontContext.font = 'bold 30px sheriff';
         frontContext.fillText('ERREUR', this.mousePosition.x - X_CENTERING_DISTANCE, this.mousePosition.y);
         setTimeout(() => {
-            frontContext.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            frontContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
             this.clickDisabled = false;
         }, ONE_SECOND);
     }
@@ -84,7 +76,7 @@ export class GameAreaService {
     convert2DCoordToPixelIndex(differenceCoord: Coordinate[]): number[] {
         const imageDataIndex: number[] = [];
         for (const coord of differenceCoord) {
-            const flatIndex = (coord.x + CANVAS_WIDTH * coord.y) * PIXEL_LENGTH;
+            const flatIndex = (coord.x + IMG_WIDTH * coord.y) * N_PIXEL_ATTRIBUTE;
             imageDataIndex.push(flatIndex);
         }
         return imageDataIndex;
@@ -93,7 +85,7 @@ export class GameAreaService {
     replaceDifference(differenceCoord: Coordinate[]): void {
         const imageDataIndex = this.convert2DCoordToPixelIndex(differenceCoord);
         for (const index of imageDataIndex) {
-            for (let i = 0; i < PIXEL_LENGTH; i++) {
+            for (let i = 0; i < N_PIXEL_ATTRIBUTE; i++) {
                 this.modifiedPixelData.data[index + i] = this.originalPixelData.data[index + i];
             }
         }
@@ -137,16 +129,16 @@ export class GameAreaService {
 
             setTimeout(() => {
                 clearInterval(secondInterval);
-                this.modifiedContextFrontLayer.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-                this.originalContextFrontLayer.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                this.modifiedContextFrontLayer.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+                this.originalContextFrontLayer.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
                 this.clickDisabled = false;
             }, FLASH_WAIT_TIME);
         }, YELLOW_FLASH_TIME);
 
         setTimeout(() => {
             clearInterval(firstInterval);
-            this.modifiedContextFrontLayer.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-            this.originalContextFrontLayer.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            this.modifiedContextFrontLayer.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+            this.originalContextFrontLayer.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
             this.clickDisabled = false;
         }, FLASH_WAIT_TIME);
     }
