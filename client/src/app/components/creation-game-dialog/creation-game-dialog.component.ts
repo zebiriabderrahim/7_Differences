@@ -1,13 +1,13 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
-import { Coordinate } from '@app/interfaces/coordinate';
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { GameDetails } from '@app/interfaces/game-interfaces';
 import { ImageSources } from '@app/interfaces/image-sources';
 import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { ImageService } from '@app/services/image-service/image.service';
+import { Coordinate } from '@common/coordinate';
 
 @Component({
     selector: 'app-creation-game-dialog',

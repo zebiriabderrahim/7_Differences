@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from '@common/constants';
 import { ClientSideGame } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
@@ -18,7 +18,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     game: ClientSideGame;
     differencesFound: number = 0;
     timer: number = 0;
-    readonly canvasSize = { width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
+    readonly canvasSize = { width: IMG_WIDTH, height: IMG_HEIGHT };
     private timerSub: Subscription;
     private gameSub: Subscription;
     private differenceSub: Subscription;

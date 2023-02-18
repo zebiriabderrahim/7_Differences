@@ -1,4 +1,5 @@
-import { Coordinate } from '@app/interfaces/coordinate';
+import { Coordinate } from '@common/coordinate';
+import { PlayerTime } from '@common/game-interfaces';
 
 export interface GameDetails {
     name: string;
@@ -20,30 +21,4 @@ export interface Game {
     differencesCount: number;
     thumbnail: string;
     hintList: string[];
-}
-
-export interface GameCard {
-    id: string;
-    name: string;
-    difficultyLevel: boolean;
-    soloTopTime: PlayerTime[];
-    oneVsOneTopTime: PlayerTime[];
-    thumbnail: string;
-}
-
-export interface CarouselPaginator {
-    hasNext: boolean;
-    hasPrevious: boolean;
-    gameCards: GameCard[];
-}
-
-export interface GameConfigConst {
-    countdownTime: number;
-    penaltyTime: number;
-    bonusTime: number;
-}
-
-export interface PlayerTime {
-    name: string;
-    time: number;
 }
