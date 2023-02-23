@@ -18,11 +18,12 @@ export class ClassicSoloModeService {
         };
         const room: PlayRoom = {
             roomId: socket.id,
-            serverGame: structuredClone(game),
             clientGame: this.buildClientGameVersion(playerName, game),
             timer: 0,
             endMessage: '',
             differencesData: diffData,
+            originalDifferencesCount: game.differencesCount,
+            originalDifferences: structuredClone(game.differences),
         };
         this.rooms.set(room.roomId, room);
         socket.join(room.roomId);
@@ -39,18 +40,18 @@ export class ClassicSoloModeService {
 
     verifyCoords(roomId: string, coords: Coordinate, server: io.Server): void {
         const room = this.rooms.get(roomId);
-        const { serverGame } = room;
+        const { originalDifferences } = room;
         let index = 0;
-        for (; index < serverGame.differences.length; index++) {
-            if (serverGame.differences[index].some((coord: Coordinate) => coord.x === coords.x && coord.y === coords.y)) {
+        for (; index < originalDifferences.length; index++) {
+            if (originalDifferences[index].some((coord: Coordinate) => coord.x === coords.x && coord.y === coords.y)) {
                 room.differencesData.differencesFound++;
-                room.differencesData.currentDifference = serverGame.differences[index];
+                room.differencesData.currentDifference = originalDifferences[index];
                 break;
             }
         }
 
-        if (index !== serverGame.differences.length) {
-            serverGame.differences.splice(index, 1);
+        if (index !== originalDifferences.length) {
+            originalDifferences.splice(index, 1);
         } else {
             room.differencesData.currentDifference = [];
         }
@@ -78,8 +79,8 @@ export class ClassicSoloModeService {
     }
     endGame(roomId: string, server: io.Server): void {
         const room = this.rooms.get(roomId);
-        if (room && room.serverGame.differencesCount === room.differencesData.differencesFound) {
-            room.endMessage = `Vous avez trouvé les ${room.serverGame.differencesCount} différences! Bravo!`;
+        if (room && room.originalDifferencesCount === room.differencesData.differencesFound) {
+            room.endMessage = `Vous avez trouvé les ${room.originalDifferencesCount} différences! Bravo!`;
             server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
             this.rooms.delete(room.roomId);
         }

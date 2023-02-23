@@ -49,11 +49,12 @@ export interface PlayerTime {
 
 export interface PlayRoom {
     roomId: string;
-    serverGame: ServerSideGame;
     clientGame: ClientSideGame;
     endMessage: string;
     timer: number;
     differencesData: Differences;
+    originalDifferencesCount: number;
+    originalDifferences: Coordinate[][];
 }
 
 export interface Differences {
