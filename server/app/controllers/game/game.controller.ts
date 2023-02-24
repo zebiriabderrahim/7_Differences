@@ -1,6 +1,6 @@
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameService } from '@app/services/game/game.service';
-import { Body, Controller, Get, HttpStatus, Param, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Query, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
@@ -27,6 +27,12 @@ export class GameController {
         } catch (error) {
             response.status(HttpStatus.NOT_FOUND).send(error.message);
         }
+    }
+
+    @Get()
+    async verifyIfGameExists(@Query('name') name: string, @Res() response: Response) {
+        const gameExists = await this.gameService.verifyIfGameExists(name);
+        response.status(HttpStatus.OK).json(gameExists);
     }
 
     @Get('carousel/:index')
