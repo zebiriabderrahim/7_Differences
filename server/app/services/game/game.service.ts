@@ -1,6 +1,7 @@
+import { Game } from '@app/model/database/game';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { DatabaseService } from '@app/services/database/database.service';
-import { CarouselPaginator, GameConfigConst, ServerSideGame } from '@common/game-interfaces';
+import { CarouselPaginator, GameConfigConst } from '@common/game-interfaces';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
@@ -16,10 +17,18 @@ export class GameService {
     }
 
     async getGameCarousel(): Promise<CarouselPaginator[]> {
-        return await this.databaseService.getGamesCarrousel();
+        const gamesCarrousels = await this.databaseService.getGamesCarrousel();
+        if (gamesCarrousels) {
+            return gamesCarrousels;
+        }
+        throw new NotFoundException('No gamesCarrousels found');
     }
 
-    getGameById(id: string): ServerSideGame {
+    async verifyIfGameExists(gameName: string): Promise<boolean> {
+        return await this.databaseService.verifyIfGameExists(gameName);
+    }
+
+    async getGameById(id: string): Promise<Game> {
         const game = this.databaseService.getGameById(id);
         if (game) {
             return game;
@@ -27,7 +36,7 @@ export class GameService {
         throw new NotFoundException('No games found');
     }
 
-    addGame(newGame: CreateGameDto): void {
-        this.databaseService.addGameInDb(newGame);
+    async addGame(newGame: CreateGameDto): Promise<void> {
+        await this.databaseService.addGameInDb(newGame);
     }
 }

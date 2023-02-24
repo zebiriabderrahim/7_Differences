@@ -1,6 +1,7 @@
+import { Game } from '@app/model/database/game';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { DatabaseService } from '@app/services/database/database.service';
-import { CarouselPaginator, GameConfigConst, ServerSideGame } from '@common/game-interfaces';
+import { CarouselPaginator, GameConfigConst } from '@common/game-interfaces';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { GameService } from './game.service';
@@ -21,14 +22,14 @@ describe('GameService', () => {
         },
     ];
 
-    const testGame: ServerSideGame = {
-        id: '1',
+    const testGame: Game = {
+        _id: 'test',
         name: 'test',
         isHard: true,
-        original: 'test',
-        modified: 'test',
-        differencesCount: 1,
-        differences: [[]],
+        originalImage: 'test',
+        modifiedImage: 'test',
+        nDifference: 1,
+        differences: 'test',
     };
     beforeEach(async () => {
         databaseService = createStubInstance(DatabaseService);
@@ -61,21 +62,21 @@ describe('GameService', () => {
     });
 
     it('should throw NotFoundException when getGamesCarrousel() in databaseService unable to found GamesCarrousel ', async () => {
-        databaseService.getGamesCarrousel.rejects(new Error('No games found'));
+        databaseService.getGamesCarrousel.returns(undefined);
         expect(async () => await gameService.getGameCarousel()).rejects.toThrowError();
         expect(databaseService.getGamesCarrousel.calledOnce).toBe(true);
     });
 
-    it('should call with the right arg getGameById() and return testGame as expected', () => {
-        databaseService.getGameById.returns(testGame);
-        expect(gameService.getGameById('1')).toEqual(testGame);
+    it('should call with the right arg getGameById() and return testGame as expected', async () => {
+        databaseService.getGameById.resolves(testGame);
+        expect(await gameService.getGameById('1')).toEqual(testGame);
         expect(databaseService.getGameById.calledOnce).toBe(true);
         expect(databaseService.getGameById.calledWith('1')).toBe(true);
     });
 
     it('should throw HttpException when getGameById() in databaseService unable to found Game', () => {
         databaseService.getGameById.returns(undefined);
-        expect(() => gameService.getGameById('0')).toThrowError();
+        expect(async () => await gameService.getGameById('0')).rejects.toThrowError();
         expect(databaseService.getGameById.calledOnce).toBe(true);
     });
 
@@ -84,5 +85,12 @@ describe('GameService', () => {
         gameService.addGame(fakeGame);
         expect(databaseService.addGameInDb.calledOnce).toBe(true);
         expect(databaseService.addGameInDb.calledWith(fakeGame)).toBe(true);
+    });
+
+    it('should call with the right arg verifyIfGameExists() and return true as expected', async () => {
+        databaseService.verifyIfGameExists.resolves(true);
+        expect(await gameService.verifyIfGameExists('1')).toBe(true);
+        expect(databaseService.verifyIfGameExists.calledOnce).toBe(true);
+        expect(databaseService.verifyIfGameExists.calledWith('1')).toBe(true);
     });
 });
