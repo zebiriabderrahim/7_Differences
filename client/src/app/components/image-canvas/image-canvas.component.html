@@ -4,41 +4,43 @@
     </button>
 </div>
 <div id ="canvas-top-buttons" *ngIf="!isColorSelected">
-    <button mat-raised-button class="button">
-        <mat-icon>gesture</mat-icon>
-        <mat-form-field appearance="fill" style="width:80px">
-            <mat-select #form [(value)]="pencilDiameter">
-              <mat-option *ngFor="let pencil of drawValues" [value]="pencil" class="circle-container">
-                <svg width="20" height="20"> 
-                    <circle cx="50%" cy="50%" [attr.r]="pencil / 2" [attr.fill]=drawColor/>
-                </svg> 
-                {{pencil}} px
-              </mat-option>
-            </mat-select>
-        </mat-form-field> 
-        <mat-icon [ngStyle]="{'color': drawColor}">line_weight</mat-icon>
-    </button>
-    <button mat-raised-button class="button">
-        <mat-icon [ngStyle]="{'color': drawColor}">crop_square</mat-icon>
-    </button>
+    <mat-button-toggle-group #group="matButtonToggleGroup" [value]="canvasAction.Pencil" (change)="onValueChange($event.value)">
+        <mat-button-toggle [value]="canvasAction.Pencil">
+                <mat-icon>gesture</mat-icon>
+                <mat-form-field appearance="fill" style="width:80px">
+                    <mat-select #form [(value)]="pencilDiameter">
+                      <mat-option *ngFor="let pencil of drawValues" [value]="pencil" class="circle-container">
+                        <svg width="20" height="20"> 
+                            <circle cx="50%" cy="50%" [attr.r]="pencil / 2" [attr.fill]=drawColor/>
+                        </svg> 
+                        {{pencil}} px
+                      </mat-option>
+                    </mat-select>
+                </mat-form-field> 
+                <mat-icon [ngStyle]="{'color': drawColor}">line_weight</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle [value]="canvasAction.Rectangle">
+            <mat-icon [ngStyle]="{'color': drawColor}">crop_square</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle [value]="canvasAction.Eraser">
+            <img src="assets/img/eraser.svg">
+            <mat-form-field appearance="fill" style="width:80px">
+                <mat-select #form [(ngModel)]="eraserLength">
+                  <mat-option *ngFor="let eraser of drawValues" [value]="eraserLength" class="circle-container">
+                    <svg width="40" height="40" viewBox="0 0 35 35">
+                        <rect fill-rule="evenodd" y="10" [attr.width]=eraser [attr.height]=eraser [attr.fill]=drawColor />
+                    </svg>
+                    {{eraser}} px
+                  </mat-option>
+                </mat-select>
+            </mat-form-field> 
+            <mat-icon [ngStyle]="{'color': drawColor}">line_weight</mat-icon>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
     <button mat-raised-button class="button" (click)="isColorSelected = true">
         <mat-icon [ngStyle]="{'color': drawColor}">color_lens</mat-icon>
     </button>
-    <button mat-raised-button class="button">
-        <img src="assets/img/eraser.svg">
-        <mat-form-field appearance="fill" style="width:80px">
-            <mat-select #form [(ngModel)]="eraserLength">
-              <mat-option *ngFor="let eraser of drawValues" [value]="eraserLength" class="circle-container">
-                <svg width="40" height="40" viewBox="0 0 35 35">
-                    <rect fill-rule="evenodd" y="10" [attr.width]=eraser [attr.height]=eraser [attr.fill]=drawColor />
-                </svg>
-                {{eraser}} px
-              </mat-option>
-            </mat-select>
-        </mat-form-field> 
-        <mat-icon [ngStyle]="{'color': drawColor}">line_weight</mat-icon>
-    </button>
-    <button mat-raised-button class="button">
+    <button mat-raised-button class="button" (click)="resetForeground()">
         <mat-icon>replay</mat-icon>
     </button>
 </div>
