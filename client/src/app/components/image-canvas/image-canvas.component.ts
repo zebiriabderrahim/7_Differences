@@ -29,6 +29,7 @@ export class ImageCanvasComponent implements AfterViewInit {
         this.pencilDiameter = DEFAULT_PENCIL_VALUE;
         this.eraserLength = DEFAULT_ERASER_VALUE;
         this.canvasAction = CanvasAction;
+        this.actualCanvasAction = CanvasAction.Pencil;
     }
     ngAfterViewInit(): void {
         const backgroundContext: CanvasRenderingContext2D = this.backgroundCanvas.nativeElement.getContext('2d', { willReadFrequently: true });
@@ -53,6 +54,7 @@ export class ImageCanvasComponent implements AfterViewInit {
         this.drawService.stopCanvasOperation(this.position, event);
     }
     onValueChange(value: CanvasAction) {
+        console.log('value: ', value);
         this.actualCanvasAction = value;
     }
 }
