@@ -1,0 +1,21 @@
+<div id="frame">
+    <div class="profile">
+        <img id = "avatar" src = "assets/img/raccoonChatAvatar.png">
+        <p>Nom de l'adversaire</p>
+    </div>
+
+    <div class="messages" #scrollMe>
+        <ul>
+            <li *ngFor="let message of messages">
+                <p>{{message}}</p>
+            </li>
+        </ul>
+    </div>
+
+    <div class="message-input">
+        <div class="wrap">
+            <input type="text" #msgInput placeholder="Write your message..." (keyup.enter) = "alert()"/>
+            <button class="submit" (click) = "alert()"></button>
+        </div>
+    </div>
+</div>
