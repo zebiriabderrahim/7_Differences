@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DEFAULT_PENCIL_VALUE, ERASER_COLOR, DEFAULT_COLOR } from '@app/constants/drawing';
+import { DEFAULT_COLOR, DEFAULT_PENCIL_VALUE, ERASER_COLOR } from '@app/constants/drawing';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasAction } from '@app/enum/canvas-action';
 import { CanvasPosition } from '@app/enum/canvas-position';
@@ -45,7 +45,8 @@ export class DrawService {
         }
     }
 
-    setCanvasOperation(canvasPosition: CanvasPosition, canvasAction: CanvasAction) {
+    setActiveCanvas(canvasPosition: CanvasPosition) {
+        this.activeCanvas = canvasPosition;
         switch (canvasPosition) {
             case CanvasPosition.Left:
                 this.activeContext = this.leftForegroundContext;
@@ -54,6 +55,10 @@ export class DrawService {
                 this.activeContext = this.rightForegroundContext;
                 break;
         }
+    }
+
+    setCanvasOperationStyle(canvasAction: CanvasAction) {
+        this.activeContext.lineWidth = this.operationWidth;
         switch (canvasAction) {
             case CanvasAction.Pencil:
                 this.activeContext.strokeStyle = DEFAULT_COLOR;
@@ -66,16 +71,14 @@ export class DrawService {
                 this.activeContext.lineJoin = 'miter';
                 break;
         }
-        this.activeContext.lineWidth = this.operationWidth;
-        this.activeCanvas = canvasPosition;
     }
 
     startCanvasOperation(canvasPosition: CanvasPosition, event: MouseEvent, canvasAction: CanvasAction) {
-        this.setCanvasOperation(canvasPosition, canvasAction);
+        this.setActiveCanvas(canvasPosition);
+        this.setCanvasOperationStyle(canvasAction);
         this.activeContext.beginPath();
-        // this.activeContext.moveTo(event.offsetX, event.offsetY);
-        // this.activeContext.lineTo(event.offsetX, event.offsetY);
-        // this.activeContext.stroke();
+        this.activeContext.moveTo(event.offsetX, event.offsetY);
+        this.activeContext.stroke();
         this.isDragging = true;
     }
 
