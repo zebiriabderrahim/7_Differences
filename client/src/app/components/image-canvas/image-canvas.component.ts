@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
 import { COLORS, DEFAULT_COLOR, DEFAULT_WIDTH, DRAW_VALUES } from '@app/constants/drawing';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
-import { CanvasOperation } from '@app/interfaces/canvas-operation';
 import { CanvasAction } from '@app/enum/canvas-action';
 import { CanvasPosition } from '@app/enum/canvas-position';
+import { CanvasOperation } from '@app/interfaces/canvas-operation';
 import { DrawService } from '@app/services/draw-service/draw.service';
 import { ImageService } from '@app/services/image-service/image.service';
 
@@ -34,6 +34,16 @@ export class ImageCanvasComponent implements AfterViewInit {
         this.canvasAction = CanvasAction;
         this.actualCanvasAction = CanvasAction.Pencil;
         this.operationWidth = this.pencilDiameter;
+    }
+
+    @HostListener('window:keydown.shift', ['$event'])
+    onShiftDown() {
+        this.drawService.enableSquareMode();
+    }
+
+    @HostListener('window:keyup.shift', ['$event'])
+    onShiftUp() {
+        this.drawService.disableSquareMode();
     }
 
     ngAfterViewInit(): void {

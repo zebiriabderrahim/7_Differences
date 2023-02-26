@@ -17,8 +17,10 @@ export class DrawService {
     private activeContext: CanvasRenderingContext2D;
     private activeCanvas: CanvasPosition;
     private isDragging: boolean;
+    private isSquare: boolean;
     private rectangleTopCorner: Coordinate;
     private currentAction: CanvasAction;
+    private clickPosition: Coordinate;
 
     constructor() {
         this.isDragging = false;
@@ -70,6 +72,10 @@ export class DrawService {
         }
     }
 
+    setClickPosition(event: MouseEvent) {
+        this.clickPosition = { x: event.offsetX, y: event.offsetY };
+    }
+
     setCanvasOperationStyle(canvasAction: CanvasAction, color: string, operationWidth: number) {
         if (canvasAction === CanvasAction.Rectangle) {
             this.activeContext.fillStyle = color;
@@ -94,8 +100,9 @@ export class DrawService {
         this.currentAction = canvasOperation.action;
         this.setActiveCanvas(canvasOperation.position);
         this.setCanvasOperationStyle(canvasOperation.action, canvasOperation.color, canvasOperation.width);
+        this.setClickPosition(event);
         if (canvasOperation.action === CanvasAction.Rectangle) {
-            this.rectangleTopCorner = { x: event.offsetX, y: event.offsetY };
+            this.rectangleTopCorner = this.clickPosition;
         } else {
             this.activeContext.beginPath();
             this.activeContext.lineTo(event.offsetX, event.offsetY);
@@ -105,34 +112,23 @@ export class DrawService {
     }
 
     continueCanvasOperation(canvasPosition: CanvasPosition, event: MouseEvent) {
+        this.setClickPosition(event);
         if (this.isDragging && this.activeCanvas === canvasPosition) {
             if (this.currentAction === CanvasAction.Rectangle) {
-                this.activeContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-                this.activeContext.fillRect(
-                    this.rectangleTopCorner.x,
-                    this.rectangleTopCorner.y,
-                    event.offsetX - this.rectangleTopCorner.x,
-                    event.offsetY - this.rectangleTopCorner.y,
-                );
+                this.drawRectangle();
             } else {
-                this.activeContext.lineTo(event.offsetX, event.offsetY);
-                this.activeContext.stroke();
+                this.drawLine(event);
             }
         }
     }
 
     stopCanvasOperation(canvasPosition: CanvasPosition, event: MouseEvent) {
+        this.setClickPosition(event);
         if (this.isDragging) {
             if (this.currentAction === CanvasAction.Rectangle) {
-                this.activeContext.fillRect(
-                    this.rectangleTopCorner.x,
-                    this.rectangleTopCorner.y,
-                    event.offsetX - this.rectangleTopCorner.x,
-                    event.offsetY - this.rectangleTopCorner.y,
-                );
+                this.drawRectangle();
             } else {
-                this.activeContext.lineTo(event.offsetX, event.offsetY);
-                this.activeContext.stroke();
+                this.drawLine(event);
             }
             this.isDragging = false;
             this.copyCanvas(this.activeContext.canvas, canvasPosition);
@@ -151,7 +147,31 @@ export class DrawService {
         }
     }
 
+    drawRectangle() {
+        this.activeContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        const rectangleWidth: number = this.clickPosition.x - this.rectangleTopCorner.x;
+        const rectangleHeight: number = this.isSquare ? rectangleWidth : this.clickPosition.y - this.rectangleTopCorner.y;
+        this.activeContext.fillRect(this.rectangleTopCorner.x, this.rectangleTopCorner.y, rectangleWidth, rectangleHeight);
+    }
+
+    drawLine(event: MouseEvent) {
+        this.activeContext.lineTo(event.offsetX, event.offsetY);
+        this.activeContext.stroke();
+    }
+
     resetActiveCanvas() {
         this.activeContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    }
+
+    enableSquareMode() {
+        this.drawRectangle();
+        this.isSquare = true;
+    }
+
+    disableSquareMode() {
+        if (this.isDragging) {
+            this.drawRectangle();
+        }
+        this.isSquare = false;
     }
 }
