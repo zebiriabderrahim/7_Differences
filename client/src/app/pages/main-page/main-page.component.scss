@@ -1,48 +1,46 @@
 .container {
     min-height: 100vh;
     height: auto;
+    color: rgb(0, 0, 0);
+}
+
+h1 {
+    font-family: 'Droid serif', serif;
+    font-size: 36px;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 44px;
+    margin: 0 0 12px;
+    text-align: center;
 }
 
 .justified {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-items: center;
-}
-
-.button {
-    margin-top: 10px;
     text-align: center;
 }
 
-.team-name {
-    margin-top: 0.25em;
-    margin-bottom: 0.25em;
-    color: green;
+header {
+    align-items: center;
+    color: rgb(0, 0, 0);
+    background: linear-gradient(90deg, rgba(98, 98, 98, 1) 0%, rgba(150, 150, 150, 1) 47%, rgba(208, 208, 208, 1) 100%);
+}
+
+.waves {
+    width: 1920px;
+    height: 15vh;
+    margin-bottom: -15px;
 }
 
 .header-item {
+    font-weight: 300;
+    letter-spacing: 2px;
+    font-size: 48px;
+    font-size: 36px;
     justify-content: center;
     text-align: center;
     margin-top: 30px;
-    font-size: xx-large;
-}
-
-.footer-item {
-    text-align: center;
-}
-
-.footer-item p :nth-child(even) {
-    color: orange;
-}
-.footer-item p :nth-child(odd) {
-    color: blue;
-}
-
-.server-message {
-    justify-content: center;
-    width: 20%;
-    min-width: min-content;
 }
 
 .project-logo {
@@ -52,4 +50,60 @@
     border-style: double;
     border-width: 5px;
     border-color: darkslategrey;
+    -webkit-animation: spin 4s linear infinite;
+    -moz-animation: spin 4s linear infinite;
+    animation: spin 4s linear infinite;
+}
+
+@-moz-keyframes spin {
+    100% {
+        -moz-transform: rotate(360deg);
+    }
+}
+@-webkit-keyframes spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+@keyframes spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+section {
+    align-items: center;
+    background-color: white;
+}
+
+.button {
+    margin-top: 10px;
+    text-align: center;
+    width: 150px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    transition: 0.5s;
+}
+
+button:hover {
+    background-color: #878787;
+    color: white;
+}
+
+.team-name {
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+}
+
+.footer {
+    text-align: center;
+    background-color: white;
+}
+
+.footer-item p :nth-child(even) {
+    color: rgb(0, 0, 0);
+}
+.footer-item p :nth-child(odd) {
+    color: rgb(0, 0, 0);
 }
