@@ -74,12 +74,10 @@ export class DrawService {
         }
     }
 
-    // startCanvasOperation(canvasPosition: CanvasPosition, event: MouseEvent, canvasAction: CanvasAction, color: string, operationWidth: number) {
     startCanvasOperation(canvasOperation: CanvasOperation, event: MouseEvent) {
         this.setActiveCanvas(canvasOperation.position);
         this.setCanvasOperationStyle(canvasOperation.action, canvasOperation.color, canvasOperation.width);
         this.activeContext.beginPath();
-        // this.activeContext.moveTo(event.offsetX, event.offsetY);
         this.activeContext.lineTo(event.offsetX, event.offsetY);
         this.activeContext.stroke();
         this.isDragging = true;

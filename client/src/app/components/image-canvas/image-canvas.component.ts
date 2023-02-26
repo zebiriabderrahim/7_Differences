@@ -48,7 +48,6 @@ export class ImageCanvasComponent implements AfterViewInit {
     startCanvasOperation(event: MouseEvent): void {
         const canvasOperation: CanvasOperation = {
             action: this.actualCanvasAction,
-            // coordinate: { x: event.offsetX, y: event.offsetY },
             position: this.position,
             color: this.drawColor,
             width: this.operationWidth,
@@ -64,7 +63,6 @@ export class ImageCanvasComponent implements AfterViewInit {
         this.drawService.stopCanvasOperation(this.position, event);
     }
     onValueChange(value: CanvasAction) {
-        // console.log('value: ', value);
         this.actualCanvasAction = value;
         switch (value) {
             case CanvasAction.Pencil:
@@ -77,8 +75,6 @@ export class ImageCanvasComponent implements AfterViewInit {
     }
 
     onWidthChange(value: number) {
-        console.log('eraser width change value: ', this.eraserLength);
-        console.log('width change value: ', value);
         this.operationWidth = value;
     }
 }
