@@ -12,6 +12,8 @@ import { Coordinate } from '@common/coordinate';
 export class DrawService {
     private leftForegroundContext: CanvasRenderingContext2D;
     private rightForegroundContext: CanvasRenderingContext2D;
+    private leftFrontContext: CanvasRenderingContext2D;
+    private rightFrontContext: CanvasRenderingContext2D;
     private activeContext: CanvasRenderingContext2D;
     private activeCanvas: CanvasPosition;
     private isDragging: boolean;
@@ -34,6 +36,17 @@ export class DrawService {
         }
     }
 
+    setFrontContext(canvasPosition: CanvasPosition, context: CanvasRenderingContext2D) {
+        switch (canvasPosition) {
+            case CanvasPosition.Left:
+                this.leftFrontContext = context;
+                break;
+            case CanvasPosition.Right:
+                this.rightFrontContext = context;
+                break;
+        }
+    }
+
     resetForeground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
@@ -49,10 +62,10 @@ export class DrawService {
         this.activeCanvas = canvasPosition;
         switch (canvasPosition) {
             case CanvasPosition.Left:
-                this.activeContext = this.leftForegroundContext;
+                this.activeContext = this.leftFrontContext;
                 break;
             case CanvasPosition.Right:
-                this.activeContext = this.rightForegroundContext;
+                this.activeContext = this.rightFrontContext;
                 break;
         }
     }
@@ -94,6 +107,7 @@ export class DrawService {
     continueCanvasOperation(canvasPosition: CanvasPosition, event: MouseEvent) {
         if (this.isDragging && this.activeCanvas === canvasPosition) {
             if (this.currentAction === CanvasAction.Rectangle) {
+                this.activeContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
                 this.activeContext.fillRect(
                     this.rectangleTopCorner.x,
                     this.rectangleTopCorner.y,
@@ -121,6 +135,23 @@ export class DrawService {
                 this.activeContext.stroke();
             }
             this.isDragging = false;
+            this.copyCanvas(this.activeContext.canvas, canvasPosition);
+            this.resetActiveCanvas();
         }
+    }
+
+    copyCanvas(canvas: HTMLCanvasElement, canvasPosition: CanvasPosition) {
+        switch (canvasPosition) {
+            case CanvasPosition.Left:
+                this.leftForegroundContext.drawImage(canvas, 0, 0);
+                break;
+            case CanvasPosition.Right:
+                this.rightForegroundContext.drawImage(canvas, 0, 0);
+                break;
+        }
+    }
+
+    resetActiveCanvas() {
+        this.activeContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
     }
 }

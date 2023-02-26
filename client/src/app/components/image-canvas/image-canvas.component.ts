@@ -16,6 +16,7 @@ export class ImageCanvasComponent implements AfterViewInit {
     @Input() position: CanvasPosition;
     @ViewChild('backgroundCanvas') backgroundCanvas: ElementRef;
     @ViewChild('foregroundCanvas') foregroundCanvas: ElementRef;
+    @ViewChild('frontCanvas') frontCanvas: ElementRef;
     readonly canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
     canvasAction: typeof CanvasAction;
     actualCanvasAction: CanvasAction;
@@ -40,6 +41,8 @@ export class ImageCanvasComponent implements AfterViewInit {
         this.imageService.setBackgroundContext(this.position, backgroundContext);
         const foregroundContext: CanvasRenderingContext2D = this.foregroundCanvas.nativeElement.getContext('2d', { willReadFrequently: true });
         this.drawService.setForegroundContext(this.position, foregroundContext);
+        const frontContext: CanvasRenderingContext2D = this.frontCanvas.nativeElement.getContext('2d', { willReadFrequently: true });
+        this.drawService.setFrontContext(this.position, frontContext);
     }
 
     resetForeground(): void {

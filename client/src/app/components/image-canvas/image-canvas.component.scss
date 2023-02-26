@@ -41,7 +41,12 @@ canvas {
 }
 
 #foreground-canvas{
+    position: absolute;
     z-index: 2;
+}
+
+#front-canvas{
+    z-index: 3;
 }
 
 #upload-btn-canvas {
