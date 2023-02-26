@@ -1,10 +1,11 @@
 import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { COLORS, DEFAULT_COLOR, DEFAULT_ERASER_VALUE, DEFAULT_PENCIL_VALUE, DRAW_VALUES } from '@app/constants/drawing';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
-import { COLORS, DEFAULT_COLOR, DRAW_VALUES, DEFAULT_ERASER_VALUE, DEFAULT_PENCIL_VALUE } from '@app/constants/drawing';
-import { CanvasPosition } from '@app/enum/canvas-position';
+import { CanvasOperation } from '@app/interfaces/canvas-operation';
 import { CanvasAction } from '@app/enum/canvas-action';
-import { ImageService } from '@app/services/image-service/image.service';
+import { CanvasPosition } from '@app/enum/canvas-position';
 import { DrawService } from '@app/services/draw-service/draw.service';
+import { ImageService } from '@app/services/image-service/image.service';
 
 @Component({
     selector: 'app-image-canvas',
@@ -24,12 +25,14 @@ export class ImageCanvasComponent implements AfterViewInit {
     drawValues: number[] = DRAW_VALUES;
     pencilDiameter: number;
     eraserLength: number;
+    operationWidth: number;
 
     constructor(private readonly imageService: ImageService, private readonly drawService: DrawService) {
         this.pencilDiameter = DEFAULT_PENCIL_VALUE;
         this.eraserLength = DEFAULT_ERASER_VALUE;
         this.canvasAction = CanvasAction;
         this.actualCanvasAction = CanvasAction.Pencil;
+        this.operationWidth = this.pencilDiameter;
     }
     ngAfterViewInit(): void {
         const backgroundContext: CanvasRenderingContext2D = this.backgroundCanvas.nativeElement.getContext('2d', { willReadFrequently: true });
@@ -43,7 +46,14 @@ export class ImageCanvasComponent implements AfterViewInit {
     }
 
     startCanvasOperation(event: MouseEvent): void {
-        this.drawService.startCanvasOperation(this.position, event, this.actualCanvasAction);
+        const canvasOperation: CanvasOperation = {
+            action: this.actualCanvasAction,
+            // coordinate: { x: event.offsetX, y: event.offsetY },
+            position: this.position,
+            color: this.drawColor,
+            width: this.operationWidth,
+        };
+        this.drawService.startCanvasOperation(canvasOperation, event);
     }
 
     continueCanvasOperation(event: MouseEvent): void {
@@ -54,7 +64,21 @@ export class ImageCanvasComponent implements AfterViewInit {
         this.drawService.stopCanvasOperation(this.position, event);
     }
     onValueChange(value: CanvasAction) {
-        console.log('value: ', value);
+        // console.log('value: ', value);
         this.actualCanvasAction = value;
+        switch (value) {
+            case CanvasAction.Pencil:
+                this.operationWidth = this.pencilDiameter;
+                break;
+            case CanvasAction.Eraser:
+                this.operationWidth = this.eraserLength;
+                break;
+        }
+    }
+
+    onWidthChange(value: number) {
+        console.log('eraser width change value: ', this.eraserLength);
+        console.log('width change value: ', value);
+        this.operationWidth = value;
     }
 }

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { DEFAULT_COLOR, DEFAULT_PENCIL_VALUE, ERASER_COLOR } from '@app/constants/drawing';
+import { ERASER_COLOR } from '@app/constants/drawing';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasAction } from '@app/enum/canvas-action';
 import { CanvasPosition } from '@app/enum/canvas-position';
+import { CanvasOperation } from '@app/interfaces/canvas-operation';
 
 @Injectable({
     providedIn: 'root',
@@ -12,14 +13,14 @@ export class DrawService {
     private rightForegroundContext: CanvasRenderingContext2D;
     private activeContext: CanvasRenderingContext2D;
     private activeCanvas: CanvasPosition;
-    private operationWidth: number;
+    // private operationWidth: number;
     private isDragging: boolean;
     // private drawingColor: string;
 
     constructor() {
         this.isDragging = false;
         // this.drawingColor = 'black';
-        this.operationWidth = DEFAULT_PENCIL_VALUE;
+        // this.operationWidth = DEFAULT_PENCIL_VALUE;
     }
 
     // TODO: possible to avoid repetition?
@@ -57,27 +58,29 @@ export class DrawService {
         }
     }
 
-    setCanvasOperationStyle(canvasAction: CanvasAction) {
-        this.activeContext.lineWidth = this.operationWidth;
+    setCanvasOperationStyle(canvasAction: CanvasAction, color: string, operationWidth: number) {
+        this.activeContext.lineWidth = operationWidth;
         switch (canvasAction) {
             case CanvasAction.Pencil:
-                this.activeContext.strokeStyle = DEFAULT_COLOR;
+                this.activeContext.strokeStyle = color;
                 this.activeContext.lineCap = 'round';
                 this.activeContext.lineJoin = 'round';
                 break;
             case CanvasAction.Eraser:
                 this.activeContext.strokeStyle = ERASER_COLOR;
                 this.activeContext.lineCap = 'square';
-                this.activeContext.lineJoin = 'miter';
+                this.activeContext.lineJoin = 'round';
                 break;
         }
     }
 
-    startCanvasOperation(canvasPosition: CanvasPosition, event: MouseEvent, canvasAction: CanvasAction) {
-        this.setActiveCanvas(canvasPosition);
-        this.setCanvasOperationStyle(canvasAction);
+    // startCanvasOperation(canvasPosition: CanvasPosition, event: MouseEvent, canvasAction: CanvasAction, color: string, operationWidth: number) {
+    startCanvasOperation(canvasOperation: CanvasOperation, event: MouseEvent) {
+        this.setActiveCanvas(canvasOperation.position);
+        this.setCanvasOperationStyle(canvasOperation.action, canvasOperation.color, canvasOperation.width);
         this.activeContext.beginPath();
-        this.activeContext.moveTo(event.offsetX, event.offsetY);
+        // this.activeContext.moveTo(event.offsetX, event.offsetY);
+        this.activeContext.lineTo(event.offsetX, event.offsetY);
         this.activeContext.stroke();
         this.isDragging = true;
     }
