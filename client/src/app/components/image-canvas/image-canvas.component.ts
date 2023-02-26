@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { COLORS, DEFAULT_COLOR, DEFAULT_ERASER_VALUE, DEFAULT_PENCIL_VALUE, DRAW_VALUES } from '@app/constants/drawing';
+import { COLORS, DEFAULT_COLOR, DEFAULT_WIDTH, DRAW_VALUES } from '@app/constants/drawing';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasOperation } from '@app/interfaces/canvas-operation';
 import { CanvasAction } from '@app/enum/canvas-action';
@@ -28,12 +28,13 @@ export class ImageCanvasComponent implements AfterViewInit {
     operationWidth: number;
 
     constructor(private readonly imageService: ImageService, private readonly drawService: DrawService) {
-        this.pencilDiameter = DEFAULT_PENCIL_VALUE;
-        this.eraserLength = DEFAULT_ERASER_VALUE;
+        this.pencilDiameter = DEFAULT_WIDTH;
+        this.eraserLength = DEFAULT_WIDTH;
         this.canvasAction = CanvasAction;
         this.actualCanvasAction = CanvasAction.Pencil;
         this.operationWidth = this.pencilDiameter;
     }
+
     ngAfterViewInit(): void {
         const backgroundContext: CanvasRenderingContext2D = this.backgroundCanvas.nativeElement.getContext('2d', { willReadFrequently: true });
         this.imageService.setBackgroundContext(this.position, backgroundContext);
@@ -62,6 +63,7 @@ export class ImageCanvasComponent implements AfterViewInit {
     stopCanvasOperation(event: MouseEvent): void {
         this.drawService.stopCanvasOperation(this.position, event);
     }
+
     onValueChange(value: CanvasAction) {
         this.actualCanvasAction = value;
         switch (value) {
