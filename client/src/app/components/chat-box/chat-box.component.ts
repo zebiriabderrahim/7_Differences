@@ -10,4 +10,11 @@ export class ChatBoxComponent {
     alert(): void {
         window.alert('Your message was sent');
     }
+    addNewMessage(inputField: { value: string }) {
+        const val = inputField.value?.trim();
+        if (val.length) {
+            this.messages.push(val);
+        }
+        inputField.value = '';
+    }
 }
