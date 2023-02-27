@@ -1,21 +1,30 @@
 <div id="frame">
-    <div class="profile">
-        <img id = "avatar" src = "assets/img/raccoonChatAvatar.png">
-        <p>Nom de l'adversaire</p>
-    </div>
-
-    <div class="messages" #scrollMe>
-        <ul>
-            <li *ngFor="let message of messages">
-                <p>{{message}}</p>
-            </li>
-        </ul>
-    </div>
-
-    <div class="message-input">
-        <div class="wrap">
-            <input type="text" #msgInput placeholder="Write your message..." (keyup.enter) = "alert()"/>
-            <button class="submit" (click) = "alert()"></button>
+    <div class="content">
+        <div class="contact-profile">
+            <img src = "assets/img/raccoonChatAvatar.png" alt="" />
+            <p>Le nom de l'adversaire</p>
+        </div>
+        <div class="messages" #scrollMe>
+            <ul>
+                <li *ngFor="let msg of messages">
+                    <img src = "assets/img/raccoonChatAvatar.png" alt="" />
+                    <p>{{msg}}</p>
+                </li>
+            </ul>
+        </div>
+        <div class="message-input">
+            <div class="wrap">
+                <input
+      type="text"
+      #msgInput
+      placeholder="Write your message..."
+      (keyup.enter)="addNewMessage(msgInput)"
+    />
+                <i class="fa fa-paperclip attachment" aria-hidden="true"></i>
+                <button class="submit" (click)="addNewMessage(msgInput)">
+      <i class="fa fa-paper-plane" aria-hidden="true"></i>
+    </button>
+            </div>
         </div>
     </div>
 </div>
