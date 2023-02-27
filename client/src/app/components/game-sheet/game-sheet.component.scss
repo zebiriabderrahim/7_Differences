@@ -1,56 +1,50 @@
-* {
-    font-family: 'Roboto', sans-serif;
+.justified {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
 }
 
 .gameSheet {
-    display: flex;
-    flex-direction: column;
-    border: 6px solid #000000;
+    border: 1px solid #000000;
     border-radius: 15px;
-    box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.75);
-    background-color: white;
 }
 
 h1 {
     text-align: center;
-    padding: 25px;
-    font-size: 300%;
+    padding: 15px;
+    font-size: 200%;
     font-weight: 700;
 }
 
 .gameContainer {
     display: flex;
-    background-color: rgb(255, 255, 255);
     padding-top: 20px;
     flex-direction: row;
     flex-wrap: nowrap;
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .thumbnail {
-    margin: 5px;
     display: flex;
-    max-width: 250px;
+    max-width: 200px;
     max-height: 150px;
 }
 
 .gameInfo {
-    display: flex;
-    text-align: center;
-    flex-direction: column;
     margin: 5px;
-    background-color: #ffffff;
 }
 
 .ranking {
     display: flex;
     flex-direction: row;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 .bestTime {
-    background-color: #ff7e7e;
-    border: 2px solid #a30000;
+    background-color: #ffffff;
+    border: 2px solid #000000;
     border-radius: 10px;
 }
 
@@ -59,6 +53,7 @@ h1 {
     margin-right: 5px;
     padding-top: 20px;
     padding-bottom: 20px;
+    margin-bottom: 20px;
     background-color: #fffdfd;
     text-align: center;
 }
@@ -68,4 +63,16 @@ h1 {
     min-width: 100px;
     margin-left: 20px;
     margin-right: 20px;
+    background-color: #3b5998;
+    color: #ffffff;
+}
+
+.mat-raised-button:hover {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.section {
+    text-align: left;
+    margin-bottom: 10px;
 }

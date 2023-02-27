@@ -1,20 +1,20 @@
-<div *ngIf="game" class="gameSheet">
+<div *ngIf="game" class="gameSheet justified">
     <h1 class="title">{{ game.name }}</h1>
     <div class="gameContainer">
         <img class="thumbnail" [src]="'data:image/png;base64,'+game.thumbnail" alt="track" />
-        <div class="gameInfo">
+        <div class="gameInfo justified">
             <h2>Difficulté: {{ game.difficultyLevel ? ' Difficile': ' Facile'}}</h2>
             <div class="ranking">
-                <div class="top three section">
+                <div class="topThree">
                     <h3>Top Solo</h3>
-                    <div class="topSolo" *ngFor="let player of game.soloTopTime; index as i">
+                    <div class="topSolo section" *ngFor="let player of game.soloTopTime; index as i">
                         <strong class="bestTime">&nbsp;{{ i + 1 }} </strong>
-                        &nbsp;<strong>{{ player.name }}</strong> {{ player.time }}
+                        &nbsp;<strong>{{ player.name }}</strong> {{ player.time}} &nbsp;
                     </div>
                 </div>
-                <div class="top three section">
+                <div class="topThree">
                     <h3>Top 1 Vs 1</h3>
-                    <div *ngFor="let player of game.oneVsOneTopTime">
+                    <div class="topOnevsOne section" *ngFor="let player of game.oneVsOneTopTime">
                         <strong>{{ player.name }}</strong> {{ player.time }}
                     </div>
                 </div>
