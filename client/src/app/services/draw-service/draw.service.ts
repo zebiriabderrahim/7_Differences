@@ -164,12 +164,14 @@ export class DrawService {
     }
 
     enableSquareMode() {
-        this.drawRectangle();
+        if (this.currentAction === CanvasAction.Rectangle) {
+            this.drawRectangle();
+        }
         this.isSquare = true;
     }
 
     disableSquareMode() {
-        if (this.isDragging) {
+        if (this.isDragging && this.currentAction === CanvasAction.Rectangle) {
             this.drawRectangle();
         }
         this.isSquare = false;
