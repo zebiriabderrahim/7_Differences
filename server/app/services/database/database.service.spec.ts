@@ -1,3 +1,4 @@
+// Id comes from database to allow _id
 /* eslint-disable no-underscore-dangle */
 import { Game, GameDocument, gameSchema } from '@app/model/database/game';
 import { GameCard, GameCardDocument, gameCardSchema } from '@app/model/database/game-card';
