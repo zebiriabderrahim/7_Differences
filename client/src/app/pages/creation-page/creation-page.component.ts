@@ -7,6 +7,7 @@ import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/difference';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { GameDetails } from '@app/interfaces/game-interfaces';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
+import { DrawService } from '@app/services/draw-service/draw.service';
 import { ImageService } from '@app/services/image-service/image.service';
 
 @Component({
@@ -26,6 +27,7 @@ export class CreationPageComponent {
     // eslint-disable-next-line max-params
     constructor(
         private readonly imageService: ImageService,
+        private readonly drawService: DrawService,
         private readonly matDialog: MatDialog,
         private readonly communicationService: CommunicationService,
         private readonly router: Router,
@@ -53,5 +55,9 @@ export class CreationPageComponent {
         } else {
             this.matDialog.open(this.imageNotSetDialog);
         }
+    }
+
+    swapForegrounds() {
+        this.drawService.swapForegrounds();
     }
 }

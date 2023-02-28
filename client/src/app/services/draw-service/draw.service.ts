@@ -39,6 +39,15 @@ export class DrawService {
         }
     }
 
+    swapForegrounds() {
+        const leftForegroundData: ImageData = this.leftForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        const rightForegroundData: ImageData = this.rightForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        this.leftForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        this.leftForegroundContext.putImageData(rightForegroundData, 0, 0);
+        this.rightForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        this.rightForegroundContext.putImageData(leftForegroundData, 0, 0);
+    }
+
     resetForeground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
             case CanvasPosition.Left:

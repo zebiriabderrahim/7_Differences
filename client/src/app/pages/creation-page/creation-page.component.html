@@ -2,6 +2,17 @@
     <button mat-raised-button [routerLink]="configRoute">Retourner à la page de Configuration</button>
     <div id="canvas-zone">
         <app-image-canvas [position]="canvasPosition.Left"></app-image-canvas>
+        <div id="canvas-middle-buttons">
+            <button mat-raised-button>
+                <mat-icon>arrow_right_alt</mat-icon>
+            </button>
+            <button mat-raised-button (click)="swapForegrounds()">
+                <mat-icon>swap_horiz</mat-icon>
+            </button>
+            <button mat-raised-button>
+                <mat-icon>arrow_left_alt</mat-icon>
+            </button>
+        </div>
         <app-image-canvas [position]="canvasPosition.Right"></app-image-canvas>
     </div>
 
