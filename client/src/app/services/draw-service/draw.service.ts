@@ -4,6 +4,7 @@ import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasAction } from '@app/enum/canvas-action';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { CanvasOperation } from '@app/interfaces/canvas-operation';
+import { CanvasState } from '@app/interfaces/canvas-state';
 import { Coordinate } from '@common/coordinate';
 
 @Injectable({
@@ -15,6 +16,8 @@ export class DrawService {
     private leftFrontContext: CanvasRenderingContext2D;
     private rightFrontContext: CanvasRenderingContext2D;
     private activeContext: CanvasRenderingContext2D;
+    private canvasStateStack: CanvasState[];
+    private undoneCanvasStateStack: CanvasState[];
     private activeCanvas: CanvasPosition;
     private isDragging: boolean;
     private isSquare: boolean;
@@ -24,7 +27,14 @@ export class DrawService {
 
     constructor() {
         this.isDragging = false;
+        this.canvasStateStack = [];
+        this.undoneCanvasStateStack = [];
     }
+
+    // initializeStacks() {
+    //     this.canvasStateStack = [];
+    //     this.undoneCanvasStateStack = [];
+    // }
 
     setForegroundContext(canvasPosition: CanvasPosition, foregroundContext: CanvasRenderingContext2D, frontContext: CanvasRenderingContext2D) {
         switch (canvasPosition) {
@@ -46,37 +56,82 @@ export class DrawService {
         this.leftForegroundContext.putImageData(rightForegroundData, 0, 0);
         this.rightForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.rightForegroundContext.putImageData(leftForegroundData, 0, 0);
+        this.saveCurrentCanvasState();
     }
 
     duplicateLeftForeground() {
         const leftForegroundData: ImageData = this.leftForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.rightForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.rightForegroundContext.putImageData(leftForegroundData, 0, 0);
+        this.saveCurrentCanvasState();
     }
 
     duplicateRightForeground() {
         const rightForegroundData: ImageData = this.rightForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.leftForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.leftForegroundContext.putImageData(rightForegroundData, 0, 0);
+        this.saveCurrentCanvasState();
+    }
+
+    redrawForegrounds(canvasState: CanvasState) {
+        this.resetForeground(CanvasPosition.Both);
+        this.leftForegroundContext.putImageData(canvasState.left, 0, 0);
+        this.rightForegroundContext.putImageData(canvasState.right, 0, 0);
     }
 
     undoCanvasOperation() {
-        console.log('undo');
+        if (this.canvasStateStack.length > 0) {
+            const lastState: CanvasState = this.canvasStateStack.pop() as CanvasState;
+            this.undoneCanvasStateStack.push(lastState);
+            this.redrawForegrounds(lastState);
+            console.log('undo');
+            console.log(this.canvasStateStack);
+            console.log('length stateStack: ' + this.canvasStateStack.length);
+            console.log(this.undoneCanvasStateStack);
+            console.log('length undoneStateStack: ' + this.undoneCanvasStateStack.length);
+        }
     }
 
     redoCanvasOperation() {
-        console.log('redo');
+        if (this.undoneCanvasStateStack.length > 0) {
+            const lastState: CanvasState = this.undoneCanvasStateStack.pop() as CanvasState;
+            this.canvasStateStack.push(lastState);
+            this.redrawForegrounds(lastState);
+            console.log('redo');
+            console.log(this.canvasStateStack);
+            console.log('length stateStack: ' + this.canvasStateStack.length);
+            console.log(this.undoneCanvasStateStack);
+            console.log('length undoneStateStack: ' + this.undoneCanvasStateStack.length);
+        }
     }
 
     resetForeground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
-                this.leftForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+                this.resetLeftForeground();
                 break;
             case CanvasPosition.Right:
-                this.rightForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+                this.resetRightForeground();
+                break;
+            case CanvasPosition.Both:
+                this.resetLeftForeground();
+                this.resetRightForeground();
                 break;
         }
+    }
+
+    resetLeftForeground() {
+        this.leftForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    }
+
+    resetRightForeground() {
+        this.rightForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    }
+
+    getCanvasState(): CanvasState {
+        const leftForegroundData: ImageData = this.leftForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        const rightForegroundData: ImageData = this.rightForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        return { left: leftForegroundData, right: rightForegroundData };
     }
 
     setActiveCanvas(canvasPosition: CanvasPosition) {
@@ -116,6 +171,10 @@ export class DrawService {
     }
 
     startCanvasOperation(canvasOperation: CanvasOperation, event: MouseEvent) {
+        this.undoneCanvasStateStack = [];
+        if (this.canvasStateStack.length === 0) {
+            this.canvasStateStack.push(this.getCanvasState());
+        }
         this.currentAction = canvasOperation.action;
         this.setActiveCanvas(canvasOperation.position);
         this.setCanvasOperationStyle(canvasOperation.color, canvasOperation.width);
@@ -164,7 +223,15 @@ export class DrawService {
                 this.rightForegroundContext.drawImage(canvas, 0, 0);
                 break;
         }
+        this.saveCurrentCanvasState();
+        console.log(this.canvasStateStack);
+        console.log('length stateStack: ' + this.canvasStateStack.length);
     }
+
+    saveCurrentCanvasState(){
+        this.canvasStateStack.push(this.getCanvasState());
+    }
+
 
     drawRectangle() {
         this.activeContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
