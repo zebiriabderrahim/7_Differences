@@ -87,12 +87,12 @@ export class DrawService {
         this.clickPosition = { x: event.offsetX, y: event.offsetY };
     }
 
-    setCanvasOperationStyle(canvasAction: CanvasAction, color: string, operationWidth: number) {
-        if (canvasAction === CanvasAction.Rectangle) {
+    setCanvasOperationStyle(color: string, operationWidth: number) {
+        if (this.currentAction === CanvasAction.Rectangle) {
             this.activeContext.fillStyle = color;
         } else {
             this.activeContext.lineWidth = operationWidth;
-            switch (canvasAction) {
+            switch (this.currentAction) {
                 case CanvasAction.Pencil:
                     this.activeContext.strokeStyle = color;
                     this.activeContext.lineCap = 'round';
@@ -110,9 +110,9 @@ export class DrawService {
     startCanvasOperation(canvasOperation: CanvasOperation, event: MouseEvent) {
         this.currentAction = canvasOperation.action;
         this.setActiveCanvas(canvasOperation.position);
-        this.setCanvasOperationStyle(canvasOperation.action, canvasOperation.color, canvasOperation.width);
+        this.setCanvasOperationStyle(canvasOperation.color, canvasOperation.width);
         this.setClickPosition(event);
-        if (canvasOperation.action === CanvasAction.Rectangle) {
+        if (this.currentAction === CanvasAction.Rectangle) {
             this.rectangleTopCorner = this.clickPosition;
         } else {
             this.activeContext.beginPath();
@@ -175,12 +175,14 @@ export class DrawService {
     }
 
     enableSquareMode() {
-        this.drawRectangle();
+        if (this.currentAction === CanvasAction.Rectangle) {
+            this.drawRectangle();
+        }
         this.isSquare = true;
     }
 
     disableSquareMode() {
-        if (this.isDragging) {
+        if (this.isDragging && this.currentAction === CanvasAction.Rectangle) {
             this.drawRectangle();
         }
         this.isSquare = false;
