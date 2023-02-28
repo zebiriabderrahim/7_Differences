@@ -1,6 +1,4 @@
-.users-section {
-    color:#fff;
-  }
+
 
 .users-section {
     display: flex;
@@ -10,12 +8,6 @@
     border-radius: 5px;
     padding: 20px;
     margin: 20px;
-}
-
-.mat-raised-button:first-child {
-    margin: 10px;
-    top: 800px;
-    position: relative;
 }
 
 #radio-buttons {
@@ -52,6 +44,13 @@
     justify-content: center;
     gap: 50px;
     flex-direction: row;
+}
+
+#canvas-middle-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    flex-direction: column;
 }
 
 #upload-btn {

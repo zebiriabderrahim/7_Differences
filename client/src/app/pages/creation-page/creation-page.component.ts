@@ -60,4 +60,12 @@ export class CreationPageComponent {
     swapForegrounds() {
         this.drawService.swapForegrounds();
     }
+
+    duplicateLeftForeground() {
+        this.drawService.duplicateLeftForeground();
+    }
+
+    duplicateRightForeground() {
+        this.drawService.duplicateRightForeground();
+    }
 }
