@@ -1,6 +1,6 @@
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameService } from '@app/services/game/game.service';
-import { Body, Controller, Get, HttpStatus, Param, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Query, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
@@ -20,13 +20,19 @@ export class GameController {
     }
 
     @Get(':id')
-    gameById(@Param('id') id: string, @Res() response: Response) {
+    async gameById(@Param('id') id: string, @Res() response: Response) {
         try {
-            const game = this.gameService.getGameById(id);
+            const game = await this.gameService.getGameById(id);
             response.status(HttpStatus.OK).json(game);
         } catch (error) {
             response.status(HttpStatus.NOT_FOUND).send(error.message);
         }
+    }
+
+    @Get()
+    async verifyIfGameExists(@Query('name') name: string, @Res() response: Response) {
+        const gameExists = await this.gameService.verifyIfGameExists(name);
+        response.status(HttpStatus.OK).json(gameExists);
     }
 
     @Get('carousel/:index')
@@ -40,9 +46,9 @@ export class GameController {
     }
 
     @Post()
-    addGame(@Body() gameDto: CreateGameDto, @Res() response: Response) {
+    async addGame(@Body() gameDto: CreateGameDto, @Res() response: Response) {
         try {
-            this.gameService.addGame(gameDto);
+            await this.gameService.addGame(gameDto);
             response.status(HttpStatus.CREATED).send();
         } catch (error) {
             response.status(HttpStatus.BAD_REQUEST).send(error.message);
