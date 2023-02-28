@@ -27,27 +27,38 @@ export class DrawService {
     }
 
     // TODO: possible to avoid repetition?
-    setForegroundContext(canvasPosition: CanvasPosition, context: CanvasRenderingContext2D) {
-        switch (canvasPosition) {
-            case CanvasPosition.Left:
-                this.leftForegroundContext = context;
-                break;
-            case CanvasPosition.Right:
-                this.rightForegroundContext = context;
-                break;
+    setContext(canvasPosition: CanvasPosition, context: CanvasRenderingContext2D, contextName: string) {
+        if (contextName === 'foregroundContext') {
+            switch (canvasPosition) {
+                case CanvasPosition.Left:
+                    this.leftForegroundContext = context;
+                    break;
+                case CanvasPosition.Right:
+                    this.rightForegroundContext = context;
+                    break;
+            }
+        } else if (contextName === 'frontContext') {
+            switch (canvasPosition) {
+                case CanvasPosition.Left:
+                    this.leftFrontContext = context;
+                    break;
+                case CanvasPosition.Right:
+                    this.rightFrontContext = context;
+                    break;
+            }
         }
     }
 
-    setFrontContext(canvasPosition: CanvasPosition, context: CanvasRenderingContext2D) {
-        switch (canvasPosition) {
-            case CanvasPosition.Left:
-                this.leftFrontContext = context;
-                break;
-            case CanvasPosition.Right:
-                this.rightFrontContext = context;
-                break;
-        }
-    }
+    // setFrontContext(canvasPosition: CanvasPosition, context: CanvasRenderingContext2D) {
+    //     switch (canvasPosition) {
+    //         case CanvasPosition.Left:
+    //             this.leftFrontContext = context;
+    //             break;
+    //         case CanvasPosition.Right:
+    //             this.rightFrontContext = context;
+    //             break;
+    //     }
+    // }
 
     resetForeground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
