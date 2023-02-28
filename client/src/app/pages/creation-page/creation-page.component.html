@@ -1,16 +1,15 @@
 <div class="users-section">
-    <button mat-raised-button [routerLink]="configRoute">Retourner à la page de Configuration</button>
     <div id="canvas-zone">
         <app-image-canvas [position]="canvasPosition.Left"></app-image-canvas>
         <div id="canvas-middle-buttons">
-            <button mat-raised-button>
-                <mat-icon>arrow_right_alt</mat-icon>
+            <button mat-raised-button (click)="duplicateRightForeground()">
+                <mat-icon>arrow_backward</mat-icon>
             </button>
             <button mat-raised-button (click)="swapForegrounds()">
                 <mat-icon>swap_horiz</mat-icon>
             </button>
-            <button mat-raised-button>
-                <mat-icon>arrow_left_alt</mat-icon>
+            <button mat-raised-button (click)="duplicateLeftForeground()">
+                <mat-icon>arrow_forward</mat-icon>
             </button>
         </div>
         <app-image-canvas [position]="canvasPosition.Right"></app-image-canvas>
@@ -22,15 +21,15 @@
     <div id="radio-buttons">
         <div>
             <p>Choisissez le rayon d'élargissement :</p>
-            <mat-radio-group ngDefaultControl color="primary" aria-label="Select an option" [(ngModel)]="radius">
+            <mat-radio-group ngDefaultControl aria-label="Select an option" [(ngModel)]="radius">
                 <mat-radio-button *ngFor="let radius of radiusSizes" [value]="radius">{{ radius }}</mat-radio-button>
             </mat-radio-group>
         </div>
     </div>
-    <button mat-raised-button name="validateButton" color="basic" matTooltip="Vous devez avoir téléversé deux images"
-        (click)="validateDifferences()">
+    <button mat-raised-button name="validateButton" color="basic" matTooltip="Vous devez avoir téléversé deux images" (click)="validateDifferences()">
         Valider les différences
     </button>
+    <button mat-raised-button [routerLink]="configRoute">Retourner à la page de Configuration</button>
 </div>
 
 <ng-template #imageNotSetDialog>
