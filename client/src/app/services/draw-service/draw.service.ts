@@ -26,39 +26,18 @@ export class DrawService {
         this.isDragging = false;
     }
 
-    // TODO: possible to avoid repetition?
-    setContext(canvasPosition: CanvasPosition, context: CanvasRenderingContext2D, contextName: string) {
-        if (contextName === 'foregroundContext') {
-            switch (canvasPosition) {
-                case CanvasPosition.Left:
-                    this.leftForegroundContext = context;
-                    break;
-                case CanvasPosition.Right:
-                    this.rightForegroundContext = context;
-                    break;
-            }
-        } else if (contextName === 'frontContext') {
-            switch (canvasPosition) {
-                case CanvasPosition.Left:
-                    this.leftFrontContext = context;
-                    break;
-                case CanvasPosition.Right:
-                    this.rightFrontContext = context;
-                    break;
-            }
+    setForegroundContext(canvasPosition: CanvasPosition, foregroundContext: CanvasRenderingContext2D, frontContext: CanvasRenderingContext2D) {
+        switch (canvasPosition) {
+            case CanvasPosition.Left:
+                this.leftForegroundContext = foregroundContext;
+                this.leftFrontContext = frontContext;
+                break;
+            case CanvasPosition.Right:
+                this.rightForegroundContext = foregroundContext;
+                this.rightFrontContext = frontContext;
+                break;
         }
     }
-
-    // setFrontContext(canvasPosition: CanvasPosition, context: CanvasRenderingContext2D) {
-    //     switch (canvasPosition) {
-    //         case CanvasPosition.Left:
-    //             this.leftFrontContext = context;
-    //             break;
-    //         case CanvasPosition.Right:
-    //             this.rightFrontContext = context;
-    //             break;
-    //     }
-    // }
 
     resetForeground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
@@ -182,7 +161,7 @@ export class DrawService {
     }
 
     disableSquareMode() {
-        if (this.isDragging && this.currentAction === CanvasAction.Rectangle) {
+        if (this.isDragging) {
             this.drawRectangle();
         }
         this.isSquare = false;

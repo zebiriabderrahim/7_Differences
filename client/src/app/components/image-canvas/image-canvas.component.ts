@@ -50,9 +50,8 @@ export class ImageCanvasComponent implements AfterViewInit {
         const backgroundContext: CanvasRenderingContext2D = this.backgroundCanvas.nativeElement.getContext('2d', { willReadFrequently: true });
         this.imageService.setBackgroundContext(this.position, backgroundContext);
         const foregroundContext: CanvasRenderingContext2D = this.foregroundCanvas.nativeElement.getContext('2d', { willReadFrequently: true });
-        this.drawService.setContext(this.position, foregroundContext, 'foregroundContext');
         const frontContext: CanvasRenderingContext2D = this.frontCanvas.nativeElement.getContext('2d', { willReadFrequently: true });
-        this.drawService.setContext(this.position, frontContext, 'frontContext');
+        this.drawService.setForegroundContext(this.position, foregroundContext, frontContext);
     }
 
     resetForeground(): void {
