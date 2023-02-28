@@ -60,6 +60,14 @@ export class DrawService {
         this.leftForegroundContext.putImageData(rightForegroundData, 0, 0);
     }
 
+    undoCanvasOperation() {
+        console.log('undo');
+    }
+
+    redoCanvasOperation() {
+        console.log('redo');
+    }
+
     resetForeground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
             case CanvasPosition.Left:

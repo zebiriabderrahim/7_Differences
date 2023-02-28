@@ -1,4 +1,4 @@
-import { Component, TemplateRef, ViewChild } from '@angular/core';
+import { Component, HostListener, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
@@ -35,6 +35,15 @@ export class CreationPageComponent {
         this.radiusSizes = RADIUS_SIZES;
         this.radius = DEFAULT_RADIUS;
         this.canvasPosition = CanvasPosition;
+    }
+
+    @HostListener('window:keydown', ['$event'])
+    keyboardEvent(event: KeyboardEvent) {
+        if (event.ctrlKey && event.shiftKey && event.key === 'Z') {
+            this.drawService.redoCanvasOperation();
+        } else if (event.ctrlKey && event.key === 'z') {
+            this.drawService.undoCanvasOperation();
+        }
     }
 
     validateDifferences() {
