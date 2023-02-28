@@ -1,7 +1,11 @@
+// Id comes from database to allow _id
+/* eslint-disable no-underscore-dangle */
+import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
 import { Coordinate } from '@common/coordinate';
-import { ClientSideGame, Differences, GameEvents, PlayRoom, ServerSideGame } from '@common/game-interfaces';
+import { ClientSideGame, Differences, GameEvents, PlayRoom } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
+import * as fs from 'fs';
 import * as io from 'socket.io';
 
 @Injectable()
@@ -10,8 +14,8 @@ export class ClassicSoloModeService {
 
     constructor(private readonly gameService: GameService) {}
 
-    createSoloRoom(socket: io.Socket, playerName: string, gameId: string): PlayRoom {
-        const game = this.gameService.getGameById(gameId);
+    async createSoloRoom(socket: io.Socket, playerName: string, gameId: string): Promise<PlayRoom> {
+        const game = await this.gameService.getGameById(gameId);
         const diffData: Differences = {
             currentDifference: [],
             differencesFound: 0,
@@ -22,8 +26,7 @@ export class ClassicSoloModeService {
             timer: 0,
             endMessage: '',
             differencesData: diffData,
-            originalDifferencesCount: game.differencesCount,
-            originalDifferences: structuredClone(game.differences),
+            originalDifferences: structuredClone(JSON.parse(fs.readFileSync(`assets/${game.name}/differences.json`, 'utf-8'))),
         };
         this.rooms.set(room.roomId, room);
         socket.join(room.roomId);
@@ -64,23 +67,23 @@ export class ClassicSoloModeService {
         server.to(room.roomId).emit(GameEvents.RemoveDiff, diffData);
     }
 
-    buildClientGameVersion(playerName: string, game: ServerSideGame): ClientSideGame {
+    buildClientGameVersion(playerName: string, game: Game): ClientSideGame {
         const clientGame: ClientSideGame = {
-            id: game.id,
+            id: game._id.toString(),
             player: playerName,
             name: game.name,
             mode: 'Classic -> solo',
-            original: game.original,
-            modified: game.modified,
+            original: 'data:image/png;base64,'.concat(fs.readFileSync(`assets/${game.name}/original.bmp`, 'base64')),
+            modified: 'data:image/png;base64,'.concat(fs.readFileSync(`assets/${game.name}/modified.bmp`, 'base64')),
             isHard: game.isHard,
-            differencesCount: game.differencesCount,
+            differencesCount: game.nDifference,
         };
         return clientGame;
     }
     endGame(roomId: string, server: io.Server): void {
         const room = this.rooms.get(roomId);
-        if (room && room.originalDifferencesCount === room.differencesData.differencesFound) {
-            room.endMessage = `Vous avez trouvé les ${room.originalDifferencesCount} différences! Bravo!`;
+        if (room && room.clientGame.differencesCount === room.differencesData.differencesFound) {
+            room.endMessage = `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo!`;
             server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
             this.rooms.delete(room.roomId);
         }

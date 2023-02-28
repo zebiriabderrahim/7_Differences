@@ -1,10 +1,13 @@
+/* eslint-disable no-underscore-dangle */
+import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
 import { Coordinate } from '@common/coordinate';
-import { ClientSideGame, Differences, GameEvents, PlayRoom, ServerSideGame } from '@common/game-interfaces';
+import { ClientSideGame, Differences, GameEvents, PlayRoom } from '@common/game-interfaces';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createStubInstance, SinonStubbedInstance, stub } from 'sinon';
 import { Server, Socket, BroadcastOperator } from 'socket.io';
 import { ClassicSoloModeService } from './classic-solo-mode.service';
+import * as fs from 'fs';
 
 describe('ClassicSoloModeService', () => {
     let service: ClassicSoloModeService;
@@ -12,19 +15,8 @@ describe('ClassicSoloModeService', () => {
     let socket: SinonStubbedInstance<Socket>;
     let server: SinonStubbedInstance<Server>;
 
-    const testGames: ServerSideGame[] = [
-        {
-            id: '0',
-            name: 'test',
-            isHard: true,
-            original: 'data:image/png;base64,test',
-            modified: 'data:image/png;base64,test',
-            differencesCount: 1,
-            differences: [[{ x: 0, y: 0 } as Coordinate]],
-        },
-    ];
     const clientSideGame: ClientSideGame = {
-        id: '0',
+        id: '1',
         name: 'test',
         isHard: true,
         original: 'data:image/png;base64,test',
@@ -37,6 +29,17 @@ describe('ClassicSoloModeService', () => {
         currentDifference: [],
         differencesFound: 0,
     };
+    const testGames: Game[] = [
+        {
+            _id: '1',
+            name: 'test',
+            isHard: true,
+            originalImage: 'test',
+            modifiedImage: 'test',
+            nDifference: 1,
+            differences: 'test',
+        },
+    ];
 
     const fakeDiff: Differences = {
         currentDifference: [{ x: 0, y: 0 } as Coordinate],
@@ -44,7 +47,7 @@ describe('ClassicSoloModeService', () => {
     };
     const fakeRoom: PlayRoom = {
         roomId: 'fakeRoomId',
-        serverGame: testGames[0],
+        originalDifferences: [[{ x: 0, y: 0 } as Coordinate]],
         clientGame: clientSideGame,
         timer: 0,
         endMessage: '',
@@ -72,14 +75,18 @@ describe('ClassicSoloModeService', () => {
         expect(service).toBeDefined();
     });
 
-    it('createSoloRoom() should create a new game', () => {
-        gameService.getGameById.returns(testGames[0]);
+    it('createSoloRoom() should create a new game', async () => {
+        const readFileSyncSpy = jest.spyOn(fs, 'readFileSync').mockReturnValue('test');
+        const parseSpy = jest.spyOn(JSON, 'parse').mockReturnValue([[{ x: 0, y: 0 } as Coordinate]]);
+        const joinSpy = jest.spyOn(socket, 'join');
+        gameService.getGameById.resolves(testGames[0]);
         const buildClientGameVersionSpy = jest.spyOn(service, 'buildClientGameVersion');
         stub(socket, 'rooms').value(new Set([fakeRoom.roomId]));
-        const joinSpy = jest.spyOn(socket, 'join');
         fakeRoom.roomId = socket.id;
-        service.createSoloRoom(socket, 'testPlayer', testGames[0].id);
+        await service.createSoloRoom(socket, 'testPlayer', testGames[0]._id);
         expect(joinSpy).toBeCalled();
+        expect(readFileSyncSpy).toBeCalled();
+        expect(parseSpy).toBeCalled();
         expect(buildClientGameVersionSpy).toBeCalled();
         expect(service['rooms'].get(socket.id)).toEqual(fakeRoom);
     });
@@ -124,6 +131,7 @@ describe('ClassicSoloModeService', () => {
     });
 
     it('buildClientGameVersion() should return a ClientSideGame', () => {
+        jest.spyOn(fs, 'readFileSync').mockReturnValue('test');
         const result = service.buildClientGameVersion('testPlayer', testGames[0]);
         expect(result).toEqual(clientSideGame);
     });
