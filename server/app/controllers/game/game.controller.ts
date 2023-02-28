@@ -20,9 +20,9 @@ export class GameController {
     }
 
     @Get(':id')
-    gameById(@Param('id') id: string, @Res() response: Response) {
+    async gameById(@Param('id') id: string, @Res() response: Response) {
         try {
-            const game = this.gameService.getGameById(id);
+            const game = await this.gameService.getGameById(id);
             response.status(HttpStatus.OK).json(game);
         } catch (error) {
             response.status(HttpStatus.NOT_FOUND).send(error.message);
@@ -46,9 +46,9 @@ export class GameController {
     }
 
     @Post()
-    addGame(@Body() gameDto: CreateGameDto, @Res() response: Response) {
+    async addGame(@Body() gameDto: CreateGameDto, @Res() response: Response) {
         try {
-            this.gameService.addGame(gameDto);
+            await this.gameService.addGame(gameDto);
             response.status(HttpStatus.CREATED).send();
         } catch (error) {
             response.status(HttpStatus.BAD_REQUEST).send(error.message);
