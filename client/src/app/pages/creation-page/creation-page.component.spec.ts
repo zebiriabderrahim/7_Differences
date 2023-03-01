@@ -14,6 +14,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
+import { DrawService } from '@app/services/draw-service/draw.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { of } from 'rxjs';
 import { CreationPageComponent } from './creation-page.component';
@@ -23,8 +24,10 @@ describe('CreationPageComponent', () => {
     let fixture: ComponentFixture<CreationPageComponent>;
     let imageService: ImageService;
     let matDialogSpy: jasmine.SpyObj<MatDialog>;
+    let drawService: DrawService;
 
     beforeEach(async () => {
+        drawService = jasmine.createSpyObj('DrawService', ['redoCanvasOperation', 'undoCanvasOperation']);
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
             declarations: [CreationPageComponent, ImageCanvasComponent, CanvasUnderButtonsComponent, MatIcon],
@@ -93,5 +96,32 @@ describe('CreationPageComponent', () => {
         validateButton.click();
         fixture.detectChanges();
         expect(validateDifferencesSpy).toHaveBeenCalled();
+    });
+
+    it('should not call any method when ctrlKey and shiftKey are pressed but key is not "Z"', () => {
+        const mockKeyboardEvent = new KeyboardEvent('keydown', { ctrlKey: true, shiftKey: true, key: 'X' });
+
+        component.keyboardEvent(mockKeyboardEvent);
+
+        expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
+        expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
+    });
+
+    it('should not call any method when only shiftKey is pressed', () => {
+        const mockKeyboardEvent = new KeyboardEvent('keydown', { shiftKey: true, key: 'z' });
+
+        component.keyboardEvent(mockKeyboardEvent);
+
+        expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
+        expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
+    });
+
+    it('should not call any method when only ctrlKey is pressed and key is not "z"', () => {
+        const mockKeyboardEvent = new KeyboardEvent('keydown', { ctrlKey: true, key: 'x' });
+
+        component.keyboardEvent(mockKeyboardEvent);
+
+        expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
+        expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
     });
 });
