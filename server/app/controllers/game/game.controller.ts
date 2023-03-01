@@ -31,6 +31,7 @@ export class GameController {
 
     @Get()
     async verifyIfGameExists(@Query('name') name: string, @Res() response: Response) {
+        console.log(name);
         const gameExists = await this.gameService.verifyIfGameExists(name);
         response.status(HttpStatus.OK).json(gameExists);
     }
