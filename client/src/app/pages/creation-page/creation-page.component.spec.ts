@@ -1,14 +1,21 @@
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialog, MatDialogConfig, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
 import { By } from '@angular/platform-browser';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
+import { SUBMIT_WAIT_TIME } from '@app/constants/constants';
 import { ImageService } from '@app/services/image-service/image.service';
 import { of } from 'rxjs';
 import { CreationPageComponent } from './creation-page.component';
@@ -18,19 +25,37 @@ describe('CreationPageComponent', () => {
     let fixture: ComponentFixture<CreationPageComponent>;
     let imageService: ImageService;
     let matDialogSpy: jasmine.SpyObj<MatDialog>;
+    let timerCallback: jasmine.Spy<jasmine.Func>;
 
     beforeEach(async () => {
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
             declarations: [CreationPageComponent, ImageCanvasComponent, CanvasUnderButtonsComponent, MatIcon],
-            imports: [MatDialogModule, RouterTestingModule, MatRadioModule, FormsModule, HttpClientTestingModule],
+            imports: [
+                NoopAnimationsModule,
+                MatDialogModule,
+                RouterTestingModule,
+                MatFormFieldModule,
+                MatRadioModule,
+                MatInputModule,
+                FormsModule,
+                HttpClientTestingModule,
+                MatButtonToggleModule,
+                MatSelectModule,
+            ],
             providers: [{ provide: MatDialog, useValue: matDialogSpy }],
         }).compileComponents();
 
         fixture = TestBed.createComponent(CreationPageComponent);
         imageService = TestBed.inject(ImageService);
+        timerCallback = jasmine.createSpy('timerCallback');
+        jasmine.clock().install();
         component = fixture.componentInstance;
         fixture.detectChanges();
+    });
+
+    afterEach(function () {
+        jasmine.clock().uninstall();
     });
 
     it('should create', () => {
@@ -50,10 +75,17 @@ describe('CreationPageComponent', () => {
             return {} as Promise<boolean>;
         });
 
+        setTimeout(function () {
+            timerCallback();
+        }, SUBMIT_WAIT_TIME);
+
         component.validateDifferences();
         const dialogConfig = new MatDialogConfig();
         dialogConfig.data = component.radius;
         expect(matDialogSpy.open).toHaveBeenCalledWith(CreationGameDialogComponent, dialogConfig);
+        expect(timerCallback).not.toHaveBeenCalled();
+        jasmine.clock().tick(SUBMIT_WAIT_TIME + 1);
+        expect(timerCallback).toHaveBeenCalled();
     });
 
     it('validateDifferences should open imageNotSetDialog if images are not set', () => {
