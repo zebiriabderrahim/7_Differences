@@ -27,7 +27,6 @@ export class ImageCanvasComponent implements AfterViewInit {
     pencilDiameter: number;
     eraserLength: number;
     operationWidth: number;
-    selected: string = 'option2';
 
     constructor(private readonly imageService: ImageService, private readonly drawService: DrawService) {
         this.pencilDiameter = DEFAULT_WIDTH;
