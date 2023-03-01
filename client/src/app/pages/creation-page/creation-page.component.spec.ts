@@ -98,6 +98,23 @@ describe('CreationPageComponent', () => {
         expect(validateDifferencesSpy).toHaveBeenCalled();
     });
 
+    // it('should call undoCanvasOperation() when ctrlKey is pressed', () => {
+    //     const mockKeyboardEvent = new KeyboardEvent('keydown', { ctrlKey: true, key: 'Z' });
+    //     component.keyboardEvent(mockKeyboardEvent);
+
+    //     expect(drawService.undoCanvasOperation).toHaveBeenCalled();
+    //     expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
+    // });
+
+    // it('should call redoCanvasOperation() when ctrlKey and shiftKey are pressed and key is "Z"', () => {
+    //     const mockKeyboardEvent = new KeyboardEvent('keydown', { ctrlKey: true, shiftKey: true, key: 'Z' });
+
+    //     component.keyboardEvent(mockKeyboardEvent);
+
+    //     expect(drawService.redoCanvasOperation).toHaveBeenCalled();
+    //     expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
+    // });
+
     it('should not call any method when ctrlKey and shiftKey are pressed but key is not "Z"', () => {
         const mockKeyboardEvent = new KeyboardEvent('keydown', { ctrlKey: true, shiftKey: true, key: 'X' });
 
