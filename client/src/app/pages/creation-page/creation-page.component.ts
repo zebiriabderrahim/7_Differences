@@ -35,7 +35,6 @@ export class CreationPageComponent {
         this.radiusSizes = RADIUS_SIZES;
         this.radius = DEFAULT_RADIUS;
         this.canvasPosition = CanvasPosition;
-        // this.drawService.initializeStacks();
     }
 
     @HostListener('window:keydown', ['$event'])
