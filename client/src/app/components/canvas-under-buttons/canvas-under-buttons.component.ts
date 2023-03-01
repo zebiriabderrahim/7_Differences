@@ -30,33 +30,21 @@ export class CanvasUnderButtonsComponent {
                 this.matDialog.open(this.invalidImageDialog);
             } else {
                 await this.setImageIfValid(file);
+                this.uploadInput.nativeElement.value = '';
             }
         }
-        console.log('select');
-        console.log('left', this.imageService['leftBackground'].slice(1,50));
-        console.log('right', this.imageService['rightBackground'].slice(1,50));
     }
 
     async setImageIfValid(file: File): Promise<void> {
         const image = await createImageBitmap(file);
         if (this.validationService.isImageSizeValid(image) && this.validationService.isImageFormatValid(file)) {
             this.imageService.setBackground(this.position, image);
-            console.log('after select');
-            console.log('left', this.imageService['leftBackground'].slice(1, 50));
-            console.log('right', this.imageService['rightBackground'].slice(1, 50));
         } else {
             this.matDialog.open(this.invalidImageDialog);
         }
     }
 
     resetBackground(): void {
-        console.log('reset');
-        console.log('left', this.imageService['leftBackground'].slice(1, 50));
-        console.log('right', this.imageService['rightBackground'].slice(1, 50));
-        this.uploadInput.nativeElement.value = '';
         this.imageService.resetBackground(this.position);
-        console.log('after reset');
-        console.log('left', this.imageService['leftBackground'].slice(1, 50));
-        console.log('right', this.imageService['rightBackground'].slice(1, 50));
     }
 }
