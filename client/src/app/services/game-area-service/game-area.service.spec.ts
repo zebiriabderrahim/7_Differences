@@ -14,7 +14,7 @@ import {
     MIDDLE_BUTTON,
     ONE_SECOND,
     RIGHT_BUTTON,
-    YELLOW_FLASH_TIME
+    YELLOW_FLASH_TIME,
 } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { Coordinate } from '@common/coordinate';
