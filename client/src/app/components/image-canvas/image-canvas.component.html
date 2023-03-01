@@ -1,37 +1,44 @@
 <div *ngIf="isColorSelected" id="canvas-color-choice">
     <button *ngFor="let color of colors" class="button" (click)="drawColor = color" (click)="isColorSelected = false">
-        <mat-icon [ngStyle]="{'color': color }">lens</mat-icon>
+        <mat-icon [ngStyle]="{ color: color }">lens</mat-icon>
     </button>
 </div>
 <div id="canvas-top-buttons" *ngIf="!isColorSelected">
-    <mat-button-toggle-group #group="matButtonToggleGroup" [value]="actualCanvasAction"
-        (change)="onValueChange($event.value)">
+    <mat-button-toggle-group #group="matButtonToggleGroup" [(value)]="selectedCanvasAction">
+        <mat-form-field>
+            <mat-select [(value)]="selected">
+                <mat-option>None</mat-option>
+                <mat-option value="option1">Option 1</mat-option>
+                <mat-option value="option2">Option 2</mat-option>
+                <mat-option value="option3">Option 3</mat-option>
+            </mat-select>
+        </mat-form-field>
         <mat-button-toggle [value]="canvasAction.Pencil">
             <mat-icon>gesture</mat-icon>
-            <mat-form-field appearance="fill" style="width:80px">
-                <mat-select #form (selectionChange)="onWidthChange($event.value)">
-                    <mat-option *ngFor="let pencil of drawValues" [attr.value]="pencil" class="circle-container">
+            <mat-form-field appearance="fill" style="width: 80px">
+                <mat-select [(value)]="pencilDiameter">
+                    <mat-option *ngFor="let pencil of drawValues" [value]="pencil">
                         <svg width="20" height="20">
-                            <circle cx="50%" cy="50%" [attr.r]="pencil / 2" [attr.fill]=drawColor />
+                            <circle cx="50%" cy="50%" [attr.r]="pencil / 2" [attr.fill]="drawColor" />
                         </svg>
-                        {{pencil}} px
+                        {{ pencil }} px
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-            <mat-icon [ngStyle]="{'color': drawColor}">line_weight</mat-icon>
+            <mat-icon [ngStyle]="{ color: drawColor }">line_weight</mat-icon>
         </mat-button-toggle>
         <mat-button-toggle [value]="canvasAction.Rectangle">
-            <mat-icon [ngStyle]="{'color': drawColor}">crop_square</mat-icon>
+            <mat-icon [ngStyle]="{ color: drawColor }">crop_square</mat-icon>
         </mat-button-toggle>
         <mat-button-toggle [value]="canvasAction.Eraser">
-            <img src="assets/img/eraser.svg">
-            <mat-form-field appearance="fill" style="width:80px">
-                <mat-select #form (selectionChange)="onWidthChange($event.value)">
-                    <mat-option *ngFor="let eraser of drawValues" [attr.value]="eraser" class="circle-container">
+            <img src="assets/img/eraser.svg" />
+            <mat-form-field appearance="fill" style="width: 80px">
+                <mat-select [(value)]="eraserLength">
+                    <mat-option *ngFor="let eraser of drawValues" [value]="eraser">
                         <svg width="40" height="40" viewBox="0 0 35 35">
-                            <rect fill-rule="evenodd" y="10" [attr.width]=eraser [attr.height]=eraser fill='black' />
+                            <rect fill-rule="evenodd" y="10" [attr.width]="eraser" [attr.height]="eraser" fill="black" />
                         </svg>
-                        {{eraser}} px
+                        {{ eraser }} px
                     </mat-option>
                 </mat-select>
             </mat-form-field>
@@ -39,7 +46,7 @@
         </mat-button-toggle>
     </mat-button-toggle-group>
     <button mat-raised-button class="button" (click)="isColorSelected = true">
-        <mat-icon [ngStyle]="{'color': drawColor}">color_lens</mat-icon>
+        <mat-icon [ngStyle]="{ color: drawColor }">color_lens</mat-icon>
     </button>
     <button mat-raised-button class="button" (click)="resetForeground()">
         <mat-icon>replay</mat-icon>
@@ -48,8 +55,14 @@
 <div id="image-editor">
     <canvas id="background-canvas" [height]="canvasSizes.height" [width]="canvasSizes.width" #backgroundCanvas></canvas>
     <canvas id="foreground-canvas" [height]="canvasSizes.height" [width]="canvasSizes.width" #foregroundCanvas></canvas>
-    <canvas id="front-canvas" [height]="canvasSizes.height" [width]="canvasSizes.width" #frontCanvas
-        (mousedown)="startCanvasOperation($event)" (mousemove)="continueCanvasOperation($event)"
-        (mouseup)="stopCanvasOperation($event)"></canvas>
+    <canvas
+        id="front-canvas"
+        [height]="canvasSizes.height"
+        [width]="canvasSizes.width"
+        #frontCanvas
+        (mousedown)="startCanvasOperation($event)"
+        (mousemove)="continueCanvasOperation($event)"
+        (mouseup)="stopCanvasOperation($event)"
+    ></canvas>
 </div>
 <app-canvas-under-buttons [position]="this.position"></app-canvas-under-buttons>
