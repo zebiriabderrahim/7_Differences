@@ -1,4 +1,4 @@
-<div id="frame">
+<div id="chat-box">
     <div class="content">
         <div class="contact-profile">
             <img src = "assets/img/raccoonChatAvatarOther.png" alt="" />
@@ -15,16 +15,11 @@
         </div>
         <div class="message-input">
             <div class="wrap">
-                <input
-      type="text"
-      #input
-      placeholder="Write your message..."
-      (keyup.enter)="addNewMessage(input)"
-    />
+                <input type="text" #inputText placeholder="Entrez un message" (keyup.enter)="addNewMessage(inputText)" maxlength="200"/>
                 <i class="fa fa-paperclip attachment" aria-hidden="true"></i>
-                <button class="submit" (click)="fakeReceived(input)">
-      <i class="fa fa-paper-plane" aria-hidden="true"></i>
-    </button>
+                <button mat-button class="submit" (click)="addNewMessage(inputText)">
+                    <mat-icon class="small-icon">near_me</mat-icon>
+                </button>
             </div>
         </div>
     </div>
