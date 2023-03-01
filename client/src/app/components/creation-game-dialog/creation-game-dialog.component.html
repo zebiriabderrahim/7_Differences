@@ -12,6 +12,7 @@
                 <input matInput type="text" placeholder="Entrer le nom de votre jeu" formControlName="name" />
                 <mat-error *ngIf="gameNameForm.controls.name.errors?.required" [ngClass]="'error'"> Le nom ne peut pas être vide</mat-error>
                 <mat-error *ngIf="gameNameForm.controls.name.errors?.pattern" [ngClass]="'error'">Le nom ne peut pas contenir d'espaces</mat-error>
+                <mat-error *ngIf="gameNameForm.get('nameExist')?.hasError('gameExists')" [ngClass]="'error'">Le Jeu existe déjà</mat-error>
             </mat-form-field>
             <button mat-raised-button type="submit" [disabled]="gameNameForm.invalid">Créer un jeu</button>
             <button mat-button (click)="onNoClick()">Quitter</button>
