@@ -36,6 +36,10 @@ export class GameService {
         throw new NotFoundException('No games found');
     }
 
+    async deleteGameById(id: string): Promise<void> {
+        await this.databaseService.deleteGameById(id);
+    }
+
     async addGame(newGame: CreateGameDto): Promise<void> {
         await this.databaseService.addGameInDb(newGame);
     }
