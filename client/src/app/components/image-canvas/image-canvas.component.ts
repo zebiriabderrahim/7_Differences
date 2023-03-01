@@ -26,14 +26,12 @@ export class ImageCanvasComponent implements AfterViewInit {
     drawValues: number[] = DRAW_VALUES;
     pencilDiameter: number;
     eraserLength: number;
-    operationWidth: number;
 
     constructor(private readonly imageService: ImageService, private readonly drawService: DrawService) {
         this.pencilDiameter = DEFAULT_WIDTH;
         this.eraserLength = DEFAULT_WIDTH;
         this.canvasAction = CanvasAction;
         this.selectedCanvasAction = CanvasAction.Pencil;
-        this.operationWidth = this.pencilDiameter;
     }
 
     @HostListener('window:keydown.shift', ['$event'])
