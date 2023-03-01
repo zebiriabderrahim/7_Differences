@@ -29,7 +29,7 @@ export class DatabaseService {
             const gameCardsList: GameCard[] = await this.gameCardModel.find().exec();
             this.gameListManager.buildGameCarousel(gameCardsList);
         }
-        return this.gameListManager['carouselGames'];
+        return this.gameListManager.getCarouselGames();
     }
 
     async getGameById(id: string): Promise<Game> {
@@ -74,6 +74,25 @@ export class DatabaseService {
             this.gameListManager.addGameCarousel(gameCard);
         } catch (error) {
             return Promise.reject(`Failed to insert game: ${error}`);
+        }
+    }
+
+    deleteGameAssetsByName(gameName: string): void {
+        fs.unlinkSync(`assets/${gameName}/original.bmp`);
+        fs.unlinkSync(`assets/${gameName}/modified.bmp`);
+        fs.unlinkSync(`assets/${gameName}/differences.json`);
+        fs.rmdirSync(`assets/${gameName}/`);
+    }
+
+    async deleteGameById(id: string): Promise<void> {
+        try {
+            await this.gameModel.findByIdAndDelete(id).exec();
+            const gameName = (await this.gameCardModel.findByIdAndDelete(id).exec()).name;
+            this.deleteGameAssetsByName(gameName);
+            const gameCardsList: GameCard[] = await this.gameCardModel.find().exec();
+            this.gameListManager.buildGameCarousel(gameCardsList);
+        } catch (error) {
+            return Promise.reject(`Failed to delete game with id : ${id} --> ${error}`);
         }
     }
 }
