@@ -184,4 +184,28 @@ describe('GameController', () => {
         await controller.verifyIfGameExists('0', res);
         expect(gameService.verifyIfGameExists.calledOnce).toBeTruthy();
     });
+
+    it('deleteGameById() should call deleteGameById() in gameService', async () => {
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.OK);
+            return res;
+        };
+        res.send = () => res;
+        await controller.deleteGameById('0', res);
+        expect(gameService.deleteGameById.calledOnce).toBeTruthy();
+    });
+
+    it('deleteGameById() should return NOT_FOUND when service unable to delete game', async () => {
+        gameService.deleteGameById.throwsException();
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.NO_CONTENT);
+            return res;
+        };
+        res.send = () => res;
+        await controller.deleteGameById('0', res);
+        expect(gameService.deleteGameById).toThrow();
+        expect(gameService.deleteGameById.called).toBeTruthy();
+    });
 });
