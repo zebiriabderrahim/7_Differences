@@ -6,14 +6,22 @@ import { Component } from '@angular/core';
     styleUrls: ['./chat-box.component.scss'],
 })
 export class ChatBoxComponent {
-    messages: string[] = ['message1', 'message2', 'message3', 'message4'];
+    messages: { tag: string; message: string }[] = [];
     alert(): void {
         window.alert('Your message was sent');
     }
     addNewMessage(inputField: { value: string }) {
         const val = inputField.value?.trim();
         if (val.length) {
-            this.messages.push(val);
+            this.messages.push({ tag: 'sent', message: val });
+        }
+        inputField.value = '';
+    }
+
+    fakeReceived(inputField: { value: string }) {
+        const val = inputField.value?.trim();
+        if (val.length) {
+            this.messages.push({ tag: 'received', message: val });
         }
         inputField.value = '';
     }
