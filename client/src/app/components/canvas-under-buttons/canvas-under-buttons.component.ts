@@ -30,6 +30,7 @@ export class CanvasUnderButtonsComponent {
                 this.matDialog.open(this.invalidImageDialog);
             } else {
                 await this.setImageIfValid(file);
+                this.uploadElRef.nativeElement.value = '';
             }
         }
     }
@@ -44,7 +45,6 @@ export class CanvasUnderButtonsComponent {
     }
 
     resetBackground(): void {
-        this.uploadElRef.nativeElement.value = '';
         this.imageService.resetBackground(this.position);
     }
 }
