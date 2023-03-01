@@ -4,7 +4,7 @@
     </button>
 </div>
 <div id="canvas-top-buttons" *ngIf="!isColorSelected">
-    <mat-button-toggle-group #group="matButtonToggleGroup" [(value)]="selectedCanvasAction">
+    <mat-button-toggle-group [(value)]="selectedCanvasAction">
         <mat-button-toggle [value]="canvasAction.Pencil">
             <mat-icon>gesture</mat-icon>
             <mat-form-field appearance="fill" style="width: 80px">
