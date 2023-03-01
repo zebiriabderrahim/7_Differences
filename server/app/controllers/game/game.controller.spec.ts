@@ -1,6 +1,7 @@
+import { Game } from '@app/model/database/game';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameService } from '@app/services/game/game.service';
-import { CarouselPaginator, GameConfigConst, ServerSideGame } from '@common/game-interfaces';
+import { CarouselPaginator, GameConfigConst } from '@common/game-interfaces';
 import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'express';
@@ -23,14 +24,14 @@ describe('GameController', () => {
         },
     ];
 
-    const testGame: ServerSideGame = {
-        id: 'test',
+    const testGame: Game = {
+        _id: 'test',
         name: 'test',
         isHard: true,
-        original: 'test',
-        modified: 'test',
-        differencesCount: 1,
-        differences: [[]],
+        originalImage: 'test',
+        modifiedImage: 'test',
+        nDifference: 1,
+        differences: 'test',
     };
 
     beforeEach(async () => {
@@ -79,8 +80,8 @@ describe('GameController', () => {
         expect(gameService.getGameCarousel.called).toBe(true);
     });
 
-    it('getGameById() should call getGameById() in gameService', () => {
-        gameService.getGameById.returns(testGame);
+    it('getGameById() should call getGameById() in gameService', async () => {
+        gameService.getGameById.resolves(testGame);
         const res = {} as unknown as Response;
         res.status = (code) => {
             expect(code).toEqual(HttpStatus.OK);
@@ -91,11 +92,11 @@ describe('GameController', () => {
             return res;
         };
         res.send = () => res;
-        controller.gameById('0', res);
+        await controller.gameById('0', res);
         expect(gameService.getGameById.calledOnce).toBeTruthy();
     });
 
-    it('getGameById() should return NOT_FOUND when service unable to fetch Game', () => {
+    it('getGameById() should return NOT_FOUND when service unable to fetch Game', async () => {
         gameService.getGameById.throwsException();
         const res = {} as unknown as Response;
         res.status = (code) => {
@@ -107,7 +108,7 @@ describe('GameController', () => {
             return res;
         };
         res.send = () => res;
-        controller.gameById('0', res);
+        await controller.gameById('0', res);
         expect(gameService.getGameById).toThrow();
         expect(gameService.getGameById.called).toBeTruthy();
     });
@@ -145,18 +146,18 @@ describe('GameController', () => {
         expect(gameService.getConfigConstants.called).toBeTruthy();
     });
 
-    it('addGame()should call addGame() in gameService', () => {
+    it('addGame()should call addGame() in gameService', async () => {
         const res = {} as unknown as Response;
         res.status = (code) => {
             expect(code).toEqual(HttpStatus.CREATED);
             return res;
         };
         res.send = () => res;
-        controller.addGame(new CreateGameDto(), res);
+        await controller.addGame(new CreateGameDto(), res);
         expect(gameService.addGame.calledOnce).toBeTruthy();
     });
 
-    it('addGame() should return NOT_FOUND when service unable to add new game', () => {
+    it('addGame() should return NOT_FOUND when service unable to add new game', async () => {
         gameService.addGame.throwsException();
         const res = {} as unknown as Response;
         res.status = (code) => {
@@ -164,8 +165,23 @@ describe('GameController', () => {
             return res;
         };
         res.send = () => res;
-        controller.addGame(new CreateGameDto(), res);
+        await controller.addGame(new CreateGameDto(), res);
         expect(gameService.addGame).toThrow();
         expect(gameService.addGame.called).toBeTruthy();
+    });
+    it('verifyIfGameExists() should call verifyIfGameExists() in gameService', async () => {
+        gameService.verifyIfGameExists.resolves(true);
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.OK);
+            return res;
+        };
+        res.json = (game) => {
+            expect(game).toEqual(true);
+            return res;
+        };
+        res.send = () => res;
+        await controller.verifyIfGameExists('0', res);
+        expect(gameService.verifyIfGameExists.calledOnce).toBeTruthy();
     });
 });

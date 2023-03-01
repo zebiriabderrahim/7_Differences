@@ -1,3 +1,5 @@
+// Id comes from database to allow _id
+/* eslint-disable no-underscore-dangle */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -43,7 +45,7 @@ describe('GameSheetComponent', () => {
         fixture.detectChanges();
         gameCardService = TestBed.inject(ClassicSystemService);
         component.game = {
-            id: '',
+            _id: '',
             name: 'test',
             difficultyLevel: true,
             soloTopTime: [],
@@ -65,6 +67,6 @@ describe('GameSheetComponent', () => {
         component.openDialog();
         expect(popUpSpy).toHaveBeenCalled();
         expect(gameServicePlayerNameSpy).toHaveBeenCalledWith(component.game.name);
-        expect(gameServicePlayerIdSpy).toHaveBeenCalledWith(component.game.id);
+        expect(gameServicePlayerIdSpy).toHaveBeenCalledWith(component.game._id);
     });
 });
