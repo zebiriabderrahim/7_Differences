@@ -1,14 +1,15 @@
 <div id="frame">
     <div class="content">
         <div class="contact-profile">
-            <img src = "assets/img/raccoonChatAvatar.png" alt="" />
+            <img src = "assets/img/raccoonChatAvatarOther.png" alt="" />
             <p>Le nom de l'adversaire</p>
         </div>
-        <div class="messages" #scrollMe>
+        <div class="messages">
             <ul>
-                <li *ngFor="let msg of messages">
-                    <img src = "assets/img/raccoonChatAvatar.png" alt="" />
-                    <p>{{msg}}</p>
+                <li [class] = "messageItem.tag" *ngFor="let messageItem of messages">
+                    <img *ngIf = "messageItem.tag === 'sent'" src = "assets/img/raccoonChatAvatar.png" alt="" />
+                    <img *ngIf = "messageItem.tag === 'received'" src = "assets/img/raccoonChatAvatarOther.png" alt="" />
+                    <p>{{messageItem.message}}</p>
                 </li>
             </ul>
         </div>
@@ -16,12 +17,12 @@
             <div class="wrap">
                 <input
       type="text"
-      #msgInput
+      #input
       placeholder="Write your message..."
-      (keyup.enter)="addNewMessage(msgInput)"
+      (keyup.enter)="addNewMessage(input)"
     />
                 <i class="fa fa-paperclip attachment" aria-hidden="true"></i>
-                <button class="submit" (click)="addNewMessage(msgInput)">
+                <button class="submit" (click)="fakeReceived(input)">
       <i class="fa fa-paper-plane" aria-hidden="true"></i>
     </button>
             </div>
