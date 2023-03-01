@@ -19,7 +19,7 @@ export class ImageCanvasComponent implements AfterViewInit {
     @ViewChild('frontCanvas') frontCanvas: ElementRef;
     readonly canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
     canvasAction: typeof CanvasAction;
-    actualCanvasAction: CanvasAction;
+    selectedCanvasAction: CanvasAction;
     drawColor: string = DEFAULT_COLOR;
     isColorSelected: boolean = false;
     colors: string[] = COLORS;
@@ -27,12 +27,13 @@ export class ImageCanvasComponent implements AfterViewInit {
     pencilDiameter: number;
     eraserLength: number;
     operationWidth: number;
+    selected: string = 'option2';
 
     constructor(private readonly imageService: ImageService, private readonly drawService: DrawService) {
         this.pencilDiameter = DEFAULT_WIDTH;
         this.eraserLength = DEFAULT_WIDTH;
         this.canvasAction = CanvasAction;
-        this.actualCanvasAction = CanvasAction.Pencil;
+        this.selectedCanvasAction = CanvasAction.Pencil;
         this.operationWidth = this.pencilDiameter;
     }
 
@@ -59,11 +60,12 @@ export class ImageCanvasComponent implements AfterViewInit {
     }
 
     startCanvasOperation(event: MouseEvent): void {
+        const width: number = this.selectedCanvasAction === CanvasAction.Pencil ? this.pencilDiameter : this.eraserLength;
         const canvasOperation: CanvasOperation = {
-            action: this.actualCanvasAction,
+            action: this.selectedCanvasAction,
             position: this.position,
             color: this.drawColor,
-            width: this.operationWidth,
+            width,
         };
         this.drawService.startCanvasOperation(canvasOperation, event);
     }
@@ -74,21 +76,5 @@ export class ImageCanvasComponent implements AfterViewInit {
 
     stopCanvasOperation(event: MouseEvent): void {
         this.drawService.stopCanvasOperation(this.position, event);
-    }
-
-    onValueChange(value: CanvasAction) {
-        this.actualCanvasAction = value;
-        switch (value) {
-            case CanvasAction.Pencil:
-                this.operationWidth = this.pencilDiameter;
-                break;
-            case CanvasAction.Eraser:
-                this.operationWidth = this.eraserLength;
-                break;
-        }
-    }
-
-    onWidthChange(value: number) {
-        this.operationWidth = value;
     }
 }
