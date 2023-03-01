@@ -1,4 +1,3 @@
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
 // Needed to ignore what drawImage does in 'loadImage should properly load an image'
 /* eslint-disable @typescript-eslint/no-empty-function */
 // Needed to get contexts from test canvas in 'setAllData should get the imageData of the two contexts'
@@ -7,7 +6,16 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-import { BACK_BUTTON, FLASH_WAIT_TIME, FORWARD_BUTTON, LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON, YELLOW_FLASH_TIME } from '@app/constants/constants';
+import {
+    BACK_BUTTON,
+    FLASH_WAIT_TIME,
+    FORWARD_BUTTON,
+    LEFT_BUTTON,
+    MIDDLE_BUTTON,
+    ONE_SECOND,
+    RIGHT_BUTTON,
+    YELLOW_FLASH_TIME
+} from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { Coordinate } from '@common/coordinate';
 import { GameAreaService } from './game-area.service';
@@ -111,7 +119,6 @@ describe('GameAreaService', () => {
     it('loadImage should properly load an image', async () => {
         const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d') as CanvasRenderingContext2D;
-        // const drawImageSpy = spyOn(context, 'drawImage').and.callFake(() => {});
 
         gameAreaService.loadImage(context, 'assets/img/RatCoon.png');
         setTimeout(() => {
@@ -120,10 +127,6 @@ describe('GameAreaService', () => {
         expect(timerCallback).not.toHaveBeenCalled();
         jasmine.clock().tick(350 + 1);
         expect(timerCallback).toHaveBeenCalled();
-        // setTimeout(() => {
-        //     expect(drawImageSpy).toHaveBeenCalled();
-        //     done();
-        // }, 350);
     });
 
     it('should correctly eliminate disparities from the altered canvas', () => {
@@ -170,12 +173,12 @@ describe('GameAreaService', () => {
         const playErrorSoundSpy = spyOn(gameAreaService, 'playErrorSound').and.callFake(() => {});
         const methodSpy = spyOn(context, 'fillText');
         gameAreaService['mousePosition'] = { x: 100, y: 150 };
-        setTimeout(function () {
+        setTimeout(() => {
             timerCallback();
-        }, 1);
+        }, ONE_SECOND);
         gameAreaService.showError(true);
         expect(timerCallback).not.toHaveBeenCalled();
-        jasmine.clock().tick(2);
+        jasmine.clock().tick(ONE_SECOND + 1);
         expect(timerCallback).toHaveBeenCalled();
         expect(context.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT)).toEqual(initialImageData);
         expect(methodSpy).toHaveBeenCalled();
@@ -192,10 +195,10 @@ describe('GameAreaService', () => {
         gameAreaService['mousePosition'] = { x: 100, y: 150 };
         setTimeout(() => {
             timerCallback();
-        }, 1000);
+        }, ONE_SECOND);
         gameAreaService.showError(false);
         expect(timerCallback).not.toHaveBeenCalled();
-        jasmine.clock().tick(1001);
+        jasmine.clock().tick(ONE_SECOND + 1);
         expect(timerCallback).toHaveBeenCalled();
         expect(context.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT)).toEqual(initialImageData);
         expect(methodSpy).toHaveBeenCalled();
@@ -240,9 +243,6 @@ describe('GameAreaService', () => {
                 expect(gameAreaService['originalFrontPixelData']).toEqual(ogInitialImageData);
                 expect(gameAreaService['modifiedFrontPixelData']).toEqual(mdInitialImageData);
             }, FLASH_WAIT_TIME);
-            // expect(timerCallback).not.toHaveBeenCalled();
-            // jasmine.clock().tick(FLASH_WAIT_TIME * 2);
-            // expect(timerCallback).toHaveBeenCalled();
         }, YELLOW_FLASH_TIME);
         expect(timerCallback).not.toHaveBeenCalled();
         expect(intervalCallback).not.toHaveBeenCalled();
