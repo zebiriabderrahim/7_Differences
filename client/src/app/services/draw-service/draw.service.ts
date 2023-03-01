@@ -83,12 +83,11 @@ export class DrawService {
         if (this.canvasStateStack.length > 0) {
             const lastState: CanvasState = this.canvasStateStack.pop() as CanvasState;
             this.undoneCanvasStateStack.push(lastState);
-            this.redrawForegrounds(lastState);
-            console.log('undo');
-            console.log(this.canvasStateStack);
-            console.log('length stateStack: ' + this.canvasStateStack.length);
-            console.log(this.undoneCanvasStateStack);
-            console.log('length undoneStateStack: ' + this.undoneCanvasStateStack.length);
+            if (!this.isCanvasStateNextState(lastState)) {
+                this.redrawForegrounds(lastState);
+            } else {
+                this.undoCanvasOperation();
+            }
         }
     }
 
@@ -96,13 +95,20 @@ export class DrawService {
         if (this.undoneCanvasStateStack.length > 0) {
             const lastState: CanvasState = this.undoneCanvasStateStack.pop() as CanvasState;
             this.canvasStateStack.push(lastState);
-            this.redrawForegrounds(lastState);
-            console.log('redo');
-            console.log(this.canvasStateStack);
-            console.log('length stateStack: ' + this.canvasStateStack.length);
-            console.log(this.undoneCanvasStateStack);
-            console.log('length undoneStateStack: ' + this.undoneCanvasStateStack.length);
+            if (!this.isCanvasStateNextState(lastState)) {
+                this.redrawForegrounds(lastState);
+            } else {
+                this.redoCanvasOperation();
+            }
         }
+    }
+
+    isCanvasStateNextState(nextState: CanvasState): boolean {
+        const canvasState: CanvasState = this.getCanvasState();
+        return (
+            canvasState.left.data.toString() === nextState.left.data.toString() &&
+            canvasState.right.data.toString() === nextState.right.data.toString()
+        );
     }
 
     resetForeground(canvasPosition: CanvasPosition) {
@@ -224,14 +230,11 @@ export class DrawService {
                 break;
         }
         this.saveCurrentCanvasState();
-        console.log(this.canvasStateStack);
-        console.log('length stateStack: ' + this.canvasStateStack.length);
     }
 
-    saveCurrentCanvasState(){
+    saveCurrentCanvasState() {
         this.canvasStateStack.push(this.getCanvasState());
     }
-
 
     drawRectangle() {
         this.activeContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
