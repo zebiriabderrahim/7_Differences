@@ -27,7 +27,7 @@ describe('CreationPageComponent', () => {
     let drawService: DrawService;
 
     beforeEach(async () => {
-        drawService = jasmine.createSpyObj('DrawService', ['redoCanvasOperation', 'undoCanvasOperation']);
+        drawService = jasmine.createSpyObj('DrawService', ['redoCanvasOperation', 'undoCanvasOperation', 'swapForegrounds']);
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
             declarations: [CreationPageComponent, ImageCanvasComponent, CanvasUnderButtonsComponent, MatIcon],
@@ -141,4 +141,10 @@ describe('CreationPageComponent', () => {
         expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
         expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
     });
+
+    // it('should call drawService.swapForegrounds()', () => {
+    //     component.swapForegrounds();
+    //     fixture.detectChanges();
+    //     expect(drawService.swapForegrounds).toHaveBeenCalled();
+    // });
 });
