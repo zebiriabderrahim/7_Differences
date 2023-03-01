@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
     selector: 'app-chat-box',
@@ -6,6 +6,7 @@ import { Component } from '@angular/core';
     styleUrls: ['./chat-box.component.scss'],
 })
 export class ChatBoxComponent {
+    @Input() opponentName: string = '';
     messages: { tag: string; message: string }[] = [];
     alert(): void {
         window.alert('Your message was sent');
@@ -14,14 +15,6 @@ export class ChatBoxComponent {
         const val = inputField.value?.trim();
         if (val.length) {
             this.messages.push({ tag: 'sent', message: val });
-        }
-        inputField.value = '';
-    }
-
-    fakeReceived(inputField: { value: string }) {
-        const val = inputField.value?.trim();
-        if (val.length) {
-            this.messages.push({ tag: 'received', message: val });
         }
         inputField.value = '';
     }

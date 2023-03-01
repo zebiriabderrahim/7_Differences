@@ -1,4 +1,4 @@
-#frame {
+#chat-box {
   display: flex;
   position: relative;
   width: 550px;
@@ -6,7 +6,7 @@
   background: #e6eaea;
 }
 
-#frame .content {
+#chat-box .content {
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -14,24 +14,26 @@
   
 }
 
-#frame .content .contact-profile {
+#chat-box .content .contact-profile {
   width: 100%;
   height: 60px;
   line-height: 60px;
   background: #1778f2;
 }
-#frame .content .contact-profile img {
+#chat-box .content .contact-profile img {
   width: 40px;
   border-radius: 50%;
   float: left;
   margin: 9px 12px 0 9px;
 }
-#frame .content .contact-profile p {
+#chat-box .content .contact-profile p {
   float: left;
   color: #eeee;
 }
 
-#frame .content .messages {
+#chat-box .content .messages {
+  position: relative;
+  bottom: 12px;
   display: flex;
   flex-direction: column-reverse;
   height: auto;
@@ -39,73 +41,109 @@
   max-height: calc(100% - 93px);
   overflow-y: scroll;
   overflow-x: hidden;
-  position: relative;
   width: calc(100% - 20px); 
   padding-right: 20px;
-  bottom: 12px;
 }
 
-#frame .content .messages::-webkit-scrollbar {
-  width: 8px;
-  background: transparent;
-}
-#frame .content .messages::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.3);
-}
-
-#frame .content .messages ul{
+#chat-box .content .messages ul{
   padding-left: 0;
 } 
-#frame .content .messages ul li {
+#chat-box .content .messages ul li.sent {
   display: inline-block;
   clear: both;
   float: left;
-  padding-left: 360px; // 360 px si on veut a droite sinon on lenleve 
+  padding-left: 250px; 
   margin: 15px 15px 15px 15px;
   width: calc(100% - 25px);
   font-size: 0.9em;
 }
 
-#frame .content .messages ul li img {
+#chat-box .content .messages ul li.received {
+  display: inline-block;
+  clear: both;
+  float: left;
+  margin: 15px 15px 15px 15px;
+  width: calc(100% - 25px);
+  font-size: 0.9em;
+}
+
+#chat-box .content .messages ul li.common {
+  display: inline-block;
+  clear: both;
+  float: left;
+  text-align: center; 
+  margin: 15px 15px 15px 15px;
+  width: calc(100% - 25px);
+  font-size: 0.9em;
+}
+
+#chat-box .content .messages ul li img {
   width: 22px;
   border-radius: 50%;
   float: left;
 }
-#frame .content .messages ul li p {
+
+#chat-box .content .messages ul li.sent p {
   display: inline-block;
   padding: 10px 15px;
   border-style: solid #1778f2;
   color: white;
   border-radius: 20px;
-  max-width: 205px;
+  max-width: 200px;
   line-height: 130%;
   overflow-wrap: break-word;
   background-color: #1778f2;
 }
 
-#frame .content .message-input {
+#chat-box .content .messages ul li.received p {
+  display: inline-block;
+  padding: 10px 15px;
+  border-style: solid white;
+  color: black;
+  border-radius: 20px;
+  max-width: 200px;
+  line-height: 130%;
+  overflow-wrap: break-word;
+  background-color: white;
+}
+
+#chat-box .content .messages ul li.common p {
+  display: inline-block;
+  color: rgb(224, 19, 19);
+  font-weight: bold;
+}
+
+#chat-box .content .messages::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+#chat-box .content .messages::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+#chat-box .content .message-input {
   position: absolute;
   bottom: 0;
   width: 100%;
   z-index: 99;
 }
-#frame .content .message-input .wrap {
+#chat-box .content .message-input .wrap {
   position: relative;
 }
-#frame .content .message-input .wrap input {
-  font-family: 'proxima-nova', 'Source Sans Pro', sans-serif;
+#chat-box .content .message-input .wrap input {
+  font-family: sans-serif;
   float: left;
   border: none;
-  width: calc(100% - 90px);
-  padding: 11px 32px 10px 8px;
+  width: calc(100% - 105px);
+  padding: 11px 32px 15px 8px;
   font-size: 0.8em;
   color: #32465a;
 }
 
-#frame .content .message-input .wrap input:focus {
+#chat-box .content .message-input .wrap input:focus {
   outline: none;
 }
-#frame .content .message-input .wrap .attachment {
+#chat-box .content .message-input .wrap .attachment {
   position: absolute;
   right: 60px;
   z-index: 4;
@@ -116,23 +154,23 @@
   cursor: pointer;
 }
 
-#frame .content .message-input .wrap .attachment:hover {
+#chat-box .content .message-input .wrap .attachment:hover {
   opacity: 1;
 }
-#frame .content .message-input .wrap button {
+#chat-box .content .message-input .wrap button {
   float: right;
   border: none;
-  width: 50px;
-  padding: 17px 0;
+  width: 15px;
+  padding-bottom: 2px;
   cursor: pointer;
   background: #1778f2;
   color: #f5f5f5;
 }
 
-#frame .content .message-input .wrap button:hover {
+#chat-box .content .message-input .wrap button:hover {
   background: #435f7a;
 }
-#frame .content .message-input .wrap button:focus {
+#chat-box .content .message-input .wrap button:focus {
   outline: none;
 }
 
