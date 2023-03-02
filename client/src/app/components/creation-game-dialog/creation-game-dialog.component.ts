@@ -1,5 +1,5 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { GameDetails } from '@app/interfaces/game-interfaces';
@@ -22,12 +22,8 @@ export class CreationGameDialogComponent implements OnInit {
     nDifferences: number;
     readonly routerConfig: string = '/config/';
     gameNameForm = new FormGroup({
-        name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)]),
-        nameExist: new FormControl('', {
-            validators: [Validators.required],
-            asyncValidators: [this.gameExistsValidator()],
-            updateOn: 'blur',
-        }),
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        name: new FormControl('', [Validators.required, Validators.maxLength(10), Validators.pattern(/^\S*$/)], [this.validateGameName.bind(this)]),
     });
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
@@ -79,9 +75,8 @@ export class CreationGameDialogComponent implements OnInit {
         }
     }
 
-    gameExistsValidator(): AsyncValidatorFn {
-        return (control: AbstractControl): Observable<ValidationErrors | null> => {
-            return this.communicationService.verifyIfGameExists(control.value).pipe(map((exists) => (exists ? { gameExists: true } : null)));
-        };
+    validateGameName(control: AbstractControl): Observable<{ [key: string]: unknown } | null> {
+        const name = control.value;
+        return this.communicationService.verifyIfGameExists(name).pipe(map((gameExists) => (gameExists ? { gameExists: true } : null)));
     }
 }
