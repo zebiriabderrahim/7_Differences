@@ -73,6 +73,7 @@ export class CreationGameDialogComponent implements OnInit {
             this.imageService.resetBothBackgrounds();
         }
     }
+
     validateGameName(control: AbstractControl): Observable<{ [key: string]: unknown } | null> {
         const name = control.value;
         return this.communicationService.verifyIfGameExists(name).pipe(map((gameExists) => (gameExists ? { gameExists: true } : null)));
