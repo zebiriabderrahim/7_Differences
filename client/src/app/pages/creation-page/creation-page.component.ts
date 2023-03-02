@@ -1,9 +1,10 @@
-import { Component, HostListener, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { SUBMIT_WAIT_TIME } from '@app/constants/constants';
 import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/difference';
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { GameDetails } from '@app/interfaces/game-interfaces';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
@@ -15,9 +16,11 @@ import { ImageService } from '@app/services/image-service/image.service';
     templateUrl: './creation-page.component.html',
     styleUrls: ['./creation-page.component.scss'],
 })
-export class CreationPageComponent {
+export class CreationPageComponent implements AfterViewInit {
+    @ViewChild('combinedCanvas') combinedCanvas: ElementRef;
     @ViewChild('imageNotSetDialog', { static: true })
     private readonly imageNotSetDialog: TemplateRef<HTMLElement>;
+    readonly canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
     readonly configRoute: string = '/config';
     canvasPosition: typeof CanvasPosition;
     readonly radiusSizes: number[];
@@ -44,6 +47,11 @@ export class CreationPageComponent {
         } else if (event.ctrlKey && event.key === 'z') {
             this.drawService.undoCanvasOperation();
         }
+    }
+
+    ngAfterViewInit(): void {
+        const combinedContext: CanvasRenderingContext2D = this.combinedCanvas.nativeElement.getContext('2d', { willReadFrequently: true });
+        this.imageService.setCombinedContext(combinedContext);
     }
 
     validateDifferences() {
