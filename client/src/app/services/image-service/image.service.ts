@@ -127,31 +127,23 @@ export class ImageService {
         return imageData;
     }
 
-    getLeftPixels(): Pixel[] {
-        const leftImageData = this.leftBackgroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data;
-        return this.transformImageDataToPixelArray(leftImageData);
+    getLeftPixels(leftForegroundCanvas: HTMLCanvasElement): Pixel[] {
+        const combinedLeftCanvasData: Uint8ClampedArray = this.getCombinedCanvasImageData(this.leftBackgroundContext.canvas, leftForegroundCanvas);
+        this.leftImage = this.combinedContext.canvas.toDataURL();
+        return this.transformImageDataToPixelArray(combinedLeftCanvasData);
     }
 
-    getRightPixels(): Pixel[] {
-        const rightImageData = this.rightBackgroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data;
-        return this.transformImageDataToPixelArray(rightImageData);
+    getRightPixels(rightForegroundCanvas: HTMLCanvasElement): Pixel[] {
+        const combinedLeftCanvasData: Uint8ClampedArray = this.getCombinedCanvasImageData(this.rightBackgroundContext.canvas, rightForegroundCanvas);
+        this.rightImage = this.combinedContext.canvas.toDataURL();
+        return this.transformImageDataToPixelArray(combinedLeftCanvasData);
     }
 
     getGamePixels(): GamePixels {
         const foregroundCanvasState: CanvasState = this.drawService.getCanvasState();
-        const combinedLeftCanvasData: Uint8ClampedArray = this.getCombinedCanvasImageData(
-            this.leftBackgroundContext.canvas,
-            foregroundCanvasState.left,
-        );
-        this.leftImage = this.combinedContext.canvas.toDataURL();
-        const combinedRightCanvasData: Uint8ClampedArray = this.getCombinedCanvasImageData(
-            this.rightBackgroundContext.canvas,
-            foregroundCanvasState.right,
-        );
-        this.rightImage = this.combinedContext.canvas.toDataURL();
         return {
-            leftImage: this.transformImageDataToPixelArray(combinedLeftCanvasData),
-            rightImage: this.transformImageDataToPixelArray(combinedRightCanvasData),
+            leftImage: this.getLeftPixels(foregroundCanvasState.left),
+            rightImage: this.getRightPixels(foregroundCanvasState.right),
         };
     }
 
