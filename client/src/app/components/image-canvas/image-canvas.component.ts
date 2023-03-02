@@ -1,7 +1,8 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
-import { COLORS, DEFAULT_COLOR, DEFAULT_WIDTH, DRAW_VALUES } from '@app/constants/drawing';
+// import { COLORS, DEFAULT_COLOR, DEFAULT_WIDTH, DRAW_VALUES } from '@app/constants/drawing';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
-import { CanvasAction } from '@app/enum/canvas-action';
+// import { CanvasAction } from '@app/enum/canvas-action';
+import { CanvasTopButtonsComponent } from '@app/components/canvas-top-buttons/canvas-top-buttons.component';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { CanvasOperation } from '@app/interfaces/canvas-operation';
 import { DrawService } from '@app/services/draw-service/draw.service';
@@ -17,22 +18,11 @@ export class ImageCanvasComponent implements AfterViewInit {
     @ViewChild('backgroundCanvas') backgroundCanvas: ElementRef;
     @ViewChild('foregroundCanvas') foregroundCanvas: ElementRef;
     @ViewChild('frontCanvas') frontCanvas: ElementRef;
+    @ViewChild(CanvasTopButtonsComponent) canvasTopButtonsComponent!: CanvasTopButtonsComponent;
     readonly canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
-    canvasAction: typeof CanvasAction;
-    selectedCanvasAction: CanvasAction;
-    drawColor: string = DEFAULT_COLOR;
-    isColorSelected: boolean = false;
-    colors: string[] = COLORS;
-    drawValues: number[] = DRAW_VALUES;
-    pencilDiameter: number;
-    eraserLength: number;
+    operationDetails: CanvasOperation;
 
-    constructor(private readonly imageService: ImageService, private readonly drawService: DrawService) {
-        this.pencilDiameter = DEFAULT_WIDTH;
-        this.eraserLength = DEFAULT_WIDTH;
-        this.canvasAction = CanvasAction;
-        this.selectedCanvasAction = CanvasAction.Pencil;
-    }
+    constructor(private readonly imageService: ImageService, private readonly drawService: DrawService) {}
 
     @HostListener('window:keydown.shift', ['$event'])
     onShiftDown() {
@@ -56,19 +46,12 @@ export class ImageCanvasComponent implements AfterViewInit {
         this.drawService.resetForeground(this.position);
     }
 
-    startCanvasOperation(event: MouseEvent): void {
-        const width: number = this.selectedCanvasAction === CanvasAction.Pencil ? this.pencilDiameter : this.eraserLength;
-        const canvasOperation: CanvasOperation = {
-            action: this.selectedCanvasAction,
-            position: this.position,
-            color: this.drawColor,
-            width,
-        };
-        this.drawService.startCanvasOperation(canvasOperation, event);
-    }
-
     continueCanvasOperation(event: MouseEvent): void {
         this.drawService.continueCanvasOperation(this.position, event);
+    }
+
+    startCanvasOperation(event: MouseEvent): void {
+        this.drawService.startCanvasOperation(this.canvasTopButtonsComponent.getOperationDetails(), event);
     }
 
     stopCanvasOperation(event: MouseEvent): void {
