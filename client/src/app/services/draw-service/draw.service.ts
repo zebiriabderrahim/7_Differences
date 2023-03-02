@@ -78,7 +78,7 @@ export class DrawService {
         if (this.canvasStateStack.length > 0) {
             const lastState: CanvasState = this.canvasStateStack.pop() as CanvasState;
             this.undoneCanvasStateStack.push(lastState);
-            if (!this.isCanvasStateNextState(lastState)) {
+            if (!this.isCurrentCanvasStateNextState(lastState)) {
                 this.redrawForegrounds(lastState);
             } else {
                 this.undoCanvasOperation();
@@ -90,7 +90,7 @@ export class DrawService {
         if (this.undoneCanvasStateStack.length > 0) {
             const lastState: CanvasState = this.undoneCanvasStateStack.pop() as CanvasState;
             this.canvasStateStack.push(lastState);
-            if (!this.isCanvasStateNextState(lastState)) {
+            if (!this.isCurrentCanvasStateNextState(lastState)) {
                 this.redrawForegrounds(lastState);
             } else {
                 this.redoCanvasOperation();
@@ -98,13 +98,16 @@ export class DrawService {
         }
     }
 
-    isCanvasStateNextState(nextState: CanvasState): boolean {
+    isCurrentCanvasStateNextState(nextState: CanvasState): boolean {
         const canvasState: CanvasState = this.getCanvasState();
-        const leftCanvasData: string = canvasState.left.getContext('2d')?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data.toString() as string;
-        const rightCanvasData: string = canvasState.right.getContext('2d')?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data.toString() as string;
-        const nextLeftCanvasData: string = nextState.left.getContext('2d')?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data.toString() as string;
-        const nextRightCanvasData: string = nextState.right.getContext('2d')?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data.toString() as string;
-        return leftCanvasData === nextLeftCanvasData && rightCanvasData === nextRightCanvasData;
+        return (
+            this.getImageDataAsString(canvasState.left) === this.getImageDataAsString(nextState.left) &&
+            this.getImageDataAsString(canvasState.right) === this.getImageDataAsString(nextState.right)
+        );
+    }
+
+    getImageDataAsString(canvas: HTMLCanvasElement): string {
+        return canvas.getContext('2d')?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data.toString() as string;
     }
 
     resetForeground(canvasPosition: CanvasPosition) {
@@ -132,15 +135,7 @@ export class DrawService {
         this.rightForegroundContext.drawImage(new Image(), 0, 0);
     }
 
-    // getCanvasState(): CanvasState {
-    //     const leftForegroundData: ImageData = this.leftForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-    //     const rightForegroundData: ImageData = this.rightForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-    //     return { left: leftForegroundData, right: rightForegroundData };
-    // }
-
     getCanvasState(): CanvasState {
-        // const leftForegroundData: ImageData = this.leftForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        // const rightForegroundData: ImageData = this.rightForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         return { left: this.leftForegroundContext.canvas, right: this.rightForegroundContext.canvas };
     }
 
