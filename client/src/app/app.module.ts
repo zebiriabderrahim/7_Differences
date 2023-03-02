@@ -28,6 +28,7 @@ import { CanvasUnderButtonsComponent } from './components/canvas-under-buttons/c
 import { ImageCanvasComponent } from './components/image-canvas/image-canvas.component';
 import { SoloGameViewDialogComponent } from './components/solo-game-view-dialog/solo-game-view-dialog.component';
 import { ConfigPageComponent } from './pages/config-page/config-page.component';
+import { CanvasTopButtonsComponent } from './components/canvas-top-buttons/canvas-top-buttons.component';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -49,6 +50,7 @@ import { ConfigPageComponent } from './pages/config-page/config-page.component';
         CreationGameDialogComponent,
         CanvasUnderButtonsComponent,
         SoloGameViewDialogComponent,
+        CanvasTopButtonsComponent,
     ],
     imports: [
         AppMaterialModule,
