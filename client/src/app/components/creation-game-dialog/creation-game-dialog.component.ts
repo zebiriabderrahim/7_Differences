@@ -22,20 +22,16 @@ export class CreationGameDialogComponent implements OnInit {
     nDifferences: number;
     readonly routerConfig: string = '/config/';
     gameNameForm = new FormGroup({
-        name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)]),
-        nameExist: new FormControl('', {
-            asyncValidators: [this.gameExistsValidator()],
-            updateOn: 'blur',
-        }),
+        name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)], [this.validateGameName.bind(this)]),
     });
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
     constructor(
+        private readonly communicationService: CommunicationService,
         private readonly imageService: ImageService,
         private readonly differenceService: DifferenceService,
         private readonly dialogRef: MatDialogRef<CreationPageComponent>,
-        private readonly communicationService: CommunicationService,
         @Inject(MAT_DIALOG_DATA) public radius: number,
     ) {}
 
@@ -77,7 +73,6 @@ export class CreationGameDialogComponent implements OnInit {
             this.imageService.resetBothBackgrounds();
         }
     }
-
     validateGameName(control: AbstractControl): Observable<{ [key: string]: unknown } | null> {
         const name = control.value;
         return this.communicationService.verifyIfGameExists(name).pipe(map((gameExists) => (gameExists ? { gameExists: true } : null)));
