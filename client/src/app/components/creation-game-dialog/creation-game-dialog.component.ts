@@ -24,7 +24,6 @@ export class CreationGameDialogComponent implements OnInit {
     gameNameForm = new FormGroup({
         name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)]),
         nameExist: new FormControl('', {
-            validators: [Validators.required],
             asyncValidators: [this.gameExistsValidator()],
             updateOn: 'blur',
         }),
