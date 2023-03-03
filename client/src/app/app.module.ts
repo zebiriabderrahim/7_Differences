@@ -24,12 +24,12 @@ import { CreationPageComponent } from '@app/pages/creation-page/creation-page.co
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
 import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.component';
+import { CanvasDropdownMenuComponent } from './components/canvas-dropdown-menu/canvas-dropdown-menu.component';
+import { CanvasTopButtonsComponent } from './components/canvas-top-buttons/canvas-top-buttons.component';
 import { CanvasUnderButtonsComponent } from './components/canvas-under-buttons/canvas-under-buttons.component';
 import { ImageCanvasComponent } from './components/image-canvas/image-canvas.component';
 import { SoloGameViewDialogComponent } from './components/solo-game-view-dialog/solo-game-view-dialog.component';
 import { ConfigPageComponent } from './pages/config-page/config-page.component';
-import { CanvasTopButtonsComponent } from './components/canvas-top-buttons/canvas-top-buttons.component';
-import { CanvasDropdownMenuComponent } from './components/canvas-dropdown-menu/canvas-dropdown-menu.component';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
