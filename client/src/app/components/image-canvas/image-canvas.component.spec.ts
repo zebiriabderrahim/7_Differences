@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { CanvasTopButtonsComponent } from '@app/components/canvas-top-buttons/canvas-top-buttons.component';
 import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ImageCanvasComponent } from './image-canvas.component';
@@ -21,7 +22,7 @@ describe('ImageCanvasComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ImageCanvasComponent, CanvasUnderButtonsComponent],
+            declarations: [ImageCanvasComponent, CanvasTopButtonsComponent, CanvasUnderButtonsComponent],
             imports: [
                 NoopAnimationsModule,
                 MatDialogModule,
