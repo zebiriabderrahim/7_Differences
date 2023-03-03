@@ -1,15 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-canvas-dropdown-menu',
-  templateUrl: './canvas-dropdown-menu.component.html',
-  styleUrls: ['./canvas-dropdown-menu.component.scss']
+    selector: 'app-canvas-dropdown-menu',
+    templateUrl: './canvas-dropdown-menu.component.html',
+    styleUrls: ['./canvas-dropdown-menu.component.scss'],
 })
-export class CanvasDropdownMenuComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
-}
+export class CanvasDropdownMenuComponent {}
