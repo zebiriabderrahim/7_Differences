@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { Component, Input } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -21,7 +22,7 @@ export class GameSheetComponent {
         dialogRef.afterClosed().subscribe((playerName) => {
             if (playerName) {
                 this.classicSystemService['playerName'].next(playerName);
-                this.classicSystemService['id'].next(this.game.id);
+                this.classicSystemService['id'].next(this.game._id);
             }
         });
     }
