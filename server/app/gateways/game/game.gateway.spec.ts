@@ -1,6 +1,6 @@
 import { ClassicSoloModeService } from '@app/services/classic-solo-mode/classic-solo-mode.service';
 import { Coordinate } from '@common/coordinate';
-import { ClientSideGame, Differences, GameEvents, PlayRoom, ServerSideGame } from '@common/game-interfaces';
+import { ClientSideGame, Differences, GameEvents, PlayRoom } from '@common/game-interfaces';
 import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
@@ -17,7 +17,7 @@ describe('GameGateway', () => {
 
     const fakeRoom: PlayRoom = {
         roomId: 'fakeRoomId',
-        serverGame: {} as ServerSideGame,
+        originalDifferences: {} as Coordinate[][],
         clientGame: {} as ClientSideGame,
         timer: 0,
         endMessage: '',
@@ -51,17 +51,15 @@ describe('GameGateway', () => {
         expect(gateway).toBeDefined();
     });
 
-    it('createSoloGame() should create a new game', () => {
-        const createSoloGameSpy = jest.spyOn(classicService, 'createSoloRoom').mockImplementation(() => {
-            return fakeRoom;
-        });
+    it('createSoloGame() should create a new game', async () => {
+        classicService.createSoloRoom.resolves(fakeRoom);
         server.to.returns({
             emit: (event: string) => {
                 expect(event).toEqual(GameEvents.CreateSoloGame);
             },
         } as BroadcastOperator<unknown, unknown>);
-        gateway.createSoloGame(socket, 'X', '0');
-        expect(createSoloGameSpy).toBeCalled();
+        await gateway.createSoloGame(socket, 'X', '0');
+        expect(classicService.createSoloRoom.called).toBeTruthy();
     });
 
     it('validateCoords() should call verifyCoords', () => {

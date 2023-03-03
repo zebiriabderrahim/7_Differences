@@ -1,12 +1,14 @@
+// Id comes from database to allow _id
+/* eslint-disable no-underscore-dangle */
 import { Game } from '@app/model/database/game';
-import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GAME_CARROUSEL_SIZE } from '@common/constants';
-import { CarouselPaginator, GameCard, PlayerTime, ServerSideGame } from '@common/game-interfaces';
+import { CarouselPaginator, GameCard, PlayerTime } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 
 @Injectable()
 export class GameListsManagerService {
+    private carouselGames: CarouselPaginator[] = [];
     private defaultBestTimes: PlayerTime[] = [
         { name: 'John Doe', time: 100 },
         { name: 'Jane Doe', time: 200 },
@@ -15,53 +17,44 @@ export class GameListsManagerService {
 
     buildGameCardFromGame(game: Game): GameCard {
         const gameCard: GameCard = {
-            // Id comes from database to allow _id
-            // eslint-disable-next-line no-param-reassign, no-underscore-dangle
-            id: game._id,
+            _id: game._id,
             name: game.name,
             difficultyLevel: game.isHard,
             soloTopTime: this.defaultBestTimes,
             oneVsOneTopTime: this.defaultBestTimes,
-            thumbnail: fs.readFileSync(`assets/${game.name}/original.bmp`, 'base64'),
+            thumbnail: `assets/${game.name}/original.bmp`,
         };
         return gameCard;
     }
 
-    addGameCarousel(gameCard: GameCard, carouselGames: CarouselPaginator[]): void {
-        let lastIndex: number = carouselGames.length - 1;
-        if (carouselGames[lastIndex].gameCards.length < GAME_CARROUSEL_SIZE) {
-            carouselGames[lastIndex].gameCards.push(gameCard);
+    addGameCarousel(gameCard: GameCard): void {
+        let lastIndex: number = this.carouselGames.length - 1;
+        gameCard.thumbnail = fs.readFileSync(gameCard.thumbnail, 'base64');
+        if (this.carouselGames[lastIndex].gameCards.length < GAME_CARROUSEL_SIZE) {
+            this.carouselGames[lastIndex].gameCards.push(gameCard);
         } else {
-            carouselGames.push({
+            this.carouselGames.push({
                 hasNext: false,
                 hasPrevious: true,
                 gameCards: [],
             });
-            carouselGames[lastIndex].hasNext = true;
-            carouselGames[++lastIndex].gameCards.push(gameCard);
+            this.carouselGames[lastIndex].hasNext = true;
+            this.carouselGames[++lastIndex].gameCards.push(gameCard);
         }
     }
-    buildGameCarousel(gameCards: GameCard[], carouselGames: CarouselPaginator[]): void {
-        if (carouselGames.length === 0) {
-            carouselGames.push({
-                hasNext: false,
-                hasPrevious: false,
-                gameCards: [],
-            });
-            for (const gameCard of gameCards) {
-                this.addGameCarousel(gameCard, carouselGames);
-            }
+    buildGameCarousel(gameCards: GameCard[]): void {
+        this.carouselGames = [];
+        this.carouselGames.push({
+            hasNext: false,
+            hasPrevious: false,
+            gameCards: [],
+        });
+        for (const gameCard of gameCards) {
+            this.addGameCarousel(gameCard);
         }
     }
-    createGameFromGameDto(newGame: CreateGameDto): ServerSideGame {
-        return {
-            id: '',
-            name: newGame.name,
-            original: newGame.originalImage,
-            modified: newGame.modifiedImage,
-            differences: newGame.differences,
-            differencesCount: newGame.nDifference,
-            isHard: newGame.isHard,
-        };
+
+    getCarouselGames(): CarouselPaginator[] {
+        return this.carouselGames;
     }
 }
