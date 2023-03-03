@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
+import { CanvasTopButtonsComponent } from '@app/components/canvas-top-buttons/canvas-top-buttons.component';
 import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
@@ -30,7 +31,14 @@ describe('CreationPageComponent', () => {
         drawService = jasmine.createSpyObj('DrawService', ['redoCanvasOperation', 'undoCanvasOperation', 'swapForegrounds']);
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
-            declarations: [CreationPageComponent, ImageCanvasComponent, CanvasUnderButtonsComponent, MatIcon],
+            declarations: [
+                CreationPageComponent,
+                ImageCanvasComponent,
+                CanvasUnderButtonsComponent,
+                MatIcon,
+                CanvasUnderButtonsComponent,
+                CanvasTopButtonsComponent,
+            ],
             imports: [
                 NoopAnimationsModule,
                 MatDialogModule,
