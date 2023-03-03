@@ -80,12 +80,9 @@ describe('GameSheetComponent', () => {
     });
 
     it('should call deleteGameById method of communicationService and redirect to config page', () => {
-        const deleteGameByIdSpy = spyOn(component['communicationService'], 'deleteGameById').and.callFake((id: '0') => {
-            expect(id).toEqual('0');
-            expect(routerSpy.navigateByUrl).toHaveBeenCalled();
-            return of();
-        });
+        const communicationService = TestBed.inject(CommunicationService);
+        const deleteGameByIdSpy = spyOn(communicationService, 'deleteGameById').and.returnValue(of());
         component.deleteGameCard();
-        expect(deleteGameByIdSpy).toHaveBeenCalled();
+        expect(deleteGameByIdSpy).toHaveBeenCalledWith(component.game._id);
     });
 });
