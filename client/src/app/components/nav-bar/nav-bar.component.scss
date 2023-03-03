@@ -10,7 +10,7 @@
     margin: 0 10px;
     font-size: 1.1em;
     font-weight: 600;
-    color: #fff;
+    color: #000000;
     text-decoration: none;
     transition: all 0.3s ease-in-out;
     &:hover {
@@ -22,10 +22,11 @@ ul {
     list-style-type: none;
 }
 
-a:link {
-    text-decoration: none;
-}
-
 a:hover {
     color: #000000;
+}
+
+a {
+    text-decoration: none;
+    color: #1778f2;
 }
