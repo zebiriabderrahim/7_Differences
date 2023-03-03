@@ -1,7 +1,7 @@
 // Id comes from database to allow _id
 /* eslint-disable no-underscore-dangle */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
@@ -16,7 +16,6 @@ describe('GameSheetComponent', () => {
     let component: GameSheetComponent;
     let fixture: ComponentFixture<GameSheetComponent>;
     let gameCardService: ClassicSystemService;
-    let communicationService: CommunicationService;
     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl', 'navigate']);
 
     beforeEach(async () => {
@@ -53,7 +52,6 @@ describe('GameSheetComponent', () => {
         fixture = TestBed.createComponent(GameSheetComponent);
         component = fixture.componentInstance;
         gameCardService = TestBed.inject(ClassicSystemService);
-        communicationService = TestBed.inject(CommunicationService);
         component.game = {
             _id: '0',
             name: 'test',
@@ -81,9 +79,13 @@ describe('GameSheetComponent', () => {
         expect(gameServicePlayerIdSpy).toHaveBeenCalledWith(component.game._id);
     });
 
-    it('should call deleteGameById method of communicationService and redirect to config page', fakeAsync(() => {
-        const deleteGameSpy = spyOn(communicationService, 'deleteGameById').and.returnValue(of());
+    it('should call deleteGameById method of communicationService and redirect to config page', () => {
+        const deleteGameByIdSpy = spyOn(component['communicationService'], 'deleteGameById').and.callFake((id: '0') => {
+            expect(id).toEqual('0');
+            expect(routerSpy.navigateByUrl).toHaveBeenCalled();
+            return of();
+        });
         component.deleteGameCard();
-        expect(deleteGameSpy).toHaveBeenCalled();
-    }));
+        expect(deleteGameByIdSpy).toHaveBeenCalled();
+    });
 });
