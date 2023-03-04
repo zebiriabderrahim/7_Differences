@@ -5,9 +5,8 @@
         <mat-icon>attach_file</mat-icon>
     </button>
     <input #uploadInput type="file" id="upload-btn" (change)="onSelectFile($event)" #fileUpload />
-    <button mat-raised-button color="primary" (click)="resetBackground()" *ngIf="position !== canvasPosition.Both">
-    <!-- <button mat-raised-button color="primary" (click)="resetBackground()"> -->
-        Réinitialiser l'arrière-plan
+    <button mat-raised-button color="primary" (click)="resetBackground()">
+        Réinitialiser {{position === canvasPosition.Both ? 'les arrières-plans' : 'l\'arrière-plan'}}
     </button>
 </div>
 
