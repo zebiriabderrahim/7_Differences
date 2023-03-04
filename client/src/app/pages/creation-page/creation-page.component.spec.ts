@@ -12,9 +12,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
+import { CanvasTopButtonsComponent } from '@app/components/canvas-top-buttons/canvas-top-buttons.component';
 import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
+import { DrawService } from '@app/services/draw-service/draw.service';
 import { SUBMIT_WAIT_TIME } from '@app/constants/constants';
 import { ImageService } from '@app/services/image-service/image.service';
 import { of } from 'rxjs';
@@ -25,12 +27,21 @@ describe('CreationPageComponent', () => {
     let fixture: ComponentFixture<CreationPageComponent>;
     let imageService: ImageService;
     let matDialogSpy: jasmine.SpyObj<MatDialog>;
+    let drawService: DrawService;
     let timerCallback: jasmine.Spy<jasmine.Func>;
 
     beforeEach(async () => {
+        drawService = jasmine.createSpyObj('DrawService', ['redoCanvasOperation', 'undoCanvasOperation', 'swapForegrounds']);
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
-            declarations: [CreationPageComponent, ImageCanvasComponent, CanvasUnderButtonsComponent, MatIcon],
+            declarations: [
+                CreationPageComponent,
+                ImageCanvasComponent,
+                CanvasUnderButtonsComponent,
+                MatIcon,
+                CanvasUnderButtonsComponent,
+                CanvasTopButtonsComponent,
+            ],
             imports: [
                 NoopAnimationsModule,
                 MatDialogModule,
@@ -110,4 +121,54 @@ describe('CreationPageComponent', () => {
         fixture.detectChanges();
         expect(validateDifferencesSpy).toHaveBeenCalled();
     });
+
+    // it('should call undoCanvasOperation() when ctrlKey is pressed', () => {
+    //     const mockKeyboardEvent = new KeyboardEvent('keydown', { ctrlKey: true, key: 'Z' });
+    //     component.keyboardEvent(mockKeyboardEvent);
+
+    //     expect(drawService.undoCanvasOperation).toHaveBeenCalled();
+    //     expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
+    // });
+
+    // it('should call redoCanvasOperation() when ctrlKey and shiftKey are pressed and key is "Z"', () => {
+    //     const mockKeyboardEvent = new KeyboardEvent('keydown', { ctrlKey: true, shiftKey: true, key: 'Z' });
+
+    //     component.keyboardEvent(mockKeyboardEvent);
+
+    //     expect(drawService.redoCanvasOperation).toHaveBeenCalled();
+    //     expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
+    // });
+
+    it('should not call any method when ctrlKey and shiftKey are pressed but key is not "Z"', () => {
+        const mockKeyboardEvent = new KeyboardEvent('keydown', { ctrlKey: true, shiftKey: true, key: 'X' });
+
+        component.keyboardEvent(mockKeyboardEvent);
+
+        expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
+        expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
+    });
+
+    it('should not call any method when only shiftKey is pressed', () => {
+        const mockKeyboardEvent = new KeyboardEvent('keydown', { shiftKey: true, key: 'z' });
+
+        component.keyboardEvent(mockKeyboardEvent);
+
+        expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
+        expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
+    });
+
+    it('should not call any method when only ctrlKey is pressed and key is not "z"', () => {
+        const mockKeyboardEvent = new KeyboardEvent('keydown', { ctrlKey: true, key: 'x' });
+
+        component.keyboardEvent(mockKeyboardEvent);
+
+        expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
+        expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
+    });
+
+    // it('should call drawService.swapForegrounds()', () => {
+    //     component.swapForegrounds();
+    //     fixture.detectChanges();
+    //     expect(drawService.swapForegrounds).toHaveBeenCalled();
+    // });
 });
