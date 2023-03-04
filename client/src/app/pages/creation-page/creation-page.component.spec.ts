@@ -1,3 +1,4 @@
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -16,6 +17,7 @@ import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-button
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
 import { DrawService } from '@app/services/draw-service/draw.service';
+import { SUBMIT_WAIT_TIME } from '@app/constants/constants';
 import { ImageService } from '@app/services/image-service/image.service';
 import { of } from 'rxjs';
 import { CreationPageComponent } from './creation-page.component';
@@ -26,6 +28,7 @@ describe('CreationPageComponent', () => {
     let imageService: ImageService;
     let matDialogSpy: jasmine.SpyObj<MatDialog>;
     let drawService: DrawService;
+    let timerCallback: jasmine.Spy<jasmine.Func>;
 
     beforeEach(async () => {
         drawService = jasmine.createSpyObj('DrawService', ['redoCanvasOperation', 'undoCanvasOperation', 'swapForegrounds']);
@@ -56,8 +59,14 @@ describe('CreationPageComponent', () => {
 
         fixture = TestBed.createComponent(CreationPageComponent);
         imageService = TestBed.inject(ImageService);
+        timerCallback = jasmine.createSpy('timerCallback');
+        jasmine.clock().install();
         component = fixture.componentInstance;
         fixture.detectChanges();
+    });
+
+    afterEach(function () {
+        jasmine.clock().uninstall();
     });
 
     it('should create', () => {
@@ -77,10 +86,17 @@ describe('CreationPageComponent', () => {
             return {} as Promise<boolean>;
         });
 
+        setTimeout(function () {
+            timerCallback();
+        }, SUBMIT_WAIT_TIME);
+
         component.validateDifferences();
         const dialogConfig = new MatDialogConfig();
         dialogConfig.data = component.radius;
         expect(matDialogSpy.open).toHaveBeenCalledWith(CreationGameDialogComponent, dialogConfig);
+        expect(timerCallback).not.toHaveBeenCalled();
+        jasmine.clock().tick(SUBMIT_WAIT_TIME + 1);
+        expect(timerCallback).toHaveBeenCalled();
     });
 
     it('validateDifferences should open imageNotSetDialog if images are not set', () => {

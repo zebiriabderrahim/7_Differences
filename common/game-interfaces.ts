@@ -1,15 +1,5 @@
 import { Coordinate } from '@common/coordinate';
 
-export interface ServerSideGame {
-    id: string;
-    name: string;
-    original: string;
-    modified: string;
-    differences: Coordinate[][];
-    differencesCount: number;
-    isHard: boolean;
-}
-
 export interface ClientSideGame {
     id: string;
     name: string;
@@ -22,7 +12,7 @@ export interface ClientSideGame {
 }
 
 export interface GameCard {
-    id: string;
+    _id: string;
     name: string;
     difficultyLevel: boolean;
     soloTopTime: PlayerTime[];
@@ -49,11 +39,11 @@ export interface PlayerTime {
 
 export interface PlayRoom {
     roomId: string;
-    serverGame: ServerSideGame;
     clientGame: ClientSideGame;
     endMessage: string;
     timer: number;
     differencesData: Differences;
+    originalDifferences: Coordinate[][];
 }
 
 export interface Differences {
