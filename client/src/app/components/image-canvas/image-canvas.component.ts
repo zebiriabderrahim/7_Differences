@@ -1,8 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
-// import { COLORS, DEFAULT_COLOR, DEFAULT_WIDTH, DRAW_VALUES } from '@app/constants/drawing';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
-// import { CanvasAction } from '@app/enum/canvas-action';
 import { CanvasTopButtonsComponent } from '@app/components/canvas-top-buttons/canvas-top-buttons.component';
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { CanvasOperation } from '@app/interfaces/canvas-operation';
 import { DrawService } from '@app/services/draw-service/draw.service';
