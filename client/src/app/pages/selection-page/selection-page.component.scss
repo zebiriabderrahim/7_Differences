@@ -71,3 +71,52 @@ h1 {
     width: 250px;
     height: 250px;
 }
+
+:root {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+body {
+    height: 100vh;
+    overflow: hidden;
+}
+
+.footerPreview {
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(255, 0, 0);
+    top: 0;
+}
+
+.sectionOne {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.project-logo {
+    width: 100px;
+    height: 100px;
+    border-radius: 60%;
+    margin: 0 auto;
+    border-style: double;
+    border-width: 5px;
+    border-color: darkslategrey;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem;
+    background: rgb(23, 15, 46);
+    color: white;
+    font-weight: 500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.2rem;
+}
