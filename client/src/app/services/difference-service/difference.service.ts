@@ -125,6 +125,7 @@ export class DifferenceService {
                     ) {
                         enlargedDifferenceCoordinates.push(largerCoordinate);
                         this.visitedCoordinates[largerCoordinate.x][largerCoordinate.y] = true;
+                        this.differenceMatrix[largerCoordinate.x][largerCoordinate.y] = true;
                     }
                 }
             }
