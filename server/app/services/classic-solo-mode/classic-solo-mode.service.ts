@@ -1,7 +1,11 @@
+// Id comes from database to allow _id
+/* eslint-disable no-underscore-dangle */
+import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
 import { Coordinate } from '@common/coordinate';
-import { ClientSideGame, Differences, GameEvents, PlayRoom, ServerSideGame } from '@common/game-interfaces';
+import { ClientSideGame, Differences, GameEvents, PlayRoom } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
+import * as fs from 'fs';
 import * as io from 'socket.io';
 
 @Injectable()
@@ -10,19 +14,19 @@ export class ClassicSoloModeService {
 
     constructor(private readonly gameService: GameService) {}
 
-    createSoloRoom(socket: io.Socket, playerName: string, gameId: string): PlayRoom {
-        const game = this.gameService.getGameById(gameId);
+    async createSoloRoom(socket: io.Socket, playerName: string, gameId: string): Promise<PlayRoom> {
+        const game = await this.gameService.getGameById(gameId);
         const diffData: Differences = {
             currentDifference: [],
             differencesFound: 0,
         };
         const room: PlayRoom = {
             roomId: socket.id,
-            serverGame: structuredClone(game),
             clientGame: this.buildClientGameVersion(playerName, game),
             timer: 0,
             endMessage: '',
             differencesData: diffData,
+            originalDifferences: structuredClone(JSON.parse(fs.readFileSync(`assets/${game.name}/differences.json`, 'utf-8'))),
         };
         this.rooms.set(room.roomId, room);
         socket.join(room.roomId);
@@ -39,18 +43,18 @@ export class ClassicSoloModeService {
 
     verifyCoords(roomId: string, coords: Coordinate, server: io.Server): void {
         const room = this.rooms.get(roomId);
-        const { serverGame } = room;
+        const { originalDifferences } = room;
         let index = 0;
-        for (; index < serverGame.differences.length; index++) {
-            if (serverGame.differences[index].some((coord: Coordinate) => coord.x === coords.x && coord.y === coords.y)) {
+        for (; index < originalDifferences.length; index++) {
+            if (originalDifferences[index].some((coord: Coordinate) => coord.x === coords.x && coord.y === coords.y)) {
                 room.differencesData.differencesFound++;
-                room.differencesData.currentDifference = serverGame.differences[index];
+                room.differencesData.currentDifference = originalDifferences[index];
                 break;
             }
         }
 
-        if (index !== serverGame.differences.length) {
-            serverGame.differences.splice(index, 1);
+        if (index !== originalDifferences.length) {
+            originalDifferences.splice(index, 1);
         } else {
             room.differencesData.currentDifference = [];
         }
@@ -63,23 +67,23 @@ export class ClassicSoloModeService {
         server.to(room.roomId).emit(GameEvents.RemoveDiff, diffData);
     }
 
-    buildClientGameVersion(playerName: string, game: ServerSideGame): ClientSideGame {
+    buildClientGameVersion(playerName: string, game: Game): ClientSideGame {
         const clientGame: ClientSideGame = {
-            id: game.id,
+            id: game._id.toString(),
             player: playerName,
             name: game.name,
             mode: 'Classic -> solo',
-            original: game.original,
-            modified: game.modified,
+            original: 'data:image/png;base64,'.concat(fs.readFileSync(`assets/${game.name}/original.bmp`, 'base64')),
+            modified: 'data:image/png;base64,'.concat(fs.readFileSync(`assets/${game.name}/modified.bmp`, 'base64')),
             isHard: game.isHard,
-            differencesCount: game.differencesCount,
+            differencesCount: game.nDifference,
         };
         return clientGame;
     }
     endGame(roomId: string, server: io.Server): void {
         const room = this.rooms.get(roomId);
-        if (room && room.serverGame.differencesCount === room.differencesData.differencesFound) {
-            room.endMessage = `Vous avez trouvé les ${room.serverGame.differencesCount} différences! Bravo!`;
+        if (room && room.clientGame.differencesCount === room.differencesData.differencesFound) {
+            room.endMessage = `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo!`;
             server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
             this.rooms.delete(room.roomId);
         }
