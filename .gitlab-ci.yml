@@ -121,6 +121,7 @@ pages:
         - cd client
         - npm ci --cache .npm --prefer-offline
         - npm run deploy -- --base-href $BASE_HREF
+        - sed -i "s|myServerURL|${SERVER_URL}|g" dist/client/src/environments/environment.prod.ts
         - mkdir ../public
         - mv dist/client/* ../public/
     artifacts:
@@ -226,9 +227,6 @@ deploy:server:
                 cd server
                 npm ci
                 npm run build
-
-                sed -i "s|myServerURL|${SERVER_URL}|g" client/src/environments/environment.prod.ts
-
                 
                 # Launch the server in background and append output to /var/log/messages for CloudWatch
                 PORT=${SERVER_PORT} forever start -a -l /var/log/messages out/server/app/index.js
