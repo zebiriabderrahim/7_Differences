@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    serverUrl: 'http://' + 'myServerURL' + ':3000', // TODO: Add remote server URL
+    serverUrl: 'http://' + 'myServerURL' + ':3000/api', // TODO: Add remote server URL
 };
