@@ -29,8 +29,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     constructor(private readonly logger: Logger, private readonly classicSoloModeService: ClassicSoloModeService) {}
 
     @SubscribeMessage(GameEvents.CreateSoloGame)
-    createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: string) {
-        const room = this.classicSoloModeService.createSoloRoom(socket, playerName, gameId);
+    async createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: string) {
+        const room = await this.classicSoloModeService.createSoloRoom(socket, playerName, gameId);
         if (room) {
             this.server.to(room.roomId).emit(GameEvents.CreateSoloGame, room.clientGame);
         }

@@ -1,37 +1,34 @@
+import { PlayerTime } from '@common/game-interfaces';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Document } from 'mongoose';
 
-export type GameDocument = Game & Document;
+export type GameCardDocument = GameCard & Document;
 
 @Schema()
-export class Game {
+export class GameCard {
     @ApiProperty()
     @Prop({ required: true })
     name: string;
 
     @ApiProperty()
     @Prop({ required: true })
-    originalImage: string;
+    thumbnail: string;
 
     @ApiProperty()
     @Prop({ required: true })
-    modifiedImage: string;
+    oneVsOneTopTime: PlayerTime[];
 
     @ApiProperty()
     @Prop({ required: true })
-    nDifference: number;
+    soloTopTime: PlayerTime[];
 
     @ApiProperty()
     @Prop({ required: true })
-    differences: string;
+    difficultyLevel: boolean;
 
     @ApiProperty()
-    @Prop({ required: true })
-    isHard: boolean;
-
-    @ApiProperty()
-    _id?: string;
+    _id: string;
 }
 
-export const gameSchema = SchemaFactory.createForClass(Game);
+export const gameCardSchema = SchemaFactory.createForClass(GameCard);
