@@ -1,6 +1,6 @@
-import { ClassicSoloModeService } from '@app/services/classic-solo-mode/classic-solo-mode.service';
+import { ClassicModeService } from '@app/services/classic-mode/classic-mode.service';
 import { Coordinate } from '@common/coordinate';
-import { GameEvents } from '@common/game-interfaces';
+import { GameEvents, GameModes } from '@common/game-interfaces';
 import { Injectable, Logger } from '@nestjs/common';
 import {
     ConnectedSocket,
@@ -26,24 +26,77 @@ import { DELAY_BEFORE_EMITTING_TIME } from './game.gateway.constants';
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
     @WebSocketServer() private server: Server;
 
-    constructor(private readonly logger: Logger, private readonly classicSoloModeService: ClassicSoloModeService) {}
+    constructor(private readonly logger: Logger, private readonly classicModeService: ClassicModeService) {}
 
     @SubscribeMessage(GameEvents.CreateSoloGame)
-    createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: string) {
-        const room = this.classicSoloModeService.createSoloRoom(socket, playerName, gameId);
+    async createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: string) {
+        const room = await this.classicModeService.createRoom(socket, playerName, gameId);
         if (room) {
+            room.clientGame.mode = GameModes.ClassicSolo;
+            this.classicModeService.saveRoom(room, socket);
             this.server.to(room.roomId).emit(GameEvents.CreateSoloGame, room.clientGame);
+        }
+    }
+
+    @SubscribeMessage(GameEvents.CreateOneVsOneGame)
+    async createOneVsOneGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: string) {
+        const room = await this.classicModeService.createRoom(socket, playerName, gameId);
+        if (room) {
+            room.clientGame.mode = GameModes.ClassicOneVsOne;
+            this.classicModeService.saveRoom(room, socket);
+            this.classicModeService.checkRoomOneVsOneAvailability(gameId, this.server);
         }
     }
 
     @SubscribeMessage(GameEvents.RemoveDiff)
     validateCoords(@ConnectedSocket() socket: Socket, @MessageBody() coords: Coordinate) {
-        this.classicSoloModeService.verifyCoords(socket.id, coords, this.server);
+        const roomId = Array.from(socket.rooms.values())[1];
+        this.classicModeService.verifyCoords(roomId, coords, this.server);
     }
 
     @SubscribeMessage(GameEvents.CheckStatus)
-    checkStatus(@MessageBody() socketId: string) {
-        this.classicSoloModeService.endGame(socketId, this.server);
+    checkStatus(@ConnectedSocket() socket: Socket) {
+        const roomId = Array.from(socket.rooms.values())[1];
+        this.classicModeService.endGame(roomId, this.server);
+    }
+
+    @SubscribeMessage(GameEvents.Disconnect)
+    deleteCreatedSoloGameRoom(@ConnectedSocket() socket: Socket) {
+        const roomId = Array.from(socket.rooms.values())[1];
+        this.classicModeService.deleteCreatedSoloGameRoom(roomId);
+    }
+
+    @SubscribeMessage(GameEvents.CheckRoomOneVsOneAvailability)
+    checkRoomOneVsOneAvailability(@MessageBody() gameId: string) {
+        this.classicModeService.checkRoomOneVsOneAvailability(gameId, this.server);
+    }
+
+    @SubscribeMessage(GameEvents.UpdateRoomOneVsOneAvailability)
+    updateRoomOneVsOneAvailability(@MessageBody() data: { gameId: string; isAvailable: boolean }) {
+        this.classicModeService.updateRoomOneVsOneAvailability(data.gameId, data.isAvailable, this.server);
+    }
+
+    @SubscribeMessage(GameEvents.DeleteCreatedOneVsOneRoom)
+    deleteCreatedOneVsOneRoom(@MessageBody() gameId: string) {
+        this.classicModeService.deleteCreatedOneVsOneRoom(gameId, this.server);
+    }
+
+    @SubscribeMessage(GameEvents.UpdateWaitingPlayerNameList)
+    updateWaitingPlayerNameList(@MessageBody() data: { gameId: string; playerName: string }) {
+        this.classicModeService.updateWaitingPlayerNameList(data.gameId, data.playerName, this.server);
+    }
+
+    @SubscribeMessage(GameEvents.WaitingPlayerNameListByGameId)
+    waitingPlayerNameListByGameId(@MessageBody() gameId: string) {
+        const player2NamesList = this.classicModeService.getWaitingPlayerNameList(gameId);
+        if (player2NamesList) {
+            this.server.emit(GameEvents.UpdateWaitingPlayerNameList, { gameId, player2NamesList });
+        }
+    }
+
+    @SubscribeMessage(GameEvents.RefusePlayer)
+    refusePlayer(@MessageBody() data: { gameId: string; playerNames: string[] }) {
+        this.classicModeService.refusePlayer(data.gameId, data.playerNames, this.server);
     }
 
     afterInit() {
@@ -58,12 +111,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     handleDisconnect(@ConnectedSocket() socket: Socket) {
         this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
-        this.classicSoloModeService.endGame(socket.id, this.server);
+        this.classicModeService.endGame(socket.id, this.server);
     }
 
     updateTimers() {
-        for (const roomId of this.classicSoloModeService['rooms'].keys()) {
-            this.classicSoloModeService.updateTimer(roomId, this.server);
+        for (const roomId of this.classicModeService['rooms'].keys()) {
+            this.classicModeService.updateTimer(roomId, this.server);
         }
     }
 }
