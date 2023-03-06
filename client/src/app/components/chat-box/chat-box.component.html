@@ -1,21 +1,21 @@
 <div id="chat-box">
     <div class="content">
         <div class="contact-profile">
-            <img src = "assets/img/raccoonChatAvatarOther.png" alt="" />
+            <img src="assets/raccoonChatAvatarOther.png" alt="" />
             <p>Le nom de l'adversaire</p>
         </div>
         <div class="messages">
             <ul>
-                <li [class] = "messageItem.tag" *ngFor="let messageItem of messages">
-                    <img *ngIf = "messageItem.tag === 'sent'" src = "assets/img/raccoonChatAvatar.png" alt="" />
-                    <img *ngIf = "messageItem.tag === 'received'" src = "assets/img/raccoonChatAvatarOther.png" alt="" />
-                    <p>{{messageItem.message}}</p>
+                <li [class]="messageItem.tag" *ngFor="let messageItem of messages">
+                    <img *ngIf="messageItem.tag === 'sent'" src="assets/raccoonChatAvatar.png" alt="" />
+                    <img *ngIf="messageItem.tag === 'received'" src="assets/raccoonChatAvatarOther.png" alt="" />
+                    <p>{{ messageItem.message }}</p>
                 </li>
             </ul>
         </div>
         <div class="message-input">
             <div class="wrap">
-                <input type="text" #inputText placeholder="Entrez un message" (keyup.enter)="addNewMessage(inputText)" maxlength="200"/>
+                <input type="text" #inputText placeholder="Entrez un message" (keyup.enter)="addNewMessage(inputText)" maxlength="200" />
                 <i class="fa fa-paperclip attachment" aria-hidden="true"></i>
                 <button mat-button class="submit" (click)="addNewMessage(inputText)">
                     <mat-icon class="small-icon">near_me</mat-icon>
