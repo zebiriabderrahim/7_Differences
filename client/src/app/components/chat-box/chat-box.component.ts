@@ -7,7 +7,7 @@ import { MessageTag } from '@common/game-interfaces';
     styleUrls: ['./chat-box.component.scss'],
 })
 export class ChatBoxComponent {
-    @Input() opponentName: string = '';
+    @Input() opponentName: string;
     messages: { tag: string; message: string }[] = [];
     alert(): void {
         window.alert('Your message was sent');
