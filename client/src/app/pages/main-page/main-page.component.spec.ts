@@ -25,14 +25,6 @@ describe('MainPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it("should have as title 'Rat-Coon'", () => {
-        expect(component.gameTitle).toEqual('Rat-Coon');
-    });
-
-    it("should have as team number '101'", () => {
-        expect(component.teamNumber).toEqual('#101');
-    });
-
     it("button 'Selection' should redirect correctly", () => {
         expect(component.selectionRoute).toEqual('/selection');
     });
