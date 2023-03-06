@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@ang
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
-import { ClientSideGame } from '@common/game-interfaces';
+import { ChatMessage, ClientSideGame, MessageTag } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -18,12 +18,14 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     game: ClientSideGame;
     differencesFound: number = 0;
     timer: number = 0;
+    messages: ChatMessage[] = [];
     readonly canvasSize = { width: IMG_WIDTH, height: IMG_HEIGHT };
     private timerSub: Subscription;
     private gameSub: Subscription;
     private differenceSub: Subscription;
     private playerNameSub: Subscription;
     private idSub: Subscription;
+    private messageSub: Subscription;
     private isFirstTime = true;
     constructor(private gameAreaService: GameAreaService, private classicService: ClassicSystemService) {}
 
@@ -69,6 +71,9 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.differenceSub = this.classicService.getDifferencesFound().subscribe((differencesFound) => {
             this.differencesFound = differencesFound;
         });
+        this.messageSub = this.classicService.message$.subscribe((message) => {
+            this.messages.push(message);
+        });
     }
 
     abandonGame(): void {
@@ -90,12 +95,19 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
             this.classicService.requestVerification(this.gameAreaService.getMousePosition());
         }
     }
+
+    addRightSideMessage(text: string) {
+        this.messages.push({ tag: MessageTag.sent, message: text });
+        this.classicService.sendMessage(text);
+    }
+
     ngOnDestroy(): void {
         this.gameSub.unsubscribe();
         this.timerSub.unsubscribe();
         this.differenceSub.unsubscribe();
         this.playerNameSub.unsubscribe();
         this.idSub.unsubscribe();
+        this.messageSub.unsubscribe();
         this.classicService.disconnect();
     }
 }

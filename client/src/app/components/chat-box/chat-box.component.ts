@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { MessageTag } from '@common/game-interfaces';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChatMessage } from '@common/game-interfaces';
 
 @Component({
     selector: 'app-chat-box',
@@ -8,15 +8,11 @@ import { MessageTag } from '@common/game-interfaces';
 })
 export class ChatBoxComponent {
     @Input() opponentName: string;
-    messages: { tag: string; message: string }[] = [];
-    alert(): void {
-        window.alert('Your message was sent');
-    }
-    addNewMessage(inputField: { value: string }) {
-        const val = inputField.value?.trim();
-        if (val.length) {
-            this.messages.push({ tag: MessageTag.sent, message: val });
-        }
+    @Input() messages: ChatMessage[] = [];
+    @Output() add = new EventEmitter<string>();
+
+    onAdd(inputField: { value: string }): void {
+        this.add.emit(inputField.value?.trim());
         inputField.value = '';
     }
 }

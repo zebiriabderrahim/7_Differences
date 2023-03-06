@@ -15,9 +15,9 @@
         </div>
         <div class="message-input">
             <div class="wrap">
-                <input type="text" #inputText placeholder="Entrez un message" (keyup.enter)="addNewMessage(inputText)" maxlength="200" />
+                <input type="text" #inputText placeholder="Entrez un message" (keyup.enter)="onAdd(inputText)" maxlength="200" />
                 <i class="fa fa-paperclip attachment" aria-hidden="true"></i>
-                <button mat-button class="submit" (click)="addNewMessage(inputText)">
+                <button mat-button class="submit" (click)="onAdd(inputText)">
                     <mat-icon class="small-icon">near_me</mat-icon>
                 </button>
             </div>
