@@ -120,7 +120,7 @@ describe('GameAreaService', () => {
         const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-        gameAreaService.loadImage(context, 'assets/img/RatCoon.png');
+        gameAreaService.loadImage(context, 'assets/RatCoon.png');
         setTimeout(() => {
             timerCallback();
         }, 350);
