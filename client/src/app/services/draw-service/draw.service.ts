@@ -36,10 +36,6 @@ export class DrawService {
         this.isMouseOutOfCanvas = isMouseLeaving;
     }
 
-    getIsMouseOutOfCanvas(): boolean {
-        return this.isMouseOutOfCanvas;
-    }
-
     setForegroundContext(canvasPosition: CanvasPosition, foregroundContext: CanvasRenderingContext2D, frontContext: CanvasRenderingContext2D) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
