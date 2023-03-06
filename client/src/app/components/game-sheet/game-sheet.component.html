@@ -1,20 +1,20 @@
-<div *ngIf="game" class="gameSheet justified">
+<div *ngIf="game" class="gameSheet">
     <h1 class="title">{{ game.name }}</h1>
     <div class="gameContainer">
         <img class="thumbnail" [src]="'data:image/png;base64,' + game.thumbnail" alt="track" />
-        <div class="gameInfo justified">
+        <div class="gameInfo">
             <h2>Difficulté: {{ game.difficultyLevel ? ' Difficile' : ' Facile' }}</h2>
             <div class="ranking">
-                <div class="topThree">
+                <div class="top three section">
                     <h3>Top Solo</h3>
-                    <div class="topSolo section" *ngFor="let player of game.soloTopTime; index as i">
+                    <div class="topSolo" *ngFor="let player of game.soloTopTime; index as i">
                         <strong class="bestTime">&nbsp;{{ i + 1 }} </strong>
-                        &nbsp;<strong>{{ player.name }}</strong> {{ player.time }} &nbsp;
+                        &nbsp;<strong>{{ player.name }}</strong> {{ player.time }}
                     </div>
                 </div>
-                <div class="topThree">
+                <div class="top three section">
                     <h3>Top 1 Vs 1</h3>
-                    <div class="topOnevsOne section" *ngFor="let player of game.oneVsOneTopTime">
+                    <div *ngFor="let player of game.oneVsOneTopTime">
                         <strong>{{ player.name }}</strong> {{ player.time }}
                     </div>
                 </div>
@@ -23,7 +23,7 @@
     </div>
     <div class="buttonSection">
         <button mat-raised-button *ngIf="router.url === '/selection'" (click)="openDialog()">Jouer</button>
-        <button mat-raised-button *ngIf="router.url === '/config'">Supprimer</button>
+        <button mat-raised-button *ngIf="router.url === '/config'" (click)="deleteGameCard()">Supprimer</button>
         <button mat-raised-button *ngIf="router.url === '/selection'">Joindre</button>
         <button mat-raised-button *ngIf="router.url === '/config'">Réinitialier</button>
     </div>

@@ -15,6 +15,9 @@ import { GameCard } from '@common/game-interfaces';
 })
 export class GameSheetComponent implements OnDestroy, OnInit {
     @Input() game: GameCard;
+
+    // Services are needed for the dialog and dialog needs to talk to the parent component
+    // eslint-disable-next-line max-params
     constructor(
         public dialog: MatDialog,
         public router: Router,
@@ -80,14 +83,6 @@ export class GameSheetComponent implements OnDestroy, OnInit {
 
     ngOnDestroy(): void {
         this.classicSystemService.disconnect();
-    }
-
-    deleteGameCard() {
-        this.communicationService.deleteGameById(this.game._id).subscribe(() => {
-            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-                this.router.navigate(['/config']);
-            });
-        });
     }
 
     deleteGameCard() {
