@@ -44,7 +44,35 @@ describe('CanvasTopButtonsComponent', () => {
         const resetButton = fixture.nativeElement.querySelector('button~button');
         resetButton.click();
         fixture.detectChanges();
-        // expect(component.resetForeground).toHaveBeenCalled();
         expect(drawServiceResetForegroundSpy).toHaveBeenCalledWith(component.position);
     });
+
+    // it('should return the correct operation details for the Pencil action', () => {
+    //     const canvas = new Canvas();
+    //     canvas.selectedCanvasAction = CanvasAction.Pencil;
+    //     canvas.pencilDiameter = 5;
+    //     canvas.position = { x: 10, y: 20 };
+    //     canvas.drawColor = 'blue';
+    //     const result = canvas.getOperationDetails();
+    //     expect(result).toEqual({
+    //         action: CanvasAction.Pencil,
+    //         position: { x: 10, y: 20 },
+    //         color: 'blue',
+    //         width: 5,
+    //     });
+    // });
+
+    // it('should return the correct operation details for the Eraser action', () => {
+    //     component.selectedCanvasAction = CanvasAction.Eraser;
+    //     component.eraserLength = 10;
+    //     component.position = { x: 30, y: 40 };
+    //     component.drawColor = 'white';
+    //     const result = component.getOperationDetails();
+    //     expect(result).toEqual({
+    //         action: CanvasAction.Eraser,
+    //         position: { x: 30, y: 40 },
+    //         color: 'white',
+    //         width: 10,
+    //     });
+    // });
 });
