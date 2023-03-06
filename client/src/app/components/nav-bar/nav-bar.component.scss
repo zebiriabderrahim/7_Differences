@@ -10,11 +10,10 @@
     margin: 0 10px;
     font-size: 1.1em;
     font-weight: 600;
-    color: #000000;
     text-decoration: none;
     transition: all 0.3s ease-in-out;
     &:hover {
-        color: #f5f5f5;
+        color: #ffffff;
     }
 }
 
@@ -23,10 +22,10 @@ ul {
 }
 
 a:hover {
-    color: #000000;
+    color: #000000ab;
 }
 
 a {
     text-decoration: none;
-    color: #1778f2;
+    color: #000000;
 }

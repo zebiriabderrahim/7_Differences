@@ -19,11 +19,6 @@ h1 {
     text-align: center;
 }
 
-.gameCarrousel {
-    margin-top: 50px;
-    margin-bottom: 50px;
-}
-
 .game-selection {
     display: flex;
     flex-direction: row;
@@ -72,33 +67,28 @@ h1 {
     height: 250px;
 }
 
-:root {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-}
-body {
-    height: 100vh;
-    overflow: hidden;
-}
-
 .footerPreview {
+    color: white;
+    position: relative;
+    height: 35%;
+    padding-top: 50px;
+    padding-bottom: 30px;
     display: flex;
     flex-direction: row;
-    background-color: rgb(255, 0, 0);
-    top: 0;
+    justify-content: space-evenly;
+    background-color: rgb(60, 60, 60);
 }
 
-.sectionOne {
+.section {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
 }
 
 .project-logo {
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     border-radius: 60%;
     margin: 0 auto;
     border-style: double;
@@ -119,4 +109,53 @@ body {
     justify-content: center;
     align-items: center;
     gap: 0.2rem;
+}
+
+.buttonCreate {
+    margin-top: 10px;
+}
+
+.buttonCreate a {
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 15px 15px rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    padding: 10px;
+    color: white;
+    letter-spacing: 1px;
+    text-decoration: none;
+    overflow: hidden;
+    font-weight: 400px;
+    transition: 0.5s;
+}
+
+.buttonCreate:hover a {
+    letter-spacing: 3px;
+}
+.buttonCreate a::before {
+    background: linear-gradient(to left, rgba(255, 255, 255, 0.15), transparent);
+    transform: skewX(45deg) translate(0);
+    transition: 0.5s;
+}
+.buttonCreate::before {
+    bottom: -5px;
+    width: 30px;
+    height: 10px;
+    border-radius: 10px;
+    transition: 0.5s;
+    transition-delay: 0.5;
+}
+
+.buttonCreate::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translatex(-50%);
+    top: -5px;
+    width: 30px;
+    height: 10px;
+    border-radius: 10px;
+    transition: 0.5s;
+    transition-delay: 0.5;
 }
