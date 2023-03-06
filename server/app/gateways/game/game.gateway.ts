@@ -1,6 +1,6 @@
 import { ClassicModeService } from '@app/services/classic-mode/classic-mode.service';
 import { Coordinate } from '@common/coordinate';
-import { GameEvents, GameModes } from '@common/game-interfaces';
+import { GameEvents, GameModes, MessageEvents, ChatMessage } from '@common/game-interfaces';
 import { Injectable, Logger } from '@nestjs/common';
 import {
     ConnectedSocket,
@@ -97,6 +97,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage(GameEvents.RefusePlayer)
     refusePlayer(@MessageBody() data: { gameId: string; playerNames: string[] }) {
         this.classicModeService.refusePlayer(data.gameId, data.playerNames, this.server);
+    }
+
+    @SubscribeMessage(MessageEvents.SendMessage)
+    sendMessage(@ConnectedSocket() socket: Socket, @MessageBody() data: ChatMessage) {
+        const roomId = Array.from(socket.rooms.values())[1];
+        socket.broadcast.to(roomId).emit(MessageEvents.SendMessage, data);
     }
 
     afterInit() {

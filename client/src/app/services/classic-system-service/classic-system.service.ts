@@ -4,7 +4,7 @@ import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dial
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { Coordinate } from '@common/coordinate';
-import { ClientSideGame, Differences, GameEvents } from '@common/game-interfaces';
+import { ClientSideGame, Differences, GameEvents, MessageEvents, MessageTag, ChatMessage } from '@common/game-interfaces';
 import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 @Injectable({
     providedIn: 'root',
@@ -20,6 +20,7 @@ export class ClassicSystemService implements OnDestroy {
     private playerNameSubscription: Subscription;
     private oneVsOneRoomsAvailability: Map<string, boolean>;
     private joinedPlayerNames: BehaviorSubject<Map<string, string[]>>;
+    private message: Subject<ChatMessage>;
 
     constructor(private clientSocket: ClientSocketService, private gameAreaService: GameAreaService, private readonly matDialog: MatDialog) {
         this.currentGame = new Subject<ClientSideGame>();
@@ -29,6 +30,7 @@ export class ClassicSystemService implements OnDestroy {
         this.id = new BehaviorSubject<string>('');
         this.oneVsOneRoomsAvailability = new Map<string, boolean>();
         this.joinedPlayerNames = new BehaviorSubject<Map<string, string[]>>(new Map<string, string[]>());
+        this.message = new Subject<ChatMessage>();
     }
     get playerName$() {
         return this.playerName.asObservable();
@@ -48,6 +50,10 @@ export class ClassicSystemService implements OnDestroy {
 
     get joinedPlayerNamesByGameId$() {
         return this.joinedPlayerNames.asObservable();
+    }
+
+    get message$() {
+        return this.message.asObservable();
     }
 
     ngOnDestroy(): void {
@@ -144,6 +150,10 @@ export class ClassicSystemService implements OnDestroy {
         this.clientSocket.disconnect();
     }
 
+    sendMessage(textMessage: string): void {
+        this.clientSocket.send(MessageEvents.SendMessage, { tag: MessageTag.received, message: textMessage });
+    }
+
     manageSocket(): void {
         this.clientSocket.connect();
         this.clientSocket.on(GameEvents.CreateSoloGame, (clientGame: ClientSideGame) => {
@@ -173,6 +183,10 @@ export class ClassicSystemService implements OnDestroy {
 
         this.clientSocket.on(GameEvents.UpdateWaitingPlayerNameList, (data: { gameId: string; playerNamesList: string[] }) => {
             this.joinedPlayerNames.next(new Map<string, string[]>([[data.gameId, data.playerNamesList]]));
+        });
+
+        this.clientSocket.on(MessageEvents.SendMessage, (receivedMessage: ChatMessage) => {
+            this.message.next(receivedMessage);
         });
     }
 }

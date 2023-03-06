@@ -58,9 +58,6 @@ export interface Differences {
     differencesFound: number;
 }
 
-
-
-
 export enum GameEvents {
     ValidateCoords = 'validateCoords',
     Penalty = 'penalty',
@@ -77,7 +74,7 @@ export enum GameEvents {
     UpdateWaitingPlayerNameList = 'UpdateWaitingPlayerNameList',
     WaitingPlayerNameListByGameId = 'WaitingPlayerNameListByGameId',
     Disconnect = "Disconnect",
-    RefusePlayer = "RefusePlayer"
+    RefusePlayer = "RefusePlayer",
 }
 
 export enum GameModes {
@@ -85,8 +82,18 @@ export enum GameModes {
     ClassicOneVsOne = 'Classic->OneVsOne',
 }
 
+export enum MessageEvents {
+    SendMessage = 'SendMessage',
+    LocalMessage = 'LocalMessage'
+}
+
 export enum MessageTag {
     sent = 'sent',
     received = 'received',
     common = 'common'
+}
+
+export interface ChatMessage {
+    tag: MessageTag,
+    message: string
 }
