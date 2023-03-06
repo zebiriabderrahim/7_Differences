@@ -5,9 +5,10 @@ import { GameService } from './services/game/game.service';
 import { GameController } from './controllers/game/game.controller';
 import { DatabaseService } from './services/database/database.service';
 import { GameGateway } from './gateways/game/game.gateway';
-import { ClassicSoloModeService } from './services/classic-solo-mode/classic-solo-mode.service';
+import { ClassicModeService } from './services/classic-mode/classic-mode.service';
 import { GameListsManagerService } from './services/game-lists-manager/game-lists-manager.service';
 import { Game, gameSchema } from './model/database/game';
+import { GameCard, gameCardSchema } from './model/database/game-card';
 
 @Module({
     imports: [
@@ -19,9 +20,12 @@ import { Game, gameSchema } from './model/database/game';
                 uri: config.get<string>('DATABASE_CONNECTION_STRING'), // Loaded from .env
             }),
         }),
-        MongooseModule.forFeature([{ name: Game.name, schema: gameSchema }]),
+        MongooseModule.forFeature([
+            { name: Game.name, schema: gameSchema },
+            { name: GameCard.name, schema: gameCardSchema },
+        ]),
     ],
     controllers: [GameController],
-    providers: [Logger, GameService, DatabaseService, ConfigService, GameGateway, ClassicSoloModeService, GameListsManagerService],
+    providers: [Logger, GameService, DatabaseService, ConfigService, GameGateway, ClassicModeService, GameListsManagerService],
 })
 export class AppModule {}

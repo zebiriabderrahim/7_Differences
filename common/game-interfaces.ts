@@ -1,15 +1,5 @@
 import { Coordinate } from '@common/coordinate';
 
-export interface ServerSideGame {
-    id: string;
-    name: string;
-    original: string;
-    modified: string;
-    differences: Coordinate[][];
-    differencesCount: number;
-    isHard: boolean;
-}
-
 export interface ClientSideGame {
     id: string;
     name: string;
@@ -22,7 +12,7 @@ export interface ClientSideGame {
 }
 
 export interface GameCard {
-    id: string;
+    _id: string;
     name: string;
     difficultyLevel: boolean;
     soloTopTime: PlayerTime[];
@@ -47,19 +37,29 @@ export interface PlayerTime {
     time: number;
 }
 
-export interface PlayRoom {
+export interface ClassicPlayRoom {
     roomId: string;
-    serverGame: ServerSideGame;
     clientGame: ClientSideGame;
     endMessage: string;
     timer: number;
     differencesData: Differences;
+    originalDifferences: Coordinate[][];
+    isAvailableToJoin?: boolean;
+    player2?: Player;
+}
+
+export interface Player {
+    name: string;
+    diffData: Differences;
 }
 
 export interface Differences {
     currentDifference: Coordinate[];
     differencesFound: number;
 }
+
+
+
 
 export enum GameEvents {
     ValidateCoords = 'validateCoords',
@@ -69,4 +69,18 @@ export enum GameEvents {
     EndGame = 'endGame',
     TimerStarted = 'timerStarted',
     RemoveDiff = 'removeDiff',
+    RoomOneVsOneAvailable = 'RoomOneVsOneAvailable',
+    CreateOneVsOneGame = 'CreateOneVsOneGame',
+    CheckRoomOneVsOneAvailability = 'CheckRoomOneVsOneAvailability',
+    UpdateRoomOneVsOneAvailability = 'UpdateRoomOneVsOneAvailability',
+    DeleteCreatedOneVsOneRoom = 'DeleteCreatedOneVsOneRoom',
+    UpdateWaitingPlayerNameList = 'UpdateWaitingPlayerNameList',
+    WaitingPlayerNameListByGameId = 'WaitingPlayerNameListByGameId',
+    Disconnect = "Disconnect",
+    RefusePlayer = "RefusePlayer"
+}
+
+export enum GameModes {
+    ClassicSolo = 'Classic->lSolo',
+    ClassicOneVsOne = 'Classic->OneVsOne',
 }

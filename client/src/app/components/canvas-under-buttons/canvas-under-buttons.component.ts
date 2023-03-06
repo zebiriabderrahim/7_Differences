@@ -11,7 +11,7 @@ import { ValidationService } from '@app/services/validation-service/validation.s
 })
 export class CanvasUnderButtonsComponent {
     @Input() position: CanvasPosition;
-    @ViewChild('uploadEl') uploadElRef: ElementRef;
+    @ViewChild('uploadInput') uploadInput: ElementRef;
     @ViewChild('invalidImageDialog', { static: true })
     private readonly invalidImageDialog: TemplateRef<HTMLElement>;
     readonly canvasPosition: typeof CanvasPosition = CanvasPosition;
@@ -30,6 +30,7 @@ export class CanvasUnderButtonsComponent {
                 this.matDialog.open(this.invalidImageDialog);
             } else {
                 await this.setImageIfValid(file);
+                this.uploadInput.nativeElement.value = '';
             }
         }
     }
@@ -44,7 +45,6 @@ export class CanvasUnderButtonsComponent {
     }
 
     resetBackground(): void {
-        this.uploadElRef.nativeElement.value = '';
         this.imageService.resetBackground(this.position);
     }
 }
