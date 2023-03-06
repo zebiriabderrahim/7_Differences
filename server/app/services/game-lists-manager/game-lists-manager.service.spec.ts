@@ -103,4 +103,9 @@ describe('GameListsManagerService', () => {
         expect(addGameCarouselSpy).not.toBeCalled();
         expect(testCarouselBefore).toEqual(testCarousel2);
     });
+
+    it('getGameCarousel() should return the game carousel', () => {
+        service['carouselGames'] = testCarousel;
+        expect(service.getCarouselGames()).toEqual(testCarousel);
+    });
 });

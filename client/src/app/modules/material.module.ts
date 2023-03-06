@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 // import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
-// import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 // import { MatCheckboxModule } from '@angular/material/checkbox';
 // import { MatChipsModule } from '@angular/material/chips';
@@ -20,7 +20,7 @@ import { MatInputModule } from '@angular/material/input';
 import { HttpClientModule } from '@angular/common/http';
 import { MatRadioModule } from '@angular/material/radio';
 import { BrowserModule } from '@angular/platform-browser';
-// import { MatSelectModule } from '@angular/material/select';
+import { MatSelectModule } from '@angular/material/select';
 // import { MatSidenavModule } from '@angular/material/sidenav';
 // import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 // import { MatSliderModule } from '@angular/material/slider';
@@ -37,7 +37,7 @@ const modules = [
     MatButtonModule,
     BrowserModule,
     HttpClientModule,
-    // MatButtonToggleModule,
+    MatButtonToggleModule,
     MatCardModule,
     // MatCheckboxModule,
     // MatCheckboxModule,
@@ -55,7 +55,7 @@ const modules = [
     // MatProgressBarModule,
     // MatProgressSpinnerModule,
     MatRadioModule,
-    // MatSelectModule,
+    MatSelectModule,
     // MatSidenavModule,
     // MatSliderModule,
     // MatSlideToggleModule,

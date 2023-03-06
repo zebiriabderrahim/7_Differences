@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { MessageTag } from '@common/game-interfaces';
 
 @Component({
     selector: 'app-chat-box',
@@ -14,7 +15,7 @@ export class ChatBoxComponent {
     addNewMessage(inputField: { value: string }) {
         const val = inputField.value?.trim();
         if (val.length) {
-            this.messages.push({ tag: 'sent', message: val });
+            this.messages.push({ tag: MessageTag.sent, message: val });
         }
         inputField.value = '';
     }
