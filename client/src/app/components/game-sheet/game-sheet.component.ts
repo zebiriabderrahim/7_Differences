@@ -5,7 +5,9 @@ import { Router } from '@angular/router';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { WaitingForPlayerToJoinComponent } from '@app/components/waiting-player-to-join/waiting-player-to-join.component';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
+import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { GameCard } from '@common/game-interfaces';
+
 @Component({
     selector: 'app-game-sheet',
     templateUrl: './game-sheet.component.html',
@@ -13,7 +15,15 @@ import { GameCard } from '@common/game-interfaces';
 })
 export class GameSheetComponent implements OnDestroy, OnInit {
     @Input() game: GameCard;
-    constructor(public dialog: MatDialog, public router: Router, private classicSystemService: ClassicSystemService) {
+
+    // Services are needed for the dialog and dialog needs to talk to the parent component
+    // eslint-disable-next-line max-params
+    constructor(
+        public dialog: MatDialog,
+        public router: Router,
+        private classicSystemService: ClassicSystemService,
+        private communicationService: CommunicationService,
+    ) {
         this.classicSystemService.manageSocket();
     }
     ngOnInit(): void {
@@ -73,5 +83,13 @@ export class GameSheetComponent implements OnDestroy, OnInit {
 
     ngOnDestroy(): void {
         this.classicSystemService.disconnect();
+    }
+
+    deleteGameCard() {
+        this.communicationService.deleteGameById(this.game._id).subscribe(() => {
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+                this.router.navigate(['/config']);
+            });
+        });
     }
 }
