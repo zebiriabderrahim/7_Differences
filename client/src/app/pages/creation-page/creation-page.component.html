@@ -12,6 +12,14 @@
             <button mat-raised-button (click)="duplicateLeftForeground()">
                 <mat-icon>arrow_forward</mat-icon>
             </button>
+            <div>
+                <button mat-raised-button (click)="undoCanvasOperation()">
+                    <mat-icon>undo</mat-icon>
+                </button>
+                <button mat-raised-button (click)="redoCanvasOperation()">
+                    <mat-icon>redo</mat-icon>
+                </button>
+            </div>
         </div>
         <app-image-canvas [position]="canvasPosition.Right"></app-image-canvas>
     </div>

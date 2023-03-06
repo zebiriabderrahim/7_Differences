@@ -42,9 +42,9 @@ export class CreationPageComponent implements AfterViewInit {
     @HostListener('window:keydown', ['$event'])
     keyboardEvent(event: KeyboardEvent) {
         if (event.ctrlKey && event.shiftKey && event.key === 'Z') {
-            this.drawService.redoCanvasOperation();
+            this.redoCanvasOperation();
         } else if (event.ctrlKey && event.key === 'z') {
-            this.drawService.undoCanvasOperation();
+            this.undoCanvasOperation();
         }
     }
 
@@ -84,5 +84,13 @@ export class CreationPageComponent implements AfterViewInit {
 
     duplicateRightForeground() {
         this.drawService.duplicateRightForeground();
+    }
+
+    undoCanvasOperation() {
+        this.drawService.undoCanvasOperation();
+    }
+
+    redoCanvasOperation() {
+        this.drawService.redoCanvasOperation();
     }
 }
