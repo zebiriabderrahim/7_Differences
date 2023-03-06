@@ -84,3 +84,9 @@ export enum GameModes {
     ClassicSolo = 'Classic->lSolo',
     ClassicOneVsOne = 'Classic->OneVsOne',
 }
+
+export enum MessageTag {
+    sent = 'sent',
+    received = 'received',
+    common = 'common'
+}
