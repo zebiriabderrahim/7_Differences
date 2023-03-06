@@ -49,7 +49,6 @@ export class ImageCanvasComponent implements AfterViewInit {
     // }
 
     setMouseLeavingBoolean(event: MouseEvent): void {
-        console.log('mouse leaving');
         const isMouseLeaving = true;
         if (event.button === 0) {
             this.drawService.setMousePosition(event, isMouseLeaving);
@@ -61,7 +60,6 @@ export class ImageCanvasComponent implements AfterViewInit {
     }
 
     continueCanvasOperation(event: MouseEvent): void {
-        console.log('isMouseOutOfCanvas: ', this.drawService.getIsMouseOutOfCanvas());
         this.drawService.continueCanvasOperation(this.position, event);
     }
 
