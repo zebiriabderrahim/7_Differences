@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { NavBarComponent } from '@app/components/nav-bar/nav-bar.component';
 import { ConfigPageComponent } from '@app/pages/config-page/config-page.component';
 import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
@@ -14,7 +13,6 @@ export const routes: Routes = [
     { path: 'create', component: CreationPageComponent },
     { path: 'selection', component: SelectionPageComponent },
     { path: 'config', component: ConfigPageComponent },
-    { path: 'nav-bar', component: NavBarComponent },
     { path: '**', redirectTo: '/home' },
 ];
 
