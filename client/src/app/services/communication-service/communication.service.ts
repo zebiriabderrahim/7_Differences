@@ -32,6 +32,14 @@ export class CommunicationService {
         return this.http.get<GameConfigConst>(`${this.gameUrl}/constants`).pipe(catchError(this.handleError<GameConfigConst>('loadConfigConstants')));
     }
 
+    deleteGameById(id: string): Observable<void> {
+        return this.http.delete<void>(`${this.gameUrl}/${id}`).pipe(catchError(this.handleError<void>('deleteGameById')));
+    }
+
+    verifyIfGameExists(name: string): Observable<boolean> {
+        return this.http.get<boolean>(`${this.gameUrl}/?name=${name}`).pipe(catchError(this.handleError<boolean>('verifyIfGameExists')));
+    }
+
     private handleError<T>(_request: string, result?: T): (error: Error) => Observable<T> {
         return () => of(result as T);
     }

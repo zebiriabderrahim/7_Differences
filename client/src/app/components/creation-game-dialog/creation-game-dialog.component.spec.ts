@@ -9,6 +9,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { GameDetails } from '@app/interfaces/game-interfaces';
+import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { CreationGameDialogComponent } from './creation-game-dialog.component';
@@ -19,6 +20,7 @@ describe('CreationGameDialogComponent', () => {
     let imageServiceSpy: jasmine.SpyObj<ImageService>;
     let differenceServiceSpy: jasmine.SpyObj<DifferenceService>;
     let dialogRef: MatDialogRef<CreationGameDialogComponent, unknown>;
+    let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
 
     beforeEach(async () => {
         imageServiceSpy = jasmine.createSpyObj('ImageService', [
@@ -50,6 +52,7 @@ describe('CreationGameDialogComponent', () => {
             ],
             declarations: [CreationGameDialogComponent],
             providers: [
+                { provide: CommunicationService, useValue: communicationServiceSpy },
                 { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } },
                 { provide: MAT_DIALOG_DATA, useValue: [] },
                 { provide: ImageService, useValue: imageServiceSpy },
@@ -141,4 +144,16 @@ describe('CreationGameDialogComponent', () => {
         component.submitForm();
         expect(dialogRef.close).not.toHaveBeenCalled();
     });
+
+    /*
+    it('should return null if game name does not exist', () => {
+        fixture.detectChanges();
+        const control = { value: 'newGame' } as AbstractControl;
+        component.gameNameForm = new FormGroup({ name: new FormControl('newGame') });
+
+        spyOn(component, 'validateGameName').and.callThrough();
+        component.validateGameName(control).subscribe((result) => {
+            expect(result).toBeNull();
+        });
+    });*/
 });
