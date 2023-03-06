@@ -1,13 +1,15 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { GameDetails } from '@app/interfaces/game-interfaces';
 import { ImageSources } from '@app/interfaces/image-sources';
 import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
+import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { Coordinate } from '@common/coordinate';
+import { map, Observable } from 'rxjs';
 
 @Component({
     selector: 'app-creation-game-dialog',
@@ -20,12 +22,13 @@ export class CreationGameDialogComponent implements OnInit {
     nDifferences: number;
     readonly routerConfig: string = '/config/';
     gameNameForm = new FormGroup({
-        name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)]),
+        name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)], [this.validateGameName.bind(this)]),
     });
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
     constructor(
+        private readonly communicationService: CommunicationService,
         private readonly imageService: ImageService,
         private readonly differenceService: DifferenceService,
         private readonly dialogRef: MatDialogRef<CreationPageComponent>,
@@ -69,5 +72,10 @@ export class CreationGameDialogComponent implements OnInit {
             this.dialogRef.close(gameDetails);
             this.imageService.resetBothBackgrounds();
         }
+    }
+
+    validateGameName(control: AbstractControl): Observable<{ [key: string]: unknown } | null> {
+        const name = control.value;
+        return this.communicationService.verifyIfGameExists(name).pipe(map((gameExists) => (gameExists ? { gameExists: true } : null)));
     }
 }

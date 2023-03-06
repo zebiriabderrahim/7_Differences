@@ -2,11 +2,12 @@ import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatIconModule } from '@angular/material/icon';
 import { RouterTestingModule } from '@angular/router/testing';
+import { NavBarComponent } from '@app/components/nav-bar/nav-bar.component';
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { of } from 'rxjs';
-
 import { SelectionPageComponent } from './selection-page.component';
 
 describe('SelectionPageComponent', () => {
@@ -15,8 +16,8 @@ describe('SelectionPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule.withRoutes(routes), MatGridListModule, FormsModule],
-            declarations: [SelectionPageComponent],
+            imports: [RouterTestingModule.withRoutes(routes), MatGridListModule, FormsModule, MatIconModule],
+            declarations: [SelectionPageComponent, NavBarComponent],
             providers: [
                 HttpClient,
                 HttpHandler,
