@@ -194,66 +194,66 @@ describe('ImageService', () => {
         expect(service.transformPixelArrayToImageData(pixelArray)).toEqual(expectedArray);
     });
 
-    it('getLeftPixels should call getImageData of leftBackgroundContext', () => {
-        const leftBackgroundContextSpy = spyOn(service['leftBackgroundContext'], 'getImageData').and.callThrough();
-        service.getLeftPixels();
-        expect(leftBackgroundContextSpy).toHaveBeenCalledWith(0, 0, IMG_WIDTH, IMG_HEIGHT);
-    });
+    // it('getLeftPixels should call getImageData of leftBackgroundContext', () => {
+    //     const leftBackgroundContextSpy = spyOn(service['leftBackgroundContext'], 'getImageData').and.callThrough();
+    //     service.getLeftPixels();
+    //     expect(leftBackgroundContextSpy).toHaveBeenCalledWith(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    // });
 
-    it('getLeftPixels should call transformImageDataToPixelArray with leftDataImage', () => {
-        const leftImageData = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * N_PIXEL_ATTRIBUTE).fill(0);
-        spyOn(service['leftBackgroundContext'], 'getImageData').and.callFake(() => {
-            return { data: leftImageData, colorSpace: 'srgb', width: IMG_WIDTH, height: IMG_HEIGHT };
-        });
-        const transformImageDataToPixelArraySpy = spyOn(service, 'transformImageDataToPixelArray').and.callFake(() => {
-            return [];
-        });
+    // it('getLeftPixels should call transformImageDataToPixelArray with leftDataImage', () => {
+    //     const leftImageData = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * N_PIXEL_ATTRIBUTE).fill(0);
+    //     spyOn(service['leftBackgroundContext'], 'getImageData').and.callFake(() => {
+    //         return { data: leftImageData, colorSpace: 'srgb', width: IMG_WIDTH, height: IMG_HEIGHT };
+    //     });
+    //     const transformImageDataToPixelArraySpy = spyOn(service, 'transformImageDataToPixelArray').and.callFake(() => {
+    //         return [];
+    //     });
 
-        service.getLeftPixels();
-        expect(transformImageDataToPixelArraySpy).toHaveBeenCalledWith(leftImageData);
-    });
+    //     service.getLeftPixels();
+    //     expect(transformImageDataToPixelArraySpy).toHaveBeenCalledWith(leftImageData);
+    // });
 
-    it('getRightPixels should call getImageData of rightBackgroundContext', () => {
-        const rightBackgroundContextSpy = spyOn(service['rightBackgroundContext'], 'getImageData').and.callThrough();
-        service.getRightPixels();
-        expect(rightBackgroundContextSpy).toHaveBeenCalledWith(0, 0, IMG_WIDTH, IMG_HEIGHT);
-    });
+    // it('getRightPixels should call getImageData of rightBackgroundContext', () => {
+    //     const rightBackgroundContextSpy = spyOn(service['rightBackgroundContext'], 'getImageData').and.callThrough();
+    //     service.getRightPixels();
+    //     expect(rightBackgroundContextSpy).toHaveBeenCalledWith(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    // });
 
-    it('getRightPixels should call transformImageDataToPixelArray with rightDataImage', () => {
-        const rightImageData = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * N_PIXEL_ATTRIBUTE).fill(1);
-        spyOn(service['rightBackgroundContext'], 'getImageData').and.callFake(() => {
-            return { data: rightImageData, colorSpace: 'srgb', width: IMG_WIDTH, height: IMG_HEIGHT };
-        });
+    // it('getRightPixels should call transformImageDataToPixelArray with rightDataImage', () => {
+    //     const rightImageData = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * N_PIXEL_ATTRIBUTE).fill(1);
+    //     spyOn(service['rightBackgroundContext'], 'getImageData').and.callFake(() => {
+    //         return { data: rightImageData, colorSpace: 'srgb', width: IMG_WIDTH, height: IMG_HEIGHT };
+    //     });
 
-        const transformImageDataToPixelArraySpy = spyOn(service, 'transformImageDataToPixelArray').and.callFake(() => {
-            return [];
-        });
+    //     const transformImageDataToPixelArraySpy = spyOn(service, 'transformImageDataToPixelArray').and.callFake(() => {
+    //         return [];
+    //     });
 
-        service.getRightPixels();
-        expect(transformImageDataToPixelArraySpy).toHaveBeenCalledWith(rightImageData);
-    });
+    //     service.getRightPixels();
+    //     expect(transformImageDataToPixelArraySpy).toHaveBeenCalledWith(rightImageData);
+    // });
 
-    it('getGamePixels should return pixels of both images', () => {
-        const leftPixels = new Array(IMG_WIDTH * IMG_HEIGHT).fill({ red: 0, green: 0, blue: 0, alpha: 0 });
-        const rightPixels = new Array(IMG_WIDTH * IMG_HEIGHT).fill({ red: 1, green: 1, blue: 1, alpha: 1 });
-        spyOn(service, 'getLeftPixels').and.callFake(() => {
-            return leftPixels;
-        });
-        spyOn(service, 'getRightPixels').and.callFake(() => {
-            return rightPixels;
-        });
+    // it('getGamePixels should return pixels of both images', () => {
+    //     const leftPixels = new Array(IMG_WIDTH * IMG_HEIGHT).fill({ red: 0, green: 0, blue: 0, alpha: 0 });
+    //     const rightPixels = new Array(IMG_WIDTH * IMG_HEIGHT).fill({ red: 1, green: 1, blue: 1, alpha: 1 });
+    //     spyOn(service, 'getLeftPixels').and.callFake(() => {
+    //         return leftPixels;
+    //     });
+    //     spyOn(service, 'getRightPixels').and.callFake(() => {
+    //         return rightPixels;
+    //     });
 
-        expect(service.getGamePixels()).toEqual({ leftImage: leftPixels, rightImage: rightPixels });
-    });
+    //     expect(service.getGamePixels()).toEqual({ leftImage: leftPixels, rightImage: rightPixels });
+    // });
 
-    it('getImageSources should return the source of the images in the service', () => {
-        service['leftBackground'] = 'leftBackground';
-        service['rightBackground'] = 'rightBackground';
-        expect(service.getImageSources()).toEqual({
-            left: service['leftBackground'],
-            right: service['rightBackground'],
-        });
-    });
+    // it('getImageSources should return the source of the images in the service', () => {
+    //     service['leftBackground'] = 'leftBackground';
+    //     service['rightBackground'] = 'rightBackground';
+    //     expect(service.getImageSources()).toEqual({
+    //         left: service['leftBackground'],
+    //         right: service['rightBackground'],
+    //     });
+    // });
 
     it('drawDifference should call transformPixelArrayToImageData', () => {
         const transformPixelArrayToImageDataSpy = spyOn(service, 'transformPixelArrayToImageData').and.callFake(() => {

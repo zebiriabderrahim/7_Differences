@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 // Id comes from database to allow _id
 /* eslint-disable no-underscore-dangle */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -27,7 +28,14 @@ describe('GameSheetComponent', () => {
                 {
                     provide: ClassicSystemService,
                     // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for fake
-                    useValue: { playerName: { next: () => {} }, id: { next: () => {} } },
+                    useValue: {
+                        playerName: { next: () => {} },
+                        id: { next: () => {} },
+                        manageSocket: () => {},
+                        checkIfOneVsOneIsAvailable: () => {},
+                        disconnect: () => {},
+                    },
+                    // TODO : Fix this freaking mess
                 },
                 {
                     provide: MatDialogRef,
@@ -63,10 +71,15 @@ describe('GameSheetComponent', () => {
         fixture.detectChanges();
     });
 
+    afterEach(() => {
+        fixture.destroy();
+    });
+
     it('should create', () => {
         expect(component).toBeTruthy();
     });
 
+    // TODO : Fix this test
     it('OpenDialog should open dialog box and call gameCardService with game id and name', () => {
         const gameServicePlayerNameSpy = spyOn(gameCardService['playerName'], 'next');
         const gameServicePlayerIdSpy = spyOn(gameCardService['id'], 'next');

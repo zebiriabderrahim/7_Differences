@@ -3,6 +3,8 @@
     flex-direction: row;
     align-items: center;
     position: relative;
+    width: 640px;
+    height: 480px;
 }
 
 #canvas-action-buttons {
@@ -25,10 +27,56 @@
     overflow: hidden;
     position: relative;
 }
-#canvas {
-    border: 1px solid #000000;
+canvas {
+    border: 1px solid black;
+}
+
+.mat-select {
+    min-width: 10px;
+}
+
+#background-canvas{
+    position: absolute;
+    z-index: 1;
+}
+
+#foreground-canvas{
+    position: absolute;
+    z-index: 2;
+}
+
+#front-canvas{
+    z-index: 3;
 }
 
 #upload-btn-canvas {
     display: none;
 }
+
+.form{
+    display: none;
+}
+
+#canvas-top-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+    padding: 10px;
+    height: 50px;
+}
+
+#canvas-color-choice {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+    padding: 10px;
+    height: 50px;
+}
+
+#canvas-top-buttons button {
+    margin-left: 10px;
+    margin-right: 10px;
+    align-items: center;
+} 
