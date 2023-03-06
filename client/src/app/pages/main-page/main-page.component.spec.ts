@@ -9,7 +9,7 @@ describe('MainPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule, HttpClientModule],
+            imports: [RouterTestingModule, HttpClientModule, HttpClientModule],
             declarations: [MainPageComponent],
             providers: [],
         }).compileComponents();
