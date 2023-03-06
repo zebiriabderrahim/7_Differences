@@ -127,16 +127,22 @@ export class ImageService {
         return imageData;
     }
 
-    getLeftPixels(leftForegroundCanvas: HTMLCanvasElement): Pixel[] {
-        const combinedLeftCanvasData: Uint8ClampedArray = this.getCombinedCanvasImageData(this.leftBackgroundContext.canvas, leftForegroundCanvas);
+    getLeftPixels(leftForegroundCanvasData: ImageData): Pixel[] {
+        const combinedLeftCanvasData: Uint8ClampedArray = this.getCombinedCanvasImageData(
+            this.leftBackgroundContext.canvas,
+            leftForegroundCanvasData,
+        );
         this.leftImage = this.combinedContext.canvas.toDataURL();
         return this.transformImageDataToPixelArray(combinedLeftCanvasData);
     }
 
-    getRightPixels(rightForegroundCanvas: HTMLCanvasElement): Pixel[] {
-        const combinedLeftCanvasData: Uint8ClampedArray = this.getCombinedCanvasImageData(this.rightBackgroundContext.canvas, rightForegroundCanvas);
+    getRightPixels(rightForegroundCanvasData: ImageData): Pixel[] {
+        const combinedRightCanvasData: Uint8ClampedArray = this.getCombinedCanvasImageData(
+            this.rightBackgroundContext.canvas,
+            rightForegroundCanvasData,
+        );
         this.rightImage = this.combinedContext.canvas.toDataURL();
-        return this.transformImageDataToPixelArray(combinedLeftCanvasData);
+        return this.transformImageDataToPixelArray(combinedRightCanvasData);
     }
 
     getGamePixels(): GamePixels {
@@ -151,11 +157,11 @@ export class ImageService {
         return { left: this.leftImage, right: this.rightImage };
     }
 
-    getCombinedCanvasImageData(firstCanvas: HTMLCanvasElement, secondCanvas: HTMLCanvasElement): Uint8ClampedArray {
+    getCombinedCanvasImageData(backgroundCanvas: HTMLCanvasElement, foregroundCanvasData: ImageData): Uint8ClampedArray {
         this.combinedContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.combinedContext.drawImage(new Image(), 0, 0);
-        this.combinedContext.drawImage(firstCanvas, 0, 0);
-        this.combinedContext.drawImage(secondCanvas, 0, 0);
+        this.combinedContext.drawImage(backgroundCanvas, 0, 0);
+        this.combinedContext.putImageData(foregroundCanvasData, 0, 0);
         return this.combinedContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data;
     }
 
