@@ -24,6 +24,7 @@
         "@angular/platform-browser": "14.1.1",
         "@angular/platform-browser-dynamic": "14.1.1",
         "@angular/router": "14.1.1",
+        "material-design-icons-iconfont": "^6.7.0",
         "rxjs": "7.5.6",
         "socket.io-client": "4.5.1",
         "tslib": "2.4.0",

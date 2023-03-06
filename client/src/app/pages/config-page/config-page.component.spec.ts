@@ -2,8 +2,10 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatIconModule } from '@angular/material/icon';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
+import { NavBarComponent } from '@app/components/nav-bar/nav-bar.component';
 import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { of } from 'rxjs';
@@ -15,8 +17,8 @@ describe('ConfigPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule, MatGridListModule, MatExpansionModule, BrowserAnimationsModule, HttpClientTestingModule],
-            declarations: [ConfigPageComponent, SelectionPageComponent],
+            imports: [RouterTestingModule, MatGridListModule, MatExpansionModule, BrowserAnimationsModule, HttpClientTestingModule, MatIconModule],
+            declarations: [ConfigPageComponent, SelectionPageComponent, NavBarComponent],
             providers: [CommunicationService],
         }).compileComponents();
     });
