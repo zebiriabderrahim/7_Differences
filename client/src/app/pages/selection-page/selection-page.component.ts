@@ -1,7 +1,7 @@
 import { AfterViewInit, Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { CarouselPaginator } from '@common/game-interfaces';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
+import { CarouselPaginator } from '@common/game-interfaces';
 
 @Component({
     selector: 'app-selection-page',
@@ -11,6 +11,8 @@ import { CommunicationService } from '@app/services/communication-service/commun
 export class SelectionPageComponent implements AfterViewInit {
     gameCarrousel: CarouselPaginator;
     readonly homeRoute: string = '/home';
+    readonly selectionRoute: string = '/selection';
+    readonly configRoute: string = '/config';
     private index: number = 0;
     constructor(private readonly communicationService: CommunicationService, public router: Router) {
         this.gameCarrousel = { hasNext: false, hasPrevious: false, gameCards: [] };
