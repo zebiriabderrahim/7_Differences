@@ -1,3 +1,5 @@
+// Id comes from database to allow _id
+/* eslint-disable no-underscore-dangle */
 import { Game } from '@app/model/database/game';
 import { GAME_CARROUSEL_SIZE } from '@common/constants';
 import { CarouselPaginator, GameCard, PlayerTime } from '@common/game-interfaces';
@@ -15,8 +17,6 @@ export class GameListsManagerService {
 
     buildGameCardFromGame(game: Game): GameCard {
         const gameCard: GameCard = {
-            // Id comes from database to allow _id
-            // eslint-disable-next-line no-param-reassign, no-underscore-dangle
             _id: game._id,
             name: game.name,
             difficultyLevel: game.isHard,
@@ -43,15 +43,18 @@ export class GameListsManagerService {
         }
     }
     buildGameCarousel(gameCards: GameCard[]): void {
-        if (this.carouselGames.length === 0) {
-            this.carouselGames.push({
-                hasNext: false,
-                hasPrevious: false,
-                gameCards: [],
-            });
-            for (const gameCard of gameCards) {
-                this.addGameCarousel(gameCard);
-            }
+        this.carouselGames = [];
+        this.carouselGames.push({
+            hasNext: false,
+            hasPrevious: false,
+            gameCards: [],
+        });
+        for (const gameCard of gameCards) {
+            this.addGameCarousel(gameCard);
         }
+    }
+
+    getCarouselGames(): CarouselPaginator[] {
+        return this.carouselGames;
     }
 }

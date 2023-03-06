@@ -1,6 +1,5 @@
 <div id="gameInfos">
-    <p><strong>Nom du Joueur:</strong> {{ game.player }}</p>
-    <p><strong>Niveau de Difficulté:</strong> {{game.isHard ? "difficile":"facile" }}</p>
+    <p><strong>Niveau de Difficulté:</strong> {{ game.isHard ? 'difficile' : 'facile' }}</p>
     <p><strong>Mode de Jeu:</strong> {{ game.mode }}</p>
     <p><strong>Nombre de Différences Présentes:</strong> {{ differencesCount }}</p>
     <mat-icon matTooltip="Pour l'utilisation d'un indice" matTooltipPosition="above">info</mat-icon>

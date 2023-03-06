@@ -111,6 +111,7 @@ describe('DatabaseService', () => {
             await mongoServer.stop();
             done();
         }, DELAY_BEFORE_CLOSING_CONNECTION);
+        jest.clearAllMocks();
     });
 
     it('should be defined', () => {
@@ -125,10 +126,12 @@ describe('DatabaseService', () => {
         const buildGameCarouselSpy = jest
             .spyOn(listsManagerService, 'buildGameCarousel')
             .mockImplementation(() => (listsManagerService['carouselGames'] = testCarousel));
+        const getCarouselGamesSpy = jest.spyOn(listsManagerService, 'getCarouselGames').mockReturnValue(testCarousel);
         const gameCardList = await dataBaseService.getGamesCarrousel();
         expect(gameCardList).toEqual(testCarousel);
         expect(buildGameCarouselSpy).toBeCalled();
         expect(buildGameCarouselSpy).toHaveBeenCalledWith([]);
+        expect(getCarouselGamesSpy).toBeCalled();
     });
 
     it('getGameById() should return the game as expected', async () => {
@@ -184,14 +187,16 @@ describe('DatabaseService', () => {
 
     it('addGameInDb() should add the game to the games list and call createGameFromGameDto and addGameCard ', async () => {
         const saveFileSpy = jest.spyOn(dataBaseService, 'saveFiles');
-        const createSpy = jest.spyOn(gameModel, 'create');
+        const gameModelCreateSpy = jest.spyOn(gameModel, 'create');
+        const gameCardModelCreateSpy = jest.spyOn(gameCardModel, 'create');
         testGameCards[0]._id = (await gameModel.create(newGameInDB))._id.toString();
         listsManagerService.buildGameCardFromGame.returns(testGameCards[0]);
         await dataBaseService.addGameInDb(testGameDto);
         const result = await dataBaseService.verifyIfGameExists(testGameDto.name);
         expect(result).toBe(true);
         expect(saveFileSpy).toBeCalledTimes(1);
-        expect(createSpy).toBeCalledTimes(2);
+        expect(gameModelCreateSpy).toBeCalledTimes(2);
+        expect(gameCardModelCreateSpy).toBeCalledTimes(1);
         expect(listsManagerService.buildGameCardFromGame.called).toBeTruthy();
         expect(listsManagerService.addGameCarousel.called).toBeTruthy();
     });
@@ -201,10 +206,42 @@ describe('DatabaseService', () => {
         await expect(dataBaseService.addGameInDb(testGameDto)).rejects.toBeTruthy();
     });
 
-    afterAll(async () => {
-        fs.unlinkSync(`assets/${testGames[0].name}/original.bmp`);
-        fs.unlinkSync(`assets/${testGames[0].name}/modified.bmp`);
-        fs.unlinkSync(`assets/${testGames[0].name}/differences.json`);
-        fs.rmdirSync('assets/test/');
+    it('deleteGame() should delete the game from the games list and call deleteGameCard ', async () => {
+        const findByIdAndDeleteGameSpy = jest.spyOn(gameModel, 'findByIdAndDelete');
+        const findByIdAndDeleteGameCardSpy = jest.spyOn(gameCardModel, 'findByIdAndDelete');
+        const deleteGameAssetsByNameSpy = jest.spyOn(dataBaseService, 'deleteGameAssetsByName').mockImplementation(() => {
+            return;
+        });
+        gameCardModel.find().exec = jest.fn().mockResolvedValue(testGameCards);
+        const id = (await gameModel.create(newGameInDB))._id.toString();
+        testGameCards[0]._id = id;
+        await gameCardModel.create(testGameCards[0]);
+        await dataBaseService.deleteGameById(id);
+        expect(findByIdAndDeleteGameSpy).toBeCalledWith(id);
+        expect(findByIdAndDeleteGameCardSpy).toBeCalledWith(id);
+        expect(deleteGameAssetsByNameSpy).toBeCalledWith(testGameDto.name);
+    });
+
+    it('deleteGame() should fail if mongo query failed', async () => {
+        gameCardModel.find().exec = jest.fn().mockRejectedValue('');
+        await expect(dataBaseService.deleteGameById('test')).rejects.toBeTruthy();
+    });
+
+    it('deleteGameAssetsByName() should delete the game assets', () => {
+        const unlinkSpy = jest.spyOn(fs, 'unlinkSync');
+        const rmdirSpy = jest.spyOn(fs, 'rmdirSync');
+        dataBaseService.deleteGameAssetsByName(testGames[0].name);
+        expect(unlinkSpy).toBeCalledTimes(3);
+        expect(rmdirSpy).toBeCalledTimes(1);
+    });
+
+    afterAll(() => {
+        const dirName = `assets/${testGames[0].name}`;
+        if (fs.existsSync(dirName)) {
+            fs.unlinkSync(`assets/${testGames[0].name}/original.bmp`);
+            fs.unlinkSync(`assets/${testGames[0].name}/modified.bmp`);
+            fs.unlinkSync(`assets/${testGames[0].name}/differences.json`);
+            fs.rmdirSync('assets/test/');
+        }
     });
 });

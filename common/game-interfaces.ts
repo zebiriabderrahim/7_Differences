@@ -37,19 +37,29 @@ export interface PlayerTime {
     time: number;
 }
 
-export interface PlayRoom {
+export interface ClassicPlayRoom {
     roomId: string;
     clientGame: ClientSideGame;
     endMessage: string;
     timer: number;
     differencesData: Differences;
     originalDifferences: Coordinate[][];
+    isAvailableToJoin?: boolean;
+    player2?: Player;
+}
+
+export interface Player {
+    name: string;
+    diffData: Differences;
 }
 
 export interface Differences {
     currentDifference: Coordinate[];
     differencesFound: number;
 }
+
+
+
 
 export enum GameEvents {
     ValidateCoords = 'validateCoords',
@@ -59,4 +69,24 @@ export enum GameEvents {
     EndGame = 'endGame',
     TimerStarted = 'timerStarted',
     RemoveDiff = 'removeDiff',
+    RoomOneVsOneAvailable = 'RoomOneVsOneAvailable',
+    CreateOneVsOneGame = 'CreateOneVsOneGame',
+    CheckRoomOneVsOneAvailability = 'CheckRoomOneVsOneAvailability',
+    UpdateRoomOneVsOneAvailability = 'UpdateRoomOneVsOneAvailability',
+    DeleteCreatedOneVsOneRoom = 'DeleteCreatedOneVsOneRoom',
+    UpdateWaitingPlayerNameList = 'UpdateWaitingPlayerNameList',
+    WaitingPlayerNameListByGameId = 'WaitingPlayerNameListByGameId',
+    Disconnect = "Disconnect",
+    RefusePlayer = "RefusePlayer"
+}
+
+export enum GameModes {
+    ClassicSolo = 'Classic->lSolo',
+    ClassicOneVsOne = 'Classic->OneVsOne',
+}
+
+export enum MessageTag {
+    sent = 'sent',
+    received = 'received',
+    common = 'common'
 }
