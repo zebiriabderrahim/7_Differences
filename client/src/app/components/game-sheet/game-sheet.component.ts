@@ -34,8 +34,10 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     playSolo() {
         this.openDialog()
             .afterClosed()
-            .subscribe(() => {
-                this.router.navigate(['/game']);
+            .subscribe((isNoClick: boolean) => {
+                if (isNoClick) {
+                    this.router.navigate(['/game']);
+                }
             });
     }
 
