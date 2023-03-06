@@ -24,11 +24,20 @@ export class DrawService {
     private rectangleTopCorner: Coordinate;
     private currentAction: CanvasAction;
     private clickPosition: Coordinate;
+    private isMouseOutOfCanvas: boolean;
 
     constructor() {
         this.isDragging = false;
         this.canvasStateStack = [];
         this.undoneCanvasStateStack = [];
+    }
+
+    setMousePosition(event: MouseEvent, isMouseLeaving: boolean): void {
+        this.isMouseOutOfCanvas = isMouseLeaving;
+    }
+
+    getIsMouseOutOfCanvas(): boolean {
+        return this.isMouseOutOfCanvas;
     }
 
     setForegroundContext(canvasPosition: CanvasPosition, foregroundContext: CanvasRenderingContext2D, frontContext: CanvasRenderingContext2D) {
@@ -200,6 +209,11 @@ export class DrawService {
             if (this.currentAction === CanvasAction.Rectangle) {
                 this.drawRectangle();
             } else {
+                if (this.isMouseOutOfCanvas) {
+                    this.activeContext.closePath();
+                    this.activeContext.beginPath();
+                    this.isMouseOutOfCanvas = false;
+                }
                 this.drawLine(event);
             }
         }

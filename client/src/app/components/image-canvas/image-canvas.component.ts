@@ -40,11 +40,28 @@ export class ImageCanvasComponent implements AfterViewInit {
         this.drawService.setForegroundContext(this.position, foregroundContext, frontContext);
     }
 
+    // setMouseEnteringBoolean(event: MouseEvent): void {
+    //     console.log('mouse entering');
+    //     const isMouseLeaving = false;
+    //     if (event.button === 0) {
+    //         this.drawService.setMousePosition(event, isMouseLeaving);
+    //     }
+    // }
+
+    setMouseLeavingBoolean(event: MouseEvent): void {
+        console.log('mouse leaving');
+        const isMouseLeaving = true;
+        if (event.button === 0) {
+            this.drawService.setMousePosition(event, isMouseLeaving);
+        }
+    }
+
     resetForeground(): void {
         this.drawService.resetForeground(this.position);
     }
 
     continueCanvasOperation(event: MouseEvent): void {
+        console.log('isMouseOutOfCanvas: ', this.drawService.getIsMouseOutOfCanvas());
         this.drawService.continueCanvasOperation(this.position, event);
     }
 
