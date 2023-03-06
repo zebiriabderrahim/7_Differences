@@ -23,11 +23,11 @@
         <div>
             <p>Choisissez le rayon d'élargissement :</p>
             <mat-radio-group ngDefaultControl aria-label="Select an option" [(ngModel)]="radius">
-                <mat-radio-button *ngFor="let radius of radiusSizes" [value]="radius">{{ radius }}</mat-radio-button>
+                <mat-radio-button color="primary" *ngFor="let radius of radiusSizes" [value]="radius">{{ radius }}</mat-radio-button>
             </mat-radio-group>
         </div>
     </div>
-    <button mat-raised-button name="validateButton" color="basic" matTooltip="Vous devez avoir téléversé deux images" (click)="validateDifferences()">
+    <button mat-raised-button name="validateButton" color="primary" matTooltip="Vous devez avoir téléversé deux images" (click)="validateDifferences()">
         Valider les différences
     </button>
     <button mat-raised-button [routerLink]="configRoute">Retourner à la page de Configuration</button>
