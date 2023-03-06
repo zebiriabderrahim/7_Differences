@@ -2,12 +2,11 @@ import { Injectable } from '@angular/core';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { BLACK_PIXEL, N_PIXEL_ATTRIBUTE, WHITE_PIXEL } from '@app/constants/pixels';
 import { CanvasPosition } from '@app/enum/canvas-position';
-import { CanvasState } from '@app/interfaces/canvas-state';
 import { ImageSources } from '@app/interfaces/image-sources';
 import { GamePixels, Pixel } from '@app/interfaces/pixel';
 import { DrawService } from '@app/services/draw-service/draw.service';
 import { Coordinate } from '@common/coordinate';
-
+import { ForegroundCanvasElements } from '@app/interfaces/foreground-canvas-elements';
 @Injectable({
     providedIn: 'root',
 })
@@ -127,29 +126,23 @@ export class ImageService {
         return imageData;
     }
 
-    getLeftPixels(leftForegroundCanvasData: ImageData): Pixel[] {
-        const combinedLeftCanvasData: Uint8ClampedArray = this.getCombinedCanvasImageData(
-            this.leftBackgroundContext.canvas,
-            leftForegroundCanvasData,
-        );
+    getLeftPixels(leftForegroundCanvas: HTMLCanvasElement): Pixel[] {
+        const combinedLeftCanvasData: Uint8ClampedArray = this.getCombinedCanvasImageData(this.leftBackgroundContext.canvas, leftForegroundCanvas);
         this.leftImage = this.combinedContext.canvas.toDataURL();
         return this.transformImageDataToPixelArray(combinedLeftCanvasData);
     }
 
-    getRightPixels(rightForegroundCanvasData: ImageData): Pixel[] {
-        const combinedRightCanvasData: Uint8ClampedArray = this.getCombinedCanvasImageData(
-            this.rightBackgroundContext.canvas,
-            rightForegroundCanvasData,
-        );
+    getRightPixels(rightForegroundCanvas: HTMLCanvasElement): Pixel[] {
+        const combinedLeftCanvasData: Uint8ClampedArray = this.getCombinedCanvasImageData(this.rightBackgroundContext.canvas, rightForegroundCanvas);
         this.rightImage = this.combinedContext.canvas.toDataURL();
-        return this.transformImageDataToPixelArray(combinedRightCanvasData);
+        return this.transformImageDataToPixelArray(combinedLeftCanvasData);
     }
 
     getGamePixels(): GamePixels {
-        const foregroundCanvasState: CanvasState = this.drawService.getCanvasState();
+        const foregroundCanvasElements: ForegroundCanvasElements = this.drawService.getForegroundCanvasElements();
         return {
-            leftImage: this.getLeftPixels(foregroundCanvasState.left),
-            rightImage: this.getRightPixels(foregroundCanvasState.right),
+            leftImage: this.getLeftPixels(foregroundCanvasElements.left),
+            rightImage: this.getRightPixels(foregroundCanvasElements.right),
         };
     }
 
@@ -157,11 +150,11 @@ export class ImageService {
         return { left: this.leftImage, right: this.rightImage };
     }
 
-    getCombinedCanvasImageData(backgroundCanvas: HTMLCanvasElement, foregroundCanvasData: ImageData): Uint8ClampedArray {
+    getCombinedCanvasImageData(firstCanvas: HTMLCanvasElement, secondCanvas: HTMLCanvasElement): Uint8ClampedArray {
         this.combinedContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.combinedContext.drawImage(new Image(), 0, 0);
-        this.combinedContext.drawImage(backgroundCanvas, 0, 0);
-        this.combinedContext.putImageData(foregroundCanvasData, 0, 0);
+        this.combinedContext.drawImage(firstCanvas, 0, 0);
+        this.combinedContext.drawImage(secondCanvas, 0, 0);
         return this.combinedContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data;
     }
 

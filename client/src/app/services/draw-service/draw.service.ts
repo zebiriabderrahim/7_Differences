@@ -5,6 +5,7 @@ import { CanvasAction } from '@app/enum/canvas-action';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { CanvasOperation } from '@app/interfaces/canvas-operation';
 import { CanvasState } from '@app/interfaces/canvas-state';
+import { ForegroundCanvasElements } from '@app/interfaces/foreground-canvas-elements';
 import { Coordinate } from '@common/coordinate';
 
 @Injectable({
@@ -44,6 +45,10 @@ export class DrawService {
         }
     }
 
+    getForegroundCanvasElements(): ForegroundCanvasElements {
+        return { left: this.leftForegroundContext.canvas, right: this.rightForegroundContext.canvas };
+    }
+
     swapForegrounds() {
         const leftForegroundData: ImageData = this.leftForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         const rightForegroundData: ImageData = this.rightForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
@@ -78,7 +83,7 @@ export class DrawService {
         if (this.canvasStateStack.length > 0) {
             const lastState: CanvasState = this.canvasStateStack.pop() as CanvasState;
             this.undoneCanvasStateStack.push(lastState);
-            if (!this.isCurrentCanvasStateNextState(lastState)) {
+            if (!this.isCanvasStateNextState(lastState)) {
                 this.redrawForegrounds(lastState);
             } else {
                 this.undoCanvasOperation();
@@ -90,7 +95,7 @@ export class DrawService {
         if (this.undoneCanvasStateStack.length > 0) {
             const lastState: CanvasState = this.undoneCanvasStateStack.pop() as CanvasState;
             this.canvasStateStack.push(lastState);
-            if (!this.isCurrentCanvasStateNextState(lastState)) {
+            if (!this.isCanvasStateNextState(lastState)) {
                 this.redrawForegrounds(lastState);
             } else {
                 this.redoCanvasOperation();
@@ -98,16 +103,12 @@ export class DrawService {
         }
     }
 
-    isCurrentCanvasStateNextState(nextState: CanvasState): boolean {
+    isCanvasStateNextState(nextState: CanvasState): boolean {
         const canvasState: CanvasState = this.getCanvasState();
         return (
             canvasState.left.data.toString() === nextState.left.data.toString() &&
             canvasState.right.data.toString() === nextState.right.data.toString()
         );
-    }
-
-    getImageDataAsString(canvas: HTMLCanvasElement): string {
-        return canvas.getContext('2d')?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data.toString() as string;
     }
 
     resetForeground(canvasPosition: CanvasPosition) {
@@ -127,12 +128,10 @@ export class DrawService {
 
     resetLeftForeground() {
         this.leftForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.leftForegroundContext.drawImage(new Image(), 0, 0);
     }
 
     resetRightForeground() {
         this.rightForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.rightForegroundContext.drawImage(new Image(), 0, 0);
     }
 
     getCanvasState(): CanvasState {
