@@ -56,6 +56,14 @@ export class CreationPageComponent implements AfterViewInit {
         }
     }
 
+    @HostListener('window:mousedown', ['$event'])
+    mouseDownEvent(event: MouseEvent) {
+        if (event.button === LEFT_BUTTON) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+
     ngAfterViewInit(): void {
         const combinedContext: CanvasRenderingContext2D = this.combinedCanvas.nativeElement.getContext('2d', { willReadFrequently: true });
         this.imageService.setCombinedContext(combinedContext);
