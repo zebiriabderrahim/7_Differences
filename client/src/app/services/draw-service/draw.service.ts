@@ -49,6 +49,12 @@ export class DrawService {
         }
     }
 
+    disableDragging(): void {
+        this.isDragging = false;
+        this.copyCanvas(this.activeContext.canvas, this.activeCanvas);
+        this.resetActiveCanvas();
+    }
+
     swapForegrounds() {
         const leftForegroundData: ImageData = this.leftForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         const rightForegroundData: ImageData = this.rightForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
