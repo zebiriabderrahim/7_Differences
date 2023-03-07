@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
@@ -17,8 +17,8 @@ import { ImageService } from '@app/services/image-service/image.service';
 })
 export class CreationPageComponent implements AfterViewInit {
     @ViewChild('combinedCanvas') combinedCanvas: ElementRef;
-    @ViewChild('imageNotSetDialog', { static: true })
-    private readonly imageNotSetDialog: TemplateRef<HTMLElement>;
+    // @ViewChild('imageNotSetDialog', { static: true })
+    // private readonly imageNotSetDialog: TemplateRef<HTMLElement>;
     readonly canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
     readonly configRoute: string = '/config';
     canvasPosition: typeof CanvasPosition;
@@ -54,24 +54,24 @@ export class CreationPageComponent implements AfterViewInit {
     }
 
     validateDifferences() {
-        if (this.imageService.areImagesSet()) {
-            const dialogConfig = new MatDialogConfig();
-            dialogConfig.data = this.radius;
-            this.matDialog
-                .open(CreationGameDialogComponent, dialogConfig)
-                .afterClosed()
-                .subscribe((game: GameDetails) => {
-                    if (game) {
-                        this.communicationService.postGame(game).subscribe(() => {
-                            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-                                this.router.navigate(['/config']);
-                            });
+        // if (this.imageService.areImagesSet()) {
+        const dialogConfig = new MatDialogConfig();
+        dialogConfig.data = this.radius;
+        this.matDialog
+            .open(CreationGameDialogComponent, dialogConfig)
+            .afterClosed()
+            .subscribe((game: GameDetails) => {
+                if (game) {
+                    this.communicationService.postGame(game).subscribe(() => {
+                        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+                            this.router.navigate(['/config']);
                         });
-                    }
-                });
-        } else {
-            this.matDialog.open(this.imageNotSetDialog);
-        }
+                    });
+                }
+            });
+        // } else {
+        //     this.matDialog.open(this.imageNotSetDialog);
+        // }
     }
 
     swapForegrounds() {
