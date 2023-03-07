@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { BLACK_PIXEL, N_PIXEL_ATTRIBUTE, WHITE_PIXEL } from '@app/constants/pixels';
 import { CanvasPosition } from '@app/enum/canvas-position';
+import { ForegroundCanvasElements } from '@app/interfaces/foreground-canvas-elements';
 import { ImageSources } from '@app/interfaces/image-sources';
 import { GamePixels, Pixel } from '@app/interfaces/pixel';
 import { DrawService } from '@app/services/draw-service/draw.service';
 import { Coordinate } from '@common/coordinate';
-import { ForegroundCanvasElements } from '@app/interfaces/foreground-canvas-elements';
 @Injectable({
     providedIn: 'root',
 })
@@ -14,19 +14,28 @@ export class ImageService {
     private leftBackgroundContext: CanvasRenderingContext2D;
     private rightBackgroundContext: CanvasRenderingContext2D;
     private combinedContext: CanvasRenderingContext2D;
-    private leftBackground: string;
-    private rightBackground: string;
+    // private leftBackground: string;
+    // private rightBackground: string;
     private leftImage: string;
     private rightImage: string;
 
     constructor(private readonly drawService: DrawService) {
-        this.leftBackground = '';
-        this.rightBackground = '';
+        // this.leftBackground = '';
+        // this.rightBackground = '';
     }
 
-    areImagesSet(): boolean {
-        return this.leftBackground !== '' && this.rightBackground !== '';
-    }
+    // areImagesSet(): boolean {
+    //     return this.areBackgroundsSet() || this.areForegroundsSet();
+    // }
+
+    // areBackgroundsSet(): boolean {
+    //     return this.leftBackground !== '' && this.rightBackground !== '';
+    // }
+
+    // areForegroundsSet(): boolean {
+    //     const foregroundCanvasElements: ForegroundCanvasElements = this.drawService.getForegroundCanvasElements();
+
+    // }
 
     resetBackground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
@@ -43,15 +52,19 @@ export class ImageService {
     }
 
     resetLeftBackground() {
-        this.leftBackground = '';
+        // this.leftBackground = '';
         this.leftBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.leftBackgroundContext.drawImage(new Image(), 0, 0);
+        this.leftBackgroundContext.fillStyle = 'white';
+        this.leftBackgroundContext.fillRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
     }
 
     resetRightBackground() {
-        this.rightBackground = '';
+        // this.rightBackground = '';
         this.rightBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.rightBackgroundContext.drawImage(new Image(), 0, 0);
+        this.rightBackgroundContext.fillStyle = 'white';
+        this.rightBackgroundContext.fillRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
     }
 
     resetBothBackgrounds() {
@@ -81,22 +94,30 @@ export class ImageService {
     setLeftBackground(imageToDraw: ImageBitmap) {
         this.leftBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.leftBackgroundContext.drawImage(imageToDraw, 0, 0);
-        this.leftBackground = this.leftBackgroundContext.canvas.toDataURL();
+        // this.leftBackground = this.leftBackgroundContext.canvas.toDataURL();
     }
 
     setRightBackground(imageToDraw: ImageBitmap) {
         this.rightBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.rightBackgroundContext.drawImage(imageToDraw, 0, 0);
-        this.rightBackground = this.rightBackgroundContext.canvas.toDataURL();
+        // this.rightBackground = this.rightBackgroundContext.canvas.toDataURL();
     }
 
     setBackgroundContext(canvasPosition: CanvasPosition, context: CanvasRenderingContext2D) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
                 this.leftBackgroundContext = context;
+                this.resetLeftBackground();
+                // this.leftBackgroundContext.putImageData(new ImageData(IMG_WIDTH, IMG_HEIGHT), 0, 0);
+                // this.leftBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+                // this.leftBackgroundContext.drawImage(new Image(), 0, 0);
                 break;
             case CanvasPosition.Right:
                 this.rightBackgroundContext = context;
+                this.resetRightBackground();
+                // this.leftBackgroundContext.putImageData(new ImageData(IMG_WIDTH, IMG_HEIGHT), 0, 0);
+                // this.rightBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+                // this.rightBackgroundContext.drawImage(new Image(), 0, 0);
                 break;
         }
     }
