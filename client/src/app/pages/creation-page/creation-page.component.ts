@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, HostListener, TemplateRef, ViewCh
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
-import { SUBMIT_WAIT_TIME } from '@app/constants/constants';
+import { SUBMIT_WAIT_TIME, LEFT_BUTTON } from '@app/constants/constants';
 import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/difference';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasPosition } from '@app/enum/canvas-position';
@@ -46,6 +46,13 @@ export class CreationPageComponent implements AfterViewInit {
             this.drawService.redoCanvasOperation();
         } else if (event.ctrlKey && event.key === 'z') {
             this.drawService.undoCanvasOperation();
+        }
+    }
+
+    @HostListener('window:mouseup', ['$event'])
+    mouseUpEvent(event: MouseEvent) {
+        if (event.button === LEFT_BUTTON) {
+            this.drawService.disableDragging();
         }
     }
 
