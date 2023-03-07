@@ -223,7 +223,7 @@ export class DrawService {
 
     stopCanvasOperation(canvasPosition: CanvasPosition, event: MouseEvent) {
         this.setClickPosition(event);
-        if (this.isDragging) {
+        if (this.isDragging && this.activeCanvas === canvasPosition) {
             if (this.currentAction === CanvasAction.Rectangle) {
                 this.drawRectangle();
             } else {
