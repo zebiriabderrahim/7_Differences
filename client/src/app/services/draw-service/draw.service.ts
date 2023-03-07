@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ERASER_COLOR } from '@app/constants/drawing';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasAction } from '@app/enum/canvas-action';
 import { CanvasPosition } from '@app/enum/canvas-position';
@@ -142,13 +141,24 @@ export class DrawService {
 
     setActiveCanvas(canvasPosition: CanvasPosition) {
         this.activeCanvas = canvasPosition;
-        switch (canvasPosition) {
-            case CanvasPosition.Left:
-                this.activeContext = this.leftFrontContext;
-                break;
-            case CanvasPosition.Right:
-                this.activeContext = this.rightFrontContext;
-                break;
+        if (this.currentAction === CanvasAction.Rectangle) {
+            switch (canvasPosition) {
+                case CanvasPosition.Left:
+                    this.activeContext = this.leftFrontContext;
+                    break;
+                case CanvasPosition.Right:
+                    this.activeContext = this.rightFrontContext;
+                    break;
+            }
+        } else {
+            switch (canvasPosition) {
+                case CanvasPosition.Left:
+                    this.activeContext = this.leftForegroundContext;
+                    break;
+                case CanvasPosition.Right:
+                    this.activeContext = this.rightForegroundContext;
+                    break;
+            }
         }
     }
 
@@ -158,17 +168,22 @@ export class DrawService {
 
     setCanvasOperationStyle(color: string, operationWidth: number) {
         if (this.currentAction === CanvasAction.Rectangle) {
+            this.activeContext.globalCompositeOperation = 'source-over';
+            this.rightForegroundContext.globalCompositeOperation = 'source-over';
+            this.leftForegroundContext.globalCompositeOperation = 'source-over';
             this.activeContext.fillStyle = color;
         } else {
             this.activeContext.lineWidth = operationWidth;
             switch (this.currentAction) {
                 case CanvasAction.Pencil:
                     this.activeContext.strokeStyle = color;
+                    this.activeContext.globalCompositeOperation = 'source-over';
                     this.activeContext.lineCap = 'round';
                     this.activeContext.lineJoin = 'round';
                     break;
                 case CanvasAction.Eraser:
-                    this.activeContext.strokeStyle = ERASER_COLOR;
+                    this.activeContext.strokeStyle = color;
+                    this.activeContext.globalCompositeOperation = 'destination-out';
                     this.activeContext.lineCap = 'square';
                     this.activeContext.lineJoin = 'round';
                     break;
@@ -189,8 +204,7 @@ export class DrawService {
             this.rectangleTopCorner = this.clickPosition;
         } else {
             this.activeContext.beginPath();
-            this.activeContext.lineTo(event.offsetX, event.offsetY);
-            this.activeContext.stroke();
+            this.drawLine(event);
         }
         this.isDragging = true;
     }
@@ -215,8 +229,14 @@ export class DrawService {
                 this.drawLine(event);
             }
             this.isDragging = false;
-            this.copyCanvas(this.activeContext.canvas, canvasPosition);
-            this.resetActiveCanvas();
+            if (this.currentAction === CanvasAction.Rectangle) {
+                this.copyCanvas(this.activeContext.canvas, canvasPosition);
+                this.resetActiveCanvas();
+            } else {
+                this.saveCurrentCanvasState();
+            }
+            // this.copyCanvas(this.activeContext.canvas, canvasPosition);
+            // this.resetActiveCanvas();
         }
     }
 
@@ -244,6 +264,7 @@ export class DrawService {
     }
 
     drawLine(event: MouseEvent) {
+        // this.activeContext.moveTo(event.offsetX, event.offsetY);
         this.activeContext.lineTo(event.offsetX, event.offsetY);
         this.activeContext.stroke();
     }
