@@ -5,4 +5,4 @@ export const DRAW_VALUES: number[] = [4, 6, 8, 10, 12, 14, 16, 18, 20];
 export const DEFAULT_WIDTH = 4;
 export const PENCIL_SHAPE: CanvasLineCap = 'round';
 export const ERASER_SHAPE: CanvasLineCap = 'square';
-export const ERASER_COLOR = 'white';
+export const BACKGROUND_COLOR = 'white';
