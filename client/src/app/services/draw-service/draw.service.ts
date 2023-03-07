@@ -51,23 +51,19 @@ export class DrawService {
     swapForegrounds() {
         const leftForegroundData: ImageData = this.leftForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         const rightForegroundData: ImageData = this.rightForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.leftForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.leftForegroundContext.putImageData(rightForegroundData, 0, 0);
-        this.rightForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.rightForegroundContext.putImageData(leftForegroundData, 0, 0);
         this.saveCurrentCanvasState();
     }
 
     duplicateLeftForeground() {
         const leftForegroundData: ImageData = this.leftForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.rightForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.rightForegroundContext.putImageData(leftForegroundData, 0, 0);
         this.saveCurrentCanvasState();
     }
 
     duplicateRightForeground() {
         const rightForegroundData: ImageData = this.rightForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.leftForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.leftForegroundContext.putImageData(rightForegroundData, 0, 0);
         this.saveCurrentCanvasState();
     }
@@ -225,18 +221,13 @@ export class DrawService {
         if (this.isDragging) {
             if (this.currentAction === CanvasAction.Rectangle) {
                 this.drawRectangle();
-            } else {
-                this.drawLine(event);
-            }
-            this.isDragging = false;
-            if (this.currentAction === CanvasAction.Rectangle) {
                 this.copyCanvas(this.activeContext.canvas, canvasPosition);
                 this.resetActiveCanvas();
             } else {
+                this.drawLine(event);
                 this.saveCurrentCanvasState();
             }
-            // this.copyCanvas(this.activeContext.canvas, canvasPosition);
-            // this.resetActiveCanvas();
+            this.isDragging = false;
         }
     }
 
@@ -264,7 +255,6 @@ export class DrawService {
     }
 
     drawLine(event: MouseEvent) {
-        // this.activeContext.moveTo(event.offsetX, event.offsetY);
         this.activeContext.lineTo(event.offsetX, event.offsetY);
         this.activeContext.stroke();
     }
