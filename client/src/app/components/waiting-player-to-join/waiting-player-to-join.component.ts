@@ -23,11 +23,12 @@ export class WaitingForPlayerToJoinComponent implements OnInit {
     }
 
     refusePlayer(nameIndex: number) {
-        this.playerNames.splice(nameIndex, 1);
+        this.playerNames.filter((name, index) => index !== nameIndex);
         this.classicSystemService.refusePlayer(this.gameId, this.playerNames);
     }
 
-    // acceptPlayer(index: number) {
-    //     console.log('accept player');
-    // }
+    acceptPlayer(index: number) {
+        this.playerNames[index]
+        console.log('accept player');
+    }
 }

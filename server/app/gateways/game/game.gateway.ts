@@ -48,6 +48,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         }
     }
 
+    // @SubscribeMessage(GameEvents.JoinOneVsOneGame)
+    // joinOneVsOneGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: string) {
+    //     const room = this.classicModeService.getOneVsOneRoomByGameId(socket, playerName, gameId);
+    // }
+
     @SubscribeMessage(GameEvents.RemoveDiff)
     validateCoords(@ConnectedSocket() socket: Socket, @MessageBody() coords: Coordinate) {
         const roomId = Array.from(socket.rooms.values())[1];

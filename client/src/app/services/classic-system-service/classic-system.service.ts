@@ -119,6 +119,10 @@ export class ClassicSystemService implements OnDestroy {
         this.clientSocket.send(GameEvents.UpdateWaitingPlayerNameList, { gameId, playerName });
     }
 
+    acceptPlayer(gameId: string, playerNames: string[]): void {
+        this.clientSocket.send(GameEvents.AcceptPlayer, { gameId, playerNames });
+    }
+
     refusePlayer(gameId: string, playerNames: string[]): void {
         const currentNames = this.joinedPlayerNames.value;
         currentNames.set(gameId, playerNames);
@@ -164,6 +168,8 @@ export class ClassicSystemService implements OnDestroy {
             this.differencesFound.next(differencesData.differencesFound);
             this.checkStatus();
         });
+
+        
 
         this.clientSocket.on(GameEvents.TimerStarted, (timer: number) => {
             this.timer.next(timer);

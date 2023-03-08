@@ -86,7 +86,7 @@ describe('GameSheetComponent', () => {
         const popUpSpy = spyOn(component.dialog, 'open').and.returnValue({
             afterClosed: () => of('test'),
         } as MatDialogRef<PlayerNameDialogBoxComponent>);
-        component.openDialog();
+        component.openNameDialog();
         expect(popUpSpy).toHaveBeenCalled();
         expect(gameServicePlayerNameSpy).toHaveBeenCalledWith(component.game.name);
         expect(gameServicePlayerIdSpy).toHaveBeenCalledWith(component.game._id);
