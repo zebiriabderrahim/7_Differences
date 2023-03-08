@@ -61,11 +61,24 @@ export interface Differences {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 export enum GameEvents {
     ValidateCoords = 'validateCoords',
     Penalty = 'penalty',
     CheckStatus = 'checkStatus',
     CreateSoloGame = 'createSoloGame',
+    RoomOneVsOneCreated = 'roomOneVsOneCreated',
     EndGame = 'endGame',
     TimerStarted = 'timerStarted',
     RemoveDiff = 'removeDiff',
@@ -76,11 +89,20 @@ export enum GameEvents {
     DeleteCreatedOneVsOneRoom = 'DeleteCreatedOneVsOneRoom',
     UpdateWaitingPlayerNameList = 'UpdateWaitingPlayerNameList',
     WaitingPlayerNameListByGameId = 'WaitingPlayerNameListByGameId',
-    Disconnect = "Disconnect",
-    RefusePlayer = "RefusePlayer"
+    Disconnect = 'Disconnect',
+    RefusePlayer = 'RefusePlayer',
+    CheckIfPlayerNameIsAvailable = "CheckIfPlayerNameIsAvailable",
+    PlayerNameTaken = "PlayerNameTaken",
+    CancelJoining = "CancelJoining",
+    AcceptPlayer = "AcceptPlayer"
 }
 
 export enum GameModes {
     ClassicSolo = 'Classic->lSolo',
     ClassicOneVsOne = 'Classic->OneVsOne',
+}
+
+export enum GameCardActions {
+    Create = 'create',
+    Join = 'join',
 }

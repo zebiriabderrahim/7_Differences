@@ -14,3 +14,6 @@ export const GREEN_FLASH_TIME = 40;
 export const YELLOW_FLASH_TIME = 50;
 export const FLASH_WAIT_TIME = 500;
 export const SUBMIT_WAIT_TIME = 200;
+
+export const MAX_NAME_LENGTH = 10;
+export const MIN_NAME_LENGTH = 3;
