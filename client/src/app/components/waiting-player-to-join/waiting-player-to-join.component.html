@@ -1,12 +1,12 @@
-<div mat-dialog-actions>
-<h1> en attente d’un deuxième joueur ....</h1>
-<div *ngIf="playerNames">
-    <h2> Joueur(s) en attente : </h2>
-    <div *ngFor="let playerName of playerNames;let i = index">
-        <h1>joueur: {{ playerName }}</h1>
-        <button mat-button (click)="refusePlayer(i)">refuser</button>
-        <button mat-button >accepter</button>
+<div mat-dialog-actions >
+    <h1> en attente d’un deuxième joueur ....</h1>
+    <div *ngIf="playerNames">
+        <h2> Joueur(s) en attente : </h2>
+        <div *ngFor="let playerName of playerNames;let i = index">
+            <h1>joueur: {{ playerName }}</h1>
+            <button mat-button (click)="refusePlayer(playerName)">refuser</button>
+            <button mat-button (click)="acceptPlayer(playerName)">accepter</button>
+        </div>
     </div>
-</div>
-<button mat-button mat-dialog-close>Annuler</button>
+    <button mat-button mat-dialog-close (click)="undoCreateOneVsOne()">Annuler</button>
 </div>
