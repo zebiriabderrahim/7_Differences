@@ -1,6 +1,6 @@
 import { ClassicModeService } from '@app/services/classic-mode/classic-mode.service';
 import { Coordinate } from '@common/coordinate';
-import { GameEvents, GameModes, MessageEvents, ChatMessage } from '@common/game-interfaces';
+import { ChatMessage, GameEvents, GameModes, MessageEvents } from '@common/game-interfaces';
 import { Injectable, Logger } from '@nestjs/common';
 import {
     ConnectedSocket,
@@ -41,17 +41,26 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage(GameEvents.CreateOneVsOneGame)
     async createOneVsOneGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: string) {
         const room = await this.classicModeService.createRoom(socket, playerName, gameId);
+        console.log('room', room.roomId);
+        console.log('room', room.clientGame.id);
+        console.log(room.clientGame.mode);
         if (room) {
             room.clientGame.mode = GameModes.ClassicOneVsOne;
             this.classicModeService.saveRoom(room, socket);
             this.classicModeService.checkRoomOneVsOneAvailability(gameId, this.server);
+            this.server.to(room.roomId).emit(GameEvents.CreateSoloGame, room.clientGame);
         }
     }
 
-    // @SubscribeMessage(GameEvents.JoinOneVsOneGame)
-    // joinOneVsOneGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: string) {
-    //     const room = this.classicModeService.getOneVsOneRoomByGameId(socket, playerName, gameId);
-    // }
+    @SubscribeMessage(GameEvents.JoinOneVsOneGame)
+    joinOneVsOneGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: string) {
+        const room = this.classicModeService.getOneVsOneRoomByGameId(gameId);
+        if (room) {
+            this.classicModeService.saveRoom(room, socket);
+            this.classicModeService.checkRoomOneVsOneAvailability(gameId, this.server);
+            this.server.to(room.roomId).emit(GameEvents.JoinOneVsOneGame, room.clientGame);
+        }
+    }
 
     @SubscribeMessage(GameEvents.RemoveDiff)
     validateCoords(@ConnectedSocket() socket: Socket, @MessageBody() coords: Coordinate) {

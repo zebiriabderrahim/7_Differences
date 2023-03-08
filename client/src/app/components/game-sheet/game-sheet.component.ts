@@ -45,8 +45,8 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     playSolo() {
         this.openNameDialog()
             .afterClosed()
-            .subscribe((isNoClick: boolean) => {
-                if (isNoClick) {
+            .subscribe((playerName: string) => {
+                if (playerName) {
                     this.router.navigate(['/game']);
                 }
             });
@@ -62,9 +62,9 @@ export class GameSheetComponent implements OnDestroy, OnInit {
                         disableClose: true,
                     });
                     dialogRef.afterClosed().subscribe(() => {
-                        this.router.navigate(['/game']);
+                        this.router.navigate(['/game/host']);
                     });
-                    this.classicSystemService.createOneVsOneGame(playerName, this.game._id);
+                    // this.classicSystemService.createOneVsOneGame(playerName, this.game._id);
                 }
             });
     }
@@ -74,15 +74,15 @@ export class GameSheetComponent implements OnDestroy, OnInit {
             .afterClosed()
             .subscribe((player2Name: string) => {
                 if (player2Name) {
+                    this.classicSystemService.updateWaitingPlayerNameList(this.game._id, player2Name);
                     const dialogRef = this.dialog.open(WaitingHostToDecideComponent, {
                         data: { gameId: this.game._id },
                         disableClose: true,
                     });
                     dialogRef.afterClosed().subscribe(() => {
-                        // this.classicSystemService.joinOneVsOneRoom(this.game._id);
-                        this.router.navigate(['/game']);
+                        this.router.navigate(['/game/join']);
                     });
-                    this.classicSystemService.updateWaitingPlayerNameList(this.game._id, player2Name);
+                    // this.classicSystemService.joinOneVsOneGame(player2Name, this.game._id);
                 }
             });
     }

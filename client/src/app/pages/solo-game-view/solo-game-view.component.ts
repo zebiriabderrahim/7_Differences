@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
@@ -27,13 +28,26 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     private idSub: Subscription;
     private messageSub: Subscription;
     private isFirstTime = true;
-    constructor(private gameAreaService: GameAreaService, private classicService: ClassicSystemService) {}
+    constructor(private gameAreaService: GameAreaService, private classicService: ClassicSystemService, public router: Router) {}
 
     ngAfterViewInit(): void {
         this.classicService.manageSocket();
         this.playerNameSub = this.classicService.playerName$.subscribe((name) => {
             this.idSub = this.classicService.id$.subscribe((id) => {
-                this.classicService.createSoloGame(name, id);
+                switch (this.router.url) {
+                    case '/game': {
+                        this.classicService.createSoloGame(name, id);
+                        break;
+                    }
+                    case '/game/host': {
+                        this.classicService.createOneVsOneGame(name, id);
+                        break;
+                    }
+                    case '/game/join': {
+                        this.classicService.joinOneVsOneGame(name, name);
+                        break;
+                    }
+                }
             });
         });
         this.gameSub = this.classicService.getCurrentGame().subscribe((game) => {
