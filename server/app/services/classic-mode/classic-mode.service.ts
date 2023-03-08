@@ -62,7 +62,6 @@ export class ClassicModeService {
             room.differencesData.currentDifference = [];
         }
 
-        this.rooms.set(room.roomId, room);
         const diffData: Differences = {
             currentDifference: room.differencesData.currentDifference,
             differencesFound: room.differencesData.differencesFound,
@@ -107,6 +106,10 @@ export class ClassicModeService {
     }
 
     getOneVsOneRoomByGameId(gameId: string): ClassicPlayRoom {
+        console.log(Array.from(this.rooms.values())[0].roomId);
+        console.log(Array.from(this.rooms.values())[0].clientGame.id);
+        console.log(Array.from(this.rooms.values())[0].clientGame.mode);
+        console.log(Array.from(this.rooms.values())[0].clientGame.id == gameId);
         return Array.from(this.rooms.values()).find((room) => room.clientGame.id === gameId && room.clientGame.mode === GameModes.ClassicOneVsOne);
     }
 

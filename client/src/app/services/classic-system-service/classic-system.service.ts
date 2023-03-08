@@ -4,7 +4,7 @@ import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dial
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { Coordinate } from '@common/coordinate';
-import { ClientSideGame, Differences, GameEvents, MessageEvents, MessageTag, ChatMessage } from '@common/game-interfaces';
+import { ChatMessage, ClientSideGame, Differences, GameEvents, MessageEvents, MessageTag } from '@common/game-interfaces';
 import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 @Injectable({
     providedIn: 'root',
@@ -158,9 +158,19 @@ export class ClassicSystemService implements OnDestroy {
         this.clientSocket.send(MessageEvents.SendMessage, { tag: MessageTag.received, message: textMessage });
     }
 
+    joinOneVsOneGame(gameId: string, playerName: string): void {
+        this.clientSocket.send(GameEvents.JoinOneVsOneGame, { gameId, playerName });
+    }
+
     manageSocket(): void {
         this.clientSocket.connect();
         this.clientSocket.on(GameEvents.CreateSoloGame, (clientGame: ClientSideGame) => {
+            this.currentGame.next(clientGame);
+        });
+        this.clientSocket.on(GameEvents.CreateOneVsOneGame, (clientGame: ClientSideGame) => {
+            this.currentGame.next(clientGame);
+        });
+        this.clientSocket.on(GameEvents.JoinOneVsOneGame, (clientGame: ClientSideGame) => {
             this.currentGame.next(clientGame);
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (differencesData: Differences) => {
@@ -168,8 +178,6 @@ export class ClassicSystemService implements OnDestroy {
             this.differencesFound.next(differencesData.differencesFound);
             this.checkStatus();
         });
-
-        
 
         this.clientSocket.on(GameEvents.TimerStarted, (timer: number) => {
             this.timer.next(timer);
