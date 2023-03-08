@@ -3,7 +3,7 @@
 import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
 import { Coordinate } from '@common/coordinate';
-import { ClassicPlayRoom, ClientSideGame, Differences, GameEvents, GameModes } from '@common/game-interfaces';
+import { ClassicPlayRoom, ClientSideGame, Differences, GameEvents, GameModes, Player } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as io from 'socket.io';
@@ -18,7 +18,7 @@ export class ClassicModeService {
         this.joinedPlayerNamesByGameId = new Map<string, string[]>();
     }
 
-    async createRoom(socket: io.Socket, playerName: string, gameId: string): Promise<ClassicPlayRoom> {
+    async createRoom(playerName: string, gameId: string): Promise<ClassicPlayRoom> {
         const game = await this.gameService.getGameById(gameId);
         const diffData: Differences = {
             currentDifference: [],
@@ -152,9 +152,44 @@ export class ClassicModeService {
         return this.joinedPlayerNamesByGameId.get(gameId);
     }
 
-    refusePlayer(gameId: string, playerNamesList: string[], server: io.Server): void {
-        this.joinedPlayerNamesByGameId.set(gameId, playerNamesList);
+    refusePlayer(gameId: string, playerName: string, server: io.Server): void {
+        this.cancelJoining(gameId, playerName, server);
+    }
+    acceptPlayer(gameId: string, playerName: string, socket: io.Socket): void {
         const roomTarget = this.getOneVsOneRoomByGameId(gameId);
-        server.to(roomTarget.roomId).emit(GameEvents.UpdateWaitingPlayerNameList, { gameId, playerNamesList });
+        if (roomTarget) {
+            const playerTwo: Player = {
+                name: playerName,
+                diffData: {
+                    currentDifference: [],
+                    differencesFound: 0,
+                },
+            };
+            roomTarget.player2 = playerTwo;
+            this.rooms.set(roomTarget.roomId, roomTarget);
+            socket.join(roomTarget.roomId);
+        }
+    }
+
+    checkIfPlayerNameIsAvailable(gameId: string, playerNames: string, server: io.Server): void {
+        const joinedPlayerNames = this.joinedPlayerNamesByGameId.get(gameId);
+        if (joinedPlayerNames) {
+            const isNameAvailable = !joinedPlayerNames.includes(playerNames);
+            server.emit(GameEvents.PlayerNameTaken, { gameId, isNameAvailable });
+        } else {
+            server.emit(GameEvents.PlayerNameTaken, { gameId, isNameAvailable: true });
+        }
+    }
+
+    cancelJoining(gameId: string, playerName: string, server: io.Server): void {
+        const playerNames = this.joinedPlayerNamesByGameId.get(gameId);
+        if (playerNames) {
+            const index = playerNames.indexOf(playerName);
+            if (index !== -1) {
+                playerNames.splice(index, 1);
+            }
+            this.joinedPlayerNamesByGameId.set(gameId, playerNames);
+            server.emit(GameEvents.UpdateWaitingPlayerNameList, { gameId, playerNamesList: playerNames });
+        }
     }
 }
