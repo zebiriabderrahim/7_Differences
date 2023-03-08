@@ -44,7 +44,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
                         break;
                     }
                     case '/game/join': {
-                        this.classicService.joinOneVsOneGame(name, name);
+                        this.classicService.joinOneVsOneGame(name, id);
                         break;
                     }
                 }
