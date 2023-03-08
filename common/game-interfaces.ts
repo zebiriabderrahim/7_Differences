@@ -75,6 +75,8 @@ export enum GameEvents {
     WaitingPlayerNameListByGameId = 'WaitingPlayerNameListByGameId',
     Disconnect = "Disconnect",
     RefusePlayer = "RefusePlayer",
+    AcceptPlayer= "AcceptPlayer",
+    JoinOneVsOneGame = "JoinOneVsOneGame",
 }
 
 export enum GameModes {

@@ -3,6 +3,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
+import { WaitingHostToDecideComponent } from '@app/components/waiting-host-to-decide/waiting-host-to-decide.component';
 import { WaitingForPlayerToJoinComponent } from '@app/components/waiting-player-to-join/waiting-player-to-join.component';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
@@ -30,7 +31,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         this.classicSystemService.checkIfOneVsOneIsAvailable(this.game._id);
     }
 
-    openDialog() {
+    openNameDialog() {
         const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent, { disableClose: true });
         dialogRef.afterClosed().subscribe((playerName) => {
             if (playerName) {
@@ -42,7 +43,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     }
 
     playSolo() {
-        this.openDialog()
+        this.openNameDialog()
             .afterClosed()
             .subscribe((isNoClick: boolean) => {
                 if (isNoClick) {
@@ -52,7 +53,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     }
 
     createOneVsOne() {
-        this.openDialog()
+        this.openNameDialog()
             .afterClosed()
             .subscribe((playerName: string) => {
                 if (playerName) {
@@ -61,8 +62,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
                         disableClose: true,
                     });
                     dialogRef.afterClosed().subscribe(() => {
-                        this.classicSystemService.deleteCreatedOneVsOneRoom(this.game._id);
-                        this.router.navigate(['/selection']);
+                        this.router.navigate(['/game']);
                     });
                     this.classicSystemService.createOneVsOneGame(playerName, this.game._id);
                 }
@@ -70,10 +70,18 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     }
 
     joinOneVsOne() {
-        this.openDialog()
+        this.openNameDialog()
             .afterClosed()
             .subscribe((player2Name: string) => {
                 if (player2Name) {
+                    const dialogRef = this.dialog.open(WaitingHostToDecideComponent, {
+                        data: { gameId: this.game._id },
+                        disableClose: true,
+                    });
+                    dialogRef.afterClosed().subscribe(() => {
+                        // this.classicSystemService.joinOneVsOneRoom(this.game._id);
+                        this.router.navigate(['/game']);
+                    });
                     this.classicSystemService.updateWaitingPlayerNameList(this.game._id, player2Name);
                 }
             });
