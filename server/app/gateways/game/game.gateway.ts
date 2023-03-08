@@ -30,7 +30,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     @SubscribeMessage(GameEvents.CreateSoloGame)
     async createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: string) {
-        const room = await this.classicModeService.createRoom(socket, playerName, gameId);
+        const room = await this.classicModeService.createRoom(playerName, gameId);
         if (room) {
             room.clientGame.mode = GameModes.ClassicSolo;
             this.classicModeService.saveRoom(room, socket);
@@ -40,11 +40,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     @SubscribeMessage(GameEvents.CreateOneVsOneGame)
     async createOneVsOneGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: string) {
-        const room = await this.classicModeService.createRoom(socket, playerName, gameId);
+        const room = await this.classicModeService.createRoom(playerName, gameId);
         if (room) {
             room.clientGame.mode = GameModes.ClassicOneVsOne;
             this.classicModeService.saveRoom(room, socket);
             this.classicModeService.checkRoomOneVsOneAvailability(gameId, this.server);
+            this.server.to(room.roomId).emit(GameEvents.RoomOneVsOneCreated, room.roomId);
         }
     }
 
@@ -86,17 +87,23 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         this.classicModeService.updateWaitingPlayerNameList(data.gameId, data.playerName, this.server);
     }
 
-    @SubscribeMessage(GameEvents.WaitingPlayerNameListByGameId)
-    waitingPlayerNameListByGameId(@MessageBody() gameId: string) {
-        const player2NamesList = this.classicModeService.getWaitingPlayerNameList(gameId);
-        if (player2NamesList) {
-            this.server.emit(GameEvents.UpdateWaitingPlayerNameList, { gameId, player2NamesList });
-        }
+    @SubscribeMessage(GameEvents.RefusePlayer)
+    refusePlayer(@MessageBody() data: { gameId: string; playerName: string }) {
+        this.classicModeService.refusePlayer(data.gameId, data.playerName, this.server);
+    }
+    @SubscribeMessage(GameEvents.AcceptPlayer)
+    acceptPlayer(@ConnectedSocket() socket: Socket, @MessageBody() data: { gameId: string; playerName: string }) {
+        this.classicModeService.acceptPlayer(data.gameId, data.playerName, socket);
     }
 
-    @SubscribeMessage(GameEvents.RefusePlayer)
-    refusePlayer(@MessageBody() data: { gameId: string; playerNames: string[] }) {
-        this.classicModeService.refusePlayer(data.gameId, data.playerNames, this.server);
+    @SubscribeMessage(GameEvents.CheckIfPlayerNameIsAvailable)
+    checkIfPlayerNameIsAvailable(@MessageBody() data: { gameId: string; playerName: string }) {
+        this.classicModeService.checkIfPlayerNameIsAvailable(data.gameId, data.playerName, this.server);
+    }
+
+    @SubscribeMessage(GameEvents.CancelJoining)
+    cancelJoining(@MessageBody() data: { gameId: string; playerName: string }) {
+        this.classicModeService.cancelJoining(data.gameId, data.playerName, this.server);
     }
 
     afterInit() {
