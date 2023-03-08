@@ -6,6 +6,7 @@ import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog
 import { WaitingForPlayerToJoinComponent } from '@app/components/waiting-player-to-join/waiting-player-to-join.component';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameCard } from '@common/game-interfaces';
+import { JoinedPlayerDialogComponent } from '@app/components/joined-player-dialog/joined-player-dialog.component';
 @Component({
     selector: 'app-game-sheet',
     templateUrl: './game-sheet.component.html',
@@ -13,7 +14,7 @@ import { GameCard } from '@common/game-interfaces';
 })
 export class GameSheetComponent implements OnDestroy, OnInit {
     @Input() game: GameCard;
-    constructor(public dialog: MatDialog, public router: Router, private classicSystemService: ClassicSystemService) {
+    constructor(public dialog: MatDialog, public router: Router, private readonly classicSystemService: ClassicSystemService) {
         this.classicSystemService.manageSocket();
     }
     ngOnInit(): void {
@@ -21,7 +22,10 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     }
 
     openDialog() {
-        const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent, { disableClose: true });
+        const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent, {
+            data: { gameId: this.game._id },
+            disableClose: true,
+        });
         dialogRef.afterClosed().subscribe((playerName) => {
             if (playerName) {
                 this.classicSystemService['playerName'].next(playerName);
@@ -44,15 +48,11 @@ export class GameSheetComponent implements OnDestroy, OnInit {
             .afterClosed()
             .subscribe((playerName: string) => {
                 if (playerName) {
-                    const dialogRef = this.dialog.open(WaitingForPlayerToJoinComponent, {
-                        data: { gameId: this.game._id },
+                    this.classicSystemService.createOneVsOneGame(playerName, this.game._id);
+                    this.dialog.open(WaitingForPlayerToJoinComponent, {
+                        data: { gameId: this.game._id, player: playerName },
                         disableClose: true,
                     });
-                    dialogRef.afterClosed().subscribe(() => {
-                        this.classicSystemService.deleteCreatedOneVsOneRoom(this.game._id);
-                        this.router.navigate(['/selection']);
-                    });
-                    this.classicSystemService.createOneVsOneGame(playerName, this.game._id);
                 }
             });
     }
@@ -63,6 +63,10 @@ export class GameSheetComponent implements OnDestroy, OnInit {
             .subscribe((player2Name: string) => {
                 if (player2Name) {
                     this.classicSystemService.updateWaitingPlayerNameList(this.game._id, player2Name);
+                    this.dialog.open(JoinedPlayerDialogComponent, {
+                        data: { gameId: this.game._id, player: player2Name },
+                        disableClose: true,
+                    });
                 }
             });
     }
