@@ -19,7 +19,9 @@ export class ClassicSystemService implements OnDestroy {
     private idSubscription: Subscription;
     private playerNameSubscription: Subscription;
     private oneVsOneRoomsAvailability: Map<string, boolean>;
-    private joinedPlayerNames: BehaviorSubject<Map<string, string[]>>;
+    private joinedPlayerNames: Subject<{ gameId: string; playerNamesList: string[] }>;
+    private isPlayerNameTaken: Subject<{ gameId: string; isNameAvailable: boolean }>;
+    private roomId: BehaviorSubject<string>;
 
     constructor(private clientSocket: ClientSocketService, private gameAreaService: GameAreaService, private readonly matDialog: MatDialog) {
         this.currentGame = new Subject<ClientSideGame>();
@@ -28,7 +30,9 @@ export class ClassicSystemService implements OnDestroy {
         this.playerName = new BehaviorSubject<string>('');
         this.id = new BehaviorSubject<string>('');
         this.oneVsOneRoomsAvailability = new Map<string, boolean>();
-        this.joinedPlayerNames = new BehaviorSubject<Map<string, string[]>>(new Map<string, string[]>());
+        this.joinedPlayerNames = new Subject<{ gameId: string; playerNamesList: string[] }>();
+        this.isPlayerNameTaken = new Subject<{ gameId: string; isNameAvailable: boolean }>();
+        this.roomId = new BehaviorSubject<string>('');
     }
     get playerName$() {
         return this.playerName.asObservable();
@@ -48,6 +52,10 @@ export class ClassicSystemService implements OnDestroy {
 
     get joinedPlayerNamesByGameId$() {
         return this.joinedPlayerNames.asObservable();
+    }
+
+    get isNameTaken$() {
+        return this.isPlayerNameTaken.asObservable();
     }
 
     ngOnDestroy(): void {
@@ -113,10 +121,15 @@ export class ClassicSystemService implements OnDestroy {
         this.clientSocket.send(GameEvents.UpdateWaitingPlayerNameList, { gameId, playerName });
     }
 
-    refusePlayer(gameId: string, playerNames: string[]): void {
-        const currentNames = this.joinedPlayerNames.value;
-        currentNames.set(gameId, playerNames);
-        this.clientSocket.send(GameEvents.RefusePlayer, { gameId, playerNames });
+    isPlayerNameIsAlreadyTaken(gameId: string, playerName: string): void {
+        this.clientSocket.send(GameEvents.CheckIfPlayerNameIsAvailable, { gameId, playerName });
+    }
+
+    refusePlayer(gameId: string, playerName: string): void {
+        this.clientSocket.send(GameEvents.RefusePlayer, { gameId, playerName });
+    }
+    acceptPlayer(gameId: string, playerName: string) {
+        this.clientSocket.send(GameEvents.AcceptPlayer, { gameId, playerName });
     }
 
     isRoomAvailable(gameId: string): boolean | undefined {
@@ -135,8 +148,8 @@ export class ClassicSystemService implements OnDestroy {
         this.clientSocket.send(GameEvents.DeleteCreatedOneVsOneRoom, gameId);
     }
 
-    getUpdatedJoinedPlayerNamesByGameId(gameId: string) {
-        this.clientSocket.send(GameEvents.WaitingPlayerNameListByGameId, gameId);
+    cancelJoining(gameId: string, playerName: string): void {
+        this.clientSocket.send(GameEvents.CancelJoining, { gameId, playerName });
     }
 
     disconnect(): void {
@@ -172,7 +185,15 @@ export class ClassicSystemService implements OnDestroy {
         });
 
         this.clientSocket.on(GameEvents.UpdateWaitingPlayerNameList, (data: { gameId: string; playerNamesList: string[] }) => {
-            this.joinedPlayerNames.next(new Map<string, string[]>([[data.gameId, data.playerNamesList]]));
+            this.joinedPlayerNames.next(data);
+        });
+
+        this.clientSocket.on(GameEvents.PlayerNameTaken, (data: { gameId: string; isNameAvailable: boolean }) => {
+            this.isPlayerNameTaken.next(data);
+        });
+
+        this.clientSocket.on(GameEvents.RoomOneVsOneCreated, (roomId: string) => {
+            this.roomId.next(roomId);
         });
     }
 }
