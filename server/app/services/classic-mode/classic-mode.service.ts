@@ -82,6 +82,7 @@ export class ClassicModeService {
         };
         return clientGame;
     }
+
     deleteCreatedSoloGameRoom(roomId: string): void {
         this.rooms.delete(roomId);
     }
@@ -106,10 +107,6 @@ export class ClassicModeService {
     }
 
     getOneVsOneRoomByGameId(gameId: string): ClassicPlayRoom {
-        console.log(Array.from(this.rooms.values())[0].roomId);
-        console.log(Array.from(this.rooms.values())[0].clientGame.id);
-        console.log(Array.from(this.rooms.values())[0].clientGame.mode);
-        console.log(Array.from(this.rooms.values())[0].clientGame.id == gameId);
         return Array.from(this.rooms.values()).find((room) => room.clientGame.id === gameId && room.clientGame.mode === GameModes.ClassicOneVsOne);
     }
 

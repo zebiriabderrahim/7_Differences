@@ -41,9 +41,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage(GameEvents.CreateOneVsOneGame)
     async createOneVsOneGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: string) {
         const room = await this.classicModeService.createRoom(socket, playerName, gameId);
-        console.log('room', room.roomId);
-        console.log('room', room.clientGame.id);
-        console.log(room.clientGame.mode);
         if (room) {
             room.clientGame.mode = GameModes.ClassicOneVsOne;
             this.classicModeService.saveRoom(room, socket);

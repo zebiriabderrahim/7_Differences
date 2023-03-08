@@ -64,7 +64,6 @@ export class GameSheetComponent implements OnDestroy, OnInit {
                     dialogRef.afterClosed().subscribe(() => {
                         this.router.navigate(['/game/host']);
                     });
-                    // this.classicSystemService.createOneVsOneGame(playerName, this.game._id);
                 }
             });
     }
@@ -82,7 +81,6 @@ export class GameSheetComponent implements OnDestroy, OnInit {
                     dialogRef.afterClosed().subscribe(() => {
                         this.router.navigate(['/game/join']);
                     });
-                    // this.classicSystemService.joinOneVsOneGame(player2Name, this.game._id);
                 }
             });
     }

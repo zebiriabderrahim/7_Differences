@@ -107,6 +107,7 @@ export class ClassicSystemService implements OnDestroy {
     getDifferencesFound(): Subject<number> {
         return this.differencesFound;
     }
+
     setIsLeftCanvas(isLeft: boolean): void {
         this.isLeftCanvas = isLeft;
     }
