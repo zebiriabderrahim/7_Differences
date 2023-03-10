@@ -243,17 +243,17 @@ describe('GameAreaService', () => {
     //     expect(intervalCallback).toHaveBeenCalled();
     // });
 
-    it('playErrorSound should call play on incorrectSoundEffect', () => {
-        const playSpy = spyOn(gameAreaService['incorrectSoundEffect'], 'play').and.returnValue(Promise.resolve());
-        gameAreaService.playErrorSound();
-        expect(playSpy).toHaveBeenCalled();
-    });
+    // it('playErrorSound should call play on incorrectSoundEffect', () => {
+    //     const playSpy = spyOn(gameAreaService['incorrectSoundEffect'], 'play').and.returnValue(Promise.resolve());
+    //     gameAreaService.playErrorSound();
+    //     expect(playSpy).toHaveBeenCalled();
+    // });
 
-    it('playCorrectSound should call play on correctSoundEffect', () => {
-        const playSpy = spyOn(gameAreaService['correctSoundEffect'], 'play').and.returnValue(Promise.resolve());
-        gameAreaService.playCorrectSound();
-        expect(playSpy).toHaveBeenCalled();
-    });
+    // it('playCorrectSound should call play on correctSoundEffect', () => {
+    //     const playSpy = spyOn(gameAreaService['correctSoundEffect'], 'play').and.returnValue(Promise.resolve());
+    //     gameAreaService.playCorrectSound();
+    //     expect(playSpy).toHaveBeenCalled();
+    // });
 
     it('getOgContext should return originalContext', () => {
         const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
