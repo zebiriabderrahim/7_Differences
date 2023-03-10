@@ -14,3 +14,8 @@ export const GREEN_FLASH_TIME = 40;
 export const YELLOW_FLASH_TIME = 50;
 export const FLASH_WAIT_TIME = 500;
 export const SUBMIT_WAIT_TIME = 200;
+
+export const RGBA_SIZE = 4;
+export const MAX_PIXEL_INTENSITY = 255;
+export const STRONG_PIXEL_INTENSITY = 244;
+export const MIN_PIXEL_INTENSITY = 0;

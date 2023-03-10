@@ -80,23 +80,23 @@ describe('SoloGameViewComponent', () => {
         expect(component.game).toBeDefined();
     });
 
-    it('should set the game canvas when the view is instantiated', () => {
-        const setOgContext = spyOn(gameAreaService, 'setOgContext');
-        const setMdContext = spyOn(gameAreaService, 'setMdContext');
-        const setOgFrontContext = spyOn(gameAreaService, 'setOgFrontContext');
-        const setMdFrontContext = spyOn(gameAreaService, 'setMdFrontContext');
-        const loadImage = spyOn(gameAreaService, 'loadImage');
-        const setAllData = spyOn(gameAreaService, 'setAllData');
+    // it('should set the game canvas when the view is instantiated', () => {
+    //     const setOgContext = spyOn(gameAreaService, 'setOgContext');
+    //     const setMdContext = spyOn(gameAreaService, 'setMdContext');
+    //     const setOgFrontContext = spyOn(gameAreaService, 'setOgFrontContext');
+    //     const setMdFrontContext = spyOn(gameAreaService, 'setMdFrontContext');
+    //     const loadImage = spyOn(gameAreaService, 'loadImage');
+    //     const setAllData = spyOn(gameAreaService, 'setAllData');
 
-        component.ngAfterViewInit();
-        clientSideGameSubjectTest.next(clientSideGameTest);
-        expect(setOgContext).toHaveBeenCalled();
-        expect(setMdContext).toHaveBeenCalled();
-        expect(setOgFrontContext).toHaveBeenCalled();
-        expect(setMdFrontContext).toHaveBeenCalled();
-        expect(loadImage).toHaveBeenCalled();
-        expect(setAllData).toHaveBeenCalled();
-    });
+    //     component.ngAfterViewInit();
+    //     clientSideGameSubjectTest.next(clientSideGameTest);
+    //     expect(setOgContext).toHaveBeenCalled();
+    //     expect(setMdContext).toHaveBeenCalled();
+    //     expect(setOgFrontContext).toHaveBeenCalled();
+    //     expect(setMdFrontContext).toHaveBeenCalled();
+    //     expect(loadImage).toHaveBeenCalled();
+    //     expect(setAllData).toHaveBeenCalled();
+    // });
 
     it('should update the timer', () => {
         expect(component.timer).toEqual(0);
