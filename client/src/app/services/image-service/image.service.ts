@@ -25,6 +25,14 @@ export class ImageService {
         this.rightBackground = '';
     }
 
+    loadImage(context: CanvasRenderingContext2D, path: string) {
+        const image = new Image();
+        image.onload = async () => {
+            context.drawImage(await createImageBitmap(image), 0, 0);
+        };
+        image.src = path;
+    }
+
     areImagesSet(): boolean {
         return this.leftBackground !== '' && this.rightBackground !== '';
     }

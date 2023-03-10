@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@ang
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { ImageService } from '@app/services/image-service/image.service';
 import { ClientSideGame } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
@@ -25,7 +26,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     private playerNameSub: Subscription;
     private idSub: Subscription;
     private isFirstTime = true;
-    constructor(private gameAreaService: GameAreaService, private classicService: ClassicSystemService) {}
+    constructor(private gameAreaService: GameAreaService, private classicService: ClassicSystemService, private imageService: ImageService) {}
 
     ngAfterViewInit(): void {
         this.classicService.manageSocket();
@@ -57,8 +58,8 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
                         willReadFrequently: true,
                     }) as CanvasRenderingContext2D,
                 );
-                this.gameAreaService.loadImage(this.gameAreaService.getOgContext(), this.game.original);
-                this.gameAreaService.loadImage(this.gameAreaService.getMdContext(), this.game.modified);
+                this.imageService.loadImage(this.gameAreaService.getOgContext(), this.game.original);
+                this.imageService.loadImage(this.gameAreaService.getMdContext(), this.game.modified);
                 this.gameAreaService.setAllData();
                 this.isFirstTime = false;
             }
