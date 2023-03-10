@@ -32,21 +32,11 @@ export class GameAreaService {
     }
 
     detectLeftClick(event: MouseEvent): boolean {
-        if (event.button === LEFT_BUTTON && !this.clickDisabled) {
-            this.saveCoord(event);
-            return true;
-        } else {
-            return false;
-        }
+        return event.button === LEFT_BUTTON && !this.clickDisabled ? (this.saveCoord(event), true) : false;
     }
 
     showError(isMainCanvas: boolean): void {
-        let frontContext: CanvasRenderingContext2D;
-        if (isMainCanvas) {
-            frontContext = this.originalContextFrontLayer;
-        } else {
-            frontContext = this.modifiedContextFrontLayer;
-        }
+        const frontContext: CanvasRenderingContext2D = isMainCanvas ? this.originalContextFrontLayer : this.modifiedContextFrontLayer;
         frontContext.fillStyle = 'red';
         this.clickDisabled = true;
         frontContext.font = 'bold 30px sheriff';
