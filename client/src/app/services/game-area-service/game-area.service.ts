@@ -1,5 +1,16 @@
 import { HostListener, Injectable } from '@angular/core';
-import { FLASH_WAIT_TIME, GREEN_FLASH_TIME, LEFT_BUTTON, ONE_SECOND, X_CENTERING_DISTANCE, YELLOW_FLASH_TIME } from '@app/constants/constants';
+import {
+    FLASH_WAIT_TIME,
+    GREEN_FLASH_TIME,
+    LEFT_BUTTON,
+    MAX_PIXEL_INTENSITY,
+    MIN_PIXEL_INTENSITY,
+    ONE_SECOND,
+    RGBA_SIZE,
+    STRONG_PIXEL_INTENSITY,
+    X_CENTERING_DISTANCE,
+    YELLOW_FLASH_TIME,
+} from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { N_PIXEL_ATTRIBUTE } from '@app/constants/pixels';
 import { Coordinate } from '@common/coordinate';
@@ -99,30 +110,19 @@ export class GameAreaService {
         const firstInterval = setInterval(() => {
             const secondInterval = setInterval(() => {
                 for (const index of imageDataIndexes) {
-                    this.modifiedFrontPixelData.data[index] = 0;
-                    this.modifiedFrontPixelData.data[index + 1] = 255;
-                    this.modifiedFrontPixelData.data[index + 2] = 0;
-                    this.modifiedFrontPixelData.data[index + 3] = 255;
-
-                    this.originalFrontPixelData.data[index] = 0;
-                    this.originalFrontPixelData.data[index + 1] = 255;
-                    this.originalFrontPixelData.data[index + 2] = 0;
-                    this.originalFrontPixelData.data[index + 3] = 255;
+                    for (let i = 0; i < RGBA_SIZE; i++) {
+                        this.modifiedFrontPixelData.data[index + i] = i === 1 || i === 3 ? MAX_PIXEL_INTENSITY : MIN_PIXEL_INTENSITY;
+                        this.originalFrontPixelData.data[index + i] = i === 1 || i === 3 ? MAX_PIXEL_INTENSITY : MIN_PIXEL_INTENSITY;
+                    }
                 }
                 this.modifiedContextFrontLayer.putImageData(this.modifiedFrontPixelData, 0, 0);
                 this.originalContextFrontLayer.putImageData(this.originalFrontPixelData, 0, 0);
             }, GREEN_FLASH_TIME);
 
+            const color = [MAX_PIXEL_INTENSITY, STRONG_PIXEL_INTENSITY, 0, MAX_PIXEL_INTENSITY];
             for (const index of imageDataIndexes) {
-                this.modifiedFrontPixelData.data[index] = 255;
-                this.modifiedFrontPixelData.data[index + 1] = 244;
-                this.modifiedFrontPixelData.data[index + 2] = 0;
-                this.modifiedFrontPixelData.data[index + 3] = 255;
-
-                this.originalFrontPixelData.data[index] = 255;
-                this.originalFrontPixelData.data[index + 1] = 244;
-                this.originalFrontPixelData.data[index + 2] = 0;
-                this.originalFrontPixelData.data[index + 3] = 255;
+                this.modifiedFrontPixelData.data.set(color, index);
+                this.originalFrontPixelData.data.set(color, index);
             }
             this.modifiedContextFrontLayer.putImageData(this.modifiedFrontPixelData, 0, 0);
             this.originalContextFrontLayer.putImageData(this.originalFrontPixelData, 0, 0);
