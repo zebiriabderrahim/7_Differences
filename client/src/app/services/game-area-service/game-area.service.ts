@@ -18,23 +18,8 @@ export class GameAreaService {
     private modifiedContextFrontLayer: CanvasRenderingContext2D;
     private mousePosition: Coordinate = { x: 0, y: 0 };
     private clickDisabled: boolean = false;
-    private correctSoundEffect: HTMLAudioElement;
-    private incorrectSoundEffect: HTMLAudioElement;
-
-    constructor() {
-        this.correctSoundEffect = new Audio('assets/sound/WinSoundEffect.mp3');
-        this.incorrectSoundEffect = new Audio('assets/sound/ErrorSoundEffect.mp3');
-    }
 
     @HostListener('keydown', ['$event'])
-    loadImage(context: CanvasRenderingContext2D, path: string) {
-        const image = new Image();
-        image.onload = async () => {
-            context.drawImage(await createImageBitmap(image), 0, 0);
-        };
-        image.src = path;
-    }
-
     setAllData(): void {
         this.originalPixelData = this.originalContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.modifiedPixelData = this.modifiedContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
@@ -62,7 +47,6 @@ export class GameAreaService {
         } else {
             frontContext = this.modifiedContextFrontLayer;
         }
-        this.playErrorSound();
         frontContext.fillStyle = 'red';
         this.clickDisabled = true;
         frontContext.font = 'bold 30px sheriff';
@@ -94,7 +78,6 @@ export class GameAreaService {
     }
 
     flashCorrectPixels(differenceCoord: Coordinate[]): void {
-        this.playCorrectSound();
         const imageDataIndexes = this.convert2DCoordToPixelIndex(differenceCoord);
         const firstInterval = setInterval(() => {
             const secondInterval = setInterval(() => {
@@ -143,13 +126,6 @@ export class GameAreaService {
         }, FLASH_WAIT_TIME);
     }
 
-    playErrorSound(): void {
-        this.incorrectSoundEffect.play();
-    }
-
-    playCorrectSound(): void {
-        this.correctSoundEffect.play();
-    }
     getOgContext(): CanvasRenderingContext2D {
         return this.originalContext;
     }
