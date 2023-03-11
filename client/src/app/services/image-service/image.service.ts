@@ -23,43 +23,53 @@ export class ImageService {
     resetBackground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
-                this.resetLeftBackground();
+                this.resetBackgroundContext(this.leftBackgroundContext);
                 break;
             case CanvasPosition.Right:
-                this.resetRightBackground();
+                this.resetBackgroundContext(this.rightBackgroundContext);
                 break;
             case CanvasPosition.Both:
-                this.resetBothBackgrounds();
+                this.resetBackgroundContext(this.leftBackgroundContext);
+                this.resetBackgroundContext(this.rightBackgroundContext);
                 break;
         }
     }
 
-    resetLeftBackground() {
-        this.leftBackgroundContext.fillStyle = BACKGROUND_COLOR;
-        this.leftBackgroundContext.fillRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    resetBackgroundContext(backgroundContext: CanvasRenderingContext2D) {
+        backgroundContext.fillStyle = BACKGROUND_COLOR;
+        backgroundContext.fillRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
     }
 
-    resetRightBackground() {
-        this.rightBackgroundContext.fillStyle = BACKGROUND_COLOR;
-        this.rightBackgroundContext.fillRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-    }
+    // resetLeftBackground() {
+    //     this.leftBackgroundContext.fillStyle = BACKGROUND_COLOR;
+    //     this.leftBackgroundContext.fillRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    // }
 
-    resetBothBackgrounds() {
-        this.resetLeftBackground();
-        this.resetRightBackground();
-    }
+    // resetRightBackground() {
+    //     this.rightBackgroundContext.fillStyle = BACKGROUND_COLOR;
+    //     this.rightBackgroundContext.fillRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    // }
+
+    // resetBothBackgrounds() {
+    //     this.resetLeftBackground();
+    //     this.resetRightBackground();
+    // }
 
     setBackground(canvasPosition: CanvasPosition, image: ImageBitmap) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
-                this.setLeftBackground(image);
+                // this.setLeftBackground(image);
+                this.setBackgroundImage(image, this.leftBackgroundContext);
                 break;
             case CanvasPosition.Right:
-                this.setRightBackground(image);
+                // this.setRightBackground(image);
+                this.setBackgroundImage(image, this.rightBackgroundContext);
                 break;
             case CanvasPosition.Both:
-                this.setLeftBackground(image);
-                this.setRightBackground(image);
+                this.setBackgroundImage(image, this.leftBackgroundContext);
+                this.setBackgroundImage(image, this.rightBackgroundContext);
+                // this.setLeftBackground(image);
+                // this.setRightBackground(image);
                 break;
         }
     }
@@ -68,25 +78,32 @@ export class ImageService {
         this.combinedContext = context;
     }
 
-    setLeftBackground(imageToDraw: ImageBitmap) {
-        this.leftBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    setBackgroundImage(imageToDraw: ImageBitmap, backgroundContext: CanvasRenderingContext2D) {
+        backgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.leftBackgroundContext.drawImage(imageToDraw, 0, 0);
     }
 
-    setRightBackground(imageToDraw: ImageBitmap) {
-        this.rightBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.rightBackgroundContext.drawImage(imageToDraw, 0, 0);
-    }
+    // setLeftBackground(imageToDraw: ImageBitmap) {
+    //     this.leftBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    //     this.leftBackgroundContext.drawImage(imageToDraw, 0, 0);
+    // }
+
+    // setRightBackground(imageToDraw: ImageBitmap) {
+    //     this.rightBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    //     this.rightBackgroundContext.drawImage(imageToDraw, 0, 0);
+    // }
 
     setBackgroundContext(canvasPosition: CanvasPosition, context: CanvasRenderingContext2D) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
                 this.leftBackgroundContext = context;
-                this.resetLeftBackground();
+                this.resetBackgroundContext(this.leftBackgroundContext);
+                // this.resetLeftBackground();
                 break;
             case CanvasPosition.Right:
                 this.rightBackgroundContext = context;
-                this.resetRightBackground();
+                this.resetBackgroundContext(this.rightBackgroundContext);
+                // this.resetRightBackground();
                 break;
         }
     }
@@ -116,23 +133,32 @@ export class ImageService {
         return imageData;
     }
 
-    getLeftPixels(leftForegroundCanvas: HTMLCanvasElement): Pixel[] {
-        const combinedLeftCanvasData: Uint8ClampedArray = this.combineCanvas(this.leftBackgroundContext.canvas, leftForegroundCanvas);
-        this.leftImage = this.combinedContext.canvas.toDataURL();
-        return this.transformImageDataToPixelArray(combinedLeftCanvasData);
-    }
+    // getLeftPixels(leftForegroundCanvas: HTMLCanvasElement): Pixel[] {
+    //     const combinedLeftCanvasData: Uint8ClampedArray = this.combineCanvas(this.leftBackgroundContext.canvas, leftForegroundCanvas);
+    //     this.leftImage = this.combinedContext.canvas.toDataURL();
+    //     return this.transformImageDataToPixelArray(combinedLeftCanvasData);
+    // }
 
-    getRightPixels(rightForegroundCanvas: HTMLCanvasElement): Pixel[] {
-        const combinedLeftCanvasData: Uint8ClampedArray = this.combineCanvas(this.rightBackgroundContext.canvas, rightForegroundCanvas);
-        this.rightImage = this.combinedContext.canvas.toDataURL();
-        return this.transformImageDataToPixelArray(combinedLeftCanvasData);
+    // getRightPixels(rightForegroundCanvas: HTMLCanvasElement): Pixel[] {
+    //     const combinedLeftCanvasData: Uint8ClampedArray = this.combineCanvas(this.rightBackgroundContext.canvas, rightForegroundCanvas);
+    //     this.rightImage = this.combinedContext.canvas.toDataURL();
+    //     return this.transformImageDataToPixelArray(combinedLeftCanvasData);
+    // }
+
+    getPixels(foregroundCanvas: HTMLCanvasElement, backgroundCanvas: HTMLCanvasElement): Pixel[] {
+        const combinedCanvasData: Uint8ClampedArray = this.combineCanvas(backgroundCanvas, foregroundCanvas);
+        return this.transformImageDataToPixelArray(combinedCanvasData);
     }
 
     getGamePixels(): GamePixels {
         const foregroundCanvasElements: ForegroundCanvasElements = this.drawService.getForegroundCanvasElements();
+        const leftPixels: Pixel[] = this.getPixels(foregroundCanvasElements.left, this.leftBackgroundContext.canvas);
+        this.leftImage = this.combinedContext.canvas.toDataURL();
+        const rightPixels: Pixel[] = this.getPixels(foregroundCanvasElements.right, this.rightBackgroundContext.canvas);
+        this.rightImage = this.combinedContext.canvas.toDataURL();
         return {
-            leftImage: this.getLeftPixels(foregroundCanvasElements.left),
-            rightImage: this.getRightPixels(foregroundCanvasElements.right),
+            leftImage: leftPixels,
+            rightImage: rightPixels,
         };
     }
 
