@@ -14,7 +14,7 @@ export class PlayerNameDialogBoxComponent {
 
     constructor(public dialogRef: MatDialogRef<PlayerNameDialogBoxComponent>) {}
 
-    onNoClick(): void {
+    closeModal(): void {
         this.dialogRef.close();
     }
 

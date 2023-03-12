@@ -53,7 +53,7 @@ export class CreationGameDialogComponent implements OnInit {
         return this.differenceService.isNumberOfDifferencesValid();
     }
 
-    onNoClick(): void {
+    closeModal(): void {
         this.dialogRef.close();
     }
 
