@@ -3,7 +3,17 @@
 import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
 import { Coordinate } from '@common/coordinate';
-import { ClassicPlayRoom, ClientSideGame, Differences, GameEvents, GameModes } from '@common/game-interfaces';
+import {
+    ChatMessage,
+    ClassicPlayRoom,
+    ClientSideGame,
+    Differences,
+    GameEvents,
+    GameModes,
+    MessageEvents,
+    MessageTag,
+    Player,
+} from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as io from 'socket.io';
@@ -44,7 +54,7 @@ export class ClassicModeService {
         }
     }
 
-    verifyCoords(roomId: string, coords: Coordinate, server: io.Server): void {
+    verifyCoords(roomId: string, coords: Coordinate, playerName: string, server: io.Server): void {
         const room = this.rooms.get(roomId);
         const { originalDifferences } = room;
         let index = 0;
@@ -62,11 +72,27 @@ export class ClassicModeService {
             room.differencesData.currentDifference = [];
         }
 
+        const time: Date = new Date();
+        let errorFoundMessage: ChatMessage;
+        if (room.clientGame.mode === GameModes.ClassicSolo) {
+            errorFoundMessage = {
+                tag: MessageTag.common,
+                message: `${time.getHours()} : ${time.getMinutes()} : ${time.getSeconds()} - Différences trouvé`,
+            };
+            server.to(roomId).emit(MessageEvents.LocalMessage, errorFoundMessage);
+        } else if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
+            errorFoundMessage = {
+                tag: MessageTag.common,
+                message: `${time.getHours()} : ${time.getMinutes()} : ${time.getSeconds()} - Différences trouvé par ${playerName}`,
+            };
+            server.to(roomId).emit(MessageEvents.LocalMessage, errorFoundMessage);
+        }
+
         const diffData: Differences = {
             currentDifference: room.differencesData.currentDifference,
             differencesFound: room.differencesData.differencesFound,
         };
-        server.to(room.roomId).emit(GameEvents.RemoveDiff, diffData);
+        server.to(roomId).emit(GameEvents.RemoveDiff, diffData);
     }
 
     buildClientGameVersion(playerName: string, game: Game): ClientSideGame {
@@ -87,12 +113,20 @@ export class ClassicModeService {
         this.rooms.delete(roomId);
     }
 
-    endGame(roomId: string, server: io.Server): void {
+    endGame(roomId: string, playerName: string, server: io.Server): void {
         const room = this.rooms.get(roomId);
-        if (room && room.clientGame.differencesCount === room.differencesData.differencesFound) {
+        if (room && room.clientGame.differencesCount === room.differencesData.differencesFound && room.clientGame.mode === GameModes.ClassicSolo) {
             room.endMessage = `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo!`;
             server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
             this.deleteCreatedSoloGameRoom(room.roomId);
+        } else if (
+            room &&
+            room.clientGame.differencesCount / 2 === room.differencesData.differencesFound &&
+            room.clientGame.mode === GameModes.ClassicOneVsOne
+        ) {
+            room.endMessage = `${playerName} remporte la partie avec ${room.differencesData.differencesFound} différences trouvées!`;
+            server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
+            this.deleteCreatedOneVsOneRoom(room.roomId, server);
         }
     }
 
@@ -107,7 +141,7 @@ export class ClassicModeService {
     }
 
     getOneVsOneRoomByGameId(gameId: string): ClassicPlayRoom {
-        return Array.from(this.rooms.values()).find((room) => room.clientGame.id === gameId && room.clientGame.mode === GameModes.ClassicOneVsOne);
+        return Array.from(this.rooms.values()).find((room) => room.clientGame.mode === GameModes.ClassicOneVsOne);
     }
 
     checkRoomOneVsOneAvailability(gameId: string, server: io.Server): void {
@@ -128,11 +162,22 @@ export class ClassicModeService {
 
     deleteCreatedOneVsOneRoom(gameId: string, server: io.Server): void {
         this.rooms.delete(this.getOneVsOneRoomByGameId(gameId).roomId);
-        server.emit(GameEvents.DeleteCreatedOneVsOneRoom, gameId);
+        server.sockets.emit(GameEvents.DeleteCreatedOneVsOneRoom, gameId);
     }
 
     saveRoom(room: ClassicPlayRoom, socket: io.Socket): void {
         socket.join(room.roomId);
+        this.rooms.set(room.roomId, room);
+    }
+
+    joinRoom(roomId: string, playerName: string, socket: io.Socket): void {
+        const room: ClassicPlayRoom = this.rooms.get(roomId);
+        socket.join(roomId);
+        const player2: Player = {
+            name: playerName,
+            diffData: room.differencesData,
+        };
+        room.player2 = player2;
         this.rooms.set(room.roomId, room);
     }
 

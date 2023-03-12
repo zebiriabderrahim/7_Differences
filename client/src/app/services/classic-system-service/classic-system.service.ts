@@ -72,11 +72,11 @@ export class ClassicSystemService implements OnDestroy {
     }
 
     checkStatus(): void {
-        this.clientSocket.send(GameEvents.CheckStatus);
+        this.clientSocket.send(GameEvents.CheckStatus, this.playerName.getValue());
     }
 
     requestVerification(coords: Coordinate): void {
-        this.clientSocket.send(GameEvents.RemoveDiff, coords);
+        this.clientSocket.send(GameEvents.RemoveDiff, { coords, playerName: this.playerName.getValue() });
     }
 
     replaceDifference(differences: Coordinate[]): void {
@@ -156,7 +156,8 @@ export class ClassicSystemService implements OnDestroy {
     }
 
     sendMessage(textMessage: string): void {
-        this.clientSocket.send(MessageEvents.SendMessage, { tag: MessageTag.received, message: textMessage });
+        const newMessage = { tag: MessageTag.received, message: textMessage };
+        this.clientSocket.send(MessageEvents.LocalMessage, newMessage);
     }
 
     joinOneVsOneGame(gameId: string, playerName: string): void {
@@ -200,7 +201,7 @@ export class ClassicSystemService implements OnDestroy {
             this.joinedPlayerNames.next(new Map<string, string[]>([[data.gameId, data.playerNamesList]]));
         });
 
-        this.clientSocket.on(MessageEvents.SendMessage, (receivedMessage: ChatMessage) => {
+        this.clientSocket.on(MessageEvents.LocalMessage, (receivedMessage: ChatMessage) => {
             this.message.next(receivedMessage);
         });
     }

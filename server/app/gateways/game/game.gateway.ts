@@ -53,22 +53,22 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     joinOneVsOneGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: string) {
         const room = this.classicModeService.getOneVsOneRoomByGameId(gameId);
         if (room) {
-            this.classicModeService.saveRoom(room, socket);
+            this.classicModeService.joinRoom(room.roomId, playerName, socket);
             this.classicModeService.checkRoomOneVsOneAvailability(gameId, this.server);
             this.server.to(room.roomId).emit(GameEvents.JoinOneVsOneGame, room.clientGame);
         }
     }
 
     @SubscribeMessage(GameEvents.RemoveDiff)
-    validateCoords(@ConnectedSocket() socket: Socket, @MessageBody() coords: Coordinate) {
+    validateCoords(@ConnectedSocket() socket: Socket, @MessageBody('coords') coords: Coordinate, @MessageBody('playerName') playerName: string) {
         const roomId = Array.from(socket.rooms.values())[1];
-        this.classicModeService.verifyCoords(roomId, coords, this.server);
+        this.classicModeService.verifyCoords(roomId, coords, playerName, this.server);
     }
 
     @SubscribeMessage(GameEvents.CheckStatus)
-    checkStatus(@ConnectedSocket() socket: Socket) {
+    checkStatus(@ConnectedSocket() socket: Socket, @MessageBody() playerName: string) {
         const roomId = Array.from(socket.rooms.values())[1];
-        this.classicModeService.endGame(roomId, this.server);
+        this.classicModeService.endGame(roomId, playerName, this.server);
     }
 
     @SubscribeMessage(GameEvents.Disconnect)
@@ -110,10 +110,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         this.classicModeService.refusePlayer(data.gameId, data.playerNames, this.server);
     }
 
-    @SubscribeMessage(MessageEvents.SendMessage)
+    @SubscribeMessage(MessageEvents.LocalMessage)
     sendMessage(@ConnectedSocket() socket: Socket, @MessageBody() data: ChatMessage) {
         const roomId = Array.from(socket.rooms.values())[1];
-        socket.broadcast.to(roomId).emit(MessageEvents.SendMessage, data);
+        socket.broadcast.to(roomId).emit(MessageEvents.LocalMessage, data);
     }
 
     afterInit() {
@@ -128,7 +128,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     handleDisconnect(@ConnectedSocket() socket: Socket) {
         this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
-        this.classicModeService.endGame(socket.id, this.server);
+        // this.classicModeService.endGame(socket.id, this.server);
     }
 
     updateTimers() {

@@ -85,8 +85,8 @@ export enum GameModes {
 }
 
 export enum MessageEvents {
-    SendMessage = 'SendMessage',
-    LocalMessage = 'LocalMessage'
+    LocalMessage = 'LocalMessage',
+    GlobalMessage = 'GlobalMessage'
 }
 
 export enum MessageTag {

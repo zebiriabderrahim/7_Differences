@@ -45,6 +45,4 @@
     </div>
 </div>
 <button class="importantButton" (click)="abandonGame()">Abandonner la partie</button>
-<div *ngIf="router.url === '/game/host' || router.url === '/game/join'">
-    <app-chat-box (add)="addRightSideMessage($event)" [messages]="messages"></app-chat-box>
-</div>
+<app-chat-box (add)="addRightSideMessage($event)" [messages]="messages"></app-chat-box>
