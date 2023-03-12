@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-player-name-dialog-box',
@@ -13,10 +12,10 @@ export class PlayerNameDialogBoxComponent {
         name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)]),
     });
 
-    constructor(public dialogRef: MatDialogRef<PlayerNameDialogBoxComponent>, public router: Router) {}
+    constructor(private readonly dialogRef: MatDialogRef<PlayerNameDialogBoxComponent>) {}
 
-    onNoClick(): void {
-        this.dialogRef.close(false);
+    closeModal(): void {
+        this.dialogRef.close();
     }
 
     submitForm() {
