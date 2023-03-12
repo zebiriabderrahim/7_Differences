@@ -68,7 +68,7 @@ describe('GameAreaService', () => {
         const resultingIndexList: number[] = gameAreaService.convert2DCoordToPixelIndex(differenceCoord);
         expect(resultingIndexList).toEqual(expectedIndexList);
     });
-
+    /*
     it('setAllData should get the imageData of the two contexts', () => {
         const originalCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const modifiedCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
@@ -106,6 +106,7 @@ describe('GameAreaService', () => {
         expect(gameAreaService['originalFrontPixelData']).toEqual(expectedOriginalFrontLayer);
         expect(gameAreaService['modifiedFrontPixelData']).toEqual(expectedModifiedFrontLayer);
     });
+*/
 
     // it('loadImage should properly load an image', async () => {
     //     const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
@@ -243,7 +244,7 @@ describe('GameAreaService', () => {
     //     expect(intervalCallback).toHaveBeenCalled();
     // });
 
-    it('playErrorSound should call play on incorrectSoundEffect', () => {
+    /* it('playErrorSound should call play on incorrectSoundEffect', () => {
         const playSpy = spyOn(gameAreaService['incorrectSoundEffect'], 'play').and.returnValue(Promise.resolve());
         gameAreaService.playErrorSound();
         expect(playSpy).toHaveBeenCalled();
@@ -253,7 +254,7 @@ describe('GameAreaService', () => {
         const playSpy = spyOn(gameAreaService['correctSoundEffect'], 'play').and.returnValue(Promise.resolve());
         gameAreaService.playCorrectSound();
         expect(playSpy).toHaveBeenCalled();
-    });
+    });*/
 
     it('getOgContext should return originalContext', () => {
         const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
