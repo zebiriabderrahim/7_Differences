@@ -17,8 +17,6 @@ import { ImageService } from '@app/services/image-service/image.service';
 })
 export class CreationPageComponent implements AfterViewInit {
     @ViewChild('combinedCanvas') combinedCanvas: ElementRef;
-    // @ViewChild('imageNotSetDialog', { static: true })
-    // private readonly imageNotSetDialog: TemplateRef<HTMLElement>;
     readonly canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
     readonly configRoute: string = '/config';
     canvasPosition: typeof CanvasPosition;
@@ -54,7 +52,6 @@ export class CreationPageComponent implements AfterViewInit {
     }
 
     validateDifferences() {
-        // if (this.imageService.areImagesSet()) {
         const dialogConfig = new MatDialogConfig();
         dialogConfig.data = this.radius;
         this.matDialog
@@ -69,9 +66,6 @@ export class CreationPageComponent implements AfterViewInit {
                     });
                 }
             });
-        // } else {
-        //     this.matDialog.open(this.imageNotSetDialog);
-        // }
     }
 
     swapForegrounds() {
