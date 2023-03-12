@@ -94,7 +94,7 @@ export class ImageService {
 
     private setBackgroundImage(imageToDraw: ImageBitmap, backgroundContext: CanvasRenderingContext2D) {
         backgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.leftBackgroundContext.drawImage(imageToDraw, 0, 0);
+        backgroundContext.drawImage(imageToDraw, 0, 0);
     }
 
     private resetBackgroundContext(backgroundContext: CanvasRenderingContext2D) {
