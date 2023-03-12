@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { GameDetails } from '@app/interfaces/game-interfaces';
 import { ImageSources } from '@app/interfaces/image-sources';
+import { CanvasPosition } from '@app/enum/canvas-position';
 import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
@@ -70,7 +71,7 @@ export class CreationGameDialogComponent implements OnInit {
                 isHard: this.differenceService.isGameHard(),
             };
             this.dialogRef.close(gameDetails);
-            this.imageService.resetBothBackgrounds();
+            this.imageService.resetBackground(CanvasPosition.Both);
         }
     }
 

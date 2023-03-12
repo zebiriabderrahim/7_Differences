@@ -26,7 +26,7 @@ export class SelectionPageComponent implements AfterViewInit {
         });
     }
 
-    hasNext() {
+    nextCarrousel() {
         if (this.gameCarrousel.hasNext) {
             this.communicationService.loadGameCarrousel(++this.index).subscribe((gameCarrousel) => {
                 if (gameCarrousel) {
@@ -36,7 +36,7 @@ export class SelectionPageComponent implements AfterViewInit {
         }
     }
 
-    hasPrevious() {
+    previousCarrousel() {
         if (this.gameCarrousel.hasPrevious) {
             this.communicationService.loadGameCarrousel(--this.index).subscribe((gameCarrousel) => {
                 if (gameCarrousel) {
