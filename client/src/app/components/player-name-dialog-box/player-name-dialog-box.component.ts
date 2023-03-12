@@ -12,7 +12,7 @@ export class PlayerNameDialogBoxComponent {
         name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)]),
     });
 
-    constructor(public dialogRef: MatDialogRef<PlayerNameDialogBoxComponent>) {}
+    constructor(private readonly dialogRef: MatDialogRef<PlayerNameDialogBoxComponent>) {}
 
     closeModal(): void {
         this.dialogRef.close();
