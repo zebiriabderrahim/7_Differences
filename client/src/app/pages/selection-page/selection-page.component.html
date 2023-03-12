@@ -1,7 +1,10 @@
-<div class="selection-component">
-    <h1 *ngIf="router.url === '/selection'">Selectionne ton jeu</h1>
-    <h1 *ngIf="router.url === '/config'">Configure ton jeu</h1>
-    <mat-grid-list cols="4">
+<div class="selectionComponent">
+    <div class="header">
+        <h1 *ngIf="router.url === '/selection'">Selectionne ton jeu</h1>
+        <h1 *ngIf="router.url === '/config'">Configure ton jeu</h1>
+        <app-nav-bar></app-nav-bar>
+    </div>
+    <mat-grid-list class="gameCarrousel" cols="4">
        <ng-container  *ngIf="gameCarrousel.gameCards">
             <mat-grid-tile *ngFor="let game of gameCarrousel.gameCards" class="section">
                 <app-game-sheet  [game]="game"></app-game-sheet>
@@ -9,14 +12,22 @@
         </ng-container>
     </mat-grid-list>
     <div class="buttonContainer">
-        <button mat-raised-button *ngIf="gameCarrousel.hasPrevious" mat-raised-button class="previous_button" (click)="hasPrevious()"><< Précedent</button>
-        <button mat-raised-button *ngIf="gameCarrousel.hasNext" mat-raised-button class="next_button" (click)="hasNext()">Suivant >></button>
+        <button mat-raised-button *ngIf="gameCarrousel.hasPrevious" mat-raised-button class="previous_button" (click)="previousCarrousel()"><< Précedent</button>
+        <button mat-raised-button *ngIf="gameCarrousel.hasNext" mat-raised-button class="next_button" (click)="nextCarrousel()">Suivant >></button>
     </div>
-    <mat-grid-list *ngIf="router.url === '/selection'" cols="1" rowHeight="300px">
-        <mat-grid-tile>
-            <div class="Back-menu">
-                <button mat-raised-button [routerLink]="homeRoute" class="menu_button">Retourner au menu</button>
-            </div>    
-        </mat-grid-tile>
-    </mat-grid-list>
+</div>
+<div *ngIf="router.url === '/selection'" class="footerPreview">
+    <div class="section blabla">
+        <h2 class="sectionOne button" >Créer ton propre Jeux dès maintenant</h2>
+        <p>Tu peux créer ton propre jeux des 7 différences pour y jouer en solo ou en duo</p>
+        <p> Ne perd pas de temps est créer ton premier jeu</p>
+        <div class="buttonCreate"><a [routerLink]="configRoute"> Créer mon Jeu</a></div>
+    </div>
+    <div class="section logo">
+        <img class="project-logo justified" src="./assets/RatCoon.png" alt="Logo Projet " [routerLink]="homeRoute" />
+        <p>Design by RatCoon Teams</p>
+    </div>
+</div>
+<div *ngIf="router.url === '/selection'" class="footer">
+    &copy;<span id="year"> </span><span> RAT-COON Games. All rights reserved.</span>
 </div>

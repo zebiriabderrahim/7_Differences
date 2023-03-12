@@ -27,7 +27,9 @@ import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.
 import { CanvasTopButtonsComponent } from './components/canvas-top-buttons/canvas-top-buttons.component';
 import { CanvasUnderButtonsComponent } from './components/canvas-under-buttons/canvas-under-buttons.component';
 import { ImageCanvasComponent } from './components/image-canvas/image-canvas.component';
+import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { SoloGameViewDialogComponent } from './components/solo-game-view-dialog/solo-game-view-dialog.component';
+import { WaitingForPlayerToJoinComponent } from './components/waiting-player-to-join/waiting-player-to-join.component';
 import { ConfigPageComponent } from './pages/config-page/config-page.component';
 /**
  * Main module that is used in main.ts.
@@ -50,7 +52,9 @@ import { ConfigPageComponent } from './pages/config-page/config-page.component';
         CreationGameDialogComponent,
         CanvasUnderButtonsComponent,
         SoloGameViewDialogComponent,
+        WaitingForPlayerToJoinComponent,
         CanvasTopButtonsComponent,
+        NavBarComponent,
     ],
     imports: [
         AppMaterialModule,

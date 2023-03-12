@@ -22,11 +22,18 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     private timerSub: Subscription;
     private gameSub: Subscription;
     private differenceSub: Subscription;
+    private playerNameSub: Subscription;
+    private idSub: Subscription;
     private isFirstTime = true;
     constructor(private gameAreaService: GameAreaService, private classicService: ClassicSystemService) {}
 
     ngAfterViewInit(): void {
         this.classicService.manageSocket();
+        this.playerNameSub = this.classicService.playerName$.subscribe((name) => {
+            this.idSub = this.classicService.id$.subscribe((id) => {
+                this.classicService.createSoloGame(name, id);
+            });
+        });
         this.gameSub = this.classicService.getCurrentGame().subscribe((game) => {
             this.game = game;
             if (this.game && this.isFirstTime) {
@@ -87,5 +94,8 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.gameSub.unsubscribe();
         this.timerSub.unsubscribe();
         this.differenceSub.unsubscribe();
+        this.playerNameSub.unsubscribe();
+        this.idSub.unsubscribe();
+        this.classicService.disconnect();
     }
 }

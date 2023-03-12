@@ -23,7 +23,7 @@
             <mat-icon [ngStyle]="{ color: drawColor }">crop_square</mat-icon>
         </mat-button-toggle>
         <mat-button-toggle [value]="canvasAction.Eraser">
-            <img src="assets/img/eraser.svg" />
+            <img src="./assets/eraser.svg" />
             <mat-form-field appearance="fill" style="width: 80px">
                 <mat-select [(value)]="eraserLength">
                     <mat-option *ngFor="let eraser of drawValues" [value]="eraser">
