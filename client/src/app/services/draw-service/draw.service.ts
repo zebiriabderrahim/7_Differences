@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { ERASER_COLOR } from '@app/constants/drawing';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasAction } from '@app/enum/canvas-action';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { CanvasOperation } from '@app/interfaces/canvas-operation';
 import { CanvasState } from '@app/interfaces/canvas-state';
+import { ForegroundCanvasElements } from '@app/interfaces/foreground-canvas-elements';
 import { Coordinate } from '@common/coordinate';
 
 @Injectable({
@@ -44,41 +44,41 @@ export class DrawService {
         }
     }
 
+    getForegroundCanvasElements(): ForegroundCanvasElements {
+        return { left: this.leftForegroundContext.canvas, right: this.rightForegroundContext.canvas };
+    }
+
     swapForegrounds() {
         const leftForegroundData: ImageData = this.leftForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         const rightForegroundData: ImageData = this.rightForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.leftForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.leftForegroundContext.putImageData(rightForegroundData, 0, 0);
-        this.rightForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.rightForegroundContext.putImageData(leftForegroundData, 0, 0);
         this.saveCurrentCanvasState();
     }
 
     duplicateLeftForeground() {
         const leftForegroundData: ImageData = this.leftForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.rightForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.rightForegroundContext.putImageData(leftForegroundData, 0, 0);
         this.saveCurrentCanvasState();
     }
 
     duplicateRightForeground() {
         const rightForegroundData: ImageData = this.rightForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.leftForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.leftForegroundContext.putImageData(rightForegroundData, 0, 0);
         this.saveCurrentCanvasState();
     }
 
     redrawForegrounds(canvasState: CanvasState) {
         this.resetForeground(CanvasPosition.Both);
-        this.leftForegroundContext.drawImage(canvasState.left, 0, 0);
-        this.rightForegroundContext.drawImage(canvasState.right, 0, 0);
+        this.leftForegroundContext.putImageData(canvasState.left, 0, 0);
+        this.rightForegroundContext.putImageData(canvasState.right, 0, 0);
     }
 
     undoCanvasOperation() {
         if (this.canvasStateStack.length > 0) {
             const lastState: CanvasState = this.canvasStateStack.pop() as CanvasState;
             this.undoneCanvasStateStack.push(lastState);
-            if (!this.isCurrentCanvasStateNextState(lastState)) {
+            if (!this.isCanvasStateNextState(lastState)) {
                 this.redrawForegrounds(lastState);
             } else {
                 this.undoCanvasOperation();
@@ -90,7 +90,7 @@ export class DrawService {
         if (this.undoneCanvasStateStack.length > 0) {
             const lastState: CanvasState = this.undoneCanvasStateStack.pop() as CanvasState;
             this.canvasStateStack.push(lastState);
-            if (!this.isCurrentCanvasStateNextState(lastState)) {
+            if (!this.isCanvasStateNextState(lastState)) {
                 this.redrawForegrounds(lastState);
             } else {
                 this.redoCanvasOperation();
@@ -98,16 +98,12 @@ export class DrawService {
         }
     }
 
-    isCurrentCanvasStateNextState(nextState: CanvasState): boolean {
+    isCanvasStateNextState(nextState: CanvasState): boolean {
         const canvasState: CanvasState = this.getCanvasState();
         return (
-            this.getImageDataAsString(canvasState.left) === this.getImageDataAsString(nextState.left) &&
-            this.getImageDataAsString(canvasState.right) === this.getImageDataAsString(nextState.right)
+            canvasState.left.data.toString() === nextState.left.data.toString() &&
+            canvasState.right.data.toString() === nextState.right.data.toString()
         );
-    }
-
-    getImageDataAsString(canvas: HTMLCanvasElement): string {
-        return canvas.getContext('2d')?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data.toString() as string;
     }
 
     resetForeground(canvasPosition: CanvasPosition) {
@@ -127,27 +123,38 @@ export class DrawService {
 
     resetLeftForeground() {
         this.leftForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.leftForegroundContext.drawImage(new Image(), 0, 0);
     }
 
     resetRightForeground() {
         this.rightForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.rightForegroundContext.drawImage(new Image(), 0, 0);
     }
 
     getCanvasState(): CanvasState {
-        return { left: this.leftForegroundContext.canvas, right: this.rightForegroundContext.canvas };
+        const leftForegroundData: ImageData = this.leftForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        const rightForegroundData: ImageData = this.rightForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        return { left: leftForegroundData, right: rightForegroundData };
     }
 
     setActiveCanvas(canvasPosition: CanvasPosition) {
         this.activeCanvas = canvasPosition;
-        switch (canvasPosition) {
-            case CanvasPosition.Left:
-                this.activeContext = this.leftFrontContext;
-                break;
-            case CanvasPosition.Right:
-                this.activeContext = this.rightFrontContext;
-                break;
+        if (this.currentAction === CanvasAction.Rectangle) {
+            switch (canvasPosition) {
+                case CanvasPosition.Left:
+                    this.activeContext = this.leftFrontContext;
+                    break;
+                case CanvasPosition.Right:
+                    this.activeContext = this.rightFrontContext;
+                    break;
+            }
+        } else {
+            switch (canvasPosition) {
+                case CanvasPosition.Left:
+                    this.activeContext = this.leftForegroundContext;
+                    break;
+                case CanvasPosition.Right:
+                    this.activeContext = this.rightForegroundContext;
+                    break;
+            }
         }
     }
 
@@ -157,17 +164,22 @@ export class DrawService {
 
     setCanvasOperationStyle(color: string, operationWidth: number) {
         if (this.currentAction === CanvasAction.Rectangle) {
+            this.activeContext.globalCompositeOperation = 'source-over';
+            this.rightForegroundContext.globalCompositeOperation = 'source-over';
+            this.leftForegroundContext.globalCompositeOperation = 'source-over';
             this.activeContext.fillStyle = color;
         } else {
             this.activeContext.lineWidth = operationWidth;
             switch (this.currentAction) {
                 case CanvasAction.Pencil:
                     this.activeContext.strokeStyle = color;
+                    this.activeContext.globalCompositeOperation = 'source-over';
                     this.activeContext.lineCap = 'round';
                     this.activeContext.lineJoin = 'round';
                     break;
                 case CanvasAction.Eraser:
-                    this.activeContext.strokeStyle = ERASER_COLOR;
+                    this.activeContext.strokeStyle = color;
+                    this.activeContext.globalCompositeOperation = 'destination-out';
                     this.activeContext.lineCap = 'square';
                     this.activeContext.lineJoin = 'round';
                     break;
@@ -188,8 +200,7 @@ export class DrawService {
             this.rectangleTopCorner = this.clickPosition;
         } else {
             this.activeContext.beginPath();
-            this.activeContext.lineTo(event.offsetX, event.offsetY);
-            this.activeContext.stroke();
+            this.drawLine(event);
         }
         this.isDragging = true;
     }
@@ -210,12 +221,13 @@ export class DrawService {
         if (this.isDragging) {
             if (this.currentAction === CanvasAction.Rectangle) {
                 this.drawRectangle();
+                this.copyCanvas(this.activeContext.canvas, canvasPosition);
+                this.resetActiveCanvas();
             } else {
                 this.drawLine(event);
+                this.saveCurrentCanvasState();
             }
             this.isDragging = false;
-            this.copyCanvas(this.activeContext.canvas, canvasPosition);
-            this.resetActiveCanvas();
         }
     }
 
