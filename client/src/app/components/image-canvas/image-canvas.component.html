@@ -6,4 +6,4 @@
         (mousedown)="startCanvasOperation($event)" (mouseleave)="setMouseLeavingBoolean($event)"
         (mousemove)="continueCanvasOperation($event)" (mouseup)="stopCanvasOperation($event)"></canvas>
 </div>
-<app-canvas-under-buttons [position]="this.position"></app-canvas-under-buttons>
+<app-canvas-under-buttons [canvasPositionType]="this.position"></app-canvas-under-buttons>

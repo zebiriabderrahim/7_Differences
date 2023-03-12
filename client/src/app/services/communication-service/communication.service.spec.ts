@@ -122,4 +122,45 @@ describe('CommunicationService', () => {
             expect(result).toBeUndefined();
         });
     });
+
+    it('should delete game with specific id when deleteGameById is called', () => {
+        const gameId = '123';
+
+        serviceComponent.deleteGameById(gameId).subscribe(() => {
+            expect().nothing();
+        });
+
+        const req = httpMock.expectOne(`${serviceComponent['gameUrl']}/${gameId}`);
+        expect(req.request.method).toBe('DELETE');
+
+        req.flush(null);
+    });
+
+    it('should return true if game exists', () => {
+        const gameName = 'test-game';
+        const expectedResponse = true;
+
+        serviceComponent.verifyIfGameExists(gameName).subscribe((res) => {
+            expect(res).toBe(expectedResponse);
+        });
+
+        const req = httpMock.expectOne(`${serviceComponent['gameUrl']}/?name=${gameName}`);
+        expect(req.request.method).toBe('GET');
+
+        req.flush(expectedResponse);
+    });
+
+    it('should return false if game does not exist', () => {
+        const gameName = 'test-game';
+        const expectedResponse = false;
+
+        serviceComponent.verifyIfGameExists(gameName).subscribe((res) => {
+            expect(res).toBe(expectedResponse);
+        });
+
+        const req = httpMock.expectOne(`${serviceComponent['gameUrl']}/?name=${gameName}`);
+        expect(req.request.method).toBe('GET');
+
+        req.flush(expectedResponse);
+    });
 });

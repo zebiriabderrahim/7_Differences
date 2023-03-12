@@ -10,7 +10,7 @@ import { ValidationService } from '@app/services/validation-service/validation.s
     styleUrls: ['./canvas-under-buttons.component.scss'],
 })
 export class CanvasUnderButtonsComponent {
-    @Input() position: CanvasPosition;
+    @Input() canvasPositionType: CanvasPosition;
     @ViewChild('uploadInput') uploadInput: ElementRef;
     @ViewChild('invalidImageDialog', { static: true })
     private readonly invalidImageDialog: TemplateRef<HTMLElement>;
@@ -38,13 +38,13 @@ export class CanvasUnderButtonsComponent {
     async setImageIfValid(file: File): Promise<void> {
         const image = await createImageBitmap(file);
         if (this.validationService.isImageSizeValid(image) && this.validationService.isImageFormatValid(file)) {
-            this.imageService.setBackground(this.position, image);
+            this.imageService.setBackground(this.canvasPositionType, image);
         } else {
             this.matDialog.open(this.invalidImageDialog);
         }
     }
 
     resetBackground(): void {
-        this.imageService.resetBackground(this.position);
+        this.imageService.resetBackground(this.canvasPositionType);
     }
 }

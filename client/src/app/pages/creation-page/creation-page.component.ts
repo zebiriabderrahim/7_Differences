@@ -1,12 +1,12 @@
-import { AfterViewInit, Component, ElementRef, HostListener, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
-import { SUBMIT_WAIT_TIME, LEFT_BUTTON } from '@app/constants/constants';
 import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/difference';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { GameDetails } from '@app/interfaces/game-interfaces';
+import { LEFT_BUTTON } from '@app/constants/constants';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { DrawService } from '@app/services/draw-service/draw.service';
 import { ImageService } from '@app/services/image-service/image.service';
@@ -18,8 +18,6 @@ import { ImageService } from '@app/services/image-service/image.service';
 })
 export class CreationPageComponent implements AfterViewInit {
     @ViewChild('combinedCanvas') combinedCanvas: ElementRef;
-    @ViewChild('imageNotSetDialog', { static: true })
-    private readonly imageNotSetDialog: TemplateRef<HTMLElement>;
     readonly canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
     readonly configRoute: string = '/config';
     canvasPosition: typeof CanvasPosition;
@@ -43,9 +41,9 @@ export class CreationPageComponent implements AfterViewInit {
     @HostListener('window:keydown', ['$event'])
     keyboardEvent(event: KeyboardEvent) {
         if (event.ctrlKey && event.shiftKey && event.key === 'Z') {
-            this.drawService.redoCanvasOperation();
+            this.redoCanvasOperation();
         } else if (event.ctrlKey && event.key === 'z') {
-            this.drawService.undoCanvasOperation();
+            this.undoCanvasOperation();
         }
     }
 
@@ -70,23 +68,20 @@ export class CreationPageComponent implements AfterViewInit {
     }
 
     validateDifferences() {
-        if (this.imageService.areImagesSet()) {
-            const dialogConfig = new MatDialogConfig();
-            dialogConfig.data = this.radius;
-            this.matDialog
-                .open(CreationGameDialogComponent, dialogConfig)
-                .afterClosed()
-                .subscribe((game: GameDetails) => {
-                    if (game) {
-                        this.communicationService.postGame(game).subscribe();
-                        setTimeout(() => {
+        const dialogConfig = new MatDialogConfig();
+        dialogConfig.data = this.radius;
+        this.matDialog
+            .open(CreationGameDialogComponent, dialogConfig)
+            .afterClosed()
+            .subscribe((game: GameDetails) => {
+                if (game) {
+                    this.communicationService.postGame(game).subscribe(() => {
+                        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
                             this.router.navigate(['/config']);
-                        }, SUBMIT_WAIT_TIME);
-                    }
-                });
-        } else {
-            this.matDialog.open(this.imageNotSetDialog);
-        }
+                        });
+                    });
+                }
+            });
     }
 
     swapForegrounds() {
@@ -99,5 +94,13 @@ export class CreationPageComponent implements AfterViewInit {
 
     duplicateRightForeground() {
         this.drawService.duplicateRightForeground();
+    }
+
+    undoCanvasOperation() {
+        this.drawService.undoCanvasOperation();
+    }
+
+    redoCanvasOperation() {
+        this.drawService.redoCanvasOperation();
     }
 }

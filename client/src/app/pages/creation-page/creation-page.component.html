@@ -12,12 +12,20 @@
             <button mat-raised-button (click)="duplicateLeftForeground()">
                 <mat-icon>arrow_forward</mat-icon>
             </button>
+            <div>
+                <button mat-raised-button (click)="undoCanvasOperation()">
+                    <mat-icon>undo</mat-icon>
+                </button>
+                <button mat-raised-button (click)="redoCanvasOperation()">
+                    <mat-icon>redo</mat-icon>
+                </button>
+            </div>
         </div>
         <app-image-canvas [position]="canvasPosition.Right"></app-image-canvas>
     </div>
 
-    <p>L'image doit être de type <strong>bitmap 640 x 480 24 bits</strong></p>
-    <app-canvas-under-buttons [position]="canvasPosition.Both"></app-canvas-under-buttons>
+    <p>L'image doit être de type <strong>bitmap 640 x 280 24 bits</strong></p>
+    <app-canvas-under-buttons [canvasPositionType]="canvasPosition.Both"></app-canvas-under-buttons>
 
     <div id="radio-buttons">
         <div>
@@ -34,10 +42,3 @@
     </button>
     <button mat-raised-button [routerLink]="configRoute">Retourner à la page de Configuration</button>
 </div>
-
-<ng-template #imageNotSetDialog>
-    <button mat-button mat-dialog-close>Fermer</button>
-    <div mat-dialog-content>
-        <h1 mat-dialog-title>Veuillez mettre deux images</h1>
-    </div>
-</ng-template>
