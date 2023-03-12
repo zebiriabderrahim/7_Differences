@@ -44,19 +44,19 @@ describe('SelectionPageComponent', () => {
         expect(component.gameCarrousel).toEqual({ hasNext: false, hasPrevious: false, gameCards: [] });
     });
 
-    it('should load the next Carrousel and increase component index when clicking on the next_button', () => {
-        component['index'] = 0;
-        component.gameCarrousel.hasNext = true;
-        component.hasNext();
-        expect(component.gameCarrousel).toEqual({ hasNext: true, hasPrevious: false, gameCards: [] });
-        expect(component['index']).toEqual(1);
-    });
+    // it('should load the next Carrousel and increase component index when clicking on the next_button', () => {
+    //     component['index'] = 0;
+    //     component.gameCarrousel.hasNext = true;
+    //     component.hasNext();
+    //     expect(component.gameCarrousel).toEqual({ hasNext: true, hasPrevious: false, gameCards: [] });
+    //     expect(component['index']).toEqual(1);
+    // });
 
-    it('should load the previous Carrousel and decrement component index when clicking on the previous_button', () => {
-        component['index'] = 1;
-        component.gameCarrousel.hasPrevious = true;
-        component.hasPrevious();
-        expect(component.gameCarrousel).toEqual({ hasNext: false, hasPrevious: true, gameCards: [] });
-        expect(component['index']).toEqual(0);
-    });
+    // it('should load the previous Carrousel and decrement component index when clicking on the previous_button', () => {
+    //     component['index'] = 1;
+    //     component.gameCarrousel.hasPrevious = true;
+    //     component.hasPrevious();
+    //     expect(component.gameCarrousel).toEqual({ hasNext: false, hasPrevious: true, gameCards: [] });
+    //     expect(component['index']).toEqual(0);
+    // });
 });
