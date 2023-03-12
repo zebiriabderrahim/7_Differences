@@ -121,14 +121,14 @@ describe('CanvasUnderButtonsComponent', () => {
 
         await component.setImageIfValid(new File([''], 'filename', { type: IMG_TYPE }));
         expect(matDialogSpy.open).not.toHaveBeenCalled();
-        expect(imageServiceSetBackgroundSpy).toHaveBeenCalledOnceWith(component.position, mockImage);
+        expect(imageServiceSetBackgroundSpy).toHaveBeenCalledOnceWith(component.canvasPositionType, mockImage);
     });
 
     it('resetBackground should call imageService.resetBackground with the right Position', () => {
-        component.position = CanvasPosition.Left;
+        component.canvasPositionType = CanvasPosition.Left;
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const imageServiceResetBackgroundSpy = spyOn(imageService, 'resetBackground').and.callFake(() => {});
         component.resetBackground();
-        expect(imageServiceResetBackgroundSpy).toHaveBeenCalledWith(component.position);
+        expect(imageServiceResetBackgroundSpy).toHaveBeenCalledWith(component.canvasPositionType);
     });
 });

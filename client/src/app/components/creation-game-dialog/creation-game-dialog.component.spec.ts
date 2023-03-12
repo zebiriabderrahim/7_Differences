@@ -111,8 +111,8 @@ describe('CreationGameDialogComponent', () => {
         expect(component.gameNameForm.disabled).toBeFalsy();
     });
 
-    it('should close the dialog onNoClick', () => {
-        component.onNoClick();
+    it('should close the dialog closeModal', () => {
+        component.closeModal();
         expect(dialogRef.close).toHaveBeenCalled();
     });
 

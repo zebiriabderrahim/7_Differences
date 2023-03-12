@@ -33,8 +33,8 @@ describe('PlayerNameDialogBoxComponent', () => {
         expect(component.playerNameForm.controls.name instanceof FormControl).toBeTruthy();
     });
 
-    it('should close the dialog onNoClick', () => {
-        component.onNoClick();
+    it('should close the dialog closeModal', () => {
+        component.closeModal();
         expect(dialogRef.close).toHaveBeenCalled();
     });
 
