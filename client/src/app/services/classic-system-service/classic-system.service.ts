@@ -1,4 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dialog/solo-game-view-dialog.component';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { Coordinate } from '@common/coordinate';
@@ -19,6 +20,7 @@ export class ClassicSystemService implements OnDestroy {
     private oneVsOneRoomsAvailability: Map<string, boolean>;
     private joinedPlayerNames: BehaviorSubject<Map<string, string[]>>;
     private message: Subject<ChatMessage>;
+    matDialog: any;
 
     constructor(private clientSocket: ClientSocketService, private gameAreaService: GameAreaService) {
         this.currentGame = new Subject<ClientSideGame>();
