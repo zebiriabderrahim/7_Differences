@@ -12,6 +12,7 @@ import { CanvasPosition } from '@app/enum/canvas-position';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { ImageService } from '@app/services/image-service/image.service';
+import { of } from 'rxjs';
 import { CreationGameDialogComponent } from './creation-game-dialog.component';
 
 describe('CreationGameDialogComponent', () => {
@@ -21,6 +22,7 @@ describe('CreationGameDialogComponent', () => {
     let differenceServiceSpy: jasmine.SpyObj<DifferenceService>;
     let dialogRef: MatDialogRef<CreationGameDialogComponent, unknown>;
     let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
+    // let httpMock: HttpTestingController;
 
     beforeEach(async () => {
         imageServiceSpy = jasmine.createSpyObj('ImageService', [
@@ -66,6 +68,7 @@ describe('CreationGameDialogComponent', () => {
         component = fixture.componentInstance;
         fixture.detectChanges();
         dialogRef = TestBed.inject(MatDialogRef<CreationGameDialogComponent, unknown>);
+        // httpMock = TestBed.inject(HttpTestingController);
     });
 
     it('should create', () => {
@@ -188,5 +191,45 @@ describe('CreationGameDialogComponent', () => {
         component.submitForm();
         expect(dialogRef.close).not.toHaveBeenCalled();
         expect(imageServiceSpy.resetBackground).not.toHaveBeenCalled();
+    });
+
+    // it('should return true if gameName is valid', () => {
+    //     const gameName = 'test-game';
+    //     const expectedResponse = true;
+
+    //     communicationServiceSpy.verifyIfGameExists.and.returnValue(of(true));
+    //     communicationServiceSpy.verifyIfGameExists(gameName).subscribe((res) => {
+    //         expect(res).toBe(expectedResponse);
+    //     });
+    // });
+
+    // it('should return false if gameName is invalid', () => {
+    //     const gameName = '';
+    //     const expectedResponse = false;
+
+    //     communicationServiceSpy.verifyIfGameExists.and.returnValue(of(false));
+    //     communicationServiceSpy.verifyIfGameExists(gameName).subscribe((res) => {
+    //         expect(res).toBe(expectedResponse);
+    //     });
+    // });
+
+    it('validateGameName should return null if game name does not exist', () => {
+        const control = jasmine.createSpyObj('AbstractControl', ['value']);
+        control.value = 'nonexistentgamename';
+        communicationServiceSpy.verifyIfGameExists.and.returnValue(of(false));
+
+        component.validateGameName(control).subscribe((result) => {
+            expect(result).toBe(null);
+        });
+    });
+
+    it('validateGameName should return an object with gameExists property if game name exists', () => {
+        const control = jasmine.createSpyObj('AbstractControl', ['value']);
+        control.value = 'existinggamename';
+        communicationServiceSpy.verifyIfGameExists.and.returnValue(of(true));
+
+        component.validateGameName(control).subscribe((result) => {
+            expect(result).toEqual({ gameExists: true });
+        });
     });
 });
