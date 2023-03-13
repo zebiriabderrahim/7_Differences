@@ -1,3 +1,4 @@
+// Id comes from database to allow _id
 /* eslint-disable no-underscore-dangle */
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -5,6 +6,7 @@ import { Router } from '@angular/router';
 import { JoinedPlayerDialogComponent } from '@app/components/joined-player-dialog/joined-player-dialog.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { WaitingForPlayerToJoinComponent } from '@app/components/waiting-player-to-join/waiting-player-to-join.component';
+import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameCard } from '@common/game-interfaces';
 import { filter, Subscription, take } from 'rxjs';
@@ -19,7 +21,15 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     private isAvailable: boolean;
     private roomIdSubscription: Subscription;
     private oneVsOneRoomsAvailabilityByRoomIdSubscription: Subscription;
-    constructor(private readonly dialog: MatDialog, public router: Router, private readonly roomManagerService: RoomManagerService) {
+
+    // Services are needed for the dialog and dialog needs to talk to the parent component
+    // eslint-disable-next-line max-params
+    constructor(
+        private readonly dialog: MatDialog,
+        public router: Router,
+        private readonly roomManagerService: RoomManagerService,
+        private readonly communicationService: CommunicationService,
+    ) {
         this.roomManagerService.handleRoomEvents();
     }
     ngOnInit(): void {
@@ -115,5 +125,13 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         if (this.oneVsOneRoomsAvailabilityByRoomIdSubscription) {
             this.oneVsOneRoomsAvailabilityByRoomIdSubscription.unsubscribe();
         }
+    }
+
+    deleteGameCard() {
+        this.communicationService.deleteGameById(this.game._id).subscribe(() => {
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+                this.router.navigate(['/config']);
+            });
+        });
     }
 }

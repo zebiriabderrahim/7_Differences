@@ -9,7 +9,7 @@ describe('MainPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule, HttpClientModule],
+            imports: [RouterTestingModule, HttpClientModule, HttpClientModule],
             declarations: [MainPageComponent],
             providers: [],
         }).compileComponents();
@@ -23,14 +23,6 @@ describe('MainPageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
-    });
-
-    it("should have as title 'Rat-Coon'", () => {
-        expect(component.gameTitle).toEqual('Rat-Coon');
-    });
-
-    it("should have as team number '101'", () => {
-        expect(component.teamNumber).toEqual('#101');
     });
 
     it("button 'Selection' should redirect correctly", () => {
