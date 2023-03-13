@@ -14,15 +14,16 @@ describe('ImageService', () => {
     let service: ImageService;
     let contextStub: CanvasRenderingContext2D;
     let resetBackgroundContextSpy: jasmine.Spy;
-    // let imageBitmap: ImageBitmap;
+    let setBackgroundImageSpy: jasmine.Spy;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
         });
         service = TestBed.inject(ImageService);
         contextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
         resetBackgroundContextSpy = spyOn<any>(service, 'resetBackgroundContext');
+        setBackgroundImageSpy = spyOn<any>(service, 'setBackgroundImage');
         service['leftBackgroundContext'] = contextStub;
         service['rightBackgroundContext'] = contextStub;
     });
@@ -175,6 +176,34 @@ describe('ImageService', () => {
         service.resetBackground(CanvasPosition.Both);
         expect(resetBackgroundContextSpy).toHaveBeenCalled();
         expect(resetBackgroundContextSpy).toHaveBeenCalled();
+    });
+
+    it('should set the background image for left canvas position', () => {
+        const mockImage = {} as ImageBitmap;
+        spyOn(window, 'createImageBitmap').and.callFake(async () => {
+            return mockImage;
+        });
+        service.setBackground(CanvasPosition.Left, mockImage);
+        expect(setBackgroundImageSpy).toHaveBeenCalled();
+    });
+
+    it('should set the background image for right canvas position', () => {
+        const mockImage = {} as ImageBitmap;
+        spyOn(window, 'createImageBitmap').and.callFake(async () => {
+            return mockImage;
+        });
+        service.setBackground(CanvasPosition.Right, mockImage);
+        expect(setBackgroundImageSpy).toHaveBeenCalled();
+    });
+
+    it('should set the background image for both canvas positions', () => {
+        const mockImage = {} as ImageBitmap;
+        spyOn(window, 'createImageBitmap').and.callFake(async () => {
+            return mockImage;
+        });
+        service.setBackground(CanvasPosition.Both, mockImage);
+        expect(setBackgroundImageSpy).toHaveBeenCalled();
+        expect(setBackgroundImageSpy).toHaveBeenCalled();
     });
 
     it('transformImageDataToPixelArray should return an array of pixels', () => {
