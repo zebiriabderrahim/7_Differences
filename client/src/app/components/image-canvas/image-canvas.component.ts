@@ -24,12 +24,12 @@ export class ImageCanvasComponent implements AfterViewInit {
 
     @HostListener('window:keydown.shift', ['$event'])
     onShiftDown() {
-        this.drawService.enableSquareMode();
+        this.drawService.setSquareMode(true);
     }
 
     @HostListener('window:keyup.shift', ['$event'])
     onShiftUp() {
-        this.drawService.disableSquareMode();
+        this.drawService.setSquareMode(false);
     }
 
     ngAfterViewInit(): void {

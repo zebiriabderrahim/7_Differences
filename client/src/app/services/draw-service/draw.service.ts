@@ -269,17 +269,10 @@ export class DrawService {
         this.activeContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
     }
 
-    enableSquareMode() {
+    setSquareMode(isSquare: boolean) {
         if (this.isDragging && this.isCurrentActionRectangle()) {
             this.drawRectangle();
-            this.isSquare = true;
-        }
-    }
-
-    disableSquareMode() {
-        if (this.isDragging && this.isCurrentActionRectangle()) {
-            this.drawRectangle();
-            this.isSquare = false;
+            this.isSquare = isSquare;
         }
     }
 }
