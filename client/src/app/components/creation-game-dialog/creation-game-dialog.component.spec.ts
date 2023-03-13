@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-// import { GameDetails } from '@app/interfaces/game-interfaces';
+import { CanvasPosition } from '@app/enum/canvas-position';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { ImageService } from '@app/services/image-service/image.service';
@@ -23,7 +23,13 @@ describe('CreationGameDialogComponent', () => {
     let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
 
     beforeEach(async () => {
-        imageServiceSpy = jasmine.createSpyObj('ImageService', ['generateDifferences', 'getGamePixels', 'getImageSources', 'drawDifferences']);
+        imageServiceSpy = jasmine.createSpyObj('ImageService', [
+            'generateDifferences',
+            'resetBackground',
+            'getGamePixels',
+            'getImageSources',
+            'drawDifferences',
+        ]);
         differenceServiceSpy = jasmine.createSpyObj('DifferenceService', [
             'generateDifferences',
             'generateDifferencesPackages',
@@ -33,6 +39,7 @@ describe('CreationGameDialogComponent', () => {
             'getNumberOfDifferences',
             'isGameHard',
         ]);
+        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['verifyIfGameExists', 'createGame']);
         await TestBed.configureTestingModule({
             imports: [
                 HttpClientTestingModule,
@@ -43,6 +50,7 @@ describe('CreationGameDialogComponent', () => {
                 MatInputModule,
                 MatButtonModule,
                 RouterTestingModule,
+                ReactiveFormsModule,
             ],
             declarations: [CreationGameDialogComponent],
             providers: [
@@ -129,20 +137,39 @@ describe('CreationGameDialogComponent', () => {
     //     expect(dialogRef.close).toHaveBeenCalledWith(gameDetails);
     // });
 
-    it('should not close the dialog if the form is invalid', () => {
+    it('submitForm should close dialog and reset background when form is valid and has a name', () => {
+        const expectedDifferencesPackages = [
+            [
+                { x: 0, y: 39 },
+                { x: 0, y: 40 },
+            ],
+            [
+                { x: 69, y: 0 },
+                { x: 70, y: 0 },
+            ],
+        ];
+        component.gameNameForm = new FormGroup({
+            name: new FormControl('test'),
+        });
+        imageServiceSpy.getImageSources.and.returnValue({ left: 'left-image', right: 'right-image' });
+        differenceServiceSpy.generateDifferencesPackages.and.returnValue(expectedDifferencesPackages);
+        differenceServiceSpy.isGameHard.and.returnValue(false);
+        differenceServiceSpy.getNumberOfDifferences.and.returnValue(2);
+        component.submitForm();
+        expect(dialogRef.close).toHaveBeenCalledWith({
+            name: 'test',
+            originalImage: 'left-image',
+            modifiedImage: 'right-image',
+            nDifference: 2,
+            differences: expectedDifferencesPackages,
+            isHard: false,
+        });
+        expect(imageServiceSpy.resetBackground).toHaveBeenCalledWith(CanvasPosition.Both);
+    });
+
+    it('should not close the dialog when the form is invalid or the name field is empty', () => {
+        component.gameNameForm = new FormGroup({ name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)]) });
         component.submitForm();
         expect(dialogRef.close).not.toHaveBeenCalled();
     });
-
-    /*
-    it('should return null if game name does not exist', () => {
-        fixture.detectChanges();
-        const control = { value: 'newGame' } as AbstractControl;
-        component.gameNameForm = new FormGroup({ name: new FormControl('newGame') });
-
-        spyOn(component, 'validateGameName').and.callThrough();
-        component.validateGameName(control).subscribe((result) => {
-            expect(result).toBeNull();
-        });
-    });*/
 });
