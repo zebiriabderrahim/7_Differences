@@ -1,7 +1,7 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
+import { RoomManagerService } from '@app/services/room-manager.service';
 import { GameCardActions } from '@common/game-interfaces';
 import { filter, Subscription } from 'rxjs';
 
@@ -15,52 +15,52 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
     refusedMessage: string;
     countdown: number;
     actions: typeof GameCardActions = GameCardActions;
-    private gameId: string;
     private playerNamesSubscription: Subscription;
     constructor(
-        @Inject(MAT_DIALOG_DATA) public data: { gameId: string; player: string; action: GameCardActions },
-        private readonly classicSystemService: ClassicSystemService,
-        public dialogRef: MatDialogRef<WaitingForPlayerToJoinComponent>,
+        @Inject(MAT_DIALOG_DATA) private data: { roomId: string; player: string; gameId: string },
+        private readonly roomManagerService: RoomManagerService,
+        private dialogRef: MatDialogRef<WaitingForPlayerToJoinComponent>,
         private readonly router: Router,
     ) {
-        this.classicSystemService.manageSocket();
+        this.roomManagerService.handleRoomEvents();
     }
     ngOnInit(): void {
-        this.gameId = this.data.gameId;
         this.getJoinedPlayerNamesByGameId();
     }
 
     getJoinedPlayerNamesByGameId(): void {
-        this.playerNamesSubscription = this.classicSystemService.joinedPlayerNamesByGameId$
-            .pipe(filter((data) => data.gameId === this.gameId && !!data.playerNamesList))
+        this.playerNamesSubscription = this.roomManagerService.joinedPlayerNamesByGameId$
+            .pipe(filter((data) => data.gameId === this.data.gameId && !!data.playerNamesList))
             .subscribe((data) => {
                 this.playerNames = data.playerNamesList;
             });
     }
 
     refusePlayer(playerName: string) {
-        this.classicSystemService.refusePlayer(this.gameId, playerName);
+        this.roomManagerService.refusePlayer(this.data.gameId, playerName);
     }
 
     acceptPlayer(playerName: string) {
+        this.roomManagerService.acceptPlayer(this.data.gameId, this.data.roomId, this.data.player);
         this.playerNames.forEach((player) => {
             if (player !== playerName) {
                 this.refusePlayer(player);
             }
         });
-        this.classicSystemService.acceptPlayer(this.gameId, playerName);
         this.dialogRef.close();
-        this.router.navigate(['/game']);
+        this.router.navigate(['/game', this.data.roomId]);
+        this.undoCreateOneVsOneRoom();
     }
 
-    undoCreateOneVsOne() {
-        this.classicSystemService.deleteCreatedOneVsOneRoom(this.data.gameId);
+    undoCreateOneVsOneRoom() {
+        this.roomManagerService.deleteCreatedOneVsOneRoom(this.data.gameId);
+        this.playerNames.forEach((player) => {
+            this.refusePlayer(player);
+        });
     }
 
     ngOnDestroy(): void {
-        if (this.playerNamesSubscription) {
-            this.playerNamesSubscription.unsubscribe();
-        }
-        this.classicSystemService.disconnect();
+        this.playerNamesSubscription?.unsubscribe();
+        this.roomManagerService.disconnect();
     }
 }

@@ -2,7 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { AsyncValidatorFn, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MAX_NAME_LENGTH, MIN_NAME_LENGTH } from '@app/constants/constants';
-import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
+import { RoomManagerService } from '@app/services/room-manager.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -25,15 +25,11 @@ export class PlayerNameDialogBoxComponent {
     });
 
     constructor(
-        public dialogRef: MatDialogRef<PlayerNameDialogBoxComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: { gameId: string },
-        private readonly classicSystemService: ClassicSystemService,
+        private dialogRef: MatDialogRef<PlayerNameDialogBoxComponent>,
+        @Inject(MAT_DIALOG_DATA) private data: { gameId: string },
+        private readonly roomManagerService: RoomManagerService,
     ) {
-        this.classicSystemService.manageSocket();
-    }
-
-    onNoClick(): void {
-        this.dialogRef.close();
+        this.roomManagerService.handleRoomEvents();
     }
 
     submitForm() {
@@ -43,8 +39,8 @@ export class PlayerNameDialogBoxComponent {
     }
 
     async validatePlayerName(control: FormControl): Promise<{ [key: string]: unknown } | null> {
-        this.classicSystemService.isPlayerNameIsAlreadyTaken(this.data.gameId, control.value);
-        const isNameTaken = await firstValueFrom(this.classicSystemService.isNameTaken$, {
+        this.roomManagerService.isPlayerNameIsAlreadyTaken(this.data.gameId, control.value);
+        const isNameTaken = await firstValueFrom(this.roomManagerService.isNameTaken$, {
             defaultValue: { gameId: this.data.gameId, isNameAvailable: true },
         });
         if (isNameTaken.gameId === this.data.gameId && !isNameTaken.isNameAvailable) {

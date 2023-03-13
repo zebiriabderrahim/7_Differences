@@ -11,6 +11,6 @@
             <mat-error *ngIf="playerNameForm.controls.name.errors?.nameTaken" [ngClass]="'error'">Ce nom est déjà pris!</mat-error>
         </mat-form-field>
         <button mat-raised-button type="submit" [disabled]="playerNameForm.invalid">Ok</button>
-        <button mat-button (click)="onNoClick()" type="button">Non merci</button>
+        <button mat-button mat-dialog-close type="button">Non merci</button>
     </form>
 </div>
