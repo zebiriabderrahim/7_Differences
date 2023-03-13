@@ -116,6 +116,7 @@ export class ClassicModeService {
             room.endMessage = `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo!`;
             server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
             this.deleteCreatedSoloGameRoom(room.roomId);
+            this.roomAvailability.delete(room.clientGame.id);
         }
     }
 
