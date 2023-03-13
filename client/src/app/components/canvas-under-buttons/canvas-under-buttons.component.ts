@@ -1,6 +1,7 @@
 import { Component, ElementRef, Input, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CanvasPosition } from '@app/enum/canvas-position';
+import { DrawService } from '@app/services/draw-service/draw.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ValidationService } from '@app/services/validation-service/validation.service';
 
@@ -16,8 +17,11 @@ export class CanvasUnderButtonsComponent {
     private readonly invalidImageDialog: TemplateRef<HTMLElement>;
     readonly canvasPosition: typeof CanvasPosition = CanvasPosition;
 
+    // Services are needed for the dialog and dialog needs to talk to the parent component
+    // eslint-disable-next-line max-params
     constructor(
         private readonly imageService: ImageService,
+        private readonly drawService: DrawService,
         private readonly validationService: ValidationService,
         private readonly matDialog: MatDialog,
     ) {}
@@ -46,5 +50,9 @@ export class CanvasUnderButtonsComponent {
 
     resetBackground(): void {
         this.imageService.resetBackground(this.canvasPositionType);
+    }
+
+    resetForeground(): void {
+        this.drawService.resetForeground(this.canvasPositionType);
     }
 }

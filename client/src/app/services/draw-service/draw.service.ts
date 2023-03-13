@@ -120,9 +120,11 @@ export class DrawService {
         switch (canvasPosition) {
             case CanvasPosition.Left:
                 this.resetForegroundContext(this.leftForegroundContext);
+                this.saveCurrentCanvasState();
                 break;
             case CanvasPosition.Right:
                 this.resetForegroundContext(this.rightForegroundContext);
+                this.saveCurrentCanvasState();
                 break;
             case CanvasPosition.Both:
                 this.resetForegroundContext(this.leftForegroundContext);
