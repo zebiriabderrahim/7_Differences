@@ -1,0 +1,19 @@
+<div id="buttons">
+    <button mat-raised-button (click)="duplicateRightForeground()">
+        <mat-icon>arrow_backward</mat-icon>
+    </button>
+    <button mat-raised-button (click)="swapForegrounds()">
+        <mat-icon>swap_horiz</mat-icon>
+    </button>
+    <button mat-raised-button (click)="duplicateLeftForeground()">
+        <mat-icon>arrow_forward</mat-icon>
+    </button>
+    <div>
+        <button mat-raised-button (click)="undoCanvasOperation()">
+            <mat-icon>undo</mat-icon>
+        </button>
+        <button mat-raised-button (click)="redoCanvasOperation()">
+            <mat-icon>redo</mat-icon>
+        </button>
+    </div>
+</div>
