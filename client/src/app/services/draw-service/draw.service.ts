@@ -50,9 +50,10 @@ export class DrawService {
     }
 
     disableDragging(): void {
-        this.isDragging = false;
-        this.copyCanvas(this.activeContext.canvas, this.activeCanvas);
-        this.resetActiveCanvas();
+        if (this.isDragging) {
+            this.isDragging = false;
+            this.saveCurrentCanvasState();
+        }
     }
 
     getForegroundCanvasElements(): ForegroundCanvasElements {
