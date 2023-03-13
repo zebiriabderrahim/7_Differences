@@ -8,6 +8,9 @@
     <button mat-raised-button color="primary" (click)="resetBackground()">
         Réinitialiser {{canvasPositionType === canvasPosition.Both ? 'les arrières-plans' : 'l\'arrière-plan'}}
     </button>
+    <button mat-raised-button color="accent" *ngIf="canvasPositionType !== canvasPosition.Both" (click)="resetForeground()">
+        Réinitialiser l'avant-plan
+    </button>
 </div>
 
 <ng-template #invalidImageDialog>
