@@ -162,12 +162,6 @@ export class ForegroundService {
         this.drawService.setActiveContext(this.getActiveContext(canvasPosition));
         this.drawService.setClickPosition(event);
         this.drawService.startOperation();
-        // if (this.isCurrentActionRectangle()) {
-        //     this.rectangleTopCorner = this.clickPosition;
-        // } else {
-        //     this.activeContext.beginPath();
-        //     this.drawLine(event);
-        // }
     }
 
     disableDragging() {
@@ -185,7 +179,6 @@ export class ForegroundService {
                 this.copyCanvas(this.drawService.getActiveContext().canvas, canvasPosition);
                 this.drawService.resetActiveCanvas();
             } else {
-                // this.drawLine(event);
                 this.drawService.drawLine();
                 this.saveCurrentCanvasState();
             }

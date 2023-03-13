@@ -1,7 +1,6 @@
 import { Component, ElementRef, Input, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CanvasPosition } from '@app/enum/canvas-position';
-// import { DrawService } from '@app/services/draw-service/draw.service';
 import { ForegroundService } from '@app/services/foreground-service/foreground.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ValidationService } from '@app/services/validation-service/validation.service';
