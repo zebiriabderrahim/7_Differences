@@ -5,7 +5,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { JoinedPlayerDialogComponent } from '@app/components/joined-player-dialog/joined-player-dialog.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
-import { WaitingHostToDecideComponent } from '@app/components/waiting-host-to-decide/waiting-host-to-decide.component';
 import { WaitingForPlayerToJoinComponent } from '@app/components/waiting-player-to-join/waiting-player-to-join.component';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';

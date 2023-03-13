@@ -1,6 +1,6 @@
 import { ClassicModeService } from '@app/services/classic-mode/classic-mode.service';
 import { Coordinate } from '@common/coordinate';
-import { ChatMessage, AcceptedPlayer, GameEvents, GameModes, MessageEvents } from '@common/game-interfaces';
+import { AcceptedPlayer, ChatMessage, GameEvents, GameModes, MessageEvents } from '@common/game-interfaces';
 import { Injectable, Logger } from '@nestjs/common';
 import {
     ConnectedSocket,
@@ -33,7 +33,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         const room = await this.classicModeService.createRoom(playerName, gameId);
         if (room) {
             room.clientGame.mode = GameModes.ClassicSolo;
-            this.classicModeService.saveRoom(room, socket);
+            this.classicModeService.saveRoom(room);
             this.server.to(socket.id).emit(GameEvents.RoomSoloCreated, room.roomId);
         }
     }
@@ -138,7 +138,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     handleDisconnect(@ConnectedSocket() socket: Socket) {
         this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
-        // this.classicModeService.endGame(socket.id, this.server);
+        this.classicModeService.endGame(socket.id, '', this.server);
     }
 
     updateTimers() {
