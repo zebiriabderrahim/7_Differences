@@ -6,6 +6,7 @@ import { GameAreaService } from '@app/services/game-area-service/game-area.servi
 import { ChatMessage, ClientSideGame, MessageTag } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
+import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dialog/solo-game-view-dialog.component';
 
 @Component({
     selector: 'app-solo-game-view',
@@ -98,7 +99,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     }
 
     abandonGame(): void {
-        this.matDialog.open(SoloGameViewComponent, {
+        this.matDialog.open(SoloGameViewDialogComponent, {
             data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ?' },
             disableClose: true,
         });
