@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { GameDetails } from '@app/interfaces/game-interfaces';
 import { ImageSources } from '@app/interfaces/image-sources';
+import { CanvasPosition } from '@app/enum/canvas-position';
 import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
@@ -20,7 +21,6 @@ export class CreationGameDialogComponent implements OnInit {
     @ViewChild('differenceCanvas', { static: true }) differenceCanvas: ElementRef;
     gameName: string;
     nDifferences: number;
-    readonly routerConfig: string = '/config/';
     gameNameForm = new FormGroup({
         name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)], [this.validateGameName.bind(this)]),
     });
@@ -53,7 +53,7 @@ export class CreationGameDialogComponent implements OnInit {
         return this.differenceService.isNumberOfDifferencesValid();
     }
 
-    onNoClick(): void {
+    closeModal(): void {
         this.dialogRef.close();
     }
 
@@ -70,7 +70,7 @@ export class CreationGameDialogComponent implements OnInit {
                 isHard: this.differenceService.isGameHard(),
             };
             this.dialogRef.close(gameDetails);
-            this.imageService.resetBothBackgrounds();
+            this.imageService.resetBackground(CanvasPosition.Both);
         }
     }
 
