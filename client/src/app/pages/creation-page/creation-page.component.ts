@@ -8,7 +8,6 @@ import { CanvasPosition } from '@app/enum/canvas-position';
 import { GameDetails } from '@app/interfaces/game-interfaces';
 import { LEFT_BUTTON } from '@app/constants/constants';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
-// import { DrawService } from '@app/services/draw-service/draw.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ForegroundService } from '@app/services/foreground-service/foreground.service';
 
@@ -29,7 +28,6 @@ export class CreationPageComponent implements AfterViewInit {
     // eslint-disable-next-line max-params
     constructor(
         private readonly imageService: ImageService,
-        // private readonly drawService: DrawService,
         private readonly foregroundService: ForegroundService,
         private readonly matDialog: MatDialog,
         private readonly communicationService: CommunicationService,
@@ -53,7 +51,6 @@ export class CreationPageComponent implements AfterViewInit {
     mouseUpEvent(event: MouseEvent) {
         if (event.button === LEFT_BUTTON) {
             this.foregroundService.disableDragging();
-            // this.drawService.disableDragging();
         }
     }
 
@@ -86,24 +83,4 @@ export class CreationPageComponent implements AfterViewInit {
                 }
             });
     }
-
-    // swapForegrounds() {
-    //     this.drawService.swapForegrounds();
-    // }
-
-    // duplicateLeftForeground() {
-    //     this.drawService.duplicateForeground(CanvasPosition.Left);
-    // }
-
-    // duplicateRightForeground() {
-    //     this.drawService.duplicateForeground(CanvasPosition.Right);
-    // }
-
-    // undoCanvasOperation() {
-    //     this.drawService.undoCanvasOperation();
-    // }
-
-    // redoCanvasOperation() {
-    //     this.drawService.redoCanvasOperation();
-    // }
 }
