@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -167,9 +167,26 @@ describe('CreationGameDialogComponent', () => {
         expect(imageServiceSpy.resetBackground).toHaveBeenCalledWith(CanvasPosition.Both);
     });
 
-    it('should not close the dialog when the form is invalid or the name field is empty', () => {
-        component.gameNameForm = new FormGroup({ name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)]) });
+    it('submitForm should not close dialog and not reset background when form is invalid', () => {
+        const expectedDifferencesPackages = [
+            [
+                { x: 0, y: 56 },
+                { x: 0, y: 57 },
+            ],
+            [
+                { x: 19, y: 0 },
+                { x: 20, y: 0 },
+            ],
+        ];
+        component.gameNameForm = new FormGroup({
+            name: new FormControl(''),
+        });
+        imageServiceSpy.getImageSources.and.returnValue({ left: 'left-image', right: 'right-image' });
+        differenceServiceSpy.generateDifferencesPackages.and.returnValue(expectedDifferencesPackages);
+        differenceServiceSpy.isGameHard.and.returnValue(false);
+        differenceServiceSpy.getNumberOfDifferences.and.returnValue(2);
         component.submitForm();
         expect(dialogRef.close).not.toHaveBeenCalled();
+        expect(imageServiceSpy.resetBackground).not.toHaveBeenCalled();
     });
 });
