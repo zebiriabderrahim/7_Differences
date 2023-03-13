@@ -30,21 +30,12 @@ export class CanvasUnderButtonsComponent {
         const target = event.target as HTMLInputElement;
         if (target.files && target.files[0]) {
             const file = target.files[0];
-            if (!this.validationService.isImageTypeValid(file)) {
-                this.matDialog.open(this.invalidImageDialog);
-            } else {
-                await this.setImageIfValid(file);
+            if (this.validationService.isImageValid(file, target)) {
+                this.imageService.setBackground(this.canvasPositionType, await createImageBitmap(file));
                 this.uploadInput.nativeElement.value = '';
+            } else {
+                this.matDialog.open(this.invalidImageDialog);
             }
-        }
-    }
-
-    async setImageIfValid(file: File): Promise<void> {
-        const image = await createImageBitmap(file);
-        if (this.validationService.isImageSizeValid(image) && this.validationService.isImageFormatValid(file)) {
-            this.imageService.setBackground(this.canvasPositionType, image);
-        } else {
-            this.matDialog.open(this.invalidImageDialog);
         }
     }
 
