@@ -1,4 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dialog/solo-game-view-dialog.component';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
@@ -9,12 +10,12 @@ import { BehaviorSubject, filter, Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class ClassicSystemService implements OnDestroy {
+    matDialog: MatDialog;
     private timer: BehaviorSubject<number>;
     private differencesFound: BehaviorSubject<number>;
     private currentGame: Subject<ClientSideGame>;
-    private isLeftCanvas: boolean;
     private message: Subject<ChatMessage>;
-    matDialog: any;
+    private isLeftCanvas: boolean;
 
     constructor(private clientSocket: ClientSocketService, private gameAreaService: GameAreaService) {
         this.currentGame = new Subject<ClientSideGame>();
@@ -33,6 +34,9 @@ export class ClassicSystemService implements OnDestroy {
     get differencesFound$() {
         return this.differencesFound.asObservable();
     }
+    get message$() {
+        return this.message.asObservable();
+    }
     createSoloGame(gameId: string, playerName: string): void {
         this.clientSocket.send(GameEvents.CreateSoloGame, { gameId, playerName });
     }
@@ -41,11 +45,11 @@ export class ClassicSystemService implements OnDestroy {
     }
 
     checkStatus(): void {
-        this.clientSocket.send(GameEvents.CheckStatus, this.playerName.getValue());
+        this.clientSocket.send(GameEvents.CheckStatus);
     }
 
     requestVerification(coords: Coordinate): void {
-        this.clientSocket.send(GameEvents.RemoveDiff, { coords, playerName: this.playerName.getValue() });
+        this.clientSocket.send(GameEvents.RemoveDiff, coords);
     }
 
     replaceDifference(differences: Coordinate[]): void {
@@ -122,13 +126,13 @@ export class ClassicSystemService implements OnDestroy {
         this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {
             this.showEndGameDialog(endGameMessage);
         });
-    }
-
-    ngOnDestroy(): void {
-        this.clientSocket.disconnect();
 
         this.clientSocket.on(MessageEvents.LocalMessage, (receivedMessage: ChatMessage) => {
             this.message.next(receivedMessage);
         });
+    }
+
+    ngOnDestroy(): void {
+        this.clientSocket.disconnect();
     }
 }

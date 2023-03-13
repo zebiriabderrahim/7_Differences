@@ -79,7 +79,6 @@ export interface WaitingPlayerNameList {
     playerNamesList: string[];
 }
 
-
 export enum GameEvents {
     ValidateCoords = 'validateCoords',
     Penalty = 'penalty',
@@ -108,9 +107,8 @@ export enum GameEvents {
     GameStarted = 'OneVsOneStarted',
     CreateSoloRoom = 'CreateSoloRoom',
     RoomSoloCreated = 'RoomSoloCreated',
-    AbandonGame = "AbandonGame",
-    AcceptPlayer= "AcceptPlayer",
-    JoinOneVsOneGame = "JoinOneVsOneGame",
+    AbandonGame = 'AbandonGame',
+    JoinOneVsOneGame = 'JoinOneVsOneGame',
 }
 
 export enum GameModes {
@@ -120,18 +118,18 @@ export enum GameModes {
 
 export enum MessageEvents {
     LocalMessage = 'LocalMessage',
-    GlobalMessage = 'GlobalMessage'
+    GlobalMessage = 'GlobalMessage',
 }
 
 export enum MessageTag {
     sent = 'sent',
     received = 'received',
-    common = 'common'
+    common = 'common',
 }
 
 export interface ChatMessage {
-    tag: MessageTag,
-    message: string
+    tag: MessageTag;
+    message: string;
 }
 
 export enum GameCardActions {

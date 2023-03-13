@@ -1,12 +1,12 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dialog/solo-game-view-dialog.component';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { ChatMessage, ClientSideGame, MessageTag } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
-import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dialog/solo-game-view-dialog.component';
 
 @Component({
     selector: 'app-solo-game-view',
@@ -32,9 +32,9 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     constructor(
         private gameAreaService: GameAreaService,
         private classicService: ClassicSystemService,
-        public router: Router,
         private readonly matDialog: MatDialog,
-    , private route: ActivatedRoute) {}
+        private route: ActivatedRoute,
+    ) {}
 
     ngAfterViewInit(): void {
         this.classicService.manageSocket();
