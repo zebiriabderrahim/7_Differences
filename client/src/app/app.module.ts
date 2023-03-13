@@ -33,6 +33,7 @@ import { WaitingForPlayerToJoinComponent } from './components/waiting-player-to-
 import { ConfigPageComponent } from './pages/config-page/config-page.component';
 import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { WaitingHostToDecideComponent } from './components/waiting-host-to-decide/waiting-host-to-decide.component';
+import { JoinedPlayerDialogComponent } from './components/joined-player-dialog/joined-player-dialog.component';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -56,6 +57,7 @@ import { WaitingHostToDecideComponent } from './components/waiting-host-to-decid
         SoloGameViewDialogComponent,
         WaitingForPlayerToJoinComponent,
         CanvasTopButtonsComponent,
+        JoinedPlayerDialogComponent,
         NavBarComponent,
         ChatBoxComponent,
         WaitingHostToDecideComponent,

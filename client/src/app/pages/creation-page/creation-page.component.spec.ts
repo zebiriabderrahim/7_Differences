@@ -1,4 +1,3 @@
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -66,7 +65,7 @@ describe('CreationPageComponent', () => {
         fixture.detectChanges();
     });
 
-    afterEach(function () {
+    afterEach(() => {
         jasmine.clock().uninstall();
     });
 

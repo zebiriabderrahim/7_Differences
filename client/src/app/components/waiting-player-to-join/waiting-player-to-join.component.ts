@@ -1,34 +1,69 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
+import { GameCardActions } from '@common/game-interfaces';
+import { filter, Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-waiting-player-to-join',
     templateUrl: './waiting-player-to-join.component.html',
     styleUrls: ['./waiting-player-to-join.component.scss'],
 })
-export class WaitingForPlayerToJoinComponent implements OnInit {
-    playerNames: string[];
-    private gameId: string;
-    constructor(@Inject(MAT_DIALOG_DATA) public data: { gameId: string }, private readonly classicSystemService: ClassicSystemService) {
-        this.classicSystemService.manageSocket();
+export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
+    playerNames: string[] = [];
+    refusedMessage: string;
+    countdown: number;
+    actions: typeof GameCardActions = GameCardActions;
+    private playerNamesSubscription: Subscription;
+
+    // Services are needed for the dialog and dialog needs to talk to the parent component
+    // eslint-disable-next-line max-params
+    constructor(
+        @Inject(MAT_DIALOG_DATA) private data: { roomId: string; player: string; gameId: string },
+        private readonly roomManagerService: RoomManagerService,
+        private dialogRef: MatDialogRef<WaitingForPlayerToJoinComponent>,
+        private readonly router: Router,
+    ) {
+        this.roomManagerService.handleRoomEvents();
     }
     ngOnInit(): void {
-        this.gameId = this.data.gameId;
-        this.classicSystemService.joinedPlayerNamesByGameId$.subscribe((playerNames) => {
-            if (playerNames.has(this.gameId)) {
-                this.playerNames = playerNames.get(this.gameId) ?? [];
+        this.getJoinedPlayerNamesByGameId();
+    }
+
+    getJoinedPlayerNamesByGameId(): void {
+        this.playerNamesSubscription = this.roomManagerService.joinedPlayerNamesByGameId$
+            .pipe(filter((data) => data.gameId === this.data.gameId && !!data.playerNamesList))
+            .subscribe((data) => {
+                this.playerNames = data.playerNamesList;
+            });
+    }
+
+    refusePlayer(playerName: string) {
+        this.roomManagerService.refusePlayer(this.data.gameId, playerName);
+    }
+
+    acceptPlayer(playerName: string) {
+        this.roomManagerService.acceptPlayer(this.data.gameId, this.data.roomId, this.data.player);
+        this.playerNames.forEach((player) => {
+            if (player !== playerName) {
+                this.refusePlayer(player);
             }
+        });
+        this.dialogRef.close();
+        this.router.navigate(['/game', this.data.roomId]);
+        this.undoCreateOneVsOneRoom();
+    }
+
+    undoCreateOneVsOneRoom() {
+        this.roomManagerService.deleteCreatedOneVsOneRoom(this.data.gameId);
+        this.playerNames.forEach((player) => {
+            this.refusePlayer(player);
         });
     }
 
-    refusePlayer(nameIndex: number) {
-        this.playerNames.filter((name, index) => index !== nameIndex);
-        this.classicSystemService.refusePlayer(this.gameId, this.playerNames);
-    }
-
-    acceptPlayer(index: number) {
-        this.playerNames[index]
-        console.log('accept player');
+    ngOnDestroy(): void {
+        this.playerNamesSubscription?.unsubscribe();
+        this.roomManagerService.disconnect();
     }
 }
