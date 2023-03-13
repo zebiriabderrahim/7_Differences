@@ -188,14 +188,19 @@ export class DrawService {
         }
     }
 
-    startCanvasOperation(canvasOperation: CanvasOperation, event: MouseEvent) {
+    setCanvasOperation(canvasOperation: CanvasOperation) {
         this.undoneCanvasStateStack = [];
+        this.isDragging = true;
         if (this.canvasStateStack.length === 0) {
             this.canvasStateStack.push(this.getCanvasState());
         }
         this.currentAction = canvasOperation.action;
         this.setActiveCanvas(canvasOperation.position);
         this.setCanvasOperationStyle(canvasOperation.color, canvasOperation.width);
+    }
+
+    startCanvasOperation(canvasOperation: CanvasOperation, event: MouseEvent) {
+        this.setCanvasOperation(canvasOperation);
         this.setClickPosition(event);
         if (this.isCurrentActionRectangle()) {
             this.rectangleTopCorner = this.clickPosition;
@@ -203,7 +208,6 @@ export class DrawService {
             this.activeContext.beginPath();
             this.drawLine(event);
         }
-        this.isDragging = true;
     }
 
     continueCanvasOperation(canvasPosition: CanvasPosition, event: MouseEvent) {
