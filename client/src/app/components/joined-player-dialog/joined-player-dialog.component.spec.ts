@@ -1,23 +1,27 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { JoinedPlayerDialogComponent } from './joined-player-dialog.component';
 
 describe('JoinedPlayerDialogComponent', () => {
-  let component: JoinedPlayerDialogComponent;
-  let fixture: ComponentFixture<JoinedPlayerDialogComponent>;
+    let component: JoinedPlayerDialogComponent;
+    let fixture: ComponentFixture<JoinedPlayerDialogComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ JoinedPlayerDialogComponent ]
-    })
-    .compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [JoinedPlayerDialogComponent],
+            imports: [MatDialogModule],
+            providers: [
+                { provide: MAT_DIALOG_DATA, useValue: {} },
+                { provide: MatDialogRef, useValue: {} },
+            ],
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(JoinedPlayerDialogComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+        fixture = TestBed.createComponent(JoinedPlayerDialogComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });
