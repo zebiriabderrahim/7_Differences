@@ -6,7 +6,6 @@ import { CanvasPosition } from '@app/enum/canvas-position';
 import { ForegroundCanvasElements } from '@app/interfaces/foreground-canvas-elements';
 import { ImageSources } from '@app/interfaces/image-sources';
 import { GamePixels, Pixel } from '@app/interfaces/pixel';
-// import { DrawService } from '@app/services/draw-service/draw.service';
 import { Coordinate } from '@common/coordinate';
 import { ForegroundService } from '@app/services/foreground-service/foreground.service';
 

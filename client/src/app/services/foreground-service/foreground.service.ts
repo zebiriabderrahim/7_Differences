@@ -51,10 +51,6 @@ export class ForegroundService {
         }
     }
 
-    resetForegroundContext(foregroundContext: CanvasRenderingContext2D) {
-        foregroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-    }
-
     getForegroundCanvasElements(): ForegroundCanvasElements {
         return { left: this.leftForegroundContext.canvas, right: this.rightForegroundContext.canvas };
     }
@@ -75,22 +71,6 @@ export class ForegroundService {
         const imageDataToDuplicate: ImageData = contextToDuplicate.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         contextToOverwrite.putImageData(imageDataToDuplicate, 0, 0);
         this.saveCurrentCanvasState();
-    }
-
-    saveCurrentCanvasState() {
-        this.foregroundsStateStack.push(this.getForegroundsState());
-    }
-
-    getForegroundsState(): ForegroundsState {
-        const leftForegroundData: ImageData = this.leftForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        const rightForegroundData: ImageData = this.rightForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        return { left: leftForegroundData, right: rightForegroundData };
-    }
-
-    redrawForegrounds(canvasState: ForegroundsState) {
-        this.resetForeground(CanvasPosition.Both);
-        this.leftForegroundContext.putImageData(canvasState.left, 0, 0);
-        this.rightForegroundContext.putImageData(canvasState.right, 0, 0);
     }
 
     undoCanvasOperation() {
@@ -115,26 +95,6 @@ export class ForegroundService {
                 this.redoCanvasOperation();
             }
         }
-    }
-
-    isCanvasStateNextState(nextState: ForegroundsState): boolean {
-        const canvasState: ForegroundsState = this.getForegroundsState();
-        return (
-            canvasState.left.data.toString() === nextState.left.data.toString() &&
-            canvasState.right.data.toString() === nextState.right.data.toString()
-        );
-    }
-
-    copyCanvas(canvas: HTMLCanvasElement, canvasPosition: CanvasPosition) {
-        switch (canvasPosition) {
-            case CanvasPosition.Left:
-                this.leftForegroundContext.drawImage(canvas, 0, 0);
-                break;
-            case CanvasPosition.Right:
-                this.rightForegroundContext.drawImage(canvas, 0, 0);
-                break;
-        }
-        this.saveCurrentCanvasState();
     }
 
     getActiveContext(canvasPosition: CanvasPosition): CanvasRenderingContext2D {
@@ -165,24 +125,62 @@ export class ForegroundService {
     }
 
     disableDragging() {
-        if (this.drawService.isMouseDragging()) {
-            this.drawService.stopOperation();
+        if (this.drawService.isMouseBeingDragged()) {
+            this.drawService.disableMouseDrag();
             this.saveCurrentCanvasState();
         }
     }
 
     stopForegroundOperation(canvasPosition: CanvasPosition, event: MouseEvent) {
         this.drawService.setClickPosition(event);
-        if (this.drawService.isMouseDragging() && this.drawService.getActiveCanvasPosition() === canvasPosition) {
+        if (this.drawService.isMouseBeingDragged() && this.drawService.getActiveCanvasPosition() === canvasPosition) {
+            this.drawService.stopOperation();
             if (this.drawService.isCurrentActionRectangle()) {
-                this.drawService.drawRectangle();
                 this.copyCanvas(this.drawService.getActiveContext().canvas, canvasPosition);
                 this.drawService.resetActiveCanvas();
             } else {
-                this.drawService.drawLine();
                 this.saveCurrentCanvasState();
             }
-            this.drawService.stopOperation();
         }
+    }
+
+    private copyCanvas(canvas: HTMLCanvasElement, canvasPosition: CanvasPosition) {
+        switch (canvasPosition) {
+            case CanvasPosition.Left:
+                this.leftForegroundContext.drawImage(canvas, 0, 0);
+                break;
+            case CanvasPosition.Right:
+                this.rightForegroundContext.drawImage(canvas, 0, 0);
+                break;
+        }
+        this.saveCurrentCanvasState();
+    }
+
+    private redrawForegrounds(canvasState: ForegroundsState) {
+        this.resetForeground(CanvasPosition.Both);
+        this.leftForegroundContext.putImageData(canvasState.left, 0, 0);
+        this.rightForegroundContext.putImageData(canvasState.right, 0, 0);
+    }
+
+    private getForegroundsState(): ForegroundsState {
+        const leftForegroundData: ImageData = this.leftForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        const rightForegroundData: ImageData = this.rightForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        return { left: leftForegroundData, right: rightForegroundData };
+    }
+
+    private isCanvasStateNextState(nextState: ForegroundsState): boolean {
+        const canvasState: ForegroundsState = this.getForegroundsState();
+        return (
+            canvasState.left.data.toString() === nextState.left.data.toString() &&
+            canvasState.right.data.toString() === nextState.right.data.toString()
+        );
+    }
+
+    private saveCurrentCanvasState() {
+        this.foregroundsStateStack.push(this.getForegroundsState());
+    }
+
+    private resetForegroundContext(foregroundContext: CanvasRenderingContext2D) {
+        foregroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
     }
 }
