@@ -1,7 +1,7 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { RoomManagerService } from '@app/services/room-manager.service';
+import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameCardActions } from '@common/game-interfaces';
 import { filter, Subscription } from 'rxjs';
 
