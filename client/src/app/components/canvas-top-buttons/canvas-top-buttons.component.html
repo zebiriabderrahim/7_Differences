@@ -19,7 +19,8 @@
             </mat-form-field>
             <mat-icon [ngStyle]="{ color: drawColor }">line_weight</mat-icon>
         </mat-button-toggle>
-        <mat-button-toggle [value]="canvasAction.Rectangle" (change)="setCanvasAction($event.value)">
+        <mat-button-toggle [value]="canvasAction.Rectangle" (change)="setCanvasAction($event.value)"
+        matTooltip="Dessiner un rectangle (Vous pouvez faire un carré en appuyant sur la touche SHIFT)">
             <mat-icon [ngStyle]="{ color: drawColor }">crop_square</mat-icon>
         </mat-button-toggle>
         <mat-button-toggle [value]="canvasAction.Eraser" (change)="setCanvasAction($event.value)">
@@ -37,7 +38,7 @@
             <mat-icon>line_weight</mat-icon>
         </mat-button-toggle>
     </mat-button-toggle-group>
-    <button mat-raised-button class="button" (click)="isColorSelected = true">
+    <button mat-raised-button class="button" (click)="isColorSelected = true" matTooltip="Changer la couleur des dessins">
         <mat-icon [ngStyle]="{ color: drawColor }">color_lens</mat-icon>
     </button>
 </div>
