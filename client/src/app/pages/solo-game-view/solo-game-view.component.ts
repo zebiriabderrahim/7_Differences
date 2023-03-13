@@ -5,6 +5,7 @@ import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dial
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { ChatMessage, ClientSideGame, MessageTag } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
@@ -20,6 +21,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     @ViewChild('modifiedCanvasFG', { static: false }) modifiedCanvasForeground!: ElementRef<HTMLCanvasElement>;
     game: ClientSideGame;
     differencesFound: number = 0;
+    opponentDifferencesFound: number = 0;
     timer: number = 0;
     messages: ChatMessage[] = [];
     readonly canvasSize = { width: IMG_WIDTH, height: IMG_HEIGHT };
@@ -29,13 +31,17 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     private routeParamSubscription: Subscription;
     private messageSub: Subscription;
     private endGameSub: Subscription;
+    private opponentDifferenceSub: Subscription;
 
     constructor(
         private gameAreaService: GameAreaService,
         private classicService: ClassicSystemService,
         private readonly matDialog: MatDialog,
         private route: ActivatedRoute,
-    ) {}
+        private roomManagerService: RoomManagerService,
+    ) {
+        this.roomManagerService.disconnect();
+    }
 
     ngAfterViewInit(): void {
         this.classicService.manageSocket();
@@ -86,6 +92,9 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
                 this.showEndGameDialog(endMessage);
             }
         });
+        this.opponentDifferenceSub = this.classicService.opponentDifferencesFound$.subscribe((opponentDifferencesFound) => {
+            this.opponentDifferencesFound = opponentDifferencesFound;
+        });
     }
 
     showAbandonDialog(): void {
@@ -127,6 +136,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.routeParamSubscription?.unsubscribe();
         this.messageSub.unsubscribe();
         this.endGameSub.unsubscribe();
+        this.opponentDifferenceSub.unsubscribe();
         this.classicService.disconnect();
     }
 }
