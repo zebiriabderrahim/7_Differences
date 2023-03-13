@@ -10,8 +10,8 @@ import { Coordinate } from '@common/coordinate';
 export class DrawService {
     private activeContext: CanvasRenderingContext2D;
     private activeCanvasPosition: CanvasPosition;
-    private isDragging: boolean;
-    private isSquare: boolean;
+    private isMouseBeingDragged: boolean;
+    private isSquareModeOn: boolean;
     private rectangleTopCorner: Coordinate;
     private currentAction: CanvasAction;
     private clickPosition: Coordinate;
@@ -21,7 +21,7 @@ export class DrawService {
     private eraserLength: number;
 
     constructor() {
-        this.isDragging = false;
+        this.isMouseBeingDragged = false;
     }
 
     setMouseStatus(isMouseLeaving: boolean): void {
@@ -60,20 +60,22 @@ export class DrawService {
         return this.currentAction === CanvasAction.Rectangle;
     }
 
-    isMouseBeingDragged(): boolean {
-        return this.isDragging;
+    isMouseDragged(): boolean {
+        return this.isMouseBeingDragged;
     }
 
     isOperationValid(canvasPosition: CanvasPosition): boolean {
-        return this.isDragging && this.activeCanvasPosition === canvasPosition;
+        return this.isMouseBeingDragged && this.activeCanvasPosition === canvasPosition;
     }
 
     disableMouseDrag(): void {
-        this.isDragging = false;
+        if (this.isMouseBeingDragged) {
+            this.isMouseBeingDragged = false;
+        }
     }
 
     startOperation() {
-        this.isDragging = true;
+        this.isMouseBeingDragged = true;
         this.setCanvasOperationStyle();
         if (this.isCurrentActionRectangle()) {
             this.rectangleTopCorner = this.clickPosition;
@@ -108,39 +110,40 @@ export class DrawService {
         this.disableMouseDrag();
     }
 
-    setSquareMode(isSquare: boolean) {
-        if (this.isDragging && this.isCurrentActionRectangle()) {
+    setSquareMode(squareMode: boolean) {
+        if (this.isMouseBeingDragged && this.isCurrentActionRectangle()) {
             this.drawRectangle();
-            this.isSquare = isSquare;
+            this.isSquareModeOn = squareMode;
         }
     }
 
     private setCanvasOperationStyle() {
-        if (this.isCurrentActionRectangle()) {
-            this.activeContext.globalCompositeOperation = 'source-over';
-            this.activeContext.fillStyle = this.drawingColor;
-        } else {
-            this.activeContext.lineWidth = this.currentAction === CanvasAction.Pencil ? this.pencilWidth : this.eraserLength;
-            this.activeContext.strokeStyle = this.drawingColor;
-            switch (this.currentAction) {
-                case CanvasAction.Pencil:
-                    this.activeContext.globalCompositeOperation = 'source-over';
-                    this.activeContext.lineCap = 'round';
-                    this.activeContext.lineJoin = 'round';
-                    break;
-                case CanvasAction.Eraser:
-                    this.activeContext.globalCompositeOperation = 'destination-out';
-                    this.activeContext.lineCap = 'square';
-                    this.activeContext.lineJoin = 'round';
-                    break;
-            }
+        switch (this.currentAction) {
+            case CanvasAction.Pencil:
+                this.activeContext.lineWidth = this.pencilWidth;
+                this.activeContext.strokeStyle = this.drawingColor;
+                this.activeContext.globalCompositeOperation = 'source-over';
+                this.activeContext.lineCap = 'round';
+                this.activeContext.lineJoin = 'round';
+                break;
+            case CanvasAction.Eraser:
+                this.activeContext.lineWidth = this.eraserLength;
+                this.activeContext.strokeStyle = this.drawingColor;
+                this.activeContext.globalCompositeOperation = 'destination-out';
+                this.activeContext.lineCap = 'square';
+                this.activeContext.lineJoin = 'round';
+                break;
+            case CanvasAction.Rectangle:
+                this.activeContext.globalCompositeOperation = 'source-over';
+                this.activeContext.fillStyle = this.drawingColor;
+                break;
         }
     }
 
     private drawRectangle() {
         this.activeContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         const rectangleWidth: number = this.clickPosition.x - this.rectangleTopCorner.x;
-        const rectangleHeight: number = this.isSquare ? rectangleWidth : this.clickPosition.y - this.rectangleTopCorner.y;
+        const rectangleHeight: number = this.isSquareModeOn ? rectangleWidth : this.clickPosition.y - this.rectangleTopCorner.y;
         this.activeContext.fillRect(this.rectangleTopCorner.x, this.rectangleTopCorner.y, rectangleWidth, rectangleHeight);
     }
 
