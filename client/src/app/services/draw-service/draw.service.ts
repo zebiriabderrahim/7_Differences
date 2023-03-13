@@ -145,24 +145,13 @@ export class DrawService {
 
     setActiveCanvas(canvasPosition: CanvasPosition) {
         this.activeCanvas = canvasPosition;
-        if (this.currentAction === CanvasAction.Rectangle) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
-                    this.activeContext = this.leftFrontContext;
-                    break;
-                case CanvasPosition.Right:
-                    this.activeContext = this.rightFrontContext;
-                    break;
-            }
-        } else {
-            switch (canvasPosition) {
-                case CanvasPosition.Left:
-                    this.activeContext = this.leftForegroundContext;
-                    break;
-                case CanvasPosition.Right:
-                    this.activeContext = this.rightForegroundContext;
-                    break;
-            }
+                this.activeContext = this.isCurrentActionRectangle() ? this.leftFrontContext : this.leftForegroundContext;
+                break;
+            case CanvasPosition.Right:
+                this.activeContext = this.isCurrentActionRectangle() ? this.rightFrontContext : this.rightForegroundContext;
+                break;
         }
     }
 
@@ -170,8 +159,12 @@ export class DrawService {
         this.clickPosition = { x: event.offsetX, y: event.offsetY };
     }
 
+    isCurrentActionRectangle(): boolean {
+        return this.currentAction === CanvasAction.Rectangle;
+    }
+
     setCanvasOperationStyle(color: string, operationWidth: number) {
-        if (this.currentAction === CanvasAction.Rectangle) {
+        if (this.isCurrentActionRectangle()) {
             this.activeContext.globalCompositeOperation = 'source-over';
             this.rightForegroundContext.globalCompositeOperation = 'source-over';
             this.leftForegroundContext.globalCompositeOperation = 'source-over';
@@ -204,7 +197,7 @@ export class DrawService {
         this.setActiveCanvas(canvasOperation.position);
         this.setCanvasOperationStyle(canvasOperation.color, canvasOperation.width);
         this.setClickPosition(event);
-        if (this.currentAction === CanvasAction.Rectangle) {
+        if (this.isCurrentActionRectangle()) {
             this.rectangleTopCorner = this.clickPosition;
         } else {
             this.activeContext.beginPath();
@@ -216,7 +209,7 @@ export class DrawService {
     continueCanvasOperation(canvasPosition: CanvasPosition, event: MouseEvent) {
         this.setClickPosition(event);
         if (this.isDragging && this.activeCanvas === canvasPosition) {
-            if (this.currentAction === CanvasAction.Rectangle) {
+            if (this.isCurrentActionRectangle()) {
                 this.drawRectangle();
             } else {
                 if (this.isMouseOutOfCanvas) {
@@ -277,14 +270,14 @@ export class DrawService {
     }
 
     enableSquareMode() {
-        if (this.isDragging && this.currentAction === CanvasAction.Rectangle) {
+        if (this.isDragging && this.isCurrentActionRectangle()) {
             this.drawRectangle();
             this.isSquare = true;
         }
     }
 
     disableSquareMode() {
-        if (this.isDragging && this.currentAction === CanvasAction.Rectangle) {
+        if (this.isDragging && this.isCurrentActionRectangle()) {
             this.drawRectangle();
             this.isSquare = false;
         }
