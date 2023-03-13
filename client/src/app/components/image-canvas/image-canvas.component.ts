@@ -1,8 +1,7 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
-import { CanvasTopButtonsComponent } from '@app/components/canvas-top-buttons/canvas-top-buttons.component';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
+import { LEFT_BUTTON } from '@app/constants/constants';
 import { CanvasPosition } from '@app/enum/canvas-position';
-import { CanvasOperation } from '@app/interfaces/canvas-operation';
 import { DrawService } from '@app/services/draw-service/draw.service';
 import { ImageService } from '@app/services/image-service/image.service';
 
@@ -16,9 +15,7 @@ export class ImageCanvasComponent implements AfterViewInit {
     @ViewChild('backgroundCanvas') backgroundCanvas: ElementRef;
     @ViewChild('foregroundCanvas') foregroundCanvas: ElementRef;
     @ViewChild('frontCanvas') frontCanvas: ElementRef;
-    @ViewChild(CanvasTopButtonsComponent) canvasTopButtonsComponent!: CanvasTopButtonsComponent;
     readonly canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
-    operationDetails: CanvasOperation;
 
     constructor(private readonly imageService: ImageService, private readonly drawService: DrawService) {}
 
@@ -42,13 +39,9 @@ export class ImageCanvasComponent implements AfterViewInit {
 
     setMouseLeavingBoolean(event: MouseEvent): void {
         const isMouseLeaving = true;
-        if (event.button === 0) {
+        if (event.button === LEFT_BUTTON) {
             this.drawService.setMousePosition(event, isMouseLeaving);
         }
-    }
-
-    resetForeground(): void {
-        this.drawService.resetForeground(this.position);
     }
 
     continueCanvasOperation(event: MouseEvent): void {
@@ -56,7 +49,7 @@ export class ImageCanvasComponent implements AfterViewInit {
     }
 
     startCanvasOperation(event: MouseEvent): void {
-        this.drawService.startCanvasOperation(this.canvasTopButtonsComponent.getOperationDetails(), event);
+        this.drawService.startCanvasOperation(this.position, event);
     }
 
     stopCanvasOperation(event: MouseEvent): void {

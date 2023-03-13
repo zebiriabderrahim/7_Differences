@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasAction } from '@app/enum/canvas-action';
 import { CanvasPosition } from '@app/enum/canvas-position';
-import { CanvasOperation } from '@app/interfaces/canvas-operation';
+// import { CanvasOperation } from '@app/interfaces/canvas-operation';
 import { CanvasState } from '@app/interfaces/canvas-state';
 import { ForegroundCanvasElements } from '@app/interfaces/foreground-canvas-elements';
 import { Coordinate } from '@common/coordinate';
@@ -40,29 +40,19 @@ export class DrawService {
     }
 
     setDrawingColor(color: string): void {
-        console.log('setDrawingColor: ' + color);
         this.drawingColor = color;
-        console.log('this.drawingColor: ' + this.drawingColor);
-        // this.activeContext.strokeStyle = color;
     }
 
     setCanvasAction(canvasAction: CanvasAction): void {
-        console.log('setCanvasAction: ' + canvasAction);
         this.currentAction = canvasAction;
     }
 
     setPencilWidth(width: number): void {
-        console.log('setPencilWidth: ' + width);
         this.pencilWidth = width;
-        console.log('this.pencilWidth: ' + this.pencilWidth);
-        // this.activeContext.lineWidth = width;
     }
 
     setEraserLength(width: number): void {
-        console.log('setEraserLength: ' + width);
         this.eraserLength = width;
-        console.log('this.eraserLength: ' + this.eraserLength);
-        // this.activeContext.lineWidth = width;
     }
 
     setForegroundContext(canvasPosition: CanvasPosition, foregroundContext: CanvasRenderingContext2D, frontContext: CanvasRenderingContext2D) {
@@ -192,23 +182,22 @@ export class DrawService {
         return this.currentAction === CanvasAction.Rectangle;
     }
 
-    setCanvasOperationStyle(color: string, operationWidth: number) {
+    setCanvasOperationStyle() {
         if (this.isCurrentActionRectangle()) {
             this.activeContext.globalCompositeOperation = 'source-over';
             this.rightForegroundContext.globalCompositeOperation = 'source-over';
             this.leftForegroundContext.globalCompositeOperation = 'source-over';
-            this.activeContext.fillStyle = color;
+            this.activeContext.fillStyle = this.drawingColor;
         } else {
-            this.activeContext.lineWidth = operationWidth;
+            this.activeContext.lineWidth = this.currentAction === CanvasAction.Pencil ? this.pencilWidth : this.eraserLength;
+            this.activeContext.strokeStyle = this.drawingColor;
             switch (this.currentAction) {
                 case CanvasAction.Pencil:
-                    this.activeContext.strokeStyle = color;
                     this.activeContext.globalCompositeOperation = 'source-over';
                     this.activeContext.lineCap = 'round';
                     this.activeContext.lineJoin = 'round';
                     break;
                 case CanvasAction.Eraser:
-                    this.activeContext.strokeStyle = color;
                     this.activeContext.globalCompositeOperation = 'destination-out';
                     this.activeContext.lineCap = 'square';
                     this.activeContext.lineJoin = 'round';
@@ -217,19 +206,18 @@ export class DrawService {
         }
     }
 
-    setCanvasOperation(canvasOperation: CanvasOperation) {
+    setCanvasOperation() {
         this.undoneCanvasStateStack = [];
         this.isDragging = true;
         if (this.canvasStateStack.length === 0) {
             this.canvasStateStack.push(this.getCanvasState());
         }
-        this.currentAction = canvasOperation.action;
-        this.setActiveCanvas(canvasOperation.position);
-        this.setCanvasOperationStyle(canvasOperation.color, canvasOperation.width);
+        this.setCanvasOperationStyle();
     }
 
-    startCanvasOperation(canvasOperation: CanvasOperation, event: MouseEvent) {
-        this.setCanvasOperation(canvasOperation);
+    startCanvasOperation(canvasPosition: CanvasPosition, event: MouseEvent) {
+        this.setActiveCanvas(canvasPosition);
+        this.setCanvasOperation();
         this.setClickPosition(event);
         if (this.isCurrentActionRectangle()) {
             this.rectangleTopCorner = this.clickPosition;
