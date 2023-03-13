@@ -16,13 +16,10 @@ import { CanvasTopButtonsComponent } from '@app/components/canvas-top-buttons/ca
 import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
 // import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
-import { SUBMIT_WAIT_TIME } from '@app/constants/constants';
 import { DrawService } from '@app/services/draw-service/draw.service';
 // import { SUBMIT_WAIT_TIME } from '@app/constants/constants';
 // import { ImageService } from '@app/services/image-service/image.service';
 // import { of } from 'rxjs';
-import { ImageService } from '@app/services/image-service/image.service';
-import { of } from 'rxjs';
 import { CreationPageComponent } from './creation-page.component';
 
 describe('CreationPageComponent', () => {
