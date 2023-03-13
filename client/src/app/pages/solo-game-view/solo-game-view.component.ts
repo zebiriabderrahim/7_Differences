@@ -28,6 +28,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     private differenceSubscription: Subscription;
     private routeParamSubscription: Subscription;
     private messageSub: Subscription;
+    private endGameSub: Subscription;
 
     constructor(
         private gameAreaService: GameAreaService,
@@ -80,13 +81,22 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.messageSub = this.classicService.message$.subscribe((message) => {
             this.messages.push(message);
         });
+        this.endGameSub = this.classicService.endMessage$.subscribe((endMessage) => {
+            if (endMessage) {
+                this.showEndGameDialog(endMessage);
+            }
+        });
     }
 
-    abandonGame(): void {
+    showAbandonDialog(): void {
         this.matDialog.open(SoloGameViewDialogComponent, {
             data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ?' },
             disableClose: true,
         });
+    }
+
+    showEndGameDialog(endingMessage: string): void {
+        this.matDialog.open(SoloGameViewDialogComponent, { data: { action: 'endGame', message: endingMessage }, disableClose: true });
     }
 
     mouseClickOnOriginal(event: MouseEvent) {
@@ -116,6 +126,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.differenceSubscription?.unsubscribe();
         this.routeParamSubscription?.unsubscribe();
         this.messageSub.unsubscribe();
+        this.endGameSub.unsubscribe();
         this.classicService.disconnect();
     }
 }
