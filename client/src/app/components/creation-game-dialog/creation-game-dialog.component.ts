@@ -53,10 +53,6 @@ export class CreationGameDialogComponent implements OnInit {
         return this.differenceService.isNumberOfDifferencesValid();
     }
 
-    closeModal(): void {
-        this.dialogRef.close();
-    }
-
     submitForm() {
         if (this.gameNameForm.valid && this.gameNameForm.value.name) {
             const differences: Coordinate[][] = this.differenceService.generateDifferencesPackages();
