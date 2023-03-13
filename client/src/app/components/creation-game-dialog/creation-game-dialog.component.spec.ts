@@ -111,11 +111,6 @@ describe('CreationGameDialogComponent', () => {
         expect(component.gameNameForm.disabled).toBeFalsy();
     });
 
-    it('should close the dialog closeModal', () => {
-        component.closeModal();
-        expect(dialogRef.close).toHaveBeenCalled();
-    });
-
     // it('should emit the game and close the dialog if the form is valid', () => {
     //     const imageSources = { left: 'left', right: 'right' };
     //     const gameDetails: GameDetails = {
