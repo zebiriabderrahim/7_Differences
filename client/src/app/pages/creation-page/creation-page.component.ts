@@ -89,11 +89,11 @@ export class CreationPageComponent implements AfterViewInit {
     }
 
     duplicateLeftForeground() {
-        this.drawService.duplicateLeftForeground();
+        this.drawService.duplicateForeground(CanvasPosition.Left);
     }
 
     duplicateRightForeground() {
-        this.drawService.duplicateRightForeground();
+        this.drawService.duplicateForeground(CanvasPosition.Right);
     }
 
     undoCanvasOperation() {

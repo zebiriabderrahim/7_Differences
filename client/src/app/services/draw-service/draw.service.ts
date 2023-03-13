@@ -68,15 +68,13 @@ export class DrawService {
         this.saveCurrentCanvasState();
     }
 
-    duplicateLeftForeground() {
-        const leftForegroundData: ImageData = this.leftForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.rightForegroundContext.putImageData(leftForegroundData, 0, 0);
-        this.saveCurrentCanvasState();
-    }
-
-    duplicateRightForeground() {
-        const rightForegroundData: ImageData = this.rightForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.leftForegroundContext.putImageData(rightForegroundData, 0, 0);
+    duplicateForeground(position: CanvasPosition) {
+        const contextToDuplicate: CanvasRenderingContext2D =
+            position === CanvasPosition.Left ? this.leftForegroundContext : this.rightForegroundContext;
+        const contextToOverwrite: CanvasRenderingContext2D =
+            position === CanvasPosition.Left ? this.rightForegroundContext : this.leftForegroundContext;
+        const imageDataToDuplicate: ImageData = contextToDuplicate.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        contextToOverwrite.putImageData(imageDataToDuplicate, 0, 0);
         this.saveCurrentCanvasState();
     }
 
