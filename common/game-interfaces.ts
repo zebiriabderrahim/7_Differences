@@ -109,6 +109,7 @@ export enum GameEvents {
     RoomSoloCreated = 'RoomSoloCreated',
     AbandonGame = 'AbandonGame',
     JoinOneVsOneGame = 'JoinOneVsOneGame',
+    OpponentFoundDiff = 'OpponentFoundDiff',
 }
 
 export enum GameModes {
