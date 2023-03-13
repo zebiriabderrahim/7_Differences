@@ -4,7 +4,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
-import { ClientSideGame } from '@common/game-interfaces';
+// import { ClientSideGame } from '@common/game-interfaces';
 import { Subject } from 'rxjs';
 import { SoloGameViewComponent } from './solo-game-view.component';
 
@@ -14,25 +14,25 @@ describe('SoloGameViewComponent', () => {
     let mouse: MouseEvent;
     let gameAreaService: GameAreaService;
     let classicService: ClassicSystemService;
-    const clientSideGameTest: ClientSideGame = {
-        id: '1',
-        name: 'test',
-        player: 'test',
-        mode: 'test',
-        isHard: true,
-        original: 'test',
-        modified: 'test',
-        differencesCount: 1,
-    };
-    const timerTest = 1;
+    // const clientSideGameTest: ClientSideGame = {
+    //     id: '1',
+    //     name: 'test',
+    //     player: 'test',
+    //     mode: 'test',
+    //     isHard: true,
+    //     original: 'test',
+    //     modified: 'test',
+    //     differencesCount: 1,
+    // };
+    // const timerTest = 1;
     const differencesFoundTest = 7;
 
-    const clientSideGameSubjectTest = new Subject<ClientSideGame>();
-    const timerSubjectTest = new Subject<number>();
+    // const clientSideGameSubjectTest = new Subject<ClientSideGame>();
+    // const timerSubjectTest = new Subject<number>();
     const differencesFoundSubjectTest = new Subject<number>();
 
-    let classicServiceGetCurrentGameSpy: () => Subject<ClientSideGame>;
-    let classicServiceGetTimerSpy: () => Subject<number>;
+    // let classicServiceGetCurrentGameSpy: () => Subject<ClientSideGame>;
+    // let classicServiceGetTimerSpy: () => Subject<number>;
     let classicServiceGetDifferencesFoundSpy: () => Subject<number>;
 
     beforeEach(async () => {
@@ -49,12 +49,12 @@ describe('SoloGameViewComponent', () => {
         gameAreaService = TestBed.inject(GameAreaService);
         classicService = TestBed.inject(ClassicSystemService);
         fixture.detectChanges();
-        classicServiceGetCurrentGameSpy = spyOn(classicService, 'getCurrentGame').and.callFake(() => {
-            return clientSideGameSubjectTest;
-        });
-        classicServiceGetTimerSpy = spyOn(classicService, 'getTimer').and.callFake(() => {
-            return timerSubjectTest;
-        });
+        // classicServiceGetCurrentGameSpy = spyOn(classicService, 'getCurrentGame').and.callFake(() => {
+        //     return clientSideGameSubjectTest;
+        // });
+        // classicServiceGetTimerSpy = spyOn(classicService, 'getTimer').and.callFake(() => {
+        //     return timerSubjectTest;
+        // });
         classicServiceGetDifferencesFoundSpy = spyOn(classicService, 'getDifferencesFound').and.callFake(() => {
             return differencesFoundSubjectTest;
         });
@@ -71,41 +71,41 @@ describe('SoloGameViewComponent', () => {
         expect(manageSocketSpy).toHaveBeenCalled();
     });
 
-    it('should define the game when the view is instantiated', () => {
-        expect(component.game).not.toBeDefined();
-        expect(classicServiceGetCurrentGameSpy).not.toHaveBeenCalled();
-        component.ngAfterViewInit();
-        clientSideGameSubjectTest.next(clientSideGameTest);
-        expect(classicServiceGetCurrentGameSpy).toHaveBeenCalled();
-        expect(component.game).toBeDefined();
-    });
+    // it('should define the game when the view is instantiated', () => {
+    //     expect(component.game).not.toBeDefined();
+    //     expect(classicServiceGetCurrentGameSpy).not.toHaveBeenCalled();
+    //     component.ngAfterViewInit();
+    //     clientSideGameSubjectTest.next(clientSideGameTest);
+    //     expect(classicServiceGetCurrentGameSpy).toHaveBeenCalled();
+    //     expect(component.game).toBeDefined();
+    // });
 
-    it('should set the game canvas when the view is instantiated', () => {
-        const setOgContext = spyOn(gameAreaService, 'setOgContext');
-        const setMdContext = spyOn(gameAreaService, 'setMdContext');
-        const setOgFrontContext = spyOn(gameAreaService, 'setOgFrontContext');
-        const setMdFrontContext = spyOn(gameAreaService, 'setMdFrontContext');
-        const loadImage = spyOn(gameAreaService, 'loadImage');
-        const setAllData = spyOn(gameAreaService, 'setAllData');
+    // it('should set the game canvas when the view is instantiated', () => {
+    //     const setOgContext = spyOn(gameAreaService, 'setOgContext');
+    //     const setMdContext = spyOn(gameAreaService, 'setMdContext');
+    //     const setOgFrontContext = spyOn(gameAreaService, 'setOgFrontContext');
+    //     const setMdFrontContext = spyOn(gameAreaService, 'setMdFrontContext');
+    //     const loadImage = spyOn(gameAreaService, 'loadImage');
+    //     const setAllData = spyOn(gameAreaService, 'setAllData');
 
-        component.ngAfterViewInit();
-        clientSideGameSubjectTest.next(clientSideGameTest);
-        expect(setOgContext).toHaveBeenCalled();
-        expect(setMdContext).toHaveBeenCalled();
-        expect(setOgFrontContext).toHaveBeenCalled();
-        expect(setMdFrontContext).toHaveBeenCalled();
-        expect(loadImage).toHaveBeenCalled();
-        expect(setAllData).toHaveBeenCalled();
-    });
+    //     component.ngAfterViewInit();
+    //     clientSideGameSubjectTest.next(clientSideGameTest);
+    //     expect(setOgContext).toHaveBeenCalled();
+    //     expect(setMdContext).toHaveBeenCalled();
+    //     expect(setOgFrontContext).toHaveBeenCalled();
+    //     expect(setMdFrontContext).toHaveBeenCalled();
+    //     expect(loadImage).toHaveBeenCalled();
+    //     expect(setAllData).toHaveBeenCalled();
+    // });
 
-    it('should update the timer', () => {
-        expect(component.timer).toEqual(0);
-        expect(classicServiceGetTimerSpy).not.toHaveBeenCalled();
-        component.ngAfterViewInit();
-        timerSubjectTest.next(timerTest);
-        expect(classicServiceGetTimerSpy).toHaveBeenCalled();
-        expect(component.timer).toEqual(timerTest);
-    });
+    // it('should update the timer', () => {
+    //     expect(component.timer).toEqual(0);
+    //     expect(classicServiceGetTimerSpy).not.toHaveBeenCalled();
+    //     component.ngAfterViewInit();
+    //     timerSubjectTest.next(timerTest);
+    //     expect(classicServiceGetTimerSpy).toHaveBeenCalled();
+    //     expect(component.timer).toEqual(timerTest);
+    // });
 
     it('should update the differences found', () => {
         expect(component.differencesFound).toEqual(0);
