@@ -8,8 +8,9 @@ import { CanvasPosition } from '@app/enum/canvas-position';
 import { GameDetails } from '@app/interfaces/game-interfaces';
 import { LEFT_BUTTON } from '@app/constants/constants';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
-import { DrawService } from '@app/services/draw-service/draw.service';
+// import { DrawService } from '@app/services/draw-service/draw.service';
 import { ImageService } from '@app/services/image-service/image.service';
+import { ForegroundService } from '@app/services/foreground-service/foreground.service';
 
 @Component({
     selector: 'app-root',
@@ -28,7 +29,8 @@ export class CreationPageComponent implements AfterViewInit {
     // eslint-disable-next-line max-params
     constructor(
         private readonly imageService: ImageService,
-        private readonly drawService: DrawService,
+        // private readonly drawService: DrawService,
+        private readonly foregroundService: ForegroundService,
         private readonly matDialog: MatDialog,
         private readonly communicationService: CommunicationService,
         private readonly router: Router,
@@ -41,16 +43,17 @@ export class CreationPageComponent implements AfterViewInit {
     @HostListener('window:keydown', ['$event'])
     keyboardEvent(event: KeyboardEvent) {
         if (event.ctrlKey && event.shiftKey && event.key === 'Z') {
-            this.redoCanvasOperation();
+            this.foregroundService.redoCanvasOperation();
         } else if (event.ctrlKey && event.key === 'z') {
-            this.undoCanvasOperation();
+            this.foregroundService.undoCanvasOperation();
         }
     }
 
     @HostListener('window:mouseup', ['$event'])
     mouseUpEvent(event: MouseEvent) {
         if (event.button === LEFT_BUTTON) {
-            this.drawService.disableDragging();
+            this.foregroundService.disableDragging();
+            // this.drawService.disableDragging();
         }
     }
 
@@ -84,23 +87,23 @@ export class CreationPageComponent implements AfterViewInit {
             });
     }
 
-    swapForegrounds() {
-        this.drawService.swapForegrounds();
-    }
+    // swapForegrounds() {
+    //     this.drawService.swapForegrounds();
+    // }
 
-    duplicateLeftForeground() {
-        this.drawService.duplicateForeground(CanvasPosition.Left);
-    }
+    // duplicateLeftForeground() {
+    //     this.drawService.duplicateForeground(CanvasPosition.Left);
+    // }
 
-    duplicateRightForeground() {
-        this.drawService.duplicateForeground(CanvasPosition.Right);
-    }
+    // duplicateRightForeground() {
+    //     this.drawService.duplicateForeground(CanvasPosition.Right);
+    // }
 
-    undoCanvasOperation() {
-        this.drawService.undoCanvasOperation();
-    }
+    // undoCanvasOperation() {
+    //     this.drawService.undoCanvasOperation();
+    // }
 
-    redoCanvasOperation() {
-        this.drawService.redoCanvasOperation();
-    }
+    // redoCanvasOperation() {
+    //     this.drawService.redoCanvasOperation();
+    // }
 }
