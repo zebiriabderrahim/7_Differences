@@ -119,12 +119,8 @@ export class GameSheetComponent implements OnDestroy, OnInit {
 
     ngOnDestroy(): void {
         this.roomManagerService.disconnect();
-        if (this.roomIdSubscription) {
-            this.roomIdSubscription.unsubscribe();
-        }
-        if (this.roomAvailabilitySubscription) {
-            this.roomAvailabilitySubscription.unsubscribe();
-        }
+        this.roomIdSubscription?.unsubscribe();
+        this.roomAvailabilitySubscription?.unsubscribe();
     }
 
     deleteGameCard() {
