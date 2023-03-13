@@ -20,7 +20,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     @Input() game: GameCard;
     private isAvailable: boolean;
     private roomIdSubscription: Subscription;
-    private oneVsOneRoomsAvailabilityByRoomIdSubscription: Subscription;
+    private roomAvailabilitySubscription: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
@@ -34,7 +34,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     }
     ngOnInit(): void {
         this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
-        this.oneVsOneRoomsAvailabilityByRoomIdSubscription = this.roomManagerService.oneVsOneRoomsAvailabilityByRoomId$
+        this.roomAvailabilitySubscription = this.roomManagerService.oneVsOneRoomsAvailabilityByRoomId$
             .pipe(filter((data) => data.gameId === this.game._id))
             .subscribe((data) => {
                 this.isAvailable = data.isAvailableToJoin;
@@ -122,8 +122,8 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         if (this.roomIdSubscription) {
             this.roomIdSubscription.unsubscribe();
         }
-        if (this.oneVsOneRoomsAvailabilityByRoomIdSubscription) {
-            this.oneVsOneRoomsAvailabilityByRoomIdSubscription.unsubscribe();
+        if (this.roomAvailabilitySubscription) {
+            this.roomAvailabilitySubscription.unsubscribe();
         }
     }
 
