@@ -1,6 +1,4 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dialog/solo-game-view-dialog.component';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { Coordinate } from '@common/coordinate';
@@ -10,18 +8,19 @@ import { BehaviorSubject, filter, Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class ClassicSystemService implements OnDestroy {
-    matDialog: MatDialog;
     private timer: BehaviorSubject<number>;
     private differencesFound: BehaviorSubject<number>;
     private currentGame: Subject<ClientSideGame>;
     private message: Subject<ChatMessage>;
     private isLeftCanvas: boolean;
+    private endMessage: Subject<string>;
 
     constructor(private clientSocket: ClientSocketService, private gameAreaService: GameAreaService) {
         this.currentGame = new Subject<ClientSideGame>();
         this.differencesFound = new BehaviorSubject<number>(0);
         this.timer = new BehaviorSubject<number>(0);
         this.message = new Subject<ChatMessage>();
+        this.endMessage = new Subject<string>();
     }
 
     get currentGame$() {
@@ -37,6 +36,11 @@ export class ClassicSystemService implements OnDestroy {
     get message$() {
         return this.message.asObservable();
     }
+
+    get endMessage$() {
+        return this.endMessage.asObservable();
+    }
+
     createSoloGame(gameId: string, playerName: string): void {
         this.clientSocket.send(GameEvents.CreateSoloGame, { gameId, playerName });
     }
@@ -62,16 +66,6 @@ export class ClassicSystemService implements OnDestroy {
 
     abandonGame(): void {
         this.clientSocket.send(GameEvents.AbandonGame);
-    }
-
-    showAbandonGameDialog() {
-        this.matDialog.open(SoloGameViewDialogComponent, {
-            data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ?' },
-            disableClose: true,
-        });
-    }
-    showEndGameDialog(endingMessage: string) {
-        this.matDialog.open(SoloGameViewDialogComponent, { data: { action: 'endGame', message: endingMessage }, disableClose: true });
     }
 
     getCurrentGame(): Subject<ClientSideGame> {
@@ -124,7 +118,7 @@ export class ClassicSystemService implements OnDestroy {
         });
 
         this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {
-            this.showEndGameDialog(endGameMessage);
+            this.endMessage.next(endGameMessage);
         });
 
         this.clientSocket.on(MessageEvents.LocalMessage, (receivedMessage: ChatMessage) => {
