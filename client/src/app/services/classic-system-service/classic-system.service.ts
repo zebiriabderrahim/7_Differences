@@ -53,6 +53,11 @@ export class ClassicSystemService implements OnDestroy {
             this.gameAreaService.replaceDifference(differences);
         }
     }
+
+    abandonGame(): void {
+        this.clientSocket.send(GameEvents.AbandonGame);
+    }
+
     showAbandonGameDialog() {
         this.matDialog.open(SoloGameViewDialogComponent, {
             data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ?' },
