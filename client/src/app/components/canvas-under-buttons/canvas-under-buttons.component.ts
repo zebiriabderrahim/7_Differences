@@ -31,7 +31,8 @@ export class CanvasUnderButtonsComponent {
         if (target.files && target.files[0]) {
             const file = target.files[0];
             if (this.validationService.isImageValid(file, target)) {
-                this.imageService.setBackground(this.canvasPositionType, await createImageBitmap(file));
+                const image: ImageBitmap = await createImageBitmap(file);
+                this.imageService.setBackground(this.canvasPositionType, image);
                 this.uploadInput.nativeElement.value = '';
             } else {
                 this.matDialog.open(this.invalidImageDialog);
