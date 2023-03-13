@@ -12,6 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
+import { CanvasMiddleButtonsComponent } from '@app/components/canvas-middle-buttons/canvas-middle-buttons/canvas-middle-buttons.component';
 import { CanvasTopButtonsComponent } from '@app/components/canvas-top-buttons/canvas-top-buttons.component';
 import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
 // import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
@@ -41,6 +42,7 @@ describe('CreationPageComponent', () => {
                 MatIcon,
                 CanvasUnderButtonsComponent,
                 CanvasTopButtonsComponent,
+                CanvasMiddleButtonsComponent,
             ],
             imports: [
                 NoopAnimationsModule,

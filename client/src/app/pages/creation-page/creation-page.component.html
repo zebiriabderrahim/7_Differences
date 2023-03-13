@@ -2,25 +2,7 @@
     <div id="canvas-zone">
         <canvas id="combined-canvas" [height]="canvasSizes.height" [width]="canvasSizes.width" #combinedCanvas></canvas>
         <app-image-canvas [position]="canvasPosition.Left"></app-image-canvas>
-        <div id="canvas-middle-buttons">
-            <button mat-raised-button (click)="duplicateRightForeground()">
-                <mat-icon>arrow_backward</mat-icon>
-            </button>
-            <button mat-raised-button (click)="swapForegrounds()">
-                <mat-icon>swap_horiz</mat-icon>
-            </button>
-            <button mat-raised-button (click)="duplicateLeftForeground()">
-                <mat-icon>arrow_forward</mat-icon>
-            </button>
-            <div>
-                <button mat-raised-button (click)="undoCanvasOperation()">
-                    <mat-icon>undo</mat-icon>
-                </button>
-                <button mat-raised-button (click)="redoCanvasOperation()">
-                    <mat-icon>redo</mat-icon>
-                </button>
-            </div>
-        </div>
+        <app-canvas-middle-buttons id="middle-buttons"></app-canvas-middle-buttons>
         <app-image-canvas [position]="canvasPosition.Right"></app-image-canvas>
     </div>
 
