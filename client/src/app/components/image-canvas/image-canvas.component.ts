@@ -1,8 +1,9 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { LEFT_BUTTON } from '@app/constants/constants';
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { DrawService } from '@app/services/draw-service/draw.service';
+import { ForegroundService } from '@app/services/foreground-service/foreground.service';
 import { ImageService } from '@app/services/image-service/image.service';
 
 @Component({
@@ -17,7 +18,11 @@ export class ImageCanvasComponent implements AfterViewInit {
     @ViewChild('frontCanvas') frontCanvas: ElementRef;
     readonly canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
 
-    constructor(private readonly imageService: ImageService, private readonly drawService: DrawService) {}
+    constructor(
+        private readonly imageService: ImageService,
+        private readonly drawService: DrawService,
+        private readonly foregroundService: ForegroundService,
+    ) {}
 
     @HostListener('window:keydown.shift', ['$event'])
     onShiftDown() {
@@ -34,7 +39,7 @@ export class ImageCanvasComponent implements AfterViewInit {
         this.imageService.setBackgroundContext(this.position, backgroundContext);
         const foregroundContext: CanvasRenderingContext2D = this.foregroundCanvas.nativeElement.getContext('2d', { willReadFrequently: true });
         const frontContext: CanvasRenderingContext2D = this.frontCanvas.nativeElement.getContext('2d', { willReadFrequently: true });
-        this.drawService.setForegroundContext(this.position, foregroundContext, frontContext);
+        this.foregroundService.setForegroundContext(this.position, foregroundContext, frontContext);
     }
 
     setMouseLeavingBoolean(event: MouseEvent): void {
@@ -49,10 +54,10 @@ export class ImageCanvasComponent implements AfterViewInit {
     }
 
     startCanvasOperation(event: MouseEvent): void {
-        this.drawService.startCanvasOperation(this.position, event);
+        this.foregroundService.startForegroundOperation(this.position, event);
     }
 
     stopCanvasOperation(event: MouseEvent): void {
-        this.drawService.stopCanvasOperation(this.position, event);
+        this.foregroundService.stopForegroundOperation(this.position, event);
     }
 }

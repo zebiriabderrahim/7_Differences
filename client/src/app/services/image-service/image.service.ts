@@ -6,8 +6,10 @@ import { CanvasPosition } from '@app/enum/canvas-position';
 import { ForegroundCanvasElements } from '@app/interfaces/foreground-canvas-elements';
 import { ImageSources } from '@app/interfaces/image-sources';
 import { GamePixels, Pixel } from '@app/interfaces/pixel';
-import { DrawService } from '@app/services/draw-service/draw.service';
+// import { DrawService } from '@app/services/draw-service/draw.service';
 import { Coordinate } from '@common/coordinate';
+import { ForegroundService } from '@app/services/foreground-service/foreground.service';
+
 @Injectable({
     providedIn: 'root',
 })
@@ -18,7 +20,7 @@ export class ImageService {
     private leftImage: string;
     private rightImage: string;
 
-    constructor(private readonly drawService: DrawService) {}
+    constructor(private readonly foregroundService: ForegroundService) {}
 
     resetBackground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
@@ -77,7 +79,7 @@ export class ImageService {
     }
 
     getGamePixels(): GamePixels {
-        const foregroundCanvasElements: ForegroundCanvasElements = this.drawService.getForegroundCanvasElements();
+        const foregroundCanvasElements: ForegroundCanvasElements = this.foregroundService.getForegroundCanvasElements();
         const leftPixels: Pixel[] = this.getPixels(foregroundCanvasElements.left, this.leftBackgroundContext.canvas);
         this.leftImage = this.combinedContext.canvas.toDataURL();
         const rightPixels: Pixel[] = this.getPixels(foregroundCanvasElements.right, this.rightBackgroundContext.canvas);

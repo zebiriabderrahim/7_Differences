@@ -1,7 +1,8 @@
 import { Component, ElementRef, Input, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CanvasPosition } from '@app/enum/canvas-position';
-import { DrawService } from '@app/services/draw-service/draw.service';
+// import { DrawService } from '@app/services/draw-service/draw.service';
+import { ForegroundService } from '@app/services/foreground-service/foreground.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ValidationService } from '@app/services/validation-service/validation.service';
 
@@ -21,7 +22,7 @@ export class CanvasUnderButtonsComponent {
     // eslint-disable-next-line max-params
     constructor(
         private readonly imageService: ImageService,
-        private readonly drawService: DrawService,
+        private readonly foregroundService: ForegroundService,
         private readonly validationService: ValidationService,
         private readonly matDialog: MatDialog,
     ) {}
@@ -53,6 +54,6 @@ export class CanvasUnderButtonsComponent {
     }
 
     resetForeground(): void {
-        this.drawService.resetForeground(this.canvasPositionType);
+        this.foregroundService.resetForeground(this.canvasPositionType);
     }
 }

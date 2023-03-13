@@ -3,6 +3,7 @@ import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { ForegroundCanvasElements } from '@app/interfaces/foreground-canvas-elements';
 import { ForegroundsState } from '@app/interfaces/foregrounds-state';
+import { DrawService } from '@app/services/draw-service/draw.service';
 
 @Injectable({
     providedIn: 'root',
@@ -15,7 +16,7 @@ export class ForegroundService {
     private foregroundsStateStack: ForegroundsState[];
     private undoneForegroundsStateStack: ForegroundsState[];
 
-    constructor() {
+    constructor(private readonly drawService: DrawService) {
         this.foregroundsStateStack = [];
         this.undoneForegroundsStateStack = [];
     }
@@ -134,5 +135,61 @@ export class ForegroundService {
                 break;
         }
         this.saveCurrentCanvasState();
+    }
+
+    getActiveContext(canvasPosition: CanvasPosition): CanvasRenderingContext2D {
+        switch (canvasPosition) {
+            case CanvasPosition.Left:
+                return this.drawService.isCurrentActionRectangle() ? this.leftFrontContext : this.leftForegroundContext;
+            case CanvasPosition.Right:
+                return this.drawService.isCurrentActionRectangle() ? this.rightFrontContext : this.rightForegroundContext;
+            default:
+                return this.drawService.isCurrentActionRectangle() ? this.leftFrontContext : this.leftForegroundContext;
+        }
+    }
+
+    startForegroundOperation(canvasPosition: CanvasPosition, event: MouseEvent) {
+        this.undoneForegroundsStateStack = [];
+        if (this.foregroundsStateStack.length === 0) {
+            this.foregroundsStateStack.push(this.getForegroundsState());
+        }
+        if (this.drawService.isCurrentActionRectangle()) {
+            this.rightForegroundContext.globalCompositeOperation = 'source-over';
+            this.leftForegroundContext.globalCompositeOperation = 'source-over';
+        }
+
+        this.drawService.setActiveCanvasPosition(canvasPosition);
+        this.drawService.setActiveContext(this.getActiveContext(canvasPosition));
+        this.drawService.setClickPosition(event);
+        this.drawService.startOperation();
+        // if (this.isCurrentActionRectangle()) {
+        //     this.rectangleTopCorner = this.clickPosition;
+        // } else {
+        //     this.activeContext.beginPath();
+        //     this.drawLine(event);
+        // }
+    }
+
+    disableDragging() {
+        if (this.drawService.isMouseDragging()) {
+            this.drawService.stopOperation();
+            this.saveCurrentCanvasState();
+        }
+    }
+
+    stopForegroundOperation(canvasPosition: CanvasPosition, event: MouseEvent) {
+        this.drawService.setClickPosition(event);
+        if (this.drawService.isMouseDragging() && this.drawService.getActiveCanvasPosition() === canvasPosition) {
+            if (this.drawService.isCurrentActionRectangle()) {
+                this.drawService.drawRectangle();
+                this.copyCanvas(this.drawService.getActiveContext().canvas, canvasPosition);
+                this.drawService.resetActiveCanvas();
+            } else {
+                // this.drawLine(event);
+                this.drawService.drawLine();
+                this.saveCurrentCanvasState();
+            }
+            this.drawService.stopOperation();
+        }
     }
 }
