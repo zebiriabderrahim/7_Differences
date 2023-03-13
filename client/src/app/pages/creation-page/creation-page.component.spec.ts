@@ -30,9 +30,16 @@ describe('CreationPageComponent', () => {
     let matDialogSpy: jasmine.SpyObj<MatDialog>;
     // let drawService: DrawService;
     // let timerCallback: jasmine.Spy<jasmine.Func>;
+    // let foregroundServiceSpy: jasmine.SpyObj<ForegroundService>;
 
     beforeEach(async () => {
         // drawService = jasmine.createSpyObj('DrawService', ['redoCanvasOperation', 'undoCanvasOperation', 'swapForegrounds']);
+        // foregroundServiceSpy = jasmine.createSpyObj('ForegroundService', [
+        //     'redoCanvasOperation',
+        //     'undoCanvasOperation',
+        //     'swapForegrounds',
+        //     'disableDragging',
+        // ]);
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
             declarations: [
@@ -107,6 +114,39 @@ describe('CreationPageComponent', () => {
     //     });
     //     component.validateDifferences();
     //     expect(matDialogSpy.open).toHaveBeenCalled();
+    // });
+
+    // it('should call redoCanvasOperation when ctrl+shift+z are pressed', () => {
+    //     const event = new KeyboardEvent('keydown', {
+    //         key: 'Z',
+    //         ctrlKey: true,
+    //         shiftKey: true,
+    //     });
+    //     window.dispatchEvent(event);
+
+    //     expect(foregroundServiceSpy.redoCanvasOperation).toHaveBeenCalled();
+    // });
+
+    // it('should call undoCanvasOperation when ctrl+z are pressed', () => {
+    //     const event = new KeyboardEvent('keydown', {
+    //         key: 'z',
+    //         ctrlKey: true,
+    //     });
+    //     window.dispatchEvent(event);
+
+    //     expect(foregroundServiceSpy.undoCanvasOperation).toHaveBeenCalled();
+    // });
+
+    // it('should disable dragging when left button is released', () => {
+    //     const mouseUpEvent = new MouseEvent('mouseup', { button: 0 });
+    //     component.mouseUpEvent(mouseUpEvent);
+    //     expect(foregroundServiceSpy.disableDragging).toHaveBeenCalled();
+    // });
+
+    // it('should not disable dragging when right button is released', () => {
+    //     const mouseUpEvent = new MouseEvent('mouseup', { button: 1 });
+    //     component.mouseUpEvent(mouseUpEvent);
+    //     expect(foregroundServiceSpy.disableDragging).not.toHaveBeenCalled();
     // });
 
     it('should select a radio button', () => {
