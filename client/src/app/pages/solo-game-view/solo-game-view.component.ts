@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
@@ -23,44 +23,29 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     timer: number = 0;
     messages: ChatMessage[] = [];
     readonly canvasSize = { width: IMG_WIDTH, height: IMG_HEIGHT };
-    private timerSub: Subscription;
-    private gameSub: Subscription;
-    private differenceSub: Subscription;
-    private playerNameSub: Subscription;
-    private idSub: Subscription;
+    private timerSubscription: Subscription;
+    private gameSubscription: Subscription;
+    private differenceSubscription: Subscription;
+    private routeParamSubscription: Subscription;
     private messageSub: Subscription;
-    private isFirstTime = true;
 
     constructor(
         private gameAreaService: GameAreaService,
         private classicService: ClassicSystemService,
         public router: Router,
         private readonly matDialog: MatDialog,
-    ) {}
+    , private route: ActivatedRoute) {}
 
     ngAfterViewInit(): void {
         this.classicService.manageSocket();
-        this.playerNameSub = this.classicService.playerName$.subscribe((name) => {
-            this.idSub = this.classicService.id$.subscribe((id) => {
-                switch (this.router.url) {
-                    case '/game': {
-                        this.classicService.createSoloGame(name, id);
-                        break;
-                    }
-                    case '/game/host': {
-                        this.classicService.createOneVsOneGame(name, id);
-                        break;
-                    }
-                    case '/game/join': {
-                        this.classicService.joinOneVsOneGame(name, id);
-                        break;
-                    }
-                }
-            });
+        this.routeParamSubscription = this.route.params.subscribe((params) => {
+            if (params['roomId']) {
+                this.classicService.startGameByRoomId(params['roomId']);
+            }
         });
-        this.gameSub = this.classicService.getCurrentGame().subscribe((game) => {
+        this.gameSubscription = this.classicService.currentGame$.subscribe((game) => {
             this.game = game;
-            if (this.game && this.isFirstTime) {
+            if (this.game) {
                 this.gameAreaService.setOgContext(
                     this.originalCanvas.nativeElement.getContext('2d', {
                         willReadFrequently: true,
@@ -84,13 +69,12 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
                 this.gameAreaService.loadImage(this.gameAreaService.getOgContext(), this.game.original);
                 this.gameAreaService.loadImage(this.gameAreaService.getMdContext(), this.game.modified);
                 this.gameAreaService.setAllData();
-                this.isFirstTime = false;
             }
         });
-        this.timerSub = this.timerSub = this.classicService.getTimer().subscribe((timer) => {
+        this.timerSubscription = this.classicService.timer$.subscribe((timer) => {
             this.timer = timer;
         });
-        this.differenceSub = this.classicService.getDifferencesFound().subscribe((differencesFound) => {
+        this.differenceSubscription = this.classicService.getDifferencesFound().subscribe((differencesFound) => {
             this.differencesFound = differencesFound;
         });
         this.messageSub = this.classicService.message$.subscribe((message) => {
@@ -127,11 +111,10 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.gameSub.unsubscribe();
-        this.timerSub.unsubscribe();
-        this.differenceSub.unsubscribe();
-        this.playerNameSub.unsubscribe();
-        this.idSub.unsubscribe();
+        this.gameSubscription?.unsubscribe();
+        this.timerSubscription?.unsubscribe();
+        this.differenceSubscription?.unsubscribe();
+        this.routeParamSubscription?.unsubscribe();
         this.messageSub.unsubscribe();
         this.classicService.disconnect();
     }
