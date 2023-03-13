@@ -5,6 +5,7 @@ import { ClassicSystemService } from '@app/services/classic-system-service/class
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { ChatMessage, ClientSideGame, MessageTag } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-solo-game-view',
@@ -28,7 +29,13 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     private idSub: Subscription;
     private messageSub: Subscription;
     private isFirstTime = true;
-    constructor(private gameAreaService: GameAreaService, private classicService: ClassicSystemService, public router: Router) {}
+
+    constructor(
+        private gameAreaService: GameAreaService,
+        private classicService: ClassicSystemService,
+        public router: Router,
+        private readonly matDialog: MatDialog,
+    ) {}
 
     ngAfterViewInit(): void {
         this.classicService.manageSocket();
@@ -91,7 +98,10 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     }
 
     abandonGame(): void {
-        this.classicService.showAbandonGameDialog();
+        this.matDialog.open(SoloGameViewComponent, {
+            data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ?' },
+            disableClose: true,
+        });
     }
 
     mouseClickOnOriginal(event: MouseEvent) {
