@@ -25,6 +25,9 @@ export class DrawService {
     private currentAction: CanvasAction;
     private clickPosition: Coordinate;
     private isMouseOutOfCanvas: boolean;
+    private drawingColor: string;
+    private pencilWidth: number;
+    private eraserLength: number;
 
     constructor() {
         this.isDragging = false;
@@ -34,6 +37,32 @@ export class DrawService {
 
     setMousePosition(event: MouseEvent, isMouseLeaving: boolean): void {
         this.isMouseOutOfCanvas = isMouseLeaving;
+    }
+
+    setDrawingColor(color: string): void {
+        console.log('setDrawingColor: ' + color);
+        this.drawingColor = color;
+        console.log('this.drawingColor: ' + this.drawingColor);
+        // this.activeContext.strokeStyle = color;
+    }
+
+    setCanvasAction(canvasAction: CanvasAction): void {
+        console.log('setCanvasAction: ' + canvasAction);
+        this.currentAction = canvasAction;
+    }
+
+    setPencilWidth(width: number): void {
+        console.log('setPencilWidth: ' + width);
+        this.pencilWidth = width;
+        console.log('this.pencilWidth: ' + this.pencilWidth);
+        // this.activeContext.lineWidth = width;
+    }
+
+    setEraserLength(width: number): void {
+        console.log('setEraserLength: ' + width);
+        this.eraserLength = width;
+        console.log('this.eraserLength: ' + this.eraserLength);
+        // this.activeContext.lineWidth = width;
     }
 
     setForegroundContext(canvasPosition: CanvasPosition, foregroundContext: CanvasRenderingContext2D, frontContext: CanvasRenderingContext2D) {
