@@ -55,6 +55,7 @@ export class DrawService {
         this.eraserLength = width;
     }
 
+    // moved
     setForegroundContext(canvasPosition: CanvasPosition, foregroundContext: CanvasRenderingContext2D, frontContext: CanvasRenderingContext2D) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
@@ -75,10 +76,12 @@ export class DrawService {
         }
     }
 
+    // moved
     getForegroundCanvasElements(): ForegroundCanvasElements {
         return { left: this.leftForegroundContext.canvas, right: this.rightForegroundContext.canvas };
     }
 
+    // moved
     swapForegrounds() {
         const leftForegroundData: ImageData = this.leftForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         const rightForegroundData: ImageData = this.rightForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
@@ -87,6 +90,7 @@ export class DrawService {
         this.saveCurrentCanvasState();
     }
 
+    // moved
     duplicateForeground(position: CanvasPosition) {
         const contextToDuplicate: CanvasRenderingContext2D =
             position === CanvasPosition.Left ? this.leftForegroundContext : this.rightForegroundContext;
@@ -97,12 +101,14 @@ export class DrawService {
         this.saveCurrentCanvasState();
     }
 
+    // moved
     redrawForegrounds(canvasState: CanvasState) {
         this.resetForeground(CanvasPosition.Both);
         this.leftForegroundContext.putImageData(canvasState.left, 0, 0);
         this.rightForegroundContext.putImageData(canvasState.right, 0, 0);
     }
 
+    // moved
     undoCanvasOperation() {
         if (this.canvasStateStack.length > 0) {
             const lastState: CanvasState = this.canvasStateStack.pop() as CanvasState;
@@ -115,6 +121,7 @@ export class DrawService {
         }
     }
 
+    // moved
     redoCanvasOperation() {
         if (this.undoneCanvasStateStack.length > 0) {
             const lastState: CanvasState = this.undoneCanvasStateStack.pop() as CanvasState;
@@ -127,6 +134,7 @@ export class DrawService {
         }
     }
 
+    // moved
     isCanvasStateNextState(nextState: CanvasState): boolean {
         const canvasState: CanvasState = this.getCanvasState();
         return (
@@ -135,6 +143,7 @@ export class DrawService {
         );
     }
 
+    // moved
     resetForeground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
@@ -152,10 +161,12 @@ export class DrawService {
         }
     }
 
+    // moved
     resetForegroundContext(foregroundContext: CanvasRenderingContext2D) {
         foregroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
     }
 
+    // moved
     getCanvasState(): CanvasState {
         const leftForegroundData: ImageData = this.leftForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         const rightForegroundData: ImageData = this.rightForegroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
@@ -270,6 +281,7 @@ export class DrawService {
         this.saveCurrentCanvasState();
     }
 
+    // moved
     saveCurrentCanvasState() {
         this.canvasStateStack.push(this.getCanvasState());
     }
