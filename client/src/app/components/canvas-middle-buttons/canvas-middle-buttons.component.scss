@@ -5,6 +5,9 @@
     flex-direction: column;
 }
 
-#undo-redo-buttons button {
-    color: #ff4081;
+#undo-redo-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-direction: row;
 }
