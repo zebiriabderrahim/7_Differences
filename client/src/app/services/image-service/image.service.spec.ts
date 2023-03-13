@@ -1,8 +1,11 @@
+// needed for private methods
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { N_PIXEL_ATTRIBUTE } from '@app/constants/pixels';
+import { CanvasPosition } from '@app/enum/canvas-position';
 // import { CanvasPosition } from '@app/enum/canvas-position';
 
 import { ImageService } from './image.service';
@@ -10,6 +13,7 @@ import { ImageService } from './image.service';
 describe('ImageService', () => {
     let service: ImageService;
     let contextStub: CanvasRenderingContext2D;
+    let resetBackgroundContextSpy: jasmine.Spy;
     // let imageBitmap: ImageBitmap;
 
     beforeEach(() => {
@@ -18,6 +22,7 @@ describe('ImageService', () => {
         });
         service = TestBed.inject(ImageService);
         contextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
+        resetBackgroundContextSpy = spyOn<any>(service, 'resetBackgroundContext');
         service['leftBackgroundContext'] = contextStub;
         service['rightBackgroundContext'] = contextStub;
     });
@@ -155,6 +160,22 @@ describe('ImageService', () => {
     //     service.setRightBackground(imageBitmap);
     //     expect(rightBackgroundContextSpy).toHaveBeenCalled();
     // });
+
+    it('should reset background context for left canvas position', () => {
+        service.resetBackground(CanvasPosition.Left);
+        expect(resetBackgroundContextSpy).toHaveBeenCalled();
+    });
+
+    it('should reset background context for right canvas position', () => {
+        service.resetBackground(CanvasPosition.Right);
+        expect(resetBackgroundContextSpy).toHaveBeenCalled();
+    });
+
+    it('should reset background context for both canvas positions', () => {
+        service.resetBackground(CanvasPosition.Both);
+        expect(resetBackgroundContextSpy).toHaveBeenCalled();
+        expect(resetBackgroundContextSpy).toHaveBeenCalled();
+    });
 
     it('transformImageDataToPixelArray should return an array of pixels', () => {
         const imageData = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * N_PIXEL_ATTRIBUTE).fill(0);
