@@ -33,7 +33,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
                 this.classicService.startGameByRoomId(params['roomId']);
             }
         });
-        this.gameSubscription = this.classicService.getCurrentGame().subscribe((game) => {
+        this.gameSubscription = this.classicService.currentGame$.subscribe((game) => {
             this.game = game;
             if (this.game) {
                 this.gameAreaService.setOgContext(
@@ -61,7 +61,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
                 this.gameAreaService.setAllData();
             }
         });
-        this.timerSubscription = this.classicService.getTimer().subscribe((timer) => {
+        this.timerSubscription = this.classicService.timer$.subscribe((timer) => {
             this.timer = timer;
         });
         this.differenceSubscription = this.classicService.getDifferencesFound().subscribe((differencesFound) => {
