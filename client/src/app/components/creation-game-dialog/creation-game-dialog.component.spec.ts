@@ -22,7 +22,6 @@ describe('CreationGameDialogComponent', () => {
     let differenceServiceSpy: jasmine.SpyObj<DifferenceService>;
     let dialogRef: MatDialogRef<CreationGameDialogComponent, unknown>;
     let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
-    // let httpMock: HttpTestingController;
 
     beforeEach(async () => {
         imageServiceSpy = jasmine.createSpyObj('ImageService', [
@@ -68,7 +67,6 @@ describe('CreationGameDialogComponent', () => {
         component = fixture.componentInstance;
         fixture.detectChanges();
         dialogRef = TestBed.inject(MatDialogRef<CreationGameDialogComponent, unknown>);
-        // httpMock = TestBed.inject(HttpTestingController);
     });
 
     it('should create', () => {
@@ -121,24 +119,6 @@ describe('CreationGameDialogComponent', () => {
         differenceServiceSpy.isNumberOfDifferencesValid.and.returnValue(false);
         expect(component.gameNameForm.disabled).toBeFalsy();
     });
-
-    // it('should emit the game and close the dialog if the form is valid', () => {
-    //     const imageSources = { left: 'left', right: 'right' };
-    //     const gameDetails: GameDetails = {
-    //         name: 'name',
-    //         originalImage: imageSources.left,
-    //         modifiedImage: imageSources.right,
-    //         nDifference: 0,
-    //         differences: [],
-    //         isHard: true,
-    //     };
-    //     differenceServiceSpy.isGameHard.and.returnValue(true);
-    //     component.gameNameForm = new FormGroup({ name: new FormControl('name') });
-    //     imageServiceSpy.getImageSources.and.returnValue(imageSources);
-    //     differenceServiceSpy.generateDifferencesPackages.and.returnValue([]);
-    //     component.submitForm();
-    //     expect(dialogRef.close).toHaveBeenCalledWith(gameDetails);
-    // });
 
     it('submitForm should close dialog and reset background when form is valid and has a name', () => {
         const expectedDifferencesPackages = [
