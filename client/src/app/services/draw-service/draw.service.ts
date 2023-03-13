@@ -121,24 +121,20 @@ export class DrawService {
     resetForeground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
-                this.resetLeftForeground();
+                this.resetForegroundContext(this.leftForegroundContext);
                 break;
             case CanvasPosition.Right:
-                this.resetRightForeground();
+                this.resetForegroundContext(this.rightForegroundContext);
                 break;
             case CanvasPosition.Both:
-                this.resetLeftForeground();
-                this.resetRightForeground();
+                this.resetForegroundContext(this.leftForegroundContext);
+                this.resetForegroundContext(this.rightForegroundContext);
                 break;
         }
     }
 
-    resetLeftForeground() {
-        this.leftForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-    }
-
-    resetRightForeground() {
-        this.rightForegroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    resetForegroundContext(foregroundContext: CanvasRenderingContext2D) {
+        foregroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
     }
 
     getCanvasState(): CanvasState {
