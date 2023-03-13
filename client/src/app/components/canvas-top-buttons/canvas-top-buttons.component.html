@@ -11,7 +11,7 @@
                 <mat-select [(value)]="pencilDiameter" (selectionChange)="setPencilWidth(pencilDiameter)">
                     <mat-option *ngFor="let pencil of drawValues" [value]="pencil">
                         <svg width="20" height="20">
-                            <circle cx="50%" cy="50%" [attr.r]="pencil / 2" [attr.fill]="drawColor" />
+                            <circle cx="50%" cy="50%" [attr.r]="pencil / (1 + 1)" [attr.fill]="drawColor" />
                         </svg>
                         {{ pencil }} px
                     </mat-option>
