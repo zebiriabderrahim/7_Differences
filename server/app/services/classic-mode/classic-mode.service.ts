@@ -1,9 +1,21 @@
+// -1 for index of non existing element
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 // Id comes from database to allow _id
 /* eslint-disable no-underscore-dangle */
 import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
 import { Coordinate } from '@common/coordinate';
-import { ClassicPlayRoom, ClientSideGame, Differences, GameEvents, GameModes, Player } from '@common/game-interfaces';
+import {
+    ClassicPlayRoom,
+    ClientSideGame,
+    Differences,
+    GameEvents,
+    GameModes,
+    Player,
+    PlayerNameAvailability,
+    RoomAvailability,
+    WaitingPlayerNameList,
+} from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as io from 'socket.io';
@@ -12,10 +24,12 @@ import * as io from 'socket.io';
 export class ClassicModeService {
     private rooms: Map<string, ClassicPlayRoom>;
     private joinedPlayerNamesByGameId: Map<string, string[]>;
+    private roomAvailability: Map<string, RoomAvailability>;
 
     constructor(private readonly gameService: GameService) {
         this.rooms = new Map<string, ClassicPlayRoom>();
         this.joinedPlayerNamesByGameId = new Map<string, string[]>();
+        this.roomAvailability = new Map<string, RoomAvailability>();
     }
 
     async createRoom(playerName: string, gameId: string): Promise<ClassicPlayRoom> {
@@ -36,11 +50,20 @@ export class ClassicModeService {
         return room;
     }
 
+    async createOneVsOneGame(gameId: string, playerName: string) {
+        const room = await this.createRoom(playerName, gameId);
+        if (room) {
+            room.clientGame.mode = GameModes.ClassicOneVsOne;
+            return room;
+        }
+    }
+
     updateTimer(roomId: string, server: io.Server): void {
         const room = this.rooms.get(roomId);
         if (room) {
             room.timer++;
-            server.to(roomId).emit(GameEvents.TimerStarted, room.timer);
+            this.rooms.set(room.roomId, room);
+            server.to(room.roomId).emit(GameEvents.TimerStarted, room.timer);
         }
     }
 
@@ -106,29 +129,50 @@ export class ClassicModeService {
         return id;
     }
 
-    getOneVsOneRoomByGameId(gameId: string): ClassicPlayRoom {
-        return Array.from(this.rooms.values()).find((room) => room.clientGame.id === gameId && room.clientGame.mode === GameModes.ClassicOneVsOne);
-    }
-
-    checkRoomOneVsOneAvailability(gameId: string, server: io.Server): void {
-        const roomTarget = this.getOneVsOneRoomByGameId(gameId);
-        if (roomTarget) {
-            server.emit(GameEvents.RoomOneVsOneAvailable, { gameId, isAvailableToJoin: roomTarget.isAvailableToJoin });
+    getRoomByRoomId(roomId: string): ClassicPlayRoom {
+        if (this.rooms.has(roomId)) {
+            return this.rooms.get(roomId);
         }
     }
 
-    updateRoomOneVsOneAvailability(gameId: string, isAvailableToJoin: boolean, server: io.Server): void {
-        const roomTarget = this.getOneVsOneRoomByGameId(gameId);
-        if (roomTarget) {
-            roomTarget.isAvailableToJoin = isAvailableToJoin;
-            this.rooms.set(roomTarget.roomId, roomTarget);
-            server.emit(GameEvents.RoomOneVsOneAvailable, { gameId, isAvailableToJoin });
+    updateRoomOneVsOneAvailability(gameId: string, server: io.Server) {
+        const roomAvailability = this.roomAvailability.get(gameId) || { gameId, isAvailableToJoin: false };
+        roomAvailability.isAvailableToJoin = !roomAvailability.isAvailableToJoin;
+        this.roomAvailability.set(gameId, roomAvailability);
+        this.checkRoomOneVsOneAvailability(gameId, server);
+    }
+
+    checkRoomOneVsOneAvailability(gameId: string, server: io.Server): void {
+        const room = this.roomAvailability.get(gameId);
+        if (room) {
+            const availabilityData: RoomAvailability = {
+                gameId,
+                isAvailableToJoin: room.isAvailableToJoin,
+            };
+            server.emit(GameEvents.RoomOneVsOneAvailable, availabilityData);
+        }
+    }
+    async createOneVsOneRoom(gameId: string): Promise<string> {
+        const oneVsOneGame = await this.createOneVsOneGame(gameId, 'Player 1');
+        if (oneVsOneGame) {
+            const roomId = this.generateRoomId();
+            oneVsOneGame.roomId = roomId;
+            this.rooms.set(oneVsOneGame.roomId, oneVsOneGame);
+            return roomId;
         }
     }
 
     deleteCreatedOneVsOneRoom(gameId: string, server: io.Server): void {
-        this.rooms.delete(this.getOneVsOneRoomByGameId(gameId).roomId);
-        server.emit(GameEvents.DeleteCreatedOneVsOneRoom, gameId);
+        const roomTarget = this.roomAvailability.get(gameId);
+        if (roomTarget) {
+            // this.rooms.delete(roomId);
+            this.roomAvailability.delete(gameId);
+            const availabilityData: RoomAvailability = {
+                gameId,
+                isAvailableToJoin: false,
+            };
+            server.emit(GameEvents.OneVsOneRoomDeleted, availabilityData);
+        }
     }
 
     saveRoom(room: ClassicPlayRoom, socket: io.Socket): void {
@@ -137,48 +181,48 @@ export class ClassicModeService {
     }
 
     updateWaitingPlayerNameList(gameId: string, playerName: string, server: io.Server): void {
-        const playerNames = this.joinedPlayerNamesByGameId.get(gameId);
-        if (playerNames) {
-            playerNames.push(playerName);
-        } else {
-            this.joinedPlayerNamesByGameId.set(gameId, [playerName]);
-        }
-        const playerNamesList = this.joinedPlayerNamesByGameId.get(gameId);
-        const roomTarget = this.getOneVsOneRoomByGameId(gameId);
-        server.to(roomTarget.roomId).emit(GameEvents.UpdateWaitingPlayerNameList, { gameId, playerNamesList });
+        const playerNames = this.joinedPlayerNamesByGameId.get(gameId) ?? [];
+        playerNames.push(playerName);
+        this.joinedPlayerNamesByGameId.set(gameId, playerNames);
+        const waitingPlayerNameList: WaitingPlayerNameList = { gameId, playerNamesList: playerNames };
+        server.emit(GameEvents.UpdateWaitingPlayerNameList, waitingPlayerNameList);
     }
 
-    getWaitingPlayerNameList(gameId: string): string[] {
-        return this.joinedPlayerNamesByGameId.get(gameId);
+    getWaitingPlayerNameList(roomId: string): string[] {
+        return this.joinedPlayerNamesByGameId.get(roomId);
     }
 
     refusePlayer(gameId: string, playerName: string, server: io.Server): void {
         this.cancelJoining(gameId, playerName, server);
     }
-    acceptPlayer(gameId: string, playerName: string, socket: io.Socket): void {
-        const roomTarget = this.getOneVsOneRoomByGameId(gameId);
-        if (roomTarget) {
-            const playerTwo: Player = {
-                name: playerName,
-                diffData: {
-                    currentDifference: [],
-                    differencesFound: 0,
-                },
-            };
-            roomTarget.player2 = playerTwo;
-            this.rooms.set(roomTarget.roomId, roomTarget);
-            socket.join(roomTarget.roomId);
-        }
+
+    acceptPlayer(gameId: string, roomId: string, playerNameCreator: string): string {
+        const room = this.rooms.get(roomId);
+        if (!room) return;
+
+        const playerName = this.joinedPlayerNamesByGameId.get(gameId)?.[0];
+        if (!playerName) return;
+
+        room.clientGame.player = playerNameCreator;
+        room.player2 = {
+            name: playerName,
+            diffData: {
+                currentDifference: [],
+                differencesFound: 0,
+            },
+        };
+        this.rooms.set(roomId, room);
+        return playerName;
     }
 
     checkIfPlayerNameIsAvailable(gameId: string, playerNames: string, server: io.Server): void {
         const joinedPlayerNames = this.joinedPlayerNamesByGameId.get(gameId);
-        if (joinedPlayerNames) {
-            const isNameAvailable = !joinedPlayerNames.includes(playerNames);
-            server.emit(GameEvents.PlayerNameTaken, { gameId, isNameAvailable });
-        } else {
-            server.emit(GameEvents.PlayerNameTaken, { gameId, isNameAvailable: true });
-        }
+        const playerNameAvailability: PlayerNameAvailability = {
+            gameId,
+            isNameAvailable: true,
+        };
+        playerNameAvailability.isNameAvailable = !joinedPlayerNames?.includes(playerNames);
+        server.emit(GameEvents.PlayerNameTaken, playerNameAvailability);
     }
 
     cancelJoining(gameId: string, playerName: string, server: io.Server): void {
@@ -189,7 +233,11 @@ export class ClassicModeService {
                 playerNames.splice(index, 1);
             }
             this.joinedPlayerNamesByGameId.set(gameId, playerNames);
-            server.emit(GameEvents.UpdateWaitingPlayerNameList, { gameId, playerNamesList: playerNames });
+            const waitingPlayerNameList: WaitingPlayerNameList = {
+                gameId,
+                playerNamesList: playerNames,
+            };
+            server.emit(GameEvents.UpdateWaitingPlayerNameList, waitingPlayerNameList);
         }
     }
 }
