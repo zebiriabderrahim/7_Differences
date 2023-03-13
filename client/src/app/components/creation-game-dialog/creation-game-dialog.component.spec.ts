@@ -193,29 +193,9 @@ describe('CreationGameDialogComponent', () => {
         expect(imageServiceSpy.resetBackground).not.toHaveBeenCalled();
     });
 
-    // it('should return true if gameName is valid', () => {
-    //     const gameName = 'test-game';
-    //     const expectedResponse = true;
-
-    //     communicationServiceSpy.verifyIfGameExists.and.returnValue(of(true));
-    //     communicationServiceSpy.verifyIfGameExists(gameName).subscribe((res) => {
-    //         expect(res).toBe(expectedResponse);
-    //     });
-    // });
-
-    // it('should return false if gameName is invalid', () => {
-    //     const gameName = '';
-    //     const expectedResponse = false;
-
-    //     communicationServiceSpy.verifyIfGameExists.and.returnValue(of(false));
-    //     communicationServiceSpy.verifyIfGameExists(gameName).subscribe((res) => {
-    //         expect(res).toBe(expectedResponse);
-    //     });
-    // });
-
     it('validateGameName should return null if game name does not exist', () => {
         const control = jasmine.createSpyObj('AbstractControl', ['value']);
-        control.value = 'nonexistentgamename';
+        control.value = 'nonExistentGameName';
         communicationServiceSpy.verifyIfGameExists.and.returnValue(of(false));
 
         component.validateGameName(control).subscribe((result) => {
@@ -225,7 +205,7 @@ describe('CreationGameDialogComponent', () => {
 
     it('validateGameName should return an object with gameExists property if game name exists', () => {
         const control = jasmine.createSpyObj('AbstractControl', ['value']);
-        control.value = 'existinggamename';
+        control.value = 'ExistentGameName';
         communicationServiceSpy.verifyIfGameExists.and.returnValue(of(true));
 
         component.validateGameName(control).subscribe((result) => {
