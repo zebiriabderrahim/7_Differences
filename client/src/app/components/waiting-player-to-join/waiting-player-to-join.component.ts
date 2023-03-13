@@ -24,9 +24,7 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         private readonly roomManagerService: RoomManagerService,
         private dialogRef: MatDialogRef<WaitingForPlayerToJoinComponent>,
         private readonly router: Router,
-    ) {
-        this.roomManagerService.handleRoomEvents();
-    }
+    ) {}
     ngOnInit(): void {
         this.getJoinedPlayerNamesByGameId();
     }
@@ -50,8 +48,10 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
                 this.refusePlayer(player);
             }
         });
+        this.dialogRef.afterClosed().subscribe(() => {
+            this.router.navigate(['/game', this.data.roomId]);
+        });
         this.dialogRef.close();
-        this.router.navigate(['/game', this.data.roomId]);
         this.undoCreateOneVsOneRoom();
     }
 
@@ -64,6 +64,5 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.playerNamesSubscription?.unsubscribe();
-        this.roomManagerService.disconnect();
     }
 }
