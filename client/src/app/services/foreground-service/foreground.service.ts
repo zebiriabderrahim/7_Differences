@@ -114,7 +114,7 @@ export class ForegroundService {
     }
 
     disableDragging() {
-        if (this.drawService.isMouseBeingDragged()) {
+        if (this.drawService.isMouseDragged()) {
             this.drawService.disableMouseDrag();
             this.saveCurrentForegroundsState();
         }
