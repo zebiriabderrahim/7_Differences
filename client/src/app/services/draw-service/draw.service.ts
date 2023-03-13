@@ -11,7 +11,7 @@ export class DrawService {
     private activeContext: CanvasRenderingContext2D;
     private activeCanvasPosition: CanvasPosition;
     private isMouseBeingDragged: boolean;
-    private isSquare: boolean;
+    private isSquareModeOn: boolean;
     private rectangleTopCorner: Coordinate;
     private currentAction: CanvasAction;
     private clickPosition: Coordinate;
@@ -110,10 +110,10 @@ export class DrawService {
         this.disableMouseDrag();
     }
 
-    setSquareMode(isSquare: boolean) {
+    setSquareMode(squareMode: boolean) {
         if (this.isMouseBeingDragged && this.isCurrentActionRectangle()) {
             this.drawRectangle();
-            this.isSquare = isSquare;
+            this.isSquareModeOn = squareMode;
         }
     }
 
@@ -143,7 +143,7 @@ export class DrawService {
     private drawRectangle() {
         this.activeContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         const rectangleWidth: number = this.clickPosition.x - this.rectangleTopCorner.x;
-        const rectangleHeight: number = this.isSquare ? rectangleWidth : this.clickPosition.y - this.rectangleTopCorner.y;
+        const rectangleHeight: number = this.isSquareModeOn ? rectangleWidth : this.clickPosition.y - this.rectangleTopCorner.y;
         this.activeContext.fillRect(this.rectangleTopCorner.x, this.rectangleTopCorner.y, rectangleWidth, rectangleHeight);
     }
 
