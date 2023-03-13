@@ -1,7 +1,7 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { ONE_SECOND, TEEN_SECONDS } from '@app/constants/constants';
+import { ONE_SECOND, TEN_SECONDS } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { filter, interval, skip, Subscription, take, takeWhile } from 'rxjs';
 
@@ -50,7 +50,7 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
     }
     handleRefusedPlayer(playerNames: string[]) {
         if (!playerNames.includes(this.data.player)) {
-            this.countdown = TEEN_SECONDS;
+            this.countdown = TEN_SECONDS;
             const countdown$ = interval(ONE_SECOND).pipe(takeWhile(() => this.countdown > 0));
             const countdownObserver = {
                 next: () => {
