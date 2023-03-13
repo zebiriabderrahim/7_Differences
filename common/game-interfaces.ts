@@ -58,20 +58,25 @@ export interface Differences {
     differencesFound: number;
 }
 
+export interface RoomAvailability {
+    gameId: string;
+    isAvailableToJoin: boolean;
+}
 
+export interface PlayerNameAvailability {
+    gameId: string;
+    isNameAvailable: boolean;
+}
 
+export interface AcceptedPlayerByRoomId {
+    roomId: string;
+    playerName: string;
+}
 
-
-
-
-
-
-
-
-
-
-
-
+export interface WaitingPlayerNameList {
+    gameId: string;
+    playerNamesList: string[];
+}
 
 export enum GameEvents {
     ValidateCoords = 'validateCoords',
@@ -83,7 +88,7 @@ export enum GameEvents {
     TimerStarted = 'timerStarted',
     RemoveDiff = 'removeDiff',
     RoomOneVsOneAvailable = 'RoomOneVsOneAvailable',
-    CreateOneVsOneGame = 'CreateOneVsOneGame',
+    StartGameByRoomId = 'CreateOneVsOneGame',
     CheckRoomOneVsOneAvailability = 'CheckRoomOneVsOneAvailability',
     UpdateRoomOneVsOneAvailability = 'UpdateRoomOneVsOneAvailability',
     DeleteCreatedOneVsOneRoom = 'DeleteCreatedOneVsOneRoom',
@@ -91,10 +96,16 @@ export enum GameEvents {
     WaitingPlayerNameListByGameId = 'WaitingPlayerNameListByGameId',
     Disconnect = 'Disconnect',
     RefusePlayer = 'RefusePlayer',
-    CheckIfPlayerNameIsAvailable = "CheckIfPlayerNameIsAvailable",
-    PlayerNameTaken = "PlayerNameTaken",
-    CancelJoining = "CancelJoining",
-    AcceptPlayer = "AcceptPlayer"
+    CheckIfPlayerNameIsAvailable = 'CheckIfPlayerNameIsAvailable',
+    PlayerNameTaken = 'PlayerNameTaken',
+    CancelJoining = 'CancelJoining',
+    AcceptPlayer = 'AcceptPlayer',
+    CreateOneVsOneRoom = 'CreateOneVsOneRoom',
+    OneVsOneRoomDeleted = 'OneVsOneRoomDeleted',
+    PlayerAccepted = 'PlayerAccepted',
+    GameStarted = 'OneVsOneStarted',
+    CreateSoloRoom = 'CreateSoloRoom',
+    RoomSoloCreated = 'RoomSoloCreated',
 }
 
 export enum GameModes {
