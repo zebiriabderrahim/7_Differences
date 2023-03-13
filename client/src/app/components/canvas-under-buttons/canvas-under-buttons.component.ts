@@ -30,7 +30,7 @@ export class CanvasUnderButtonsComponent {
         const target = event.target as HTMLInputElement;
         if (target.files && target.files[0]) {
             const file = target.files[0];
-            if (this.validationService.isImageValid(file, target)) {
+            if (await this.validationService.isImageValid(file)) {
                 const image: ImageBitmap = await createImageBitmap(file);
                 this.imageService.setBackground(this.canvasPositionType, image);
                 this.uploadInput.nativeElement.value = '';
