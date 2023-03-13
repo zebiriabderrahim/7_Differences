@@ -162,23 +162,23 @@ describe('ImageService', () => {
     //     expect(rightBackgroundContextSpy).toHaveBeenCalled();
     // });
 
-    it('should reset background context for left canvas position', () => {
+    it('resetBackground should reset background context for left canvas position', () => {
         service.resetBackground(CanvasPosition.Left);
         expect(resetBackgroundContextSpy).toHaveBeenCalled();
     });
 
-    it('should reset background context for right canvas position', () => {
+    it('resetBackground should reset background context for right canvas position', () => {
         service.resetBackground(CanvasPosition.Right);
         expect(resetBackgroundContextSpy).toHaveBeenCalled();
     });
 
-    it('should reset background context for both canvas positions', () => {
+    it('resetBackground should reset background context for both canvas positions', () => {
         service.resetBackground(CanvasPosition.Both);
         expect(resetBackgroundContextSpy).toHaveBeenCalled();
         expect(resetBackgroundContextSpy).toHaveBeenCalled();
     });
 
-    it('should set the background image for left canvas position', () => {
+    it('setBackground should set the background image for left canvas position', () => {
         const mockImage = {} as ImageBitmap;
         spyOn(window, 'createImageBitmap').and.callFake(async () => {
             return mockImage;
@@ -187,7 +187,7 @@ describe('ImageService', () => {
         expect(setBackgroundImageSpy).toHaveBeenCalled();
     });
 
-    it('should set the background image for right canvas position', () => {
+    it('setBackground should set the background image for right canvas position', () => {
         const mockImage = {} as ImageBitmap;
         spyOn(window, 'createImageBitmap').and.callFake(async () => {
             return mockImage;
@@ -196,7 +196,7 @@ describe('ImageService', () => {
         expect(setBackgroundImageSpy).toHaveBeenCalled();
     });
 
-    it('should set the background image for both canvas positions', () => {
+    it('setBackground should set the background image for both canvas positions', () => {
         const mockImage = {} as ImageBitmap;
         spyOn(window, 'createImageBitmap').and.callFake(async () => {
             return mockImage;
