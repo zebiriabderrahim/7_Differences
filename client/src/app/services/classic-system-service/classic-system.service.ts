@@ -10,6 +10,7 @@ import { BehaviorSubject, filter, Subject } from 'rxjs';
 export class ClassicSystemService implements OnDestroy {
     private timer: BehaviorSubject<number>;
     private differencesFound: BehaviorSubject<number>;
+    private opponentDifferencesFound: BehaviorSubject<number>;
     private currentGame: Subject<ClientSideGame>;
     private message: Subject<ChatMessage>;
     private isLeftCanvas: boolean;
@@ -21,6 +22,7 @@ export class ClassicSystemService implements OnDestroy {
         this.timer = new BehaviorSubject<number>(0);
         this.message = new Subject<ChatMessage>();
         this.endMessage = new Subject<string>();
+        this.opponentDifferencesFound = new BehaviorSubject<number>(0);
     }
 
     get currentGame$() {
@@ -39,6 +41,10 @@ export class ClassicSystemService implements OnDestroy {
 
     get endMessage$() {
         return this.endMessage.asObservable();
+    }
+
+    get opponentDifferencesFound$() {
+        return this.opponentDifferencesFound.asObservable();
     }
 
     createSoloGame(gameId: string, playerName: string): void {
@@ -111,6 +117,11 @@ export class ClassicSystemService implements OnDestroy {
             this.replaceDifference(differencesData.currentDifference);
             this.differencesFound.next(differencesData.differencesFound);
             this.checkStatus();
+        });
+
+        this.clientSocket.on(GameEvents.OpponentFoundDiff, (differencesData: Differences) => {
+            this.replaceDifference(differencesData.currentDifference);
+            this.opponentDifferencesFound.next(differencesData.differencesFound);
         });
 
         this.clientSocket.on(GameEvents.TimerStarted, (timer: number) => {
