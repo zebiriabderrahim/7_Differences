@@ -19,7 +19,6 @@ import { ImageService } from '@app/services/image-service/image.service';
 export class CreationPageComponent implements AfterViewInit {
     @ViewChild('combinedCanvas') combinedCanvas: ElementRef;
     readonly canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
-    readonly configRoute: string = '/config';
     canvasPosition: typeof CanvasPosition;
     readonly radiusSizes: number[];
     radius: number;
