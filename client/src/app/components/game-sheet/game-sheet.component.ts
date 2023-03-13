@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { JoinedPlayerDialogComponent } from '@app/components/joined-player-dialog/joined-player-dialog.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { WaitingForPlayerToJoinComponent } from '@app/components/waiting-player-to-join/waiting-player-to-join.component';
-import { RoomManagerService } from '@app/services/room-manager.service';
+import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameCard } from '@common/game-interfaces';
 import { filter, Subscription, take } from 'rxjs';
 

@@ -2,7 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { AsyncValidatorFn, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MAX_NAME_LENGTH, MIN_NAME_LENGTH } from '@app/constants/constants';
-import { RoomManagerService } from '@app/services/room-manager.service';
+import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
