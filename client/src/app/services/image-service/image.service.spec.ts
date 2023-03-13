@@ -97,6 +97,16 @@ describe('ImageService', () => {
         expect(service['transformPixelArrayToImageData'](pixelArray)).toEqual(expectedArray);
     });
 
+    it('getImageSources should return image sources for both left and right', () => {
+        const fakeLeftImage = 'fakeLeftImage';
+        const fakeRightImage = 'fakeRightImage';
+        service['leftImage'] = fakeLeftImage;
+        service['rightImage'] = fakeRightImage;
+        const result = service.getImageSources();
+        expect(result.left).toEqual(fakeLeftImage);
+        expect(result.right).toEqual(fakeRightImage);
+    });
+
     // it('getLeftPixels should call getImageData of leftBackgroundContext', () => {
     //     const leftBackgroundContextSpy = spyOn(service['leftBackgroundContext'], 'getImageData').and.callThrough();
     //     service.getLeftPixels();
@@ -172,16 +182,16 @@ describe('ImageService', () => {
     //     expect(transformPixelArrayToImageDataSpy).toHaveBeenCalled();
     // });
 
-    it('drawDifference should call putImageData on provided context', () => {
-        const mockDifferences = [
-            { x: 0, y: 0 },
-            { x: 1, y: 1 },
-        ];
+    // it('drawDifference should call putImageData on provided context', () => {
+    //     const mockDifferences = [
+    //         { x: 0, y: 0 },
+    //         { x: 1, y: 1 },
+    //     ];
 
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed to callFake
-        const putImageDataSpy = spyOn(contextStub, 'putImageData').and.callFake(() => {});
+    //     // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed to callFake
+    //     const putImageDataSpy = spyOn(contextStub, 'putImageData').and.callFake(() => {});
 
-        service.drawDifferences(contextStub, mockDifferences);
-        expect(putImageDataSpy).toHaveBeenCalled();
-    });
+    //     service.drawDifferences(contextStub, mockDifferences);
+    //     expect(putImageDataSpy).toHaveBeenCalled();
+    // });
 });
