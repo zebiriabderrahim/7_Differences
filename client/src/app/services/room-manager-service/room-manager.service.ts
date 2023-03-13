@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
-import { AcceptedPlayerByRoomId, GameEvents, PlayerNameAvailability, RoomAvailability, WaitingPlayerNameList } from '@common/game-interfaces';
+import { AcceptedPlayer, GameEvents, PlayerNameAvailability, RoomAvailability, WaitingPlayerNameList } from '@common/game-interfaces';
 import { BehaviorSubject, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
@@ -9,13 +9,14 @@ export class RoomManagerService implements OnDestroy {
     private joinedPlayerNames: BehaviorSubject<WaitingPlayerNameList>;
     private isPlayerNameTaken: Subject<PlayerNameAvailability>;
     private oneVsOneRoomsAvailabilityByGameId: BehaviorSubject<RoomAvailability>;
-    private acceptedPlayerByRoom: BehaviorSubject<AcceptedPlayerByRoomId>;
+    private acceptedPlayerByRoom: BehaviorSubject<AcceptedPlayer>;
     private roomId: Subject<string>;
 
     constructor(private clientSocket: ClientSocketService) {
         this.isPlayerNameTaken = new Subject<PlayerNameAvailability>();
         this.roomId = new Subject<string>();
-        this.acceptedPlayerByRoom = new BehaviorSubject<AcceptedPlayerByRoomId>({
+        this.acceptedPlayerByRoom = new BehaviorSubject<AcceptedPlayer>({
+            gameId: '',
             roomId: '',
             playerName: '',
         });
@@ -120,7 +121,7 @@ export class RoomManagerService implements OnDestroy {
             this.roomId.next(roomId);
         });
 
-        this.clientSocket.on(GameEvents.PlayerAccepted, (acceptedPlayer: AcceptedPlayerByRoomId) => {
+        this.clientSocket.on(GameEvents.PlayerAccepted, (acceptedPlayer: AcceptedPlayer) => {
             this.acceptedPlayerByRoom.next(acceptedPlayer);
         });
     }

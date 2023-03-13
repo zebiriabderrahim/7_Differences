@@ -242,4 +242,13 @@ export class ClassicModeService {
             server.emit(GameEvents.UpdateWaitingPlayerNameList, waitingPlayerNameList);
         }
     }
+
+    abandonGame(roomId: string, server: io.Server): void {
+        const room = this.rooms.get(roomId);
+        if (room) {
+            room.endMessage = "L'adversaire a abandonné la partie!";
+            server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
+            this.roomAvailability.delete(room.clientGame.id);
+        }
+    }
 }
