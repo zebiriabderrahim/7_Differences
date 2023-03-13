@@ -5,16 +5,17 @@ import { IMG_HEIGHT, IMG_TYPE, IMG_WIDTH, VALID_BMP_SIZE } from '@app/constants/
     providedIn: 'root',
 })
 export class ValidationService {
-    isImageValid(file: File, target: HTMLInputElement): boolean {
-        return this.isImageTypeValid(file) && this.isImageSizeValid(target) && this.isImageFormatValid(file);
+    async isImageValid(file: File): Promise<boolean> {
+        return this.isImageTypeValid(file) && (await this.isImageSizeValid(file)) && this.isImageFormatValid(file);
     }
 
     isImageTypeValid(file: File): boolean {
         return file.type === IMG_TYPE;
     }
 
-    isImageSizeValid(target: HTMLInputElement): boolean {
-        return target.width === IMG_WIDTH && target.height === IMG_HEIGHT;
+    async isImageSizeValid(file: File): Promise<boolean> {
+        const image = await createImageBitmap(file);
+        return image.width === IMG_WIDTH && image.height === IMG_HEIGHT;
     }
 
     isImageFormatValid(file: File): boolean {

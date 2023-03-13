@@ -56,16 +56,18 @@ describe('CanvasUnderButtonsComponent', () => {
         expect(matDialogSpy.open).not.toHaveBeenCalled();
     });
 
-    it('onSelectFile should open the invalidImageDialog when given an invalid type image and should not call imageService setBackground', () => {
+    it('onSelectFile should open invalidImageDialog when given invalid type image and should not call imageService setBackground', async () => {
         const event = {
             target: {
                 files: [new Blob()],
             } as unknown as HTMLInputElement,
         } as unknown as Event;
 
-        validationServiceSpy.isImageValid.and.returnValue(false);
+        validationServiceSpy.isImageValid.and.callFake(async () => {
+            return false;
+        });
 
-        component.onSelectFile(event);
+        await component.onSelectFile(event);
         expect(matDialogSpy.open).toHaveBeenCalled();
         expect(imageServiceSpy.setBackground).not.toHaveBeenCalled();
     });
@@ -82,7 +84,9 @@ describe('CanvasUnderButtonsComponent', () => {
             } as unknown as HTMLInputElement,
         } as unknown as Event;
 
-        validationServiceSpy.isImageValid.and.returnValue(true);
+        validationServiceSpy.isImageValid.and.callFake(async () => {
+            return true;
+        });
 
         await component.onSelectFile(event);
         expect(matDialogSpy.open).not.toHaveBeenCalled();
