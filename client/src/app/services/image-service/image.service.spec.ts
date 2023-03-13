@@ -6,7 +6,6 @@ import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { N_PIXEL_ATTRIBUTE } from '@app/constants/pixels';
 import { CanvasPosition } from '@app/enum/canvas-position';
-// import { CanvasPosition } from '@app/enum/canvas-position';
 
 import { ImageService } from './image.service';
 
