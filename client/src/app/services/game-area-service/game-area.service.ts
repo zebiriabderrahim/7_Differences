@@ -6,7 +6,6 @@ import {
     MAX_PIXEL_INTENSITY,
     MIN_PIXEL_INTENSITY,
     ONE_SECOND,
-    RGBA_SIZE,
     STRONG_PIXEL_INTENSITY,
     X_CENTERING_DISTANCE,
     YELLOW_FLASH_TIME,
@@ -86,12 +85,7 @@ export class GameAreaService {
     flashPixelsLogic(imageDataIndexes: number[]): void {
         const firstInterval = setInterval(() => {
             const secondInterval = setInterval(() => {
-                for (const index of imageDataIndexes) {
-                    for (let i = 0; i < RGBA_SIZE; i++) {
-                        this.modifiedFrontPixelData.data[index + i] = i === 1 || i === 3 ? MAX_PIXEL_INTENSITY : MIN_PIXEL_INTENSITY;
-                        this.originalFrontPixelData.data[index + i] = i === 1 || i === 3 ? MAX_PIXEL_INTENSITY : MIN_PIXEL_INTENSITY;
-                    }
-                }
+                this.setPixelData(imageDataIndexes, this.modifiedFrontPixelData, this.originalFrontPixelData);
                 this.putImageDataToContexts();
             }, GREEN_FLASH_TIME);
 
@@ -102,21 +96,36 @@ export class GameAreaService {
             }
             this.putImageDataToContexts();
 
-            setTimeout(() => {
-                clearInterval(secondInterval);
-                this.clearFlashing();
-            }, FLASH_WAIT_TIME);
+            this.setTime(secondInterval);
         }, YELLOW_FLASH_TIME);
 
-        setTimeout(() => {
-            clearInterval(firstInterval);
-            this.clearFlashing();
-        }, FLASH_WAIT_TIME);
+        this.setTime(firstInterval);
+    }
+
+    setPixelData(imageDataIndexes: number[], modifiedFrontPixelData: ImageData, originalFrontPixelData: ImageData): void {
+        for (const index of imageDataIndexes) {
+            modifiedFrontPixelData.data[index] = MIN_PIXEL_INTENSITY;
+            modifiedFrontPixelData.data[index + 1] = MAX_PIXEL_INTENSITY;
+            modifiedFrontPixelData.data[index + 2] = MIN_PIXEL_INTENSITY;
+            modifiedFrontPixelData.data[index + 3] = MAX_PIXEL_INTENSITY;
+
+            originalFrontPixelData.data[index] = MIN_PIXEL_INTENSITY;
+            originalFrontPixelData.data[index + 1] = MAX_PIXEL_INTENSITY;
+            originalFrontPixelData.data[index + 2] = MIN_PIXEL_INTENSITY;
+            originalFrontPixelData.data[index + 3] = MAX_PIXEL_INTENSITY;
+        }
     }
 
     putImageDataToContexts(): void {
         this.modifiedContextFrontLayer.putImageData(this.modifiedFrontPixelData, 0, 0);
         this.originalContextFrontLayer.putImageData(this.originalFrontPixelData, 0, 0);
+    }
+
+    setTime(intervalNumber: NodeJS.Timer): void {
+        setTimeout(() => {
+            clearInterval(intervalNumber);
+            this.clearFlashing();
+        }, FLASH_WAIT_TIME);
     }
 
     clearFlashing(): void {
