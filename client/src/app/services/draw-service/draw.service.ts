@@ -24,7 +24,7 @@ export class DrawService {
         this.isDragging = false;
     }
 
-    setMousePosition(event: MouseEvent, isMouseLeaving: boolean): void {
+    setMousePosition(isMouseLeaving: boolean): void {
         this.isMouseOutOfCanvas = isMouseLeaving;
     }
 

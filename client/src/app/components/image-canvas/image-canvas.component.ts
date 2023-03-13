@@ -45,7 +45,7 @@ export class ImageCanvasComponent implements AfterViewInit {
     setMouseLeavingBoolean(event: MouseEvent): void {
         const isMouseLeaving = true;
         if (event.button === LEFT_BUTTON) {
-            this.drawService.setMousePosition(event, isMouseLeaving);
+            this.drawService.setMousePosition(isMouseLeaving);
         }
     }
 
