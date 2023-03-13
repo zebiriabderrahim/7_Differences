@@ -25,9 +25,7 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
         private readonly roomManagerService: RoomManagerService,
         private dialogRef: MatDialogRef<JoinedPlayerDialogComponent>,
         private readonly router: Router,
-    ) {
-        this.roomManagerService.handleRoomEvents();
-    }
+    ) {}
 
     ngOnInit(): void {
         this.getJoinedPlayerNamesByGameId();
@@ -81,7 +79,6 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
         this.playerNamesSubscription?.unsubscribe();
         this.countdownSubscription?.unsubscribe();
         this.roomIdSubscription?.unsubscribe();
-        this.acceptedPlayerSubscription?.unsubscribe();
-        this.roomManagerService.disconnect();
+        this.acceptedPlayerSubscription?.unsubscribe()
     }
 }

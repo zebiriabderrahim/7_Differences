@@ -28,9 +28,7 @@ export class PlayerNameDialogBoxComponent {
         private dialogRef: MatDialogRef<PlayerNameDialogBoxComponent>,
         @Inject(MAT_DIALOG_DATA) private data: { gameId: string },
         private readonly roomManagerService: RoomManagerService,
-    ) {
-        this.roomManagerService.handleRoomEvents();
-    }
+    ) {}
 
     submitForm() {
         if (this.playerNameForm.valid && this.playerNameForm.value.name) {
