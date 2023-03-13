@@ -146,8 +146,8 @@ export class DrawService {
     setActiveCanvas(canvasPosition: CanvasPosition) {
         this.activeCanvas = canvasPosition;
         if (this.currentAction === CanvasAction.Rectangle) {
-            switch (canvasPosition) {
-                case CanvasPosition.Left:
+        switch (canvasPosition) {
+            case CanvasPosition.Left:
                     this.activeContext = this.leftFrontContext;
                     break;
                 case CanvasPosition.Right:
