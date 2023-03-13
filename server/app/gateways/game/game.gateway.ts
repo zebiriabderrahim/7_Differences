@@ -1,6 +1,6 @@
 import { ClassicModeService } from '@app/services/classic-mode/classic-mode.service';
 import { Coordinate } from '@common/coordinate';
-import { AcceptedPlayer, ChatMessage, GameEvents, GameModes, MessageEvents } from '@common/game-interfaces';
+import {  AcceptedPlayer, ChatMessage, GameEvents, GameModes, MessageEvents } from '@common/game-interfaces';
 import { Injectable, Logger } from '@nestjs/common';
 import {
     ConnectedSocket,
@@ -54,15 +54,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameEvents.RemoveDiff)
-    validateCoords(@ConnectedSocket() socket: Socket, @MessageBody('coords') coords: Coordinate, @MessageBody('playerName') playerName: string) {
+    validateCoords(@ConnectedSocket() socket: Socket, @MessageBody() coords: Coordinate) {
         const roomId = Array.from(socket.rooms.values())[1];
-        this.classicModeService.verifyCoords(roomId, coords, playerName, this.server);
+        this.classicModeService.verifyCoords(roomId, coords, '', socket, this.server);
     }
 
     @SubscribeMessage(GameEvents.CheckStatus)
-    checkStatus(@ConnectedSocket() socket: Socket, @MessageBody() playerName: string) {
+    checkStatus(@ConnectedSocket() socket: Socket) {
         const roomId = Array.from(socket.rooms.values())[1];
-        this.classicModeService.endGame(roomId, playerName, this.server);
+        this.classicModeService.endGame(roomId, '', this.server);
     }
 
     @SubscribeMessage(GameEvents.Disconnect)
@@ -120,7 +120,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     abandonGame(@MessageBody() roomId: string) {
         this.classicModeService.abandonGame(roomId, this.server);
     }
-
     @SubscribeMessage(MessageEvents.LocalMessage)
     sendMessage(@ConnectedSocket() socket: Socket, @MessageBody() data: ChatMessage) {
         const roomId = Array.from(socket.rooms.values())[1];
@@ -138,7 +137,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     handleDisconnect(@ConnectedSocket() socket: Socket) {
         this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
-        this.classicModeService.endGame(socket.id, '', this.server);
+        // this.classicModeService.endGame(socket.id, '', this.server);
     }
 
     updateTimers() {

@@ -70,11 +70,12 @@ export class ClassicModeService {
         }
     }
 
-    verifyCoords(roomId: string, coords: Coordinate, playerName: string, server: io.Server): void {
+    verifyCoords(roomId: string, coords: Coordinate, playerName: string, socket: io.Socket, server: io.Server): void {
         const room = this.rooms.get(roomId);
         const { originalDifferences } = room;
         const time: Date = new Date();
         let errorFoundMessage: ChatMessage;
+
         let index = 0;
         for (; index < originalDifferences.length; index++) {
             if (originalDifferences[index].some((coord: Coordinate) => coord.x === coords.x && coord.y === coords.y)) {
@@ -86,28 +87,32 @@ export class ClassicModeService {
 
         if (index !== originalDifferences.length) {
             originalDifferences.splice(index, 1);
-            if (room.clientGame.mode === GameModes.ClassicSolo) {
-                errorFoundMessage = {
-                    tag: MessageTag.common,
-                    message: `${time.getHours()} : ${time.getMinutes()} : ${time.getSeconds()} - Différences trouvé`,
-                };
-                server.to(roomId).emit(MessageEvents.LocalMessage, errorFoundMessage);
-            } else if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
-                errorFoundMessage = {
-                    tag: MessageTag.common,
-                    message: `${time.getHours()} : ${time.getMinutes()} : ${time.getSeconds()} - Différences trouvé par ${playerName}`,
-                };
-                server.to(roomId).emit(MessageEvents.LocalMessage, errorFoundMessage);
-            }
         } else {
             room.differencesData.currentDifference = [];
         }
 
-        const diffData: Differences = {
-            currentDifference: room.differencesData.currentDifference,
-            differencesFound: room.differencesData.differencesFound,
-        };
-        server.to(roomId).emit(GameEvents.RemoveDiff, diffData);
+        if (room.clientGame.mode === GameModes.ClassicSolo) {
+            errorFoundMessage = {
+                tag: MessageTag.common,
+                message: `${time.getHours()} : ${time.getMinutes()} : ${time.getSeconds()} - Différences trouvé`,
+            };
+            server.to(roomId).emit(MessageEvents.LocalMessage, errorFoundMessage);
+
+            server.to(roomId).emit(GameEvents.RemoveDiff, room.differencesData);
+        } else if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
+            errorFoundMessage = {
+                tag: MessageTag.common,
+                message: `${time.getHours()} : ${time.getMinutes()} : ${time.getSeconds()} - Différences trouvé par ${playerName}`,
+            };
+            server.to(roomId).emit(MessageEvents.LocalMessage, errorFoundMessage);
+
+            if (playerName === room.clientGame.player) {
+                room.differencesData.differencesFound++;
+            } else {
+                room.player2.diffData.differencesFound++;
+            }
+            socket.broadcast.to(roomId).emit(GameEvents.OpponentFoundDiff, room.differencesData);
+        }
     }
 
     buildClientGameVersion(playerName: string, game: Game): ClientSideGame {
@@ -181,7 +186,7 @@ export class ClassicModeService {
     async createOneVsOneRoom(gameId: string): Promise<string> {
         const oneVsOneGame = await this.createOneVsOneGame(gameId, 'Player 1');
         if (oneVsOneGame) {
-            const roomId = this.generateRoomId();
+            const roomId = oneVsOneGame.roomId;
             oneVsOneGame.roomId = roomId;
             this.rooms.set(oneVsOneGame.roomId, oneVsOneGame);
             return roomId;
