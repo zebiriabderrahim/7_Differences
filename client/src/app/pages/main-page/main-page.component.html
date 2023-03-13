@@ -1,16 +1,65 @@
 <div class="container justified">
-    <h1 class="header-item">{{ gameTitle }}</h1>
-    <img class="project-logo" src="./assets/RatCoon.png" alt="Logo Projet" />
-    <section id="server-message" class="justified">
-        <p>Modes de jeu:</p>
+    <header class="header">
+        <h1 class="header-item justified">{{ gameTitle }}</h1>
+        <img class="project-logo justified" src="./assets/RatCoon.png" alt="Logo Projet" />
+        <!-- Waves Container -->
+        <div>
+            <svg
+            class="waves"
+            viewBox="0 24 150 28"
+            preserveAspectRatio="none"
+            shape-rendering="auto"
+            >
+            <defs>
+                <path
+                id="gentle-wave"
+                d="M-160 44c30 0 
+                58-18 88-18s
+                58 18 88 18 
+                58-18 88-18 
+                58 18 88 18 
+                v44h-352z"
+                />
+            </defs>
+            <g class="parallax">
+                <use
+                xlink:href="#gentle-wave"
+                x="48"
+                y="0"
+                fill="rgba(255,255,255,0.7"
+                />
+                <use
+                xlink:href="#gentle-wave"
+                x="48"
+                y="3"
+                fill="rgba(255,255,255,0.5)"
+                />
+                <use
+                xlink:href="#gentle-wave"
+                x="48"
+                y="5"
+                fill="rgba(255,255,255,0.3)"
+                />
+                <use
+                xlink:href="#gentle-wave"
+                x="48"
+                y="7"
+                fill="#fff"
+                /> 
+            </g>
+            </svg>
+        </div>
+    </header>    
+    <section id="server-message" class="justified section">
+        <h2>Choisis ton mode de jeu :</h2>
         <div class="justified">
             <button mat-raised-button class="button" [routerLink]="selectionRoute">Classique</button>
             <button mat-raised-button class="button">Temps Limité</button>
             <button mat-raised-button class="button" [routerLink]="configRoute">Configuration</button>
         </div>
     </section>
-    <footer class="footer-item">
-        <h4 class="team-name">{{ teamNumber }}</h4>
+    <footer class="footer justified">
+        <h3 class="team-name"><strong>{{ teamNumber }}</strong></h3>
         <p>
             <span *ngFor="let teammateName of teammateNameList"> {{ teammateName }} </span>
         </p>

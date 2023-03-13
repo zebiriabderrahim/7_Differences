@@ -9,26 +9,24 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./config-page.component.scss'],
 })
 export class ConfigPageComponent implements OnInit, OnDestroy {
-    readonly titre: string = 'Configure ton jeu';
     readonly createRoute: string = '/create';
     readonly homeRoute: string = '/home';
     configConstants: GameConfigConst;
-    private commSub: Subscription;
+    private communicationSubscription: Subscription;
 
     constructor(private readonly communicationService: CommunicationService) {
         this.configConstants = { countdownTime: 0, penaltyTime: 0, bonusTime: 0 };
     }
 
     ngOnInit() {
-        this.commSub = this.communicationService.loadConfigConstants().subscribe((res) => {
+        this.communicationSubscription = this.communicationService.loadConfigConstants().subscribe((res) => {
             this.configConstants.countdownTime = res.countdownTime;
             this.configConstants.penaltyTime = res.penaltyTime;
             this.configConstants.bonusTime = res.bonusTime;
         });
     }
 
-    // not needed
     ngOnDestroy() {
-        this.commSub.unsubscribe();
+        this.communicationSubscription.unsubscribe();
     }
 }

@@ -1,4 +1,4 @@
 export interface CanvasState {
-    left: HTMLCanvasElement;
-    right: HTMLCanvasElement;
+    left: ImageData;
+    right: ImageData;
 }

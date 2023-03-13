@@ -1,23 +1,30 @@
+// Needed for functions mock
 /* eslint-disable @typescript-eslint/no-empty-function */
 // Id comes from database to allow _id
 /* eslint-disable no-underscore-dangle */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
-import { GameSheetComponent } from './game-sheet.component';
+import { CommunicationService } from '@app/services/communication-service/communication.service';
+import { of } from 'rxjs';
+import { GameSheetComponent } from '@app/components/game-sheet/game-sheet.component';
 
 describe('GameSheetComponent', () => {
     let component: GameSheetComponent;
     let fixture: ComponentFixture<GameSheetComponent>;
     // let gameCardService: ClassicSystemService;
+    const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl', 'navigate']);
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule, BrowserAnimationsModule, MatDialogModule],
+            imports: [RouterTestingModule, BrowserAnimationsModule, MatDialogModule, HttpClientTestingModule],
             declarations: [GameSheetComponent],
             providers: [
+                CommunicationService,
                 {
                     provide: ClassicSystemService,
                     // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for fake
@@ -41,6 +48,10 @@ describe('GameSheetComponent', () => {
                     provide: MAT_DIALOG_DATA,
                     useValue: {},
                 },
+                {
+                    provide: Router,
+                    useValue: routerSpy,
+                },
             ],
         }).compileComponents();
     });
@@ -50,8 +61,9 @@ describe('GameSheetComponent', () => {
         component = fixture.componentInstance;
         // fixture.detectChanges();
         // gameCardService = TestBed.inject(ClassicSystemService);
+        // gameCardService = TestBed.inject(ClassicSystemService);
         component.game = {
-            _id: '',
+            _id: '0',
             name: 'test',
             difficultyLevel: true,
             soloTopTime: [],
@@ -69,7 +81,7 @@ describe('GameSheetComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    // // TODO : Fix this test
+    // TODO : Fix this test
     // it('OpenDialog should open dialog box and call gameCardService with game id and name', () => {
     //     const gameServicePlayerNameSpy = spyOn(gameCardService['playerName'], 'next');
     //     const gameServicePlayerIdSpy = spyOn(gameCardService['id'], 'next');
@@ -81,4 +93,11 @@ describe('GameSheetComponent', () => {
     //     expect(gameServicePlayerNameSpy).toHaveBeenCalledWith(component.game.name);
     //     expect(gameServicePlayerIdSpy).toHaveBeenCalledWith(component.game._id);
     // });
+
+    it('should call deleteGameById method of communicationService and redirect to config page', () => {
+        const communicationService = TestBed.inject(CommunicationService);
+        const deleteGameByIdSpy = spyOn(communicationService, 'deleteGameById').and.returnValue(of());
+        component.deleteGameCard();
+        expect(deleteGameByIdSpy).toHaveBeenCalledWith(component.game._id);
+    });
 });
