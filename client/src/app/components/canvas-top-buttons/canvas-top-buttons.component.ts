@@ -40,17 +40,6 @@ export class CanvasTopButtonsComponent implements AfterViewInit {
         this.setEraserLength(this.eraserLength);
     }
 
-    getOperationDetails(): CanvasOperation {
-        const width: number = this.selectedCanvasAction === CanvasAction.Pencil ? this.pencilDiameter : this.eraserLength;
-        this.operationDetails = {
-            action: this.selectedCanvasAction,
-            position: this.position,
-            color: this.drawColor,
-            width,
-        };
-        return this.operationDetails;
-    }
-
     setDrawingColor(color: string): void {
         this.drawColor = color;
         this.isColorSelected = false;
