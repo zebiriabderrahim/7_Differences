@@ -20,7 +20,6 @@ import { map, Observable } from 'rxjs';
 export class CreationGameDialogComponent implements OnInit {
     @ViewChild('differenceCanvas', { static: true }) differenceCanvas: ElementRef;
     gameName: string;
-    nDifferences: number;
     gameNameForm = new FormGroup({
         name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)], [this.validateGameName.bind(this)]),
     });
@@ -49,7 +48,6 @@ export class CreationGameDialogComponent implements OnInit {
     }
 
     isNumberOfDifferencesValid(): boolean {
-        this.nDifferences = this.differenceService.getNumberOfDifferences();
         return this.differenceService.isNumberOfDifferencesValid();
     }
 
