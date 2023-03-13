@@ -1,8 +1,9 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
-import { filter, interval, skip, Subscription, takeWhile } from 'rxjs';
+import { ONE_SECOND, TEEN_SECONDS } from '@app/constants/constants';
+import { RoomManagerService } from '@app/services/room-manager.service';
+import { filter, interval, skip, Subscription, take, takeWhile } from 'rxjs';
 
 @Component({
     selector: 'app-joined-player-dialog',
@@ -12,41 +13,42 @@ import { filter, interval, skip, Subscription, takeWhile } from 'rxjs';
 export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
     countdown: number;
     refusedMessage: string;
-    private gameId: string;
     private playerNamesSubscription: Subscription;
+    private countdownSubscription: Subscription;
+    private roomIdSubscription: Subscription;
+    private acceptedPlayerSubscription: Subscription;
     constructor(
-        @Inject(MAT_DIALOG_DATA) public data: { gameId: string; player: string },
-        private readonly classicSystemService: ClassicSystemService,
-        public dialogRef: MatDialogRef<JoinedPlayerDialogComponent>,
+        @Inject(MAT_DIALOG_DATA) private data: { gameId: string; player: string },
+        private readonly roomManagerService: RoomManagerService,
+        private dialogRef: MatDialogRef<JoinedPlayerDialogComponent>,
         private readonly router: Router,
     ) {
-        this.classicSystemService.manageSocket();
+        this.roomManagerService.handleRoomEvents();
     }
 
     ngOnInit(): void {
-        this.gameId = this.data.gameId;
         this.getJoinedPlayerNamesByGameId();
     }
 
     getJoinedPlayerNamesByGameId() {
-        this.playerNamesSubscription = this.classicSystemService.joinedPlayerNamesByGameId$
+        this.playerNamesSubscription = this.roomManagerService.joinedPlayerNamesByGameId$
             .pipe(
                 skip(1),
-                filter((data) => data.gameId === this.gameId && !!data.playerNamesList),
+                filter((data) => data.gameId === this.data.gameId && !!data.playerNamesList),
             )
             .subscribe((data) => {
                 this.handleRefusedPlayer(data.playerNamesList);
-                this.handleAcceptedPlayer(data.playerNamesList);
+                this.handleAcceptedPlayer();
             });
     }
 
     cancelJoining() {
-        this.classicSystemService.cancelJoining(this.gameId, this.data.player);
+        this.roomManagerService.cancelJoining(this.data.gameId, this.data.player);
     }
     handleRefusedPlayer(playerNames: string[]) {
         if (!playerNames.includes(this.data.player)) {
-            this.countdown = 10;
-            const countdown$ = interval(1000).pipe(takeWhile(() => this.countdown > 0));
+            this.countdown = TEEN_SECONDS;
+            const countdown$ = interval(ONE_SECOND).pipe(takeWhile(() => this.countdown > 0));
             const countdownObserver = {
                 next: () => {
                     this.countdown--;
@@ -56,21 +58,27 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
                     this.dialogRef.close();
                 },
             };
-            countdown$.subscribe(countdownObserver);
+            this.countdownSubscription = countdown$.subscribe(countdownObserver);
         }
     }
 
-    handleAcceptedPlayer(playerNames: string[]) {
-        if (playerNames.includes(this.data.player)) {
-            this.dialogRef.close();
-            this.router.navigate(['/game']);
-        }
+    handleAcceptedPlayer() {
+        this.acceptedPlayerSubscription = this.roomManagerService.acceptedPlayerByRoom$
+            .pipe(
+                filter((data) => data?.playerName === this.data.player),
+                take(1),
+            )
+            .subscribe((data) => {
+                this.dialogRef.close();
+                this.router.navigate(['/game', data.roomId]);
+            });
     }
 
     ngOnDestroy(): void {
-        if (this.playerNamesSubscription) {
-            this.playerNamesSubscription.unsubscribe();
-        }
-        this.classicSystemService.disconnect();
+        this.playerNamesSubscription?.unsubscribe();
+        this.countdownSubscription?.unsubscribe();
+        this.roomIdSubscription?.unsubscribe();
+        this.acceptedPlayerSubscription?.unsubscribe();
+        this.roomManagerService.disconnect();
     }
 }
