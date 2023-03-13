@@ -68,7 +68,7 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
     handleAcceptedPlayer() {
         this.acceptedPlayerSubscription = this.roomManagerService.acceptedPlayerByRoom$
             .pipe(
-                filter((data) => data?.playerName === this.data.player),
+                filter((data) => data?.playerName === this.data.player && data?.gameId === this.data.gameId),
                 take(1),
             )
             .subscribe((data) => {

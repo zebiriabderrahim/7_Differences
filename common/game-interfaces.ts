@@ -68,7 +68,8 @@ export interface PlayerNameAvailability {
     isNameAvailable: boolean;
 }
 
-export interface AcceptedPlayerByRoomId {
+export interface AcceptedPlayer {
+    gameId: string;
     roomId: string;
     playerName: string;
 }
@@ -77,6 +78,7 @@ export interface WaitingPlayerNameList {
     gameId: string;
     playerNamesList: string[];
 }
+
 
 export enum GameEvents {
     ValidateCoords = 'validateCoords',
@@ -106,6 +108,7 @@ export enum GameEvents {
     GameStarted = 'OneVsOneStarted',
     CreateSoloRoom = 'CreateSoloRoom',
     RoomSoloCreated = 'RoomSoloCreated',
+    AbandonGame = "AbandonGame"
 }
 
 export enum GameModes {
