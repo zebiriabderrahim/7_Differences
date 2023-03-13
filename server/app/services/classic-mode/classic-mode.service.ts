@@ -11,6 +11,7 @@ import {
     Differences,
     GameEvents,
     GameModes,
+    Player,
     PlayerNameAvailability,
     RoomAvailability,
     WaitingPlayerNameList,
@@ -203,13 +204,15 @@ export class ClassicModeService {
         if (!playerName) return;
 
         room.clientGame.player = playerNameCreator;
-        room.player2 = {
+        const player2: Player = {
             name: playerName,
             diffData: {
                 currentDifference: [],
                 differencesFound: 0,
             },
         };
+        room.player2 = player2;
+        this.rooms.set(roomId, room);
         this.rooms.set(roomId, room);
         return playerName;
     }
