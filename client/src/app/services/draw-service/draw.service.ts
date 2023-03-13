@@ -24,7 +24,7 @@ export class DrawService {
         this.isDragging = false;
     }
 
-    setMousePosition(isMouseLeaving: boolean): void {
+    setMouseStatus(isMouseLeaving: boolean): void {
         this.isMouseOutOfCanvas = isMouseLeaving;
     }
 
@@ -56,20 +56,16 @@ export class DrawService {
         this.clickPosition = { x: event.offsetX, y: event.offsetY };
     }
 
-    getActiveCanvasPosition(): CanvasPosition {
-        return this.activeCanvasPosition;
-    }
-
-    getActiveContext(): CanvasRenderingContext2D {
-        return this.activeContext;
-    }
-
     isCurrentActionRectangle(): boolean {
         return this.currentAction === CanvasAction.Rectangle;
     }
 
     isMouseBeingDragged(): boolean {
         return this.isDragging;
+    }
+
+    isOperationValid(canvasPosition: CanvasPosition): boolean {
+        return this.isDragging && this.activeCanvasPosition === canvasPosition;
     }
 
     disableMouseDrag(): void {
@@ -89,7 +85,7 @@ export class DrawService {
 
     continueCanvasOperation(canvasPosition: CanvasPosition, event: MouseEvent) {
         this.setClickPosition(event);
-        if (this.isDragging && this.activeCanvasPosition === canvasPosition) {
+        if (this.isOperationValid(canvasPosition)) {
             if (this.isCurrentActionRectangle()) {
                 this.drawRectangle();
             } else {
@@ -110,10 +106,6 @@ export class DrawService {
             this.drawLine();
         }
         this.disableMouseDrag();
-    }
-
-    resetActiveCanvas() {
-        this.activeContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
     }
 
     setSquareMode(isSquare: boolean) {
