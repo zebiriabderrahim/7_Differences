@@ -11,7 +11,6 @@ import {
     Differences,
     GameEvents,
     GameModes,
-    Player,
     PlayerNameAvailability,
     RoomAvailability,
     WaitingPlayerNameList,
