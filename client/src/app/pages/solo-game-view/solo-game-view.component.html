@@ -1,6 +1,6 @@
 <div *ngIf="game" class="infomations-header">
     <h1>{{ game.name }}</h1>
-    <h2>{{ player}}</h2>
+    <h2>{{ player }}</h2>
     <div class="game-feedback">
         <mat-icon class="personIcon">person</mat-icon>
         <h1>{{ game.player }} &nbsp; Différences trouvées: {{ differencesFound }}</h1>
@@ -46,4 +46,8 @@
     </div>
 </div>
 <button class="importantButton" (click)="showAbandonDialog()">Abandonner la partie</button>
-<app-chat-box (add)="addRightSideMessage($event)" [opponentName]="player === players.player1.name ? players.player2.name : players.player1.name" [messages]="messages"></app-chat-box>
+<app-chat-box
+    (add)="addRightSideMessage($event)"
+    [opponentName]="player === players.player1.name ? players.player2.name : players.player1.name"
+    [messages]="messages"
+></app-chat-box>
