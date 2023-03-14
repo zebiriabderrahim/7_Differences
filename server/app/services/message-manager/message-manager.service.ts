@@ -27,4 +27,12 @@ export class MessageManagerService {
         };
         return localMessage;
     }
+
+    getSoloErrorMessage(): ChatMessage {
+        const localMessage: ChatMessage = {
+            tag: MessageTag.common,
+            message: this.getFormatTime() + ' - Différences trouvé',
+        };
+        return localMessage;
+    }
 }
