@@ -1,5 +1,6 @@
 <div *ngIf="game" class="infomations-header">
     <h1>{{ game.name }}</h1>
+    <h2>{{ player}}</h2>
     <div class="game-feedback">
         <h1>Temps: {{ timer*1000 | date: 'mm:ss' }}</h1>
         <h1> Différences trouvées: {{ differencesFound }}</h1>
