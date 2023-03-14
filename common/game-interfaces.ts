@@ -113,7 +113,7 @@ export enum GameEvents {
 }
 
 export enum GameModes {
-    ClassicSolo = 'Classic->lSolo',
+    ClassicSolo = 'Classic->Solo',
     ClassicOneVsOne = 'Classic->OneVsOne',
 }
 
