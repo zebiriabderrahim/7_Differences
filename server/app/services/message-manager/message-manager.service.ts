@@ -4,11 +4,9 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class MessageManagerService {
     private time: Date;
-    constructor() {
-        this.time = new Date();
-    }
 
     getFormatTime(): string {
+        this.time = new Date();
         return `${this.time.getHours()} : ${this.time.getMinutes()} : ${this.time.getSeconds()}`;
     }
 
@@ -40,6 +38,14 @@ export class MessageManagerService {
         const localMessage: ChatMessage = {
             tag: MessageTag.common,
             message: this.getFormatTime() + `- Erreur par ${playerName}`,
+        };
+        return localMessage;
+    }
+
+    getQuitMessage(playerName: string): ChatMessage {
+        const localMessage: ChatMessage = {
+            tag: MessageTag.common,
+            message: this.getFormatTime() + `- ${playerName} a abandonné la partie`,
         };
         return localMessage;
     }
