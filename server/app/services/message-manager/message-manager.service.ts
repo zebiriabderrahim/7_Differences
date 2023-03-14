@@ -31,7 +31,15 @@ export class MessageManagerService {
     getSoloErrorMessage(): ChatMessage {
         const localMessage: ChatMessage = {
             tag: MessageTag.common,
-            message: this.getFormatTime() + ' - Différences trouvé',
+            message: this.getFormatTime() + ' - Erreur',
+        };
+        return localMessage;
+    }
+
+    getOneVsOneErrorMessage(playerName: string): ChatMessage {
+        const localMessage: ChatMessage = {
+            tag: MessageTag.common,
+            message: this.getFormatTime() + `- Erreur par ${playerName}`,
         };
         return localMessage;
     }
