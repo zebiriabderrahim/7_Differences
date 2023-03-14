@@ -1,7 +1,7 @@
 import { ClassicModeService } from '@app/services/classic-mode/classic-mode.service';
 import { Coordinate } from '@common/coordinate';
 import { AcceptedPlayer, ChatMessage, GameEvents, GameModes, MessageEvents } from '@common/game-interfaces';
-import { ConsoleLogger, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
     ConnectedSocket,
     MessageBody,
@@ -78,9 +78,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameEvents.Disconnect)
-    deleteCreatedSoloGameRoom(@ConnectedSocket() socket: Socket) {
+    deleteRoom(@ConnectedSocket() socket: Socket) {
         const roomId = Array.from(socket.rooms.values())[1];
-        this.classicModeService.deleteCreatedSoloGameRoom(roomId);
+        this.classicModeService.deleteRoom(roomId);
     }
 
     @SubscribeMessage(GameEvents.UpdateRoomOneVsOneAvailability)

@@ -5,7 +5,6 @@ import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dial
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
-import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { ChatMessage, ClientSideGame, GameModes, MessageTag, Player } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
@@ -23,13 +22,11 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     differencesFound: number = 0;
     opponentDifferencesFound: number = 0;
     timer: number = 0;
-    secondPlayerName: string = '';
     messages: ChatMessage[] = [];
     gameModes: typeof GameModes;
     player: string;
     players: { player1: Player; player2: Player };
     readonly canvasSize = { width: IMG_WIDTH, height: IMG_HEIGHT };
-    private ownPlayerName: string = '';
     private timerSubscription: Subscription;
     private gameSubscription: Subscription;
     private differenceSubscription: Subscription;
@@ -108,9 +105,6 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.opponentDifferenceSub = this.classicService.opponentDifferencesFound$.subscribe((opponentDifferencesFound) => {
             this.opponentDifferencesFound = opponentDifferencesFound;
         });
-        this.secondPlayerSub = this.roomManagerService.acceptedPlayerByRoom$.subscribe((acceptedPlayer) => {
-            this.secondPlayerName = acceptedPlayer.playerName;
-        });
     }
 
     showAbandonDialog(): void {
@@ -128,7 +122,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         if (this.gameAreaService.detectLeftClick(event)) {
             this.gameAreaService.setAllData();
             this.classicService.setIsLeftCanvas(true);
-            this.classicService.requestVerification(this.gameAreaService.getMousePosition(), this.ownPlayerName);
+            this.classicService.requestVerification(this.gameAreaService.getMousePosition());
         }
     }
 
@@ -136,7 +130,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         if (this.gameAreaService.detectLeftClick(event)) {
             this.gameAreaService.setAllData();
             this.classicService.setIsLeftCanvas(false);
-            this.classicService.requestVerification(this.gameAreaService.getMousePosition(), this.ownPlayerName);
+            this.classicService.requestVerification(this.gameAreaService.getMousePosition());
         }
     }
 
