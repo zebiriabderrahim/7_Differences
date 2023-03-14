@@ -2,7 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 // import { MatDialog, MatDialogConfig, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
@@ -17,6 +17,7 @@ import { CanvasTopButtonsComponent } from '@app/components/canvas-top-buttons/ca
 import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
 // import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
+import { of } from 'rxjs';
 // import { DrawService } from '@app/services/draw-service/draw.service';
 // import { SUBMIT_WAIT_TIME } from '@app/constants/constants';
 // import { ImageService } from '@app/services/image-service/image.service';
@@ -28,6 +29,7 @@ describe('CreationPageComponent', () => {
     let fixture: ComponentFixture<CreationPageComponent>;
     // let imageService: ImageService;
     let matDialogSpy: jasmine.SpyObj<MatDialog>;
+    // let routerSpy: jasmine.SpyObj<Router>;
     // let drawService: DrawService;
     // let timerCallback: jasmine.Spy<jasmine.Func>;
     // let foregroundServiceSpy: jasmine.SpyObj<ForegroundService>;
@@ -213,4 +215,17 @@ describe('CreationPageComponent', () => {
     //     fixture.detectChanges();
     //     expect(drawService.swapForegrounds).toHaveBeenCalled();
     // });
+
+    it('validateDifferences should open dialog', () => {
+        const data = 42;
+        const game = { id: 1, name: 'Test Game' };
+        matDialogSpy.open.and.returnValue({
+            afterClosed: () => of(game),
+        } as MatDialogRef<unknown, unknown>);
+
+        component.radius = data;
+        component.validateDifferences();
+
+        expect(matDialogSpy.open).toHaveBeenCalled();
+    });
 });
