@@ -29,7 +29,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     constructor(private readonly logger: Logger, private readonly classicModeService: ClassicModeService) {}
 
     @SubscribeMessage(GameEvents.CreateSoloGame)
-    async createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: string) {
+    async createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('playerName') playerName: string, @MessageBody('gameId') gameId: string) {
         const room = await this.classicModeService.createRoom(playerName, gameId);
         if (room) {
             room.clientGame.mode = GameModes.ClassicSolo;
@@ -43,15 +43,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         const room = this.classicModeService.getRoomByRoomId(roomId);
         if (room) {
             socket.join(roomId);
-            if (room.player1.playerId && !room.player2.playerId) {
+            if (!room.player1.playerId && !room.player2?.playerId) {
                 room.player1.playerId = socket.id;
-                room.player2.playerId = 'not defined yet';
-            } else if (room.player2.playerId) {
+            } else if (room.clientGame.mode === GameModes.ClassicOneVsOne && !room.player2?.playerId) {
                 room.player2.playerId = socket.id;
             }
             this.classicModeService.saveRoom(room);
-            const payload = room.clientGame.mode === GameModes.ClassicOneVsOne ? { player1: room.player1, player2: room.player2 } : undefined;
-            this.server.to(roomId)?.emit(GameEvents.GameStarted, { clientGame: room.clientGame, players: payload });
+            this.server
+                .to(roomId)
+                ?.emit(GameEvents.GameStarted, { clientGame: room.clientGame, players: { player1: room.player1, player2: room.player2 } });
         }
     }
 
@@ -59,7 +59,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     async createOneVsOneRoom(@ConnectedSocket() socket: Socket, @MessageBody('gameId') gameId: string) {
         const oneVsOneRoom = await this.classicModeService.createOneVsOneRoom(gameId);
         if (oneVsOneRoom) {
-            oneVsOneRoom.player1.playerId = socket.id;
             this.classicModeService.saveRoom(oneVsOneRoom);
             this.server.to(socket.id).emit(GameEvents.RoomOneVsOneCreated, oneVsOneRoom.roomId);
         }

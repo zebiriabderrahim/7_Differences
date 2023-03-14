@@ -3,7 +3,6 @@ import { Coordinate } from '@common/coordinate';
 export interface ClientSideGame {
     id: string;
     name: string;
-    player: string;
     mode: string;
     original: string;
     modified: string;
@@ -42,9 +41,7 @@ export interface ClassicPlayRoom {
     clientGame: ClientSideGame;
     endMessage: string;
     timer: number;
-    differencesData: Differences;
     originalDifferences: Coordinate[][];
-    isAvailableToJoin?: boolean;
     player2?: Player;
     player1?: Player;
 }
