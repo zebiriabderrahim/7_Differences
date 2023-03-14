@@ -3,7 +3,6 @@ import { Coordinate } from '@common/coordinate';
 export interface ClientSideGame {
     id: string;
     name: string;
-    player: string;
     mode: string;
     original: string;
     modified: string;

@@ -32,6 +32,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     async createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('player') playerName: string, @MessageBody('gameId') gameId: string) {
         const room = await this.classicModeService.createRoom(playerName, gameId);
         if (room) {
+            room.player1.playerId = socket.id;
             room.clientGame.mode = GameModes.ClassicSolo;
             this.classicModeService.saveRoom(room);
             this.server.to(socket.id).emit(GameEvents.RoomSoloCreated, room.roomId);
@@ -45,13 +46,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             socket.join(roomId);
             if (room.player1?.playerId && !room.player2?.playerId) {
                 room.player1.playerId = socket.id;
-                room.player2.playerId = 'not defined yet';
-            } else if (room.player2?.playerId) {
+            } else if (room.clientGame.mode === GameModes.ClassicOneVsOne && !room.player2?.playerId) {
                 room.player2.playerId = socket.id;
             }
             this.classicModeService.saveRoom(room);
-            const payload = room.clientGame.mode === GameModes.ClassicOneVsOne ? { player1: room.player1, player2: room.player2 } : undefined;
-            this.server.to(roomId)?.emit(GameEvents.GameStarted, { clientGame: room.clientGame, players: payload });
+            this.server
+                .to(roomId)
+                ?.emit(GameEvents.GameStarted, { clientGame: room.clientGame, players: { player1: room.player1, player2: room.player2 } });
+
         }
     }
 

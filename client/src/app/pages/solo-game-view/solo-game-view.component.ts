@@ -34,7 +34,6 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     private messageSub: Subscription;
     private endGameSub: Subscription;
     private opponentDifferenceSub: Subscription;
-    private secondPlayerSub: Subscription;
 
     constructor(
         private gameAreaService: GameAreaService,
@@ -52,10 +51,11 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
             }
         });
         this.classicService.players$.subscribe((players) => {
+            this.players = players;
             if (players && players.player1.playerId === this.classicService.getSocketId()) {
                 this.player = players.player1.name;
             }
-            if (players && players.player2.playerId === this.classicService.getSocketId()) {
+            if (players && players.player2?.playerId === this.classicService.getSocketId()) {
                 this.player = players.player2.name;
             }
         });
@@ -147,7 +147,6 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.messageSub.unsubscribe();
         this.endGameSub.unsubscribe();
         this.opponentDifferenceSub.unsubscribe();
-        this.secondPlayerSub.unsubscribe();
         this.classicService.disconnect();
     }
 }
