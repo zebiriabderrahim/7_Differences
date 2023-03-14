@@ -93,7 +93,7 @@ export class ClassicModeService {
 
             server.to(roomId).emit(GameEvents.RemoveDiff, room.differencesData);
         } else if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
-            server.to(roomId).emit(MessageEvents.LocalMessage, this.messageManager.getSoloDifferenceMessage());
+            server.to(roomId).emit(MessageEvents.LocalMessage, this.messageManager.getOneVsOneDifferenceMessage(playerName));
 
             if (playerName === room.clientGame.player) {
                 room.differencesData.differencesFound++;

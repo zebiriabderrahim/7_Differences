@@ -19,4 +19,12 @@ export class MessageManagerService {
         };
         return localMessage;
     }
+
+    getOneVsOneDifferenceMessage(playerName: string): ChatMessage {
+        const localMessage: ChatMessage = {
+            tag: MessageTag.common,
+            message: this.getFormatTime() + `- Différences trouvé par ${playerName}`,
+        };
+        return localMessage;
+    }
 }
