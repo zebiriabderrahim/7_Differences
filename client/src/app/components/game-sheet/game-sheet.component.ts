@@ -29,9 +29,10 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         public router: Router,
         private readonly roomManagerService: RoomManagerService,
         private readonly communicationService: CommunicationService,
-    ) {}
-    ngOnInit(): void {
+    ) {
         this.roomManagerService.handleRoomEvents();
+    }
+    ngOnInit(): void {
         this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
         this.roomAvailabilitySubscription = this.roomManagerService.oneVsOneRoomsAvailabilityByRoomId$
             .pipe(filter((data) => data.gameId === this.game._id))
@@ -48,26 +49,24 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         return dialogRef;
     }
 
-    createSoloRoom(): string {
-        const name = '';
+    createSoloRoom(): void {
         this.openDialog()
             .afterClosed()
             .pipe(filter((playerName) => !!playerName))
             .subscribe((playerName) => {
                 this.roomManagerService.createSoloRoom(this.game._id, playerName);
             });
-        return name;
     }
 
     playSolo(): void {
-        const name: string = this.createSoloRoom();
+        this.createSoloRoom();
         this.roomIdSubscription = this.roomManagerService.roomId$
             .pipe(
                 filter((roomId) => !!roomId),
                 take(1),
             )
             .subscribe((roomId) => {
-                this.router.navigate(['/game', roomId, name]);
+                this.router.navigate(['/game', roomId]);
             });
     }
 
