@@ -45,4 +45,4 @@
     </div>
 </div>
 <button class="importantButton" (click)="showAbandonDialog()">Abandonner la partie</button>
-<app-chat-box (add)="addRightSideMessage($event)" [messages]="messages"></app-chat-box>
+<app-chat-box (add)="addRightSideMessage($event)" [opponentName]="secondPlayerName" [messages]="messages"></app-chat-box>
