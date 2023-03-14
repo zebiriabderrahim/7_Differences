@@ -5,8 +5,8 @@
         <h1>{{ game.player }} &nbsp; Différences trouvées: {{ differencesFound }}</h1>
         &nbsp;
         <h1>Temps: {{ timer * 1000 | date: 'mm:ss' }}</h1>
-        &nbsp;<mat-icon *ngIf="game.mode === gameModes.ClassicOneVsOne" class="personIcon">person</mat-icon>
-        <h1> *ngIf="game.mode === gameModes.ClassicOneVsOne" {{ secondPlayerName }} &nbsp; Différences trouvées: {{ opponentDifferencesFound }}</h1>
+        &nbsp;<mat-icon *ngIf="game.mode === 'Classic->OneVsOne'" class="personIcon">person</mat-icon>
+        <h1 *ngIf="game.mode === 'Classic->OneVsOne'">{{ secondPlayerName }} &nbsp; Différences trouvées: {{ opponentDifferencesFound }}</h1>
     </div>
     <app-game-infos [game]="game" [differencesCount]="game.differencesCount"></app-game-infos>
 </div>
