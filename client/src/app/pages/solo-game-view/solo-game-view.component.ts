@@ -19,7 +19,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     game: ClientSideGame;
     differencesFound: number = 0;
     timer: number = 0;
-    player: string;
+    playerName: string;
     players: { player1: Player; player2: Player };
     readonly canvasSize = { width: IMG_WIDTH, height: IMG_HEIGHT };
     private timerSubscription: Subscription;
@@ -38,10 +38,10 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         });
         this.classicService.players$.subscribe((players) => {
             if (players && players.player1.playerId === this.classicService.getSocketId()) {
-                this.player = players.player1.name;
+                this.playerName = players.player1.name;
             }
-            if (players && players.player2.playerId === this.classicService.getSocketId()) {
-                this.player = players.player2.name;
+            if (players && players.player2?.playerId === this.classicService.getSocketId()) {
+                this.playerName = players.player2.name;
             }
         });
 
