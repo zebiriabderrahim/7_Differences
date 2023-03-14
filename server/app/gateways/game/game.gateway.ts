@@ -43,10 +43,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         const room = this.classicModeService.getRoomByRoomId(roomId);
         if (room) {
             socket.join(roomId);
-            if (room.player1.playerId && !room.player2.playerId) {
+            if (room.player1?.playerId && !room.player2?.playerId) {
                 room.player1.playerId = socket.id;
                 room.player2.playerId = 'not defined yet';
-            } else if (room.player2.playerId) {
+            } else if (room.player2?.playerId) {
                 room.player2.playerId = socket.id;
             }
             this.classicModeService.saveRoom(room);
