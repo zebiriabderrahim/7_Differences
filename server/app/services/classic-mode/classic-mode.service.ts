@@ -40,6 +40,13 @@ export class ClassicModeService {
             currentDifference: [],
             differencesFound: 0,
         };
+        const player1: Player = {
+            name: playerName,
+            diffData: {
+                currentDifference: [],
+                differencesFound: 0,
+            },
+        };
         const room: ClassicPlayRoom = {
             roomId: this.generateRoomId(),
             clientGame: this.buildClientGameVersion(playerName, game),
@@ -48,6 +55,7 @@ export class ClassicModeService {
             differencesData: diffData,
             originalDifferences: structuredClone(JSON.parse(fs.readFileSync(`assets/${game.name}/differences.json`, 'utf-8'))),
             isAvailableToJoin: true,
+            player1,
         };
         return room;
     }
@@ -55,14 +63,6 @@ export class ClassicModeService {
     async createOneVsOneGame(gameId: string, playerName: string) {
         const room = await this.createRoom(playerName, gameId);
         if (room) {
-            const player1: Player = {
-                name: playerName,
-                diffData: {
-                    currentDifference: [],
-                    differencesFound: 0,
-                },
-            };
-            room.player1 = player1;
             room.clientGame.mode = GameModes.ClassicOneVsOne;
             return room;
         }
@@ -101,15 +101,12 @@ export class ClassicModeService {
             if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
                 server.to(roomId).emit(MessageEvents.LocalMessage, this.messageManager.getOneVsOneDifferenceMessage(playerName));
 
-                if (playerName === room.clientGame.player) {
-                    room.differencesData.differencesFound++;
-                    socket.emit(GameEvents.RemoveDiff, room.differencesData);
-                    socket.broadcast.to(roomId).emit(GameEvents.OpponentFoundDiff, room.differencesData);
-                } else {
-                    room.player2.diffData.differencesFound++;
-                    socket.emit(GameEvents.RemoveDiff, room.differencesData);
-                    socket.broadcast.to(roomId).emit(GameEvents.OpponentFoundDiff, room.differencesData);
-                }
+                room.differencesData.differencesFound++;
+                socket.emit(GameEvents.RemoveDiff, room.differencesData);
+                socket.broadcast.to(roomId).emit(GameEvents.OpponentFoundDiff, room.differencesData);
+                room.player2.diffData.differencesFound++;
+                socket.emit(GameEvents.RemoveDiff, room.differencesData);
+                socket.broadcast.to(roomId).emit(GameEvents.OpponentFoundDiff, room.differencesData);
             }
         } else {
             room.differencesData.currentDifference = [];
@@ -124,7 +121,6 @@ export class ClassicModeService {
     buildClientGameVersion(playerName: string, game: Game): ClientSideGame {
         const clientGame: ClientSideGame = {
             id: game._id.toString(),
-            player: playerName,
             name: game.name,
             mode: '',
             original: 'data:image/png;base64,'.concat(fs.readFileSync(`assets/${game.name}/original.bmp`, 'base64')),
@@ -241,7 +237,6 @@ export class ClassicModeService {
         };
         room.player1.name = playerNameCreator;
         room.player2 = player2;
-        this.rooms.set(roomId, room);
         this.joinedPlayerNamesByGameId.delete(gameId);
         this.roomAvailability.delete(gameId);
         return acceptedPlayerName;
