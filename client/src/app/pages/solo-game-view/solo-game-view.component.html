@@ -7,7 +7,7 @@
         &nbsp;
         <h1>Temps: {{ timer * 1000 | date: 'mm:ss' }}</h1>
         &nbsp;<mat-icon *ngIf="game.mode === 'Classic->OneVsOne'" class="personIcon">person</mat-icon>
-        <h1 *ngIf="game.mode === 'Classic->OneVsOne'">{{ secondPlayerName }} &nbsp; Différences trouvées: {{ opponentDifferencesFound }}</h1>
+        <h1 *ngIf="game.mode === 'Classic->OneVsOne'">{{ players.player2.name }} &nbsp; Différences trouvées: {{ opponentDifferencesFound }}</h1>
     </div>
     <app-game-infos [game]="game" [differencesCount]="game.differencesCount"></app-game-infos>
 </div>
@@ -46,4 +46,4 @@
     </div>
 </div>
 <button class="importantButton" (click)="showAbandonDialog()">Abandonner la partie</button>
-<app-chat-box (add)="addRightSideMessage($event)" [opponentName]="secondPlayerName" [messages]="messages"></app-chat-box>
+<app-chat-box (add)="addRightSideMessage($event)" [opponentName]="player === players.player1.name ? players.player2.name : players.player1.name" [messages]="messages"></app-chat-box>

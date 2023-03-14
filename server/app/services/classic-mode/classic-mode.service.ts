@@ -135,7 +135,7 @@ export class ClassicModeService {
         return clientGame;
     }
 
-    deleteCreatedSoloGameRoom(roomId: string): void {
+    deleteRoom(roomId: string): void {
         this.rooms.delete(roomId);
     }
 
@@ -144,7 +144,7 @@ export class ClassicModeService {
         if (room && room.clientGame.differencesCount === room.differencesData.differencesFound && room.clientGame.mode === GameModes.ClassicSolo) {
             room.endMessage = `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo!`;
             server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
-            this.deleteCreatedSoloGameRoom(room.roomId);
+            this.deleteRoom(room.roomId);
         } else if (
             room &&
             room.clientGame.differencesCount / 2 === room.differencesData.differencesFound &&
@@ -152,7 +152,7 @@ export class ClassicModeService {
         ) {
             room.endMessage = `${playerName} remporte la partie avec ${room.differencesData.differencesFound} différences trouvées!`;
             server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
-            this.deleteCreatedOneVsOneRoom(room.roomId, server);
+            this.deleteRoom(room.roomId);
         }
     }
 

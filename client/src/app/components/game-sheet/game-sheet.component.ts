@@ -49,7 +49,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     }
 
     createSoloRoom(): string {
-        let name = '';
+        const name = '';
         this.openDialog()
             .afterClosed()
             .pipe(filter((playerName) => !!playerName))

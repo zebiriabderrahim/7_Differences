@@ -49,7 +49,6 @@ export class ClassicSystemService implements OnDestroy {
         return this.opponentDifferencesFound.asObservable();
     }
 
-
     get players$() {
         return this.players.asObservable();
     }
@@ -69,8 +68,8 @@ export class ClassicSystemService implements OnDestroy {
         this.clientSocket.send(GameEvents.CheckStatus);
     }
 
-    requestVerification(coords: Coordinate, ownPlayerName: string): void {
-        this.clientSocket.send(GameEvents.RemoveDiff, { coords, ownPlayerName });
+    requestVerification(coords: Coordinate): void {
+        this.clientSocket.send(GameEvents.RemoveDiff, coords);
     }
 
     replaceDifference(differences: Coordinate[]): void {
