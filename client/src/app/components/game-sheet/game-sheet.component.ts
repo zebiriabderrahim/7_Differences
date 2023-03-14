@@ -49,25 +49,29 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         return dialogRef;
     }
 
-    createSoloRoom() {
+    createSoloRoom(): string {
+        let name = '';
         this.openDialog()
             .afterClosed()
             .subscribe((playerName) => {
                 if (playerName) {
                     this.roomManagerService.createSoloRoom(this.game._id, playerName);
+                    name = playerName;
                 }
             });
+            console.log(name);
+        return name;
     }
 
     playSolo(): void {
-        this.createSoloRoom();
+        const name: string = this.createSoloRoom();
         this.roomIdSubscription = this.roomManagerService.roomId$
             .pipe(
                 filter((roomId) => !!roomId),
                 take(1),
             )
             .subscribe((roomId) => {
-                this.router.navigate(['/game', roomId]);
+                this.router.navigate(['/game', roomId, name]);
             });
     }
 

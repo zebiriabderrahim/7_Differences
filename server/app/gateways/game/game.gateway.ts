@@ -1,7 +1,7 @@
 import { ClassicModeService } from '@app/services/classic-mode/classic-mode.service';
 import { Coordinate } from '@common/coordinate';
 import { AcceptedPlayer, ChatMessage, GameEvents, GameModes, MessageEvents } from '@common/game-interfaces';
-import { Injectable, Logger } from '@nestjs/common';
+import { ConsoleLogger, Injectable, Logger } from '@nestjs/common';
 import {
     ConnectedSocket,
     MessageBody,
@@ -54,9 +54,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameEvents.RemoveDiff)
-    validateCoords(@ConnectedSocket() socket: Socket, @MessageBody() coords: Coordinate) {
+    validateCoords(@ConnectedSocket() socket: Socket, @MessageBody('coords') coords: Coordinate, @MessageBody('ownPlayerName') playerName: string) {
         const roomId = Array.from(socket.rooms.values())[1];
-        this.classicModeService.verifyCoords(roomId, coords, '', socket, this.server);
+        this.classicModeService.verifyCoords(roomId, coords, playerName, socket, this.server);
     }
 
     @SubscribeMessage(GameEvents.CheckStatus)

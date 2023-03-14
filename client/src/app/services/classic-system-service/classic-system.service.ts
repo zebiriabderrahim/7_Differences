@@ -58,8 +58,8 @@ export class ClassicSystemService implements OnDestroy {
         this.clientSocket.send(GameEvents.CheckStatus);
     }
 
-    requestVerification(coords: Coordinate): void {
-        this.clientSocket.send(GameEvents.RemoveDiff, coords);
+    requestVerification(coords: Coordinate, ownPlayerName: string): void {
+        this.clientSocket.send(GameEvents.RemoveDiff, { coords, ownPlayerName });
     }
 
     replaceDifference(differences: Coordinate[]): void {

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ChatMessage } from '@common/game-interfaces';
+import { ChatMessage, GameModes } from '@common/game-interfaces';
 
 @Component({
     selector: 'app-chat-box',
@@ -9,6 +9,7 @@ import { ChatMessage } from '@common/game-interfaces';
 export class ChatBoxComponent {
     @Input() opponentName: string;
     @Input() messages: ChatMessage[] = [];
+    @Input() gameMode: GameModes;
     @Output() add = new EventEmitter<string>();
 
     onAdd(inputField: { value: string }): void {
