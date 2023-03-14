@@ -9,8 +9,9 @@ import { ChatMessage, GameModes } from '@common/game-interfaces';
 export class ChatBoxComponent {
     @Input() opponentName: string;
     @Input() messages: ChatMessage[] = [];
-    @Input() gameMode: GameModes;
     @Output() add = new EventEmitter<string>();
+
+    oneVsOneGameMode = GameModes.ClassicOneVsOne;
 
     onAdd(inputField: { value: string }): void {
         this.add.emit(inputField.value?.trim());

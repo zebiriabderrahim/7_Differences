@@ -59,7 +59,6 @@ export class GameSheetComponent implements OnDestroy, OnInit {
                     name = playerName;
                 }
             });
-            console.log(name);
         return name;
     }
 
