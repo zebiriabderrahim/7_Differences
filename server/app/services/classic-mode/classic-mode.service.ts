@@ -3,17 +3,16 @@
 // Id comes from database to allow _id
 /* eslint-disable no-underscore-dangle */
 import { Game } from '@app/model/database/game';
+import { MessageManagerService } from '@app/services//message-manager/message-manager.service';
 import { GameService } from '@app/services/game/game.service';
 import { Coordinate } from '@common/coordinate';
 import {
-    ChatMessage,
     ClassicPlayRoom,
     ClientSideGame,
     Differences,
     GameEvents,
     GameModes,
     MessageEvents,
-    MessageTag,
     Player,
     PlayerNameAvailability,
     RoomAvailability,
@@ -29,7 +28,7 @@ export class ClassicModeService {
     private joinedPlayerNamesByGameId: Map<string, string[]>;
     private roomAvailability: Map<string, RoomAvailability>;
 
-    constructor(private readonly gameService: GameService) {
+    constructor(private readonly gameService: GameService, private readonly messageManager: MessageManagerService) {
         this.rooms = new Map<string, ClassicPlayRoom>();
         this.joinedPlayerNamesByGameId = new Map<string, string[]>();
         this.roomAvailability = new Map<string, RoomAvailability>();
@@ -73,8 +72,6 @@ export class ClassicModeService {
     verifyCoords(roomId: string, coords: Coordinate, playerName: string, socket: io.Socket, server: io.Server): void {
         const room = this.rooms.get(roomId);
         const { originalDifferences } = room;
-        const time: Date = new Date();
-        let errorFoundMessage: ChatMessage;
 
         let index = 0;
         for (; index < originalDifferences.length; index++) {
@@ -92,19 +89,11 @@ export class ClassicModeService {
         }
 
         if (room.clientGame.mode === GameModes.ClassicSolo) {
-            errorFoundMessage = {
-                tag: MessageTag.common,
-                message: `${time.getHours()} : ${time.getMinutes()} : ${time.getSeconds()} - Différences trouvé`,
-            };
-            server.to(roomId).emit(MessageEvents.LocalMessage, errorFoundMessage);
+            server.to(roomId).emit(MessageEvents.LocalMessage, this.messageManager.getSoloDifferenceMessage());
 
             server.to(roomId).emit(GameEvents.RemoveDiff, room.differencesData);
         } else if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
-            errorFoundMessage = {
-                tag: MessageTag.common,
-                message: `${time.getHours()} : ${time.getMinutes()} : ${time.getSeconds()} - Différences trouvé par ${playerName}`,
-            };
-            server.to(roomId).emit(MessageEvents.LocalMessage, errorFoundMessage);
+            server.to(roomId).emit(MessageEvents.LocalMessage, this.messageManager.getSoloDifferenceMessage());
 
             if (playerName === room.clientGame.player) {
                 room.differencesData.differencesFound++;
