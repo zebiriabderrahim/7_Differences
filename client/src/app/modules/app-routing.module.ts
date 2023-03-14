@@ -10,7 +10,6 @@ export const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: MainPageComponent },
     { path: 'game/:roomId', component: SoloGameViewComponent },
-    { path: 'game/:roomId/:ownPlayerName', component: SoloGameViewComponent },
     { path: 'create', component: CreationPageComponent },
     { path: 'selection', component: SelectionPageComponent },
     { path: 'config', component: ConfigPageComponent },
