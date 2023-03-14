@@ -4,21 +4,23 @@ import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dial
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { Coordinate } from '@common/coordinate';
-import { ClientSideGame, Differences, GameEvents } from '@common/game-interfaces';
-import { BehaviorSubject, filter, Subject } from 'rxjs';
+import { ClientSideGame, Differences, GameEvents, Player } from '@common/game-interfaces';
+import { filter, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class ClassicSystemService implements OnDestroy {
-    private timer: BehaviorSubject<number>;
-    private differencesFound: BehaviorSubject<number>;
+    private timer: Subject<number>;
+    private differencesFound: Subject<number>;
     private currentGame: Subject<ClientSideGame>;
     private isLeftCanvas: boolean;
+    private players: Subject<{ player1: Player; player2: Player }>;
 
     constructor(private clientSocket: ClientSocketService, private gameAreaService: GameAreaService, private readonly matDialog: MatDialog) {
         this.currentGame = new Subject<ClientSideGame>();
-        this.differencesFound = new BehaviorSubject<number>(0);
-        this.timer = new BehaviorSubject<number>(0);
+        this.differencesFound = new Subject<number>();
+        this.timer = new Subject<number>();
+        this.players = new Subject<{ player1: Player; player2: Player }>();
     }
 
     get currentGame$() {
@@ -31,6 +33,15 @@ export class ClassicSystemService implements OnDestroy {
     get differencesFound$() {
         return this.differencesFound.asObservable();
     }
+
+    get players$() {
+        return this.players.asObservable();
+    }
+
+    getSocketId(): string {
+        return this.clientSocket.socket.id;
+    }
+
     createSoloGame(gameId: string, playerName: string): void {
         this.clientSocket.send(GameEvents.CreateSoloGame, { gameId, playerName });
     }
@@ -68,17 +79,6 @@ export class ClassicSystemService implements OnDestroy {
         this.matDialog.open(SoloGameViewDialogComponent, { data: { action: 'endGame', message: endingMessage }, disableClose: true });
     }
 
-    getCurrentGame(): Subject<ClientSideGame> {
-        return this.currentGame;
-    }
-
-    getTimer(): Subject<number> {
-        return this.timer;
-    }
-
-    getDifferencesFound(): Subject<number> {
-        return this.differencesFound;
-    }
     setIsLeftCanvas(isLeft: boolean): void {
         this.isLeftCanvas = isLeft;
     }
@@ -94,8 +94,11 @@ export class ClassicSystemService implements OnDestroy {
             this.currentGame.next(clientGame);
         });
 
-        this.clientSocket.on(GameEvents.GameStarted, (clientGame: ClientSideGame) => {
-            this.currentGame.next(clientGame);
+        this.clientSocket.on(GameEvents.GameStarted, (data: { clientGame: ClientSideGame; players: { player1: Player; player2: Player } }) => {
+            this.currentGame.next(data.clientGame);
+            if (data.players) {
+                this.players.next(data.players);
+            }
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (differencesData: Differences) => {
             this.replaceDifference(differencesData.currentDifference);
