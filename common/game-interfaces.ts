@@ -46,9 +46,11 @@ export interface ClassicPlayRoom {
     originalDifferences: Coordinate[][];
     isAvailableToJoin?: boolean;
     player2?: Player;
+    player1?: Player;
 }
 
 export interface Player {
+    playerId?: string;
     name: string;
     diffData: Differences;
 }

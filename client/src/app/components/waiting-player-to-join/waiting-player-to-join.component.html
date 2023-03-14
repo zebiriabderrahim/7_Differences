@@ -5,7 +5,7 @@
         <div *ngFor="let playerName of playerNames;let i = index">
             <h1>joueur: {{ playerName }}</h1>
             <button mat-button (click)="refusePlayer(playerName)">refuser</button>
-            <button mat-button (click)="acceptPlayer(playerName)">accepter</button>
+            <button mat-button mat-dialog-close (click)="acceptPlayer(playerName)">accepter</button>
         </div>
     </div>
     <button mat-button mat-dialog-close (click)="undoCreateOneVsOneRoom()">Annuler</button>

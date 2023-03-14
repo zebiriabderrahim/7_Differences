@@ -2,27 +2,29 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { Coordinate } from '@common/coordinate';
-import { ChatMessage, ClientSideGame, Differences, GameEvents, MessageEvents, MessageTag } from '@common/game-interfaces';
-import { BehaviorSubject, filter, Subject } from 'rxjs';
+import { ChatMessage, ClientSideGame, Differences, GameEvents, MessageEvents, MessageTag, Player } from '@common/game-interfaces';
+import { filter, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class ClassicSystemService implements OnDestroy {
-    private timer: BehaviorSubject<number>;
-    private differencesFound: BehaviorSubject<number>;
-    private opponentDifferencesFound: BehaviorSubject<number>;
+    private timer: Subject<number>;
+    private differencesFound: Subject<number>;
+    private opponentDifferencesFound: Subject<number>;
     private currentGame: Subject<ClientSideGame>;
     private message: Subject<ChatMessage>;
     private isLeftCanvas: boolean;
     private endMessage: Subject<string>;
+    private players: Subject<{ player1: Player; player2: Player }>;
 
     constructor(private clientSocket: ClientSocketService, private gameAreaService: GameAreaService) {
         this.currentGame = new Subject<ClientSideGame>();
-        this.differencesFound = new BehaviorSubject<number>(0);
-        this.timer = new BehaviorSubject<number>(0);
+        this.differencesFound = new Subject<number>();
+        this.timer = new Subject<number>();
+        this.players = new Subject<{ player1: Player; player2: Player }>();
         this.message = new Subject<ChatMessage>();
         this.endMessage = new Subject<string>();
-        this.opponentDifferencesFound = new BehaviorSubject<number>(0);
+        this.opponentDifferencesFound = new Subject<number>();
     }
 
     get currentGame$() {
@@ -45,6 +47,15 @@ export class ClassicSystemService implements OnDestroy {
 
     get opponentDifferencesFound$() {
         return this.opponentDifferencesFound.asObservable();
+    }
+
+
+    get players$() {
+        return this.players.asObservable();
+    }
+
+    getSocketId(): string {
+        return this.clientSocket.socket.id;
     }
 
     createSoloGame(gameId: string, playerName: string): void {
@@ -74,18 +85,6 @@ export class ClassicSystemService implements OnDestroy {
         this.clientSocket.send(GameEvents.AbandonGame);
     }
 
-    getCurrentGame(): Subject<ClientSideGame> {
-        return this.currentGame;
-    }
-
-    getTimer(): Subject<number> {
-        return this.timer;
-    }
-
-    getDifferencesFound(): Subject<number> {
-        return this.differencesFound;
-    }
-
     setIsLeftCanvas(isLeft: boolean): void {
         this.isLeftCanvas = isLeft;
     }
@@ -110,8 +109,11 @@ export class ClassicSystemService implements OnDestroy {
             this.currentGame.next(clientGame);
         });
 
-        this.clientSocket.on(GameEvents.GameStarted, (clientGame: ClientSideGame) => {
-            this.currentGame.next(clientGame);
+        this.clientSocket.on(GameEvents.GameStarted, (data: { clientGame: ClientSideGame; players: { player1: Player; player2: Player } }) => {
+            this.currentGame.next(data.clientGame);
+            if (data.players) {
+                this.players.next(data.players);
+            }
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (differencesData: Differences) => {
             this.replaceDifference(differencesData.currentDifference);

@@ -55,6 +55,14 @@ export class ClassicModeService {
     async createOneVsOneGame(gameId: string, playerName: string) {
         const room = await this.createRoom(playerName, gameId);
         if (room) {
+            const player1: Player = {
+                name: playerName,
+                diffData: {
+                    currentDifference: [],
+                    differencesFound: 0,
+                },
+            };
+            room.player1 = player1;
             room.clientGame.mode = GameModes.ClassicOneVsOne;
             return room;
         }
@@ -168,54 +176,37 @@ export class ClassicModeService {
         const roomAvailability = this.roomAvailability.get(gameId) || { gameId, isAvailableToJoin: false };
         roomAvailability.isAvailableToJoin = !roomAvailability.isAvailableToJoin;
         this.roomAvailability.set(gameId, roomAvailability);
-        this.checkRoomOneVsOneAvailability(gameId, server);
+        server.emit(GameEvents.RoomOneVsOneAvailable, roomAvailability);
     }
 
     checkRoomOneVsOneAvailability(gameId: string, server: io.Server): void {
-        const room = this.roomAvailability.get(gameId);
-        if (room) {
-            const availabilityData: RoomAvailability = {
-                gameId,
-                isAvailableToJoin: room.isAvailableToJoin,
-            };
-            server.emit(GameEvents.RoomOneVsOneAvailable, availabilityData);
-        }
+        const availabilityData: RoomAvailability = this.roomAvailability.has(gameId)
+            ? { gameId, isAvailableToJoin: this.roomAvailability.get(gameId).isAvailableToJoin }
+            : { gameId, isAvailableToJoin: false };
+        server.emit(GameEvents.RoomOneVsOneAvailable, availabilityData);
     }
-    async createOneVsOneRoom(gameId: string): Promise<string> {
+
+    async createOneVsOneRoom(gameId: string): Promise<ClassicPlayRoom> {
         const oneVsOneGame = await this.createOneVsOneGame(gameId, 'Player 1');
         if (oneVsOneGame) {
             const roomId = oneVsOneGame.roomId;
             oneVsOneGame.roomId = roomId;
             this.rooms.set(oneVsOneGame.roomId, oneVsOneGame);
-            return roomId;
+            return oneVsOneGame;
         }
     }
 
-    deleteCreatedOneVsOneRoom(gameId: string, server: io.Server): void {
-        const roomTarget = this.roomAvailability.get(gameId);
-        if (roomTarget) {
-            // this.rooms.delete(roomId);
-            this.roomAvailability.delete(gameId);
-            const availabilityData: RoomAvailability = {
-                gameId,
-                isAvailableToJoin: false,
-            };
-            server.emit(GameEvents.OneVsOneRoomDeleted, availabilityData);
+    getOneVsOneRoomByGameId(gameId: string): ClassicPlayRoom {
+        return Array.from(this.rooms.values()).find((room) => room.clientGame.id === gameId && room.clientGame.mode === GameModes.ClassicOneVsOne);
+    }
+
+    deleteOneVsOneRoomAvailability(gameId: string, server: io.Server): void {
+        if (this.roomAvailability.delete(gameId)) {
+            this.checkRoomOneVsOneAvailability(gameId, server);
         }
     }
 
     saveRoom(room: ClassicPlayRoom): void {
-        this.rooms.set(room.roomId, room);
-    }
-
-    joinRoom(roomId: string, playerName: string, socket: io.Socket): void {
-        const room: ClassicPlayRoom = this.rooms.get(roomId);
-        socket.join(roomId);
-        const player2: Player = {
-            name: playerName,
-            diffData: room.differencesData,
-        };
-        room.player2 = player2;
         this.rooms.set(room.roomId, room);
     }
 
@@ -241,8 +232,6 @@ export class ClassicModeService {
 
         const acceptedPlayerName = this.joinedPlayerNamesByGameId.get(gameId)?.[0];
         if (!acceptedPlayerName) return;
-
-        room.clientGame.player = playerNameCreator;
         const player2: Player = {
             name: acceptedPlayerName,
             diffData: {
@@ -250,8 +239,11 @@ export class ClassicModeService {
                 differencesFound: 0,
             },
         };
+        room.player1.name = playerNameCreator;
         room.player2 = player2;
         this.rooms.set(roomId, room);
+        this.joinedPlayerNamesByGameId.delete(gameId);
+        this.roomAvailability.delete(gameId);
         return acceptedPlayerName;
     }
 

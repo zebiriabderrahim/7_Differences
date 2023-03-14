@@ -42,17 +42,15 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
     }
 
     acceptPlayer(playerName: string) {
-        this.roomManagerService.acceptPlayer(this.data.gameId, this.data.roomId, this.data.player);
         this.playerNames.forEach((player) => {
             if (player !== playerName) {
                 this.refusePlayer(player);
             }
         });
+        this.roomManagerService.acceptPlayer(this.data.gameId, this.data.roomId, this.data.player);
         this.dialogRef.afterClosed().subscribe(() => {
-            this.router.navigate(['/game', this.data.roomId, this.data.player]);
+            this.router.navigate(['/game', this.data.roomId]);
         });
-        this.dialogRef.close();
-        this.undoCreateOneVsOneRoom();
     }
 
     undoCreateOneVsOneRoom() {
