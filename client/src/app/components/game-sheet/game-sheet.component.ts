@@ -29,10 +29,9 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         public router: Router,
         private readonly roomManagerService: RoomManagerService,
         private readonly communicationService: CommunicationService,
-    ) {
-        this.roomManagerService.handleRoomEvents();
-    }
+    ) {}
     ngOnInit(): void {
+        this.roomManagerService.handleRoomEvents();
         this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
         this.roomAvailabilitySubscription = this.roomManagerService.oneVsOneRoomsAvailabilityByRoomId$
             .pipe(filter((data) => data.gameId === this.game._id))
@@ -53,11 +52,9 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         let name = '';
         this.openDialog()
             .afterClosed()
+            .pipe(filter((playerName) => !!playerName))
             .subscribe((playerName) => {
-                if (playerName) {
-                    this.roomManagerService.createSoloRoom(this.game._id, playerName);
-                    name = playerName;
-                }
+                this.roomManagerService.createSoloRoom(this.game._id, playerName);
             });
         return name;
     }
@@ -83,9 +80,10 @@ export class GameSheetComponent implements OnDestroy, OnInit {
                     this.roomManagerService.createOneVsOneRoom(this.game._id);
                     this.openWaitingDialog(playerName);
                 } else {
-                    this.roomManagerService.updateRoomOneVsOneAvailability(this.game._id);
+                    this.roomManagerService.deleteCreatedOneVsOneRoom(this.game._id);
                 }
             });
+        this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
     }
 
     joinOneVsOne(): void {
@@ -120,16 +118,17 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         return this.isAvailable;
     }
 
-    ngOnDestroy(): void {
-        this.roomIdSubscription?.unsubscribe();
-        this.roomAvailabilitySubscription?.unsubscribe();
-    }
-
     deleteGameCard() {
         this.communicationService.deleteGameById(this.game._id).subscribe(() => {
             this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
                 this.router.navigate(['/config']);
             });
         });
+    }
+
+    ngOnDestroy(): void {
+        this.roomManagerService.disconnect();
+        this.roomIdSubscription?.unsubscribe();
+        this.roomAvailabilitySubscription?.unsubscribe();
     }
 }

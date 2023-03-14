@@ -6,7 +6,7 @@ import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { ChatMessage, ClientSideGame, GameModes, MessageTag } from '@common/game-interfaces';
+import { ChatMessage, ClientSideGame, GameModes, MessageTag, Player } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -26,6 +26,8 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     secondPlayerName: string = '';
     messages: ChatMessage[] = [];
     gameModes: typeof GameModes;
+    player: string;
+    players: { player1: Player; player2: Player };
     readonly canvasSize = { width: IMG_WIDTH, height: IMG_HEIGHT };
     private ownPlayerName: string = '';
     private timerSubscription: Subscription;
@@ -42,19 +44,25 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         private classicService: ClassicSystemService,
         private readonly matDialog: MatDialog,
         private route: ActivatedRoute,
-        private roomManagerService: RoomManagerService,
     ) {
-        this.roomManagerService.disconnect();
+        this.classicService.manageSocket();
     }
 
     ngAfterViewInit(): void {
-        this.classicService.manageSocket();
         this.routeParamSubscription = this.route.params.subscribe((params) => {
             if (params['roomId']) {
                 this.classicService.startGameByRoomId(params['roomId']);
-                this.ownPlayerName = params['ownPlayerName'];
             }
         });
+        this.classicService.players$.subscribe((players) => {
+            if (players && players.player1.playerId === this.classicService.getSocketId()) {
+                this.player = players.player1.name;
+            }
+            if (players && players.player2.playerId === this.classicService.getSocketId()) {
+                this.player = players.player2.name;
+            }
+        });
+
         this.gameSubscription = this.classicService.currentGame$.subscribe((game) => {
             this.game = game;
             if (this.game) {
@@ -86,7 +94,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.timerSubscription = this.classicService.timer$.subscribe((timer) => {
             this.timer = timer;
         });
-        this.differenceSubscription = this.classicService.getDifferencesFound().subscribe((differencesFound) => {
+        this.differenceSubscription = this.classicService.differencesFound$.subscribe((differencesFound) => {
             this.differencesFound = differencesFound;
         });
         this.messageSub = this.classicService.message$.subscribe((message) => {
