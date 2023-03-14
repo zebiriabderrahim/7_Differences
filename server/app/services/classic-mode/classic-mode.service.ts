@@ -76,30 +76,40 @@ export class ClassicModeService {
         let index = 0;
         for (; index < originalDifferences.length; index++) {
             if (originalDifferences[index].some((coord: Coordinate) => coord.x === coords.x && coord.y === coords.y)) {
-                room.differencesData.differencesFound++;
                 room.differencesData.currentDifference = originalDifferences[index];
+                if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
+                    room.differencesData.currentDifference = originalDifferences[index];
+                }
                 break;
             }
         }
 
         if (index !== originalDifferences.length) {
             originalDifferences.splice(index, 1);
+            if (room.clientGame.mode === GameModes.ClassicSolo) {
+                server.to(roomId).emit(GameEvents.RemoveDiff, room.differencesData);
+                server.to(roomId).emit(MessageEvents.LocalMessage, this.messageManager.getSoloDifferenceMessage());
+            }
+            if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
+                server.to(roomId).emit(MessageEvents.LocalMessage, this.messageManager.getOneVsOneDifferenceMessage(playerName));
+
+                if (playerName === room.clientGame.player) {
+                    room.differencesData.differencesFound++;
+                    socket.emit(GameEvents.RemoveDiff, room.differencesData);
+                    socket.broadcast.to(roomId).emit(GameEvents.OpponentFoundDiff, room.differencesData);
+                } else {
+                    room.player2.diffData.differencesFound++;
+                    socket.emit(GameEvents.RemoveDiff, room.differencesData);
+                    socket.broadcast.to(roomId).emit(GameEvents.OpponentFoundDiff, room.differencesData);
+                }
+            }
         } else {
             room.differencesData.currentDifference = [];
-        }
-
-        if (room.clientGame.mode === GameModes.ClassicSolo) {
-            server.to(roomId).emit(MessageEvents.LocalMessage, this.messageManager.getSoloDifferenceMessage());
-            server.to(roomId).emit(GameEvents.RemoveDiff, room.differencesData);
-        } else if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
-            server.to(roomId).emit(MessageEvents.LocalMessage, this.messageManager.getOneVsOneDifferenceMessage(playerName));
-
-            if (playerName === room.clientGame.player) {
-                room.differencesData.differencesFound++;
-            } else {
-                room.player2.diffData.differencesFound++;
+            if (room.clientGame.mode === GameModes.ClassicSolo) {
+                server.to(roomId).emit(MessageEvents.LocalMessage, this.messageManager.getSoloErrorMessage());
+            } else if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
+                server.to(roomId).emit(MessageEvents.LocalMessage, this.messageManager.getOneVsOneErrorMessage(playerName));
             }
-            socket.broadcast.to(roomId).emit(GameEvents.OpponentFoundDiff, room.differencesData);
         }
     }
 

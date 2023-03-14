@@ -6,7 +6,7 @@
         &nbsp;
         <h1>Temps: {{ timer * 1000 | date: 'mm:ss' }}</h1>
         &nbsp;<mat-icon class="personIcon">person</mat-icon>
-        <h1>Nom du deuxieme Joueur Différences trouvées: {{ opponentDifferencesFound }}</h1>
+        <h1>{{ secondPlayerName }} &nbsp; Différences trouvées: {{ opponentDifferencesFound }}</h1>
     </div>
     <app-game-infos [game]="game" [differencesCount]="game.differencesCount"></app-game-infos>
 </div>

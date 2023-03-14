@@ -71,7 +71,7 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
             )
             .subscribe((data) => {
                 this.dialogRef.close();
-                this.router.navigate(['/game', data.roomId]);
+                this.router.navigate(['/game', data.roomId, data.playerName]);
             });
     }
 
@@ -79,6 +79,6 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
         this.playerNamesSubscription?.unsubscribe();
         this.countdownSubscription?.unsubscribe();
         this.roomIdSubscription?.unsubscribe();
-        this.acceptedPlayerSubscription?.unsubscribe()
+        this.acceptedPlayerSubscription?.unsubscribe();
     }
 }
