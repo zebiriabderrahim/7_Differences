@@ -6,7 +6,7 @@ import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { ChatMessage, ClientSideGame, MessageTag } from '@common/game-interfaces';
+import { ChatMessage, ClientSideGame, GameModes, MessageTag } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -25,6 +25,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     timer: number = 0;
     secondPlayerName: string = '';
     messages: ChatMessage[] = [];
+    gameModes: typeof GameModes;
     readonly canvasSize = { width: IMG_WIDTH, height: IMG_HEIGHT };
     private ownPlayerName: string = '';
     private timerSubscription: Subscription;
