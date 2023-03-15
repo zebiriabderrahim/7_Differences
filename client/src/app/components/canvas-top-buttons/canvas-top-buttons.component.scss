@@ -1,0 +1,22 @@
+#canvas-top-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+    padding: 10px;
+    height: 50px;
+}
+
+#canvas-color-choice {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+    padding: 10px;
+    height: 50px;
+}
+
+button {
+    margin-right: 10px;
+    height: 70px;
+}
