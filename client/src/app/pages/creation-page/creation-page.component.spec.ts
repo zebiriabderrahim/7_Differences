@@ -82,40 +82,6 @@ describe('CreationPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    // it('validateDifferences should open imageNotSetDialog with config if images are set', async () => {
-    //     matDialogSpy.open.and.returnValue({
-    //         afterClosed: () => of('test'),
-    //     } as MatDialogRef<CreationGameDialogComponent>);
-    //     spyOn(imageService, 'areImagesSet').and.callFake(() => {
-    //         return true;
-    //     });
-
-    //     // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for the mock
-    //     spyOn(component['router'], 'navigate').and.callFake(async () => {
-    //         return {} as Promise<boolean>;
-    //     });
-
-    //     setTimeout(function () {
-    //         timerCallback();
-    //     }, SUBMIT_WAIT_TIME);
-
-    //     component.validateDifferences();
-    //     const dialogConfig = new MatDialogConfig();
-    //     dialogConfig.data = component.radius;
-    //     expect(matDialogSpy.open).toHaveBeenCalledWith(CreationGameDialogComponent, dialogConfig);
-    //     expect(timerCallback).not.toHaveBeenCalled();
-    //     jasmine.clock().tick(SUBMIT_WAIT_TIME + 1);
-    //     expect(timerCallback).toHaveBeenCalled();
-    // });
-
-    // it('validateDifferences should open imageNotSetDialog if images are not set', () => {
-    //     spyOn(imageService, 'areImagesSet').and.callFake(() => {
-    //         return false;
-    //     });
-    //     component.validateDifferences();
-    //     expect(matDialogSpy.open).toHaveBeenCalled();
-    // });
-
     it('keyboardEvent should call redoCanvasOperation when ctrl+shift+z are pressed', () => {
         const keyboardEvent: KeyboardEvent = new KeyboardEvent('keydown', {
             key: 'Z',
@@ -194,56 +160,6 @@ describe('CreationPageComponent', () => {
         fixture.detectChanges();
         expect(validateDifferencesSpy).toHaveBeenCalled();
     });
-
-    // it('should call undoCanvasOperation() when ctrlKey is pressed', () => {
-    //     const mockKeyboardEvent = new KeyboardEvent('keydown', { ctrlKey: true, key: 'Z' });
-    //     component.keyboardEvent(mockKeyboardEvent);
-
-    //     expect(drawService.undoCanvasOperation).toHaveBeenCalled();
-    //     expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
-    // });
-
-    // it('should call redoCanvasOperation() when ctrlKey and shiftKey are pressed and key is "Z"', () => {
-    //     const mockKeyboardEvent = new KeyboardEvent('keydown', { ctrlKey: true, shiftKey: true, key: 'Z' });
-
-    //     component.keyboardEvent(mockKeyboardEvent);
-
-    //     expect(drawService.redoCanvasOperation).toHaveBeenCalled();
-    //     expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
-    // });
-
-    // it('should not call any method when ctrlKey and shiftKey are pressed but key is not "Z"', () => {
-    //     const mockKeyboardEvent = new KeyboardEvent('keydown', { ctrlKey: true, shiftKey: true, key: 'X' });
-
-    //     component.keyboardEvent(mockKeyboardEvent);
-
-    //     expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
-    //     expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
-    // });
-
-    // it('should not call any method when only shiftKey is pressed', () => {
-    //     const mockKeyboardEvent = new KeyboardEvent('keydown', { shiftKey: true, key: 'z' });
-
-    //     component.keyboardEvent(mockKeyboardEvent);
-
-    //     expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
-    //     expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
-    // });
-
-    // it('should not call any method when only ctrlKey is pressed and key is not "z"', () => {
-    //     const mockKeyboardEvent = new KeyboardEvent('keydown', { ctrlKey: true, key: 'x' });
-
-    //     component.keyboardEvent(mockKeyboardEvent);
-
-    //     expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
-    //     expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
-    // });
-
-    // it('should call drawService.swapForegrounds()', () => {
-    //     component.swapForegrounds();
-    //     fixture.detectChanges();
-    //     expect(drawService.swapForegrounds).toHaveBeenCalled();
-    // });
 
     it('validateDifferences should open dialog', () => {
         const data = 42;
