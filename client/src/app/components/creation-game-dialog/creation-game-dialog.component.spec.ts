@@ -27,7 +27,7 @@ describe('CreationGameDialogComponent', () => {
         imageServiceSpy = jasmine.createSpyObj('ImageService', [
             'generateDifferences',
             'resetBackground',
-            'getGamePixels',
+            'generateGamePixels',
             'getImageSources',
             'drawDifferences',
         ]);
@@ -88,7 +88,7 @@ describe('CreationGameDialogComponent', () => {
         });
         component.ngOnInit();
 
-        expect(differenceServiceSpy.generateDifferences).toHaveBeenCalledWith(imageServiceSpy.getGamePixels(), component.radius);
+        expect(differenceServiceSpy.generateDifferences).toHaveBeenCalledWith(imageServiceSpy.generateGamePixels(), component.radius);
         expect(getContextSpy).toHaveBeenCalled();
         expect(imageServiceSpy.drawDifferences).toHaveBeenCalledWith(context, []);
     });

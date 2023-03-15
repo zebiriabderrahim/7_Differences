@@ -6,16 +6,20 @@ import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { N_PIXEL_ATTRIBUTE } from '@app/constants/pixels';
 import { CanvasPosition } from '@app/enum/canvas-position';
+import { ForegroundService } from '@app/services/foreground-service/foreground.service';
 import { ImageService } from './image.service';
 
 describe('ImageService', () => {
     let service: ImageService;
     let contextStub: CanvasRenderingContext2D;
     let imageBitmap: ImageBitmap;
+    let foregroundServiceSpy: jasmine.SpyObj<ForegroundService>;
 
     beforeEach(() => {
+        foregroundServiceSpy = jasmine.createSpyObj('ForegroundService', ['getForegroundCanvasElements']);
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
+            providers: [{ provide: ForegroundService, useValue: foregroundServiceSpy }],
         });
         service = TestBed.inject(ImageService);
         contextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
@@ -124,7 +128,26 @@ describe('ImageService', () => {
         expect(putImageDataSpy).toHaveBeenCalled();
     });
 
-    // TODO: getGamePixels refactor
+    it('generateGamePixels should foregroundService.getForegroundCanvasElements and generatePixels with the correct parameters', () => {
+        const generatePixelsSpy = spyOn<any>(service, 'generatePixels').and.callFake(() => {
+            return [];
+        });
+        const fakeLeftForegroundCanvas = {
+            width: 0,
+        } as HTMLCanvasElement;
+        const fakeRightForegroundCanvas = {
+            width: 1,
+        } as HTMLCanvasElement;
+
+        foregroundServiceSpy.getForegroundCanvasElements.and.returnValue({
+            left: fakeLeftForegroundCanvas,
+            right: fakeRightForegroundCanvas,
+        });
+        service.generateGamePixels();
+        expect(foregroundServiceSpy.getForegroundCanvasElements).toHaveBeenCalled();
+        expect(generatePixelsSpy).toHaveBeenCalledWith(fakeLeftForegroundCanvas, CanvasPosition.Left);
+        expect(generatePixelsSpy).toHaveBeenCalledWith(fakeRightForegroundCanvas, CanvasPosition.Right);
+    });
 
     it('getImageSources should return the source of the images in the service', () => {
         service['leftImage'] = 'leftImage';
@@ -179,31 +202,61 @@ describe('ImageService', () => {
         expect(service['transformPixelArrayToImageData'](pixelArray)).toEqual(expectedArray);
     });
 
-    it('getPixels should call transformImageDataToPixelArray with returned value of combineCanvas', () => {
-        const fakeArray = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * N_PIXEL_ATTRIBUTE).fill(0);
+    it('generatePixels should call combineCanvas and setImage', () => {
+        service['combinedContext'] = contextStub;
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed to callFake
-        const transformImageDataToPixelArraySpy = spyOn<any>(service, 'transformImageDataToPixelArray').and.callFake(() => {});
-        const combineCanvasSpy = spyOn<any>(service, 'combineCanvas').and.callFake(() => {
-            return fakeArray;
-        });
-        const firstFakeCanvas = {} as HTMLCanvasElement;
-        const secondFakeCanvas = {} as HTMLCanvasElement;
-        service['getPixels'](firstFakeCanvas, secondFakeCanvas);
+        const combineCanvasSpy = spyOn<any>(service, 'combineCanvas').and.callFake(() => {});
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed to callFake
+        const setImageSpy = spyOn<any>(service, 'setImage').and.callFake(() => {});
+        const fakeCanvas = {} as HTMLCanvasElement;
+
+        service['generatePixels'](fakeCanvas, CanvasPosition.Left);
         expect(combineCanvasSpy).toHaveBeenCalled();
-        expect(transformImageDataToPixelArraySpy).toHaveBeenCalledOnceWith(fakeArray);
+        expect(setImageSpy).toHaveBeenCalled();
     });
 
-    it('combineCanvas should call getImageData and drawImage twice on the provided canvas', () => {
+    it('generatePixels should call getImageData on combinedContext and transformImageToDataPixelArray with his data', () => {
+        service['combinedContext'] = contextStub;
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed to callFake
+        spyOn<any>(service, 'combineCanvas').and.callFake(() => {});
+        const fakeCanvas = {} as HTMLCanvasElement;
+        const mockImageData = new ImageData(1, 1);
+
+        const getImageDataSpy = spyOn(contextStub, 'getImageData').and.callFake(() => {
+            return mockImageData;
+        });
+
+        const transformImageDataToPixelArraySpy = spyOn<any>(service, 'transformImageDataToPixelArray').and.callFake(() => {
+            return [];
+        });
+
+        service['generatePixels'](fakeCanvas, CanvasPosition.Right);
+        expect(getImageDataSpy).toHaveBeenCalled();
+        expect(transformImageDataToPixelArraySpy).toHaveBeenCalledOnceWith(mockImageData.data);
+    });
+
+    it('setImage called with leftCanvasPosition should set leftImage', () => {
+        const leftImage = 'leftImage';
+        expect(service['leftImage']).not.toEqual(leftImage);
+        service['setImage'](CanvasPosition.Left, leftImage);
+        expect(service['leftImage']).toEqual(leftImage);
+    });
+
+    it('setImage called with rightCanvasPosition should set rightImage', () => {
+        const rightImage = 'rightImage';
+        expect(service['rightImage']).not.toEqual(rightImage);
+        service['setImage'](CanvasPosition.Right, rightImage);
+        expect(service['rightImage']).toEqual(rightImage);
+    });
+
+    it('combineCanvas should call drawImage twice on the provided canvas', () => {
         service['combinedContext'] = contextStub;
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed to callFake
         const drawImageSpy = spyOn(contextStub, 'drawImage').and.callFake(() => {});
-        const getImageDataSpy = spyOn(contextStub, 'getImageData').and.callFake(() => {
-            return new ImageData(IMG_WIDTH, IMG_HEIGHT);
-        });
+
         const firstFakeCanvas = {} as HTMLCanvasElement;
         const secondFakeCanvas = {} as HTMLCanvasElement;
         service['combineCanvas'](firstFakeCanvas, secondFakeCanvas);
         expect(drawImageSpy).toHaveBeenCalledTimes(2);
-        expect(getImageDataSpy).toHaveBeenCalled();
     });
 });
