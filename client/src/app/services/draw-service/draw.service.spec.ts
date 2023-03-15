@@ -20,11 +20,10 @@ describe('DrawService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('setMouseStatus should set isMouseOutOfCanvas to appropriate value', () => {
-        const mockIsMouseLeaving = true;
-        expect(service['isMouseOutOfCanvas']).not.toBe(mockIsMouseLeaving);
-        service.setMouseStatus(mockIsMouseLeaving);
-        expect(service['isMouseOutOfCanvas']).toBe(mockIsMouseLeaving);
+    it('mouseIsOutOfCanvas should set isMouseOutOfCanvas to false', () => {
+        service['isMouseOutOfCanvas'] = true;
+        service.mouseIsOutOfCanvas();
+        expect(service['isMouseOutOfCanvas']).toBe(false);
     });
 
     it('setDrawingColor should set drawingColor to appropriate value', () => {
