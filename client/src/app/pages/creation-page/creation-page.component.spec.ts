@@ -11,6 +11,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CanvasMiddleButtonsComponent } from '@app/components/canvas-middle-buttons/canvas-middle-buttons.component';
 import { CanvasTopButtonsComponent } from '@app/components/canvas-top-buttons/canvas-top-buttons.component';
@@ -18,6 +19,8 @@ import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-button
 // import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
 import { LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON } from '@app/constants/constants';
+import { AppRoutingModule } from '@app/modules/app-routing.module';
+import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { ForegroundService } from '@app/services/foreground-service/foreground.service';
 import { of } from 'rxjs';
 // import { DrawService } from '@app/services/draw-service/draw.service';
@@ -31,10 +34,11 @@ describe('CreationPageComponent', () => {
     let fixture: ComponentFixture<CreationPageComponent>;
     // let imageService: ImageService;
     let matDialogSpy: jasmine.SpyObj<MatDialog>;
-    // let routerSpy: jasmine.SpyObj<Router>;
+    let routerSpy: jasmine.SpyObj<Router>;
     // let drawService: DrawService;
     // let timerCallback: jasmine.Spy<jasmine.Func>;
     let foregroundServiceSpy: jasmine.SpyObj<ForegroundService>;
+    let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
 
     beforeEach(async () => {
         foregroundServiceSpy = jasmine.createSpyObj('ForegroundService', [
@@ -44,6 +48,7 @@ describe('CreationPageComponent', () => {
             'disableDragging',
             'setForegroundContext',
         ]);
+        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['postGame']);
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
             declarations: [
@@ -66,10 +71,13 @@ describe('CreationPageComponent', () => {
                 HttpClientTestingModule,
                 MatButtonToggleModule,
                 MatSelectModule,
+                RouterModule,
+                AppRoutingModule,
             ],
             providers: [
                 { provide: MatDialog, useValue: matDialogSpy },
                 { provide: ForegroundService, useValue: foregroundServiceSpy },
+                { provide: CommunicationService, useValue: communicationServiceSpy },
             ],
         }).compileComponents();
 
@@ -163,7 +171,7 @@ describe('CreationPageComponent', () => {
 
     it('validateDifferences should open dialog', () => {
         const data = 42;
-        const game = { id: 1, name: 'Test Game' };
+        const game = { id: 1, name: 'testGame' };
         matDialogSpy.open.and.returnValue({
             afterClosed: () => of(game),
         } as MatDialogRef<unknown, unknown>);
@@ -173,4 +181,22 @@ describe('CreationPageComponent', () => {
 
         expect(matDialogSpy.open).toHaveBeenCalled();
     });
+
+    // it('validateDifferences should navigate to the config page after posting the game details', fakeAsync(() => {
+    //     const game = { id: 1, name: 'testGame' };
+    //     communicationServiceSpy.postGame.and.returnValue(of(void 0));
+    //     matDialogSpy.open.and.returnValue({
+    //         afterClosed: () => of(game),
+    //     } as MatDialogRef<unknown, unknown>);
+    //     routerSpy.navigateByUrl.and.returnValue(Promise.resolve(true));
+    //     component.validateDifferences();
+    //     tick();
+    //     expect(routerSpy.navigateByUrl).toHaveBeenCalledWith(
+    //         '/',
+    //         jasmine.objectContaining({
+    //             skipLocationChange: true,
+    //         }),
+    //     );
+    //     expect(routerSpy.navigate).toHaveBeenCalledWith(['/config']);
+    // }));
 });
