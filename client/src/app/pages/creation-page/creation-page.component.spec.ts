@@ -142,17 +142,17 @@ describe('CreationPageComponent', () => {
         expect(foregroundServiceSpy.undoCanvasOperation).toHaveBeenCalled();
     });
 
-    // it('should disable dragging when left button is released', () => {
-    //     const mouseUpEvent = new MouseEvent('mouseup', { button: 0 });
-    //     component.mouseUpEvent(mouseUpEvent);
-    //     expect(foregroundServiceSpy.disableDragging).toHaveBeenCalled();
-    // });
+    it('should disable dragging when left button is released', () => {
+        const mouseUpEvent = new MouseEvent('mouseup', { button: 0 });
+        component.mouseUpEvent(mouseUpEvent);
+        expect(foregroundServiceSpy.disableDragging).toHaveBeenCalled();
+    });
 
-    // it('should not disable dragging when right button is released', () => {
-    //     const mouseUpEvent = new MouseEvent('mouseup', { button: 1 });
-    //     component.mouseUpEvent(mouseUpEvent);
-    //     expect(foregroundServiceSpy.disableDragging).not.toHaveBeenCalled();
-    // });
+    it('should not disable dragging when right button is released', () => {
+        const mouseUpEvent = new MouseEvent('mouseup', { button: 1 });
+        component.mouseUpEvent(mouseUpEvent);
+        expect(foregroundServiceSpy.disableDragging).not.toHaveBeenCalled();
+    });
 
     it('should select a radio button', () => {
         const radioButtons = fixture.debugElement.query(By.css('mat-radio-button')).nativeElement;
