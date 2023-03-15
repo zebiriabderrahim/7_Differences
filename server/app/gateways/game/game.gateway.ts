@@ -1,6 +1,6 @@
 import { ClassicModeService } from '@app/services/classic-mode/classic-mode.service';
 import { Coordinate } from '@common/coordinate';
-import { AcceptedPlayer, GameEvents, GameModes } from '@common/game-interfaces';
+import { AcceptedPlayer, ChatMessage, GameEvents, GameModes, MessageEvents } from '@common/game-interfaces';
 import { Injectable, Logger } from '@nestjs/common';
 import {
     ConnectedSocket,
@@ -39,7 +39,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameEvents.StartGameByRoomId)
-    startOneVsOneGame(@ConnectedSocket() socket: Socket, @MessageBody() roomId: string) {
+    startGame(@ConnectedSocket() socket: Socket, @MessageBody() roomId: string) {
         const room = this.classicModeService.getRoomByRoomId(roomId);
         if (room) {
             socket.join(roomId);
@@ -71,8 +71,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     @SubscribeMessage(GameEvents.CheckStatus)
     checkStatus(@ConnectedSocket() socket: Socket) {
-        const roomId = Array.from(socket.rooms.values())[1];
-        this.classicModeService.endGame(roomId, this.server);
+        this.classicModeService.endGame(socket, this.server);
     }
 
     @SubscribeMessage(GameEvents.Disconnect)
@@ -129,8 +128,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameEvents.AbandonGame)
-    abandonGame(@MessageBody() roomId: string) {
-        this.classicModeService.abandonGame(roomId, this.server);
+    abandonGame(@ConnectedSocket() socket) {
+        this.classicModeService.abandonGame(socket, this.server);
+    }
+
+    @SubscribeMessage(MessageEvents.LocalMessage)
+    sendMessage(@ConnectedSocket() socket: Socket, @MessageBody() data: ChatMessage) {
+        const roomId = Array.from(socket.rooms.values())[1];
+        socket.broadcast.to(roomId).emit(MessageEvents.LocalMessage, data);
     }
 
     afterInit() {
@@ -145,7 +150,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     handleDisconnect(@ConnectedSocket() socket: Socket) {
         this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
-        this.classicModeService.endGame(socket.id, this.server);
     }
 
     updateTimers() {
