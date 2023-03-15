@@ -42,10 +42,9 @@ export class ImageCanvasComponent implements AfterViewInit {
         this.foregroundService.setForegroundContext(this.position, foregroundContext, frontContext);
     }
 
-    setMouseLeavingBoolean(event: MouseEvent): void {
-        const isMouseLeaving = true;
+    onMouseLeavingCanvas(event: MouseEvent): void {
         if (event.button === LEFT_BUTTON) {
-            this.drawService.setMouseStatus(isMouseLeaving);
+            this.drawService.setMouseStatus(true);
         }
     }
 
