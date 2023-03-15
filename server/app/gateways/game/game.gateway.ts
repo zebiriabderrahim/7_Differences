@@ -145,6 +145,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     handleDisconnect(@ConnectedSocket() socket: Socket) {
         this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
+        this.classicModeService.endGame(socket.id, this.server);
     }
 
     updateTimers() {
