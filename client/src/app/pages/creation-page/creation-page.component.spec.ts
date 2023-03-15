@@ -17,6 +17,7 @@ import { CanvasTopButtonsComponent } from '@app/components/canvas-top-buttons/ca
 import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
 // import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
+import { ForegroundService } from '@app/services/foreground-service/foreground.service';
 import { of } from 'rxjs';
 // import { DrawService } from '@app/services/draw-service/draw.service';
 // import { SUBMIT_WAIT_TIME } from '@app/constants/constants';
@@ -32,16 +33,17 @@ describe('CreationPageComponent', () => {
     // let routerSpy: jasmine.SpyObj<Router>;
     // let drawService: DrawService;
     // let timerCallback: jasmine.Spy<jasmine.Func>;
-    // let foregroundServiceSpy: jasmine.SpyObj<ForegroundService>;
+    let foregroundServiceSpy: jasmine.SpyObj<ForegroundService>;
 
     beforeEach(async () => {
         // drawService = jasmine.createSpyObj('DrawService', ['redoCanvasOperation', 'undoCanvasOperation', 'swapForegrounds']);
-        // foregroundServiceSpy = jasmine.createSpyObj('ForegroundService', [
-        //     'redoCanvasOperation',
-        //     'undoCanvasOperation',
-        //     'swapForegrounds',
-        //     'disableDragging',
-        // ]);
+        foregroundServiceSpy = jasmine.createSpyObj('ForegroundService', [
+            'redoCanvasOperation',
+            'undoCanvasOperation',
+            'swapForegrounds',
+            'disableDragging',
+            'setForegroundContext',
+        ]);
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
             declarations: [
@@ -65,20 +67,23 @@ describe('CreationPageComponent', () => {
                 MatButtonToggleModule,
                 MatSelectModule,
             ],
-            providers: [{ provide: MatDialog, useValue: matDialogSpy }],
+            providers: [
+                { provide: MatDialog, useValue: matDialogSpy },
+                { provide: ForegroundService, useValue: foregroundServiceSpy },
+            ],
         }).compileComponents();
 
         fixture = TestBed.createComponent(CreationPageComponent);
         // imageService = TestBed.inject(ImageService);
         // timerCallback = jasmine.createSpy('timerCallback');
-        jasmine.clock().install();
+        // jasmine.clock().install();
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
 
-    afterEach(() => {
-        jasmine.clock().uninstall();
-    });
+    // afterEach(() => {
+    //     jasmine.clock().uninstall();
+    // });
 
     it('should create', () => {
         expect(component).toBeTruthy();
@@ -118,26 +123,24 @@ describe('CreationPageComponent', () => {
     //     expect(matDialogSpy.open).toHaveBeenCalled();
     // });
 
-    // it('should call redoCanvasOperation when ctrl+shift+z are pressed', () => {
-    //     const event = new KeyboardEvent('keydown', {
-    //         key: 'Z',
-    //         ctrlKey: true,
-    //         shiftKey: true,
-    //     });
-    //     window.dispatchEvent(event);
+    it('should call redoCanvasOperation when ctrl+shift+z are pressed', () => {
+        const keyboardEvent: KeyboardEvent = new KeyboardEvent('keydown', {
+            key: 'Z',
+            ctrlKey: true,
+            shiftKey: true,
+        });
+        component.keyboardEvent(keyboardEvent);
+        expect(foregroundServiceSpy.redoCanvasOperation).toHaveBeenCalled();
+    });
 
-    //     expect(foregroundServiceSpy.redoCanvasOperation).toHaveBeenCalled();
-    // });
-
-    // it('should call undoCanvasOperation when ctrl+z are pressed', () => {
-    //     const event = new KeyboardEvent('keydown', {
-    //         key: 'z',
-    //         ctrlKey: true,
-    //     });
-    //     window.dispatchEvent(event);
-
-    //     expect(foregroundServiceSpy.undoCanvasOperation).toHaveBeenCalled();
-    // });
+    it('should call undoCanvasOperation when ctrl+z are pressed', () => {
+        const keyboardEvent = new KeyboardEvent('keydown', {
+            key: 'z',
+            ctrlKey: true,
+        });
+        component.keyboardEvent(keyboardEvent);
+        expect(foregroundServiceSpy.undoCanvasOperation).toHaveBeenCalled();
+    });
 
     // it('should disable dragging when left button is released', () => {
     //     const mouseUpEvent = new MouseEvent('mouseup', { button: 0 });
