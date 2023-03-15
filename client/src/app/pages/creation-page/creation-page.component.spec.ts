@@ -17,6 +17,7 @@ import { CanvasTopButtonsComponent } from '@app/components/canvas-top-buttons/ca
 import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
 // import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
+import { LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON } from '@app/constants/constants';
 import { ForegroundService } from '@app/services/foreground-service/foreground.service';
 import { of } from 'rxjs';
 // import { DrawService } from '@app/services/draw-service/draw.service';
@@ -36,7 +37,6 @@ describe('CreationPageComponent', () => {
     let foregroundServiceSpy: jasmine.SpyObj<ForegroundService>;
 
     beforeEach(async () => {
-        // drawService = jasmine.createSpyObj('DrawService', ['redoCanvasOperation', 'undoCanvasOperation', 'swapForegrounds']);
         foregroundServiceSpy = jasmine.createSpyObj('ForegroundService', [
             'redoCanvasOperation',
             'undoCanvasOperation',
@@ -74,16 +74,9 @@ describe('CreationPageComponent', () => {
         }).compileComponents();
 
         fixture = TestBed.createComponent(CreationPageComponent);
-        // imageService = TestBed.inject(ImageService);
-        // timerCallback = jasmine.createSpy('timerCallback');
-        // jasmine.clock().install();
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
-
-    // afterEach(() => {
-    //     jasmine.clock().uninstall();
-    // });
 
     it('should create', () => {
         expect(component).toBeTruthy();
@@ -123,7 +116,7 @@ describe('CreationPageComponent', () => {
     //     expect(matDialogSpy.open).toHaveBeenCalled();
     // });
 
-    it('should call redoCanvasOperation when ctrl+shift+z are pressed', () => {
+    it('keyboardEvent should call redoCanvasOperation when ctrl+shift+z are pressed', () => {
         const keyboardEvent: KeyboardEvent = new KeyboardEvent('keydown', {
             key: 'Z',
             ctrlKey: true,
@@ -133,7 +126,7 @@ describe('CreationPageComponent', () => {
         expect(foregroundServiceSpy.redoCanvasOperation).toHaveBeenCalled();
     });
 
-    it('should call undoCanvasOperation when ctrl+z are pressed', () => {
+    it('keyboardEvent should call undoCanvasOperation when ctrl+z are pressed', () => {
         const keyboardEvent = new KeyboardEvent('keydown', {
             key: 'z',
             ctrlKey: true,
@@ -142,16 +135,49 @@ describe('CreationPageComponent', () => {
         expect(foregroundServiceSpy.undoCanvasOperation).toHaveBeenCalled();
     });
 
-    it('should disable dragging when left button is released', () => {
-        const mouseUpEvent = new MouseEvent('mouseup', { button: 0 });
+    it('mouseUpEvent should disable dragging when left button is released', () => {
+        const mouseUpEvent = new MouseEvent('mouseup', { button: LEFT_BUTTON });
         component.mouseUpEvent(mouseUpEvent);
         expect(foregroundServiceSpy.disableDragging).toHaveBeenCalled();
     });
 
-    it('should not disable dragging when right button is released', () => {
-        const mouseUpEvent = new MouseEvent('mouseup', { button: 1 });
+    it('mouseUpEvent should not disable dragging when right button is released', () => {
+        const mouseUpEvent = new MouseEvent('mouseup', { button: MIDDLE_BUTTON });
         component.mouseUpEvent(mouseUpEvent);
         expect(foregroundServiceSpy.disableDragging).not.toHaveBeenCalled();
+    });
+
+    it('mouseDownEvent should prevent default and stop propagation when left mouse button is clicked', () => {
+        const mouseDownEvent = new MouseEvent('mousedown', {
+            button: LEFT_BUTTON,
+        });
+        spyOn(mouseDownEvent, 'preventDefault');
+        spyOn(mouseDownEvent, 'stopPropagation');
+        component.mouseDownEvent(mouseDownEvent);
+        expect(mouseDownEvent.preventDefault).toHaveBeenCalled();
+        expect(mouseDownEvent.stopPropagation).toHaveBeenCalled();
+    });
+
+    it('mouseDownEvent should not prevent default or stop propagation when right mouse button is clicked', () => {
+        const mouseDownEvent = new MouseEvent('mousedown', {
+            button: RIGHT_BUTTON,
+        });
+        spyOn(mouseDownEvent, 'preventDefault');
+        spyOn(mouseDownEvent, 'stopPropagation');
+        component.mouseDownEvent(mouseDownEvent);
+        expect(mouseDownEvent.preventDefault).not.toHaveBeenCalled();
+        expect(mouseDownEvent.stopPropagation).not.toHaveBeenCalled();
+    });
+
+    it('mouseDownEvent should not prevent default or stop propagation when middle mouse button is clicked', () => {
+        const mouseDownEvent = new MouseEvent('mousedown', {
+            button: MIDDLE_BUTTON,
+        });
+        spyOn(mouseDownEvent, 'preventDefault');
+        spyOn(mouseDownEvent, 'stopPropagation');
+        component.mouseDownEvent(mouseDownEvent);
+        expect(mouseDownEvent.preventDefault).not.toHaveBeenCalled();
+        expect(mouseDownEvent.stopPropagation).not.toHaveBeenCalled();
     });
 
     it('should select a radio button', () => {
