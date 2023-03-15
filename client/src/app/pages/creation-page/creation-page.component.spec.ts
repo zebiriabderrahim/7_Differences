@@ -2,8 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-// import { MatDialog, MatDialogConfig, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -17,27 +16,19 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { CanvasMiddleButtonsComponent } from '@app/components/canvas-middle-buttons/canvas-middle-buttons.component';
 import { CanvasTopButtonsComponent } from '@app/components/canvas-top-buttons/canvas-top-buttons.component';
 import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
-// import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
 import { LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON } from '@app/constants/constants';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { ForegroundService } from '@app/services/foreground-service/foreground.service';
-// import { of } from 'rxjs';
-// import { DrawService } from '@app/services/draw-service/draw.service';
-// import { SUBMIT_WAIT_TIME } from '@app/constants/constants';
-// import { ImageService } from '@app/services/image-service/image.service';
-// import { of } from 'rxjs';
+import { of } from 'rxjs';
 import { CreationPageComponent } from './creation-page.component';
 
 describe('CreationPageComponent', () => {
     let component: CreationPageComponent;
     let fixture: ComponentFixture<CreationPageComponent>;
-    // let imageService: ImageService;
     let matDialogSpy: jasmine.SpyObj<MatDialog>;
     // let routerSpy: jasmine.SpyObj<Router>;
-    // let drawService: DrawService;
-    // let timerCallback: jasmine.Spy<jasmine.Func>;
     let foregroundServiceSpy: jasmine.SpyObj<ForegroundService>;
     let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
 
@@ -49,7 +40,7 @@ describe('CreationPageComponent', () => {
             'disableDragging',
             'setForegroundContext',
         ]);
-        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['postGame']);
+        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['postGame', 'verifyIfGameExists']);
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
             declarations: [
@@ -170,18 +161,18 @@ describe('CreationPageComponent', () => {
         expect(validateDifferencesSpy).toHaveBeenCalled();
     });
 
-    // it('validateDifferences should open dialog', () => {
-    //     const data = 42;
-    //     const game = { id: 1, name: 'testGame' };
-    //     matDialogSpy.open.and.returnValue({
-    //         afterClosed: () => of(game),
-    //     } as MatDialogRef<unknown, unknown>);
+    it('validateDifferences should open dialog', () => {
+        const data = 42;
+        const game = { id: 1, name: 'testGame' };
+        matDialogSpy.open.and.returnValue({
+            afterClosed: () => of(game),
+        } as MatDialogRef<unknown, unknown>);
+        communicationServiceSpy.postGame.and.returnValue(of(void 0));
+        component.radius = data;
+        component.validateDifferences();
 
-    //     component.radius = data;
-    //     component.validateDifferences();
-
-    //     expect(matDialogSpy.open).toHaveBeenCalled();
-    // });
+        expect(matDialogSpy.open).toHaveBeenCalled();
+    });
 
     // it('validateDifferences should navigate to the config page after posting the game details', fakeAsync(() => {
     //     const game = { id: 1, name: 'testGame' };
