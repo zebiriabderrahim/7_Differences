@@ -32,6 +32,7 @@ import { SoloGameViewDialogComponent } from './components/solo-game-view-dialog/
 import { WaitingForPlayerToJoinComponent } from './components/waiting-player-to-join/waiting-player-to-join.component';
 import { ConfigPageComponent } from './pages/config-page/config-page.component';
 import { JoinedPlayerDialogComponent } from './components/joined-player-dialog/joined-player-dialog.component';
+import { CanvasMiddleButtonsComponent } from './components/canvas-middle-buttons/canvas-middle-buttons.component';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -57,6 +58,7 @@ import { JoinedPlayerDialogComponent } from './components/joined-player-dialog/j
         CanvasTopButtonsComponent,
         JoinedPlayerDialogComponent,
         NavBarComponent,
+        CanvasMiddleButtonsComponent,
     ],
     imports: [
         AppMaterialModule,

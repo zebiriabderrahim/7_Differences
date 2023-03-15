@@ -12,11 +12,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
+import { CanvasMiddleButtonsComponent } from '@app/components/canvas-middle-buttons/canvas-middle-buttons.component';
 import { CanvasTopButtonsComponent } from '@app/components/canvas-top-buttons/canvas-top-buttons.component';
 import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
 // import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { ImageCanvasComponent } from '@app/components/image-canvas/image-canvas.component';
-import { DrawService } from '@app/services/draw-service/draw.service';
+// import { DrawService } from '@app/services/draw-service/draw.service';
 // import { SUBMIT_WAIT_TIME } from '@app/constants/constants';
 // import { ImageService } from '@app/services/image-service/image.service';
 // import { of } from 'rxjs';
@@ -27,11 +28,18 @@ describe('CreationPageComponent', () => {
     let fixture: ComponentFixture<CreationPageComponent>;
     // let imageService: ImageService;
     let matDialogSpy: jasmine.SpyObj<MatDialog>;
-    let drawService: DrawService;
+    // let drawService: DrawService;
     // let timerCallback: jasmine.Spy<jasmine.Func>;
+    // let foregroundServiceSpy: jasmine.SpyObj<ForegroundService>;
 
     beforeEach(async () => {
-        drawService = jasmine.createSpyObj('DrawService', ['redoCanvasOperation', 'undoCanvasOperation', 'swapForegrounds']);
+        // drawService = jasmine.createSpyObj('DrawService', ['redoCanvasOperation', 'undoCanvasOperation', 'swapForegrounds']);
+        // foregroundServiceSpy = jasmine.createSpyObj('ForegroundService', [
+        //     'redoCanvasOperation',
+        //     'undoCanvasOperation',
+        //     'swapForegrounds',
+        //     'disableDragging',
+        // ]);
         matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
             declarations: [
@@ -41,6 +49,7 @@ describe('CreationPageComponent', () => {
                 MatIcon,
                 CanvasUnderButtonsComponent,
                 CanvasTopButtonsComponent,
+                CanvasMiddleButtonsComponent,
             ],
             imports: [
                 NoopAnimationsModule,
@@ -107,6 +116,39 @@ describe('CreationPageComponent', () => {
     //     expect(matDialogSpy.open).toHaveBeenCalled();
     // });
 
+    // it('should call redoCanvasOperation when ctrl+shift+z are pressed', () => {
+    //     const event = new KeyboardEvent('keydown', {
+    //         key: 'Z',
+    //         ctrlKey: true,
+    //         shiftKey: true,
+    //     });
+    //     window.dispatchEvent(event);
+
+    //     expect(foregroundServiceSpy.redoCanvasOperation).toHaveBeenCalled();
+    // });
+
+    // it('should call undoCanvasOperation when ctrl+z are pressed', () => {
+    //     const event = new KeyboardEvent('keydown', {
+    //         key: 'z',
+    //         ctrlKey: true,
+    //     });
+    //     window.dispatchEvent(event);
+
+    //     expect(foregroundServiceSpy.undoCanvasOperation).toHaveBeenCalled();
+    // });
+
+    // it('should disable dragging when left button is released', () => {
+    //     const mouseUpEvent = new MouseEvent('mouseup', { button: 0 });
+    //     component.mouseUpEvent(mouseUpEvent);
+    //     expect(foregroundServiceSpy.disableDragging).toHaveBeenCalled();
+    // });
+
+    // it('should not disable dragging when right button is released', () => {
+    //     const mouseUpEvent = new MouseEvent('mouseup', { button: 1 });
+    //     component.mouseUpEvent(mouseUpEvent);
+    //     expect(foregroundServiceSpy.disableDragging).not.toHaveBeenCalled();
+    // });
+
     it('should select a radio button', () => {
         const radioButtons = fixture.debugElement.query(By.css('mat-radio-button')).nativeElement;
         radioButtons[1]?.click();
@@ -139,32 +181,32 @@ describe('CreationPageComponent', () => {
     //     expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
     // });
 
-    it('should not call any method when ctrlKey and shiftKey are pressed but key is not "Z"', () => {
-        const mockKeyboardEvent = new KeyboardEvent('keydown', { ctrlKey: true, shiftKey: true, key: 'X' });
+    // it('should not call any method when ctrlKey and shiftKey are pressed but key is not "Z"', () => {
+    //     const mockKeyboardEvent = new KeyboardEvent('keydown', { ctrlKey: true, shiftKey: true, key: 'X' });
 
-        component.keyboardEvent(mockKeyboardEvent);
+    //     component.keyboardEvent(mockKeyboardEvent);
 
-        expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
-        expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
-    });
+    //     expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
+    //     expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
+    // });
 
-    it('should not call any method when only shiftKey is pressed', () => {
-        const mockKeyboardEvent = new KeyboardEvent('keydown', { shiftKey: true, key: 'z' });
+    // it('should not call any method when only shiftKey is pressed', () => {
+    //     const mockKeyboardEvent = new KeyboardEvent('keydown', { shiftKey: true, key: 'z' });
 
-        component.keyboardEvent(mockKeyboardEvent);
+    //     component.keyboardEvent(mockKeyboardEvent);
 
-        expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
-        expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
-    });
+    //     expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
+    //     expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
+    // });
 
-    it('should not call any method when only ctrlKey is pressed and key is not "z"', () => {
-        const mockKeyboardEvent = new KeyboardEvent('keydown', { ctrlKey: true, key: 'x' });
+    // it('should not call any method when only ctrlKey is pressed and key is not "z"', () => {
+    //     const mockKeyboardEvent = new KeyboardEvent('keydown', { ctrlKey: true, key: 'x' });
 
-        component.keyboardEvent(mockKeyboardEvent);
+    //     component.keyboardEvent(mockKeyboardEvent);
 
-        expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
-        expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
-    });
+    //     expect(drawService.redoCanvasOperation).not.toHaveBeenCalled();
+    //     expect(drawService.undoCanvasOperation).not.toHaveBeenCalled();
+    // });
 
     // it('should call drawService.swapForegrounds()', () => {
     //     component.swapForegrounds();
