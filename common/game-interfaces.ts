@@ -3,7 +3,6 @@ import { Coordinate } from '@common/coordinate';
 export interface ClientSideGame {
     id: string;
     name: string;
-    player: string;
     mode: string;
     original: string;
     modified: string;
@@ -42,13 +41,13 @@ export interface ClassicPlayRoom {
     clientGame: ClientSideGame;
     endMessage: string;
     timer: number;
-    differencesData: Differences;
     originalDifferences: Coordinate[][];
-    isAvailableToJoin?: boolean;
     player2?: Player;
+    player1?: Player;
 }
 
 export interface Player {
+    playerId?: string;
     name: string;
     diffData: Differences;
 }
@@ -79,10 +78,8 @@ export interface WaitingPlayerNameList {
     playerNamesList: string[];
 }
 
-
 export enum GameEvents {
     ValidateCoords = 'validateCoords',
-    Penalty = 'penalty',
     CheckStatus = 'checkStatus',
     CreateSoloGame = 'createSoloGame',
     RoomOneVsOneCreated = 'roomOneVsOneCreated',
@@ -95,8 +92,6 @@ export enum GameEvents {
     UpdateRoomOneVsOneAvailability = 'UpdateRoomOneVsOneAvailability',
     DeleteCreatedOneVsOneRoom = 'DeleteCreatedOneVsOneRoom',
     UpdateWaitingPlayerNameList = 'UpdateWaitingPlayerNameList',
-    WaitingPlayerNameListByGameId = 'WaitingPlayerNameListByGameId',
-    Disconnect = 'Disconnect',
     RefusePlayer = 'RefusePlayer',
     CheckIfPlayerNameIsAvailable = 'CheckIfPlayerNameIsAvailable',
     PlayerNameTaken = 'PlayerNameTaken',
@@ -106,14 +101,31 @@ export enum GameEvents {
     OneVsOneRoomDeleted = 'OneVsOneRoomDeleted',
     PlayerAccepted = 'PlayerAccepted',
     GameStarted = 'OneVsOneStarted',
-    CreateSoloRoom = 'CreateSoloRoom',
     RoomSoloCreated = 'RoomSoloCreated',
-    AbandonGame = "AbandonGame"
+    AbandonGame = 'AbandonGame',
+    JoinOneVsOneGame = 'JoinOneVsOneGame',
+    Disconnect = "Disconnect"
 }
 
 export enum GameModes {
-    ClassicSolo = 'Classic->lSolo',
+    ClassicSolo = 'Classic->Solo',
     ClassicOneVsOne = 'Classic->OneVsOne',
+}
+
+export enum MessageEvents {
+    LocalMessage = 'LocalMessage',
+    GlobalMessage = 'GlobalMessage',
+}
+
+export enum MessageTag {
+    sent = 'sent',
+    received = 'received',
+    common = 'common',
+}
+
+export interface ChatMessage {
+    tag: MessageTag;
+    message: string;
 }
 
 export enum GameCardActions {

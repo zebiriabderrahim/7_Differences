@@ -99,13 +99,13 @@ export class GameAreaService {
         const firstInterval = setInterval(() => {
             const secondInterval = setInterval(() => {
                 for (const index of imageDataIndexes) {
-                    this.modifiedFrontPixelData.data[index] = 0;
-                    this.modifiedFrontPixelData.data[index + 1] = 255;
+                    this.modifiedFrontPixelData.data[index] = 255;
+                    this.modifiedFrontPixelData.data[index + 1] = 244;
                     this.modifiedFrontPixelData.data[index + 2] = 0;
                     this.modifiedFrontPixelData.data[index + 3] = 255;
 
-                    this.originalFrontPixelData.data[index] = 0;
-                    this.originalFrontPixelData.data[index + 1] = 255;
+                    this.originalFrontPixelData.data[index] = 255;
+                    this.originalFrontPixelData.data[index + 1] = 244;
                     this.originalFrontPixelData.data[index + 2] = 0;
                     this.originalFrontPixelData.data[index + 3] = 255;
                 }
@@ -114,13 +114,13 @@ export class GameAreaService {
             }, GREEN_FLASH_TIME);
 
             for (const index of imageDataIndexes) {
-                this.modifiedFrontPixelData.data[index] = 255;
-                this.modifiedFrontPixelData.data[index + 1] = 244;
+                this.modifiedFrontPixelData.data[index] = 0;
+                this.modifiedFrontPixelData.data[index + 1] = 255;
                 this.modifiedFrontPixelData.data[index + 2] = 0;
                 this.modifiedFrontPixelData.data[index + 3] = 255;
 
-                this.originalFrontPixelData.data[index] = 255;
-                this.originalFrontPixelData.data[index + 1] = 244;
+                this.originalFrontPixelData.data[index] = 0;
+                this.originalFrontPixelData.data[index + 1] = 255;
                 this.originalFrontPixelData.data[index + 2] = 0;
                 this.originalFrontPixelData.data[index + 3] = 255;
             }
