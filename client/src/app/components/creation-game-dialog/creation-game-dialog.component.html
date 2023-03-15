@@ -15,7 +15,7 @@
                 <mat-error *ngIf="gameNameForm.controls.name.errors?.gameExists" [ngClass]="'error'">Ce nom de jeu existe déjà</mat-error>
             </mat-form-field>
             <button mat-raised-button type="submit" [disabled]="gameNameForm.invalid">Créer un jeu</button>
-            <button mat-button (click)="closeModal()" type="button">Quitter</button>
+            <button mat-button mat-dialog-close type="button">Quitter</button>
         </form>
     </div>
     <ng-template #differencesInvalid>
