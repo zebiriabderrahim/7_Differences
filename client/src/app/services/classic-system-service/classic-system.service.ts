@@ -114,15 +114,15 @@ export class ClassicSystemService implements OnDestroy {
                 this.players.next(data.players);
             }
         });
-        this.clientSocket.on(GameEvents.RemoveDiff, (differencesData: Differences) => {
-            this.replaceDifference(differencesData.currentDifference);
-            this.differencesFound.next(differencesData.differencesFound);
-            this.checkStatus();
-        });
-
-        this.clientSocket.on(GameEvents.OpponentFoundDiff, (differencesData: Differences) => {
-            this.replaceDifference(differencesData.currentDifference);
-            this.opponentDifferencesFound.next(differencesData.differencesFound);
+        this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string }) => {
+            if (data.playerId === this.getSocketId()) {
+                this.replaceDifference(data.differencesData.currentDifference);
+                this.differencesFound.next(data.differencesData.differencesFound);
+                this.checkStatus();
+            } else if (data.differencesData.currentDifference.length !== 0) {
+                this.replaceDifference(data.differencesData.currentDifference);
+                this.opponentDifferencesFound.next(data.differencesData.differencesFound);
+            }
         });
 
         this.clientSocket.on(GameEvents.TimerStarted, (timer: number) => {
