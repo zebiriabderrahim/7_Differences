@@ -4,13 +4,16 @@
 /* eslint-disable no-underscore-dangle */
 import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
+import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { Coordinate } from '@common/coordinate';
 import {
+    ChatMessage,
     ClassicPlayRoom,
     ClientSideGame,
     Differences,
     GameEvents,
     GameModes,
+    MessageEvents,
     Player,
     PlayerNameAvailability,
     RoomAvailability,
@@ -26,7 +29,7 @@ export class ClassicModeService {
     private joinedPlayerNamesByGameId: Map<string, string[]>;
     private roomAvailability: Map<string, RoomAvailability>;
 
-    constructor(private readonly gameService: GameService) {
+    constructor(private readonly gameService: GameService, private readonly messageManager: MessageManagerService) {
         this.rooms = new Map<string, ClassicPlayRoom>();
         this.joinedPlayerNamesByGameId = new Map<string, string[]>();
         this.roomAvailability = new Map<string, RoomAvailability>();
@@ -87,7 +90,9 @@ export class ClassicModeService {
         const room = this.rooms.get(roomId);
         const { originalDifferences } = room;
         const { diffData } = room.player1.playerId === socket.id ? room.player1 : room.player2;
+        const playerName = room.player1.playerId === socket.id ? room.player1.name : room.player2.name;
         let index = 0;
+        let localMessage: ChatMessage;
         for (; index < originalDifferences.length; index++) {
             if (originalDifferences[index].some((coord: Coordinate) => coord.x === coords.x && coord.y === coords.y)) {
                 diffData.differencesFound++;
@@ -98,8 +103,16 @@ export class ClassicModeService {
 
         if (index !== originalDifferences.length) {
             originalDifferences.splice(index, 1);
+            localMessage =
+                room.clientGame.mode === GameModes.ClassicSolo
+                    ? this.messageManager.getSoloDifferenceMessage()
+                    : this.messageManager.getOneVsOneDifferenceMessage(playerName);
         } else {
             diffData.currentDifference = [];
+            localMessage =
+                room.clientGame.mode === GameModes.ClassicSolo
+                    ? this.messageManager.getSoloErrorMessage()
+                    : this.messageManager.getOneVsOneErrorMessage(playerName);
         }
 
         this.rooms.set(room.roomId, room);
@@ -107,7 +120,8 @@ export class ClassicModeService {
             currentDifference: diffData.currentDifference,
             differencesFound: diffData.differencesFound,
         };
-        server.to(room.roomId).emit(GameEvents.RemoveDiff, differencesData);
+        server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
+        server.to(room.roomId).emit(GameEvents.RemoveDiff, { differencesData, playerId: socket.id });
     }
 
     buildClientGameVersion(game: Game): ClientSideGame {
@@ -127,13 +141,22 @@ export class ClassicModeService {
         this.rooms.delete(roomId);
     }
 
-    endGame(roomId: string, server: io.Server): void {
-        const room = this.rooms.get(roomId);
-        if (room && room.clientGame.differencesCount === room.player1.diffData.differencesFound) {
+    endGame(socket: io.Socket, server: io.Server): void {
+        const roomId = Array.from(socket.rooms.values())[1];
+        const room = this.getRoomByRoomId(roomId);
+        const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
+        if (room && room.clientGame.differencesCount === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicSolo) {
             room.endMessage = `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo!`;
-            server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
-            this.deleteCreatedSoloGameRoom(room.roomId);
-            this.roomAvailability.delete(room.clientGame.id);
+            server.to(roomId).emit(GameEvents.EndGame, room.endMessage);
+            this.deleteCreatedSoloGameRoom(roomId);
+        } else if (
+            room &&
+            Math.ceil(room.clientGame.differencesCount / 2) === player.diffData.differencesFound &&
+            room.clientGame.mode === GameModes.ClassicOneVsOne
+        ) {
+            room.endMessage = `${player.name} remporte la partie avec ${player.diffData.differencesFound} différences trouvées!`;
+            server.to(roomId).emit(GameEvents.EndGame, room.endMessage);
+            this.deleteCreatedSoloGameRoom(roomId);
         }
     }
 
@@ -254,12 +277,16 @@ export class ClassicModeService {
         }
     }
 
-    abandonGame(roomId: string, server: io.Server): void {
-        const room = this.rooms.get(roomId);
-        if (room) {
+    abandonGame(socket: io.Socket, server: io.Server): void {
+        const roomId = Array.from(socket.rooms.values())[1];
+        const room = this.getRoomByRoomId(roomId);
+        if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
+            const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
             room.endMessage = "L'adversaire a abandonné la partie!";
-            server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
-            this.roomAvailability.delete(room.clientGame.id);
+            server.to(room.roomId).emit(MessageEvents.LocalMessage, this.messageManager.getQuitMessage(player.name));
         }
+        this.deleteCreatedSoloGameRoom(roomId);
+        server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
+        this.roomAvailability.delete(room.clientGame.id);
     }
 }

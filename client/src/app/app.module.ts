@@ -26,6 +26,7 @@ import { SelectionPageComponent } from '@app/pages/selection-page/selection-page
 import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.component';
 import { CanvasTopButtonsComponent } from './components/canvas-top-buttons/canvas-top-buttons.component';
 import { CanvasUnderButtonsComponent } from './components/canvas-under-buttons/canvas-under-buttons.component';
+import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { ImageCanvasComponent } from './components/image-canvas/image-canvas.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { SoloGameViewDialogComponent } from './components/solo-game-view-dialog/solo-game-view-dialog.component';
@@ -58,6 +59,7 @@ import { CanvasMiddleButtonsComponent } from './components/canvas-middle-buttons
         CanvasTopButtonsComponent,
         JoinedPlayerDialogComponent,
         NavBarComponent,
+        ChatBoxComponent,
         CanvasMiddleButtonsComponent,
     ],
     imports: [

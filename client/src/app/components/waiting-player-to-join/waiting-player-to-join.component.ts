@@ -24,9 +24,7 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         private readonly roomManagerService: RoomManagerService,
         private dialogRef: MatDialogRef<WaitingForPlayerToJoinComponent>,
         private readonly router: Router,
-    ) {
-        this.roomManagerService.handleRoomEvents();
-    }
+    ) {}
     ngOnInit(): void {
         this.getJoinedPlayerNamesByGameId();
     }
