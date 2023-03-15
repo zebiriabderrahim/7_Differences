@@ -6,9 +6,10 @@ import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/difference';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { GameDetails } from '@app/interfaces/game-interfaces';
+import { LEFT_BUTTON } from '@app/constants/constants';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
-import { DrawService } from '@app/services/draw-service/draw.service';
 import { ImageService } from '@app/services/image-service/image.service';
+import { ForegroundService } from '@app/services/foreground-service/foreground.service';
 
 @Component({
     selector: 'app-root',
@@ -18,7 +19,7 @@ import { ImageService } from '@app/services/image-service/image.service';
 export class CreationPageComponent implements AfterViewInit {
     @ViewChild('combinedCanvas') combinedCanvas: ElementRef;
     readonly canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
-    readonly configRoute: string = '/config';
+    readonly configRoute = '/config';
     canvasPosition: typeof CanvasPosition;
     readonly radiusSizes: number[];
     radius: number;
@@ -27,7 +28,7 @@ export class CreationPageComponent implements AfterViewInit {
     // eslint-disable-next-line max-params
     constructor(
         private readonly imageService: ImageService,
-        private readonly drawService: DrawService,
+        private readonly foregroundService: ForegroundService,
         private readonly matDialog: MatDialog,
         private readonly communicationService: CommunicationService,
         private readonly router: Router,
@@ -40,9 +41,24 @@ export class CreationPageComponent implements AfterViewInit {
     @HostListener('window:keydown', ['$event'])
     keyboardEvent(event: KeyboardEvent) {
         if (event.ctrlKey && event.shiftKey && event.key === 'Z') {
-            this.redoCanvasOperation();
+            this.foregroundService.redoCanvasOperation();
         } else if (event.ctrlKey && event.key === 'z') {
-            this.undoCanvasOperation();
+            this.foregroundService.undoCanvasOperation();
+        }
+    }
+
+    @HostListener('window:mouseup', ['$event'])
+    mouseUpEvent(event: MouseEvent) {
+        if (event.button === LEFT_BUTTON) {
+            this.foregroundService.disableDragging();
+        }
+    }
+
+    @HostListener('window:mousedown', ['$event'])
+    mouseDownEvent(event: MouseEvent) {
+        if (event.button === LEFT_BUTTON) {
+            event.preventDefault();
+            event.stopPropagation();
         }
     }
 
@@ -66,25 +82,5 @@ export class CreationPageComponent implements AfterViewInit {
                     });
                 }
             });
-    }
-
-    swapForegrounds() {
-        this.drawService.swapForegrounds();
-    }
-
-    duplicateLeftForeground() {
-        this.drawService.duplicateLeftForeground();
-    }
-
-    duplicateRightForeground() {
-        this.drawService.duplicateRightForeground();
-    }
-
-    undoCanvasOperation() {
-        this.drawService.undoCanvasOperation();
-    }
-
-    redoCanvasOperation() {
-        this.drawService.redoCanvasOperation();
     }
 }

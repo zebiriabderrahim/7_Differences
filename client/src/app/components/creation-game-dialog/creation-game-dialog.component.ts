@@ -2,9 +2,9 @@ import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core'
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
+import { CanvasPosition } from '@app/enum/canvas-position';
 import { GameDetails } from '@app/interfaces/game-interfaces';
 import { ImageSources } from '@app/interfaces/image-sources';
-import { CanvasPosition } from '@app/enum/canvas-position';
 import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
@@ -20,7 +20,6 @@ import { map, Observable } from 'rxjs';
 export class CreationGameDialogComponent implements OnInit {
     @ViewChild('differenceCanvas', { static: true }) differenceCanvas: ElementRef;
     gameName: string;
-    nDifferences: number;
     gameNameForm = new FormGroup({
         name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)], [this.validateGameName.bind(this)]),
     });
@@ -49,12 +48,7 @@ export class CreationGameDialogComponent implements OnInit {
     }
 
     isNumberOfDifferencesValid(): boolean {
-        this.nDifferences = this.differenceService.getNumberOfDifferences();
         return this.differenceService.isNumberOfDifferencesValid();
-    }
-
-    closeModal(): void {
-        this.dialogRef.close();
     }
 
     submitForm() {
