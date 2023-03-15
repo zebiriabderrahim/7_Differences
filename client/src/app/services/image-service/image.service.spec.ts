@@ -1,4 +1,4 @@
-// needed for private methods
+// needed to spy on private methods
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
