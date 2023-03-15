@@ -7,7 +7,6 @@ import { ChatMessage, GameModes } from '@common/game-interfaces';
     styleUrls: ['./chat-box.component.scss'],
 })
 export class ChatBoxComponent {
-    @Input() opponentName: string;
     @Input() messages: ChatMessage[] = [];
     @Output() add = new EventEmitter<string>();
 

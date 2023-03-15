@@ -38,6 +38,8 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     private endGameSub: Subscription;
     private opponentDifferenceSub: Subscription;
 
+    // Services are needed for the dialog and dialog needs to talk to the parent component
+    // eslint-disable-next-line max-params
     constructor(
         private gameAreaService: GameAreaService,
         private classicService: ClassicSystemService,
