@@ -11,68 +11,111 @@ import { ImageService } from './image.service';
 describe('ImageService', () => {
     let service: ImageService;
     let contextStub: CanvasRenderingContext2D;
-    let resetBackgroundContextSpy: jasmine.Spy;
-    let setBackgroundImageSpy: jasmine.Spy;
+    let imageBitmap: ImageBitmap;
 
     beforeEach(() => {
+        resetBackgroundContextSpy = jasmine.createSpy();
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
         });
         service = TestBed.inject(ImageService);
         contextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
-        resetBackgroundContextSpy = spyOn<any>(service, 'resetBackgroundContext');
-        setBackgroundImageSpy = spyOn<any>(service, 'setBackgroundImage');
         service['leftBackgroundContext'] = contextStub;
         service['rightBackgroundContext'] = contextStub;
+    });
+
+    beforeEach(async () => {
+        imageBitmap = await createImageBitmap(new ImageData(IMG_WIDTH, IMG_HEIGHT));
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
 
-    it('resetBackground should reset background context for left canvas position', () => {
+    it('resetBackground called with leftCanvasPosition should call resetBackgroundContext with leftBackgroundContext', () => {
+        const resetBackgroundContextSpy = spyOn<any>(service, 'resetBackgroundContext').and.callThrough();
         service.resetBackground(CanvasPosition.Left);
-        expect(resetBackgroundContextSpy).toHaveBeenCalled();
+        expect(resetBackgroundContextSpy).toHaveBeenCalledOnceWith(service['leftBackgroundContext']);
     });
 
-    it('resetBackground should reset background context for right canvas position', () => {
+    it('resetBackground called with rightCanvasPosition should call resetBackgroundContext with rightBackgroundContext', () => {
+        const resetBackgroundContextSpy = spyOn<any>(service, 'resetBackgroundContext').and.callThrough();
         service.resetBackground(CanvasPosition.Right);
-        expect(resetBackgroundContextSpy).toHaveBeenCalled();
+        expect(resetBackgroundContextSpy).toHaveBeenCalledOnceWith(service['rightBackgroundContext']);
     });
 
-    it('resetBackground should reset background context for both canvas positions', () => {
+    it('resetBackground called with CanvasPosition both should call resetBackgroundContext with both background context', () => {
+        const resetBackgroundContextSpy = spyOn<any>(service, 'resetBackgroundContext').and.callThrough();
         service.resetBackground(CanvasPosition.Both);
-        expect(resetBackgroundContextSpy).toHaveBeenCalled();
-        expect(resetBackgroundContextSpy).toHaveBeenCalled();
+        expect(resetBackgroundContextSpy).toHaveBeenCalledWith(service['leftBackgroundContext']);
+        expect(resetBackgroundContextSpy).toHaveBeenCalledWith(service['rightBackgroundContext']);
     });
 
-    it('setBackground should set the background image for left canvas position', () => {
-        const mockImage = {} as ImageBitmap;
-        spyOn(window, 'createImageBitmap').and.callFake(async () => {
-            return mockImage;
-        });
-        service.setBackground(CanvasPosition.Left, mockImage);
-        expect(setBackgroundImageSpy).toHaveBeenCalled();
+    it('setBackground called with leftCanvasPosition should call setBackgroundImage with leftBackgroundContext', () => {
+        const setBackgroundImageSpy = spyOn<any>(service, 'setBackgroundImage').and.callThrough();
+        service.setBackground(CanvasPosition.Left, imageBitmap);
+        expect(setBackgroundImageSpy).toHaveBeenCalledOnceWith(imageBitmap, service['leftBackgroundContext']);
     });
 
-    it('setBackground should set the background image for right canvas position', () => {
-        const mockImage = {} as ImageBitmap;
-        spyOn(window, 'createImageBitmap').and.callFake(async () => {
-            return mockImage;
-        });
-        service.setBackground(CanvasPosition.Right, mockImage);
-        expect(setBackgroundImageSpy).toHaveBeenCalled();
+    it('setBackground called with rightCanvasPosition should call setBackgroundImage with rightBackgroundContext', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const setBackgroundImageSpy = spyOn<any>(service, 'setBackgroundImage').and.callThrough();
+        service.setBackground(CanvasPosition.Right, imageBitmap);
+        expect(setBackgroundImageSpy).toHaveBeenCalledOnceWith(imageBitmap, service['rightBackgroundContext']);
     });
 
-    it('setBackground should set the background image for both canvas positions', () => {
-        const mockImage = {} as ImageBitmap;
-        spyOn(window, 'createImageBitmap').and.callFake(async () => {
-            return mockImage;
-        });
-        service.setBackground(CanvasPosition.Both, mockImage);
-        expect(setBackgroundImageSpy).toHaveBeenCalled();
-        expect(setBackgroundImageSpy).toHaveBeenCalled();
+    it('setBackground called with CanvasPosition both should call setBackgroundImage with both background context', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const setBackgroundImageSpy = spyOn<any>(service, 'setBackgroundImage').and.callFake(() => {});
+        service.setBackground(CanvasPosition.Both, imageBitmap);
+        expect(setBackgroundImageSpy).toHaveBeenCalledWith(imageBitmap, service['leftBackgroundContext']);
+        expect(setBackgroundImageSpy).toHaveBeenCalledWith(imageBitmap, service['rightBackgroundContext']);
     });
+
+    it('setCombinedContext should set combinedContext', () => {
+        expect(service['combinedContext']).toBeUndefined();
+        service.setCombinedContext(contextStub);
+        expect(service['combinedContext']).toEqual(contextStub);
+    });
+
+    it('setBackgroundContext called with leftCanvasPosition should set the leftBackgroundContext and call resetBackgroundContext with it', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const resetBackgroundContextSpy = spyOn<any>(service, 'resetBackgroundContext').and.callFake(() => {});
+        const mockLeftBackgroundContext = {} as CanvasRenderingContext2D;
+        expect(service['leftBackgroundContext']).not.toEqual(mockLeftBackgroundContext);
+        service.setBackgroundContext(CanvasPosition.Left, mockLeftBackgroundContext);
+        expect(service['leftBackgroundContext']).toEqual(mockLeftBackgroundContext);
+        expect(resetBackgroundContextSpy).toHaveBeenCalledOnceWith(mockLeftBackgroundContext);
+    });
+
+    it('setBackgroundContext called with rightCanvasPosition should set the rightBackgroundContext and call resetBackgroundContext with it', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for callFake
+        const resetBackgroundContextSpy = spyOn<any>(service, 'resetBackgroundContext').and.callFake(() => {});
+        const mockRightBackgroundContext = {} as CanvasRenderingContext2D;
+        expect(service['rightBackgroundContext']).not.toEqual(mockRightBackgroundContext);
+        service.setBackgroundContext(CanvasPosition.Right, mockRightBackgroundContext);
+        expect(service['rightBackgroundContext']).toEqual(mockRightBackgroundContext);
+        expect(resetBackgroundContextSpy).toHaveBeenCalledOnceWith(mockRightBackgroundContext);
+    });
+
+    // it('setBackground should set the background image for right canvas position', () => {
+    //     const mockImage = {} as ImageBitmap;
+    //     spyOn(window, 'createImageBitmap').and.callFake(async () => {
+    //         return mockImage;
+    //     });
+    //     service.setBackground(CanvasPosition.Right, mockImage);
+    //     expect(setBackgroundImageSpy).toHaveBeenCalled();
+    // });
+
+    // it('setBackground should set the background image for both canvas positions', () => {
+    //     const mockImage = {} as ImageBitmap;
+    //     spyOn(window, 'createImageBitmap').and.callFake(async () => {
+    //         return mockImage;
+    //     });
+    //     service.setBackground(CanvasPosition.Both, mockImage);
+    //     expect(setBackgroundImageSpy).toHaveBeenCalled();
+    //     expect(setBackgroundImageSpy).toHaveBeenCalled();
+    // });
 
     it('transformImageDataToPixelArray should return an array of pixels', () => {
         const imageData = new Uint8ClampedArray(IMG_WIDTH * IMG_HEIGHT * N_PIXEL_ATTRIBUTE).fill(0);
