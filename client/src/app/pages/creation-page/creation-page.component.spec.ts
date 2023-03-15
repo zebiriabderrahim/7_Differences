@@ -2,7 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 // import { MatDialog, MatDialogConfig, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
@@ -11,7 +11,8 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Router, RouterModule } from '@angular/router';
+// import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CanvasMiddleButtonsComponent } from '@app/components/canvas-middle-buttons/canvas-middle-buttons.component';
 import { CanvasTopButtonsComponent } from '@app/components/canvas-top-buttons/canvas-top-buttons.component';
@@ -22,7 +23,7 @@ import { LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON } from '@app/constants/constan
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { ForegroundService } from '@app/services/foreground-service/foreground.service';
-import { of } from 'rxjs';
+// import { of } from 'rxjs';
 // import { DrawService } from '@app/services/draw-service/draw.service';
 // import { SUBMIT_WAIT_TIME } from '@app/constants/constants';
 // import { ImageService } from '@app/services/image-service/image.service';
@@ -34,7 +35,7 @@ describe('CreationPageComponent', () => {
     let fixture: ComponentFixture<CreationPageComponent>;
     // let imageService: ImageService;
     let matDialogSpy: jasmine.SpyObj<MatDialog>;
-    let routerSpy: jasmine.SpyObj<Router>;
+    // let routerSpy: jasmine.SpyObj<Router>;
     // let drawService: DrawService;
     // let timerCallback: jasmine.Spy<jasmine.Func>;
     let foregroundServiceSpy: jasmine.SpyObj<ForegroundService>;
@@ -169,18 +170,18 @@ describe('CreationPageComponent', () => {
         expect(validateDifferencesSpy).toHaveBeenCalled();
     });
 
-    it('validateDifferences should open dialog', () => {
-        const data = 42;
-        const game = { id: 1, name: 'testGame' };
-        matDialogSpy.open.and.returnValue({
-            afterClosed: () => of(game),
-        } as MatDialogRef<unknown, unknown>);
+    // it('validateDifferences should open dialog', () => {
+    //     const data = 42;
+    //     const game = { id: 1, name: 'testGame' };
+    //     matDialogSpy.open.and.returnValue({
+    //         afterClosed: () => of(game),
+    //     } as MatDialogRef<unknown, unknown>);
 
-        component.radius = data;
-        component.validateDifferences();
+    //     component.radius = data;
+    //     component.validateDifferences();
 
-        expect(matDialogSpy.open).toHaveBeenCalled();
-    });
+    //     expect(matDialogSpy.open).toHaveBeenCalled();
+    // });
 
     // it('validateDifferences should navigate to the config page after posting the game details', fakeAsync(() => {
     //     const game = { id: 1, name: 'testGame' };

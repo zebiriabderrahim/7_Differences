@@ -14,7 +14,6 @@ describe('ImageService', () => {
     let imageBitmap: ImageBitmap;
 
     beforeEach(() => {
-        resetBackgroundContextSpy = jasmine.createSpy();
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
         });
