@@ -24,8 +24,11 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     timer: number = 0;
     messages: ChatMessage[] = [];
     gameModes: typeof GameModes;
-    player: string;
-    players: { player1: Player; player2: Player };
+    player: string = '';
+    players: { player1: Player; player2: Player } = {
+        player1: { name: '', diffData: { currentDifference: [], differencesFound: 0 } },
+        player2: { name: '', diffData: { currentDifference: [], differencesFound: 0 } },
+    };
     readonly canvasSize = { width: IMG_WIDTH, height: IMG_HEIGHT };
     private timerSubscription: Subscription;
     private gameSubscription: Subscription;
