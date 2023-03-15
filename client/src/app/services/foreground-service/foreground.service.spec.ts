@@ -5,14 +5,30 @@ import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { ForegroundCanvasElements } from '@app/interfaces/foreground-canvas-elements';
+import { ForegroundsState } from '@app/interfaces/foregrounds-state';
+import { DrawService } from '@app/services/draw-service/draw.service';
 import { ForegroundService } from './foreground.service';
 
 describe('ForegroundService', () => {
     let service: ForegroundService;
     let contextStub: CanvasRenderingContext2D;
+    let drawServiceSpy: jasmine.SpyObj<DrawService>;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        drawServiceSpy = jasmine.createSpyObj('DrawService', [
+            'isCurrentActionRectangle',
+            'setActiveCanvasPosition',
+            'setClickPosition',
+            'startOperation',
+            'isMouseDragged',
+            'disableMouseDrag',
+            'isOperationValid',
+            'stopOperation',
+            'setActiveContext',
+        ]);
+        TestBed.configureTestingModule({
+            providers: [{ provide: DrawService, useValue: drawServiceSpy }],
+        });
         service = TestBed.inject(ForegroundService);
         contextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
     });
@@ -198,5 +214,95 @@ describe('ForegroundService', () => {
         expect(leftForegroundDrawImageSpy).not.toHaveBeenCalled();
         expect(rightForegroundDrawImageSpy).toHaveBeenCalled();
         expect(saveCurrentForegroundsStateSpy).toHaveBeenCalled();
+    });
+
+    it('setActiveContext called with leftPosition should call drawService.setActiveContext with leftFrontContext if action is Rectangle', () => {
+        service['leftFrontContext'] = contextStub;
+        drawServiceSpy.isCurrentActionRectangle.and.returnValue(true);
+        service['setActiveContext'](CanvasPosition.Left);
+        expect(drawServiceSpy.setActiveContext).toHaveBeenCalledOnceWith(service['leftFrontContext']);
+    });
+
+    it('setActiveContext called with leftPosition should call drawService.setActiveContext with leftForeground if action is not Rectangle', () => {
+        service['leftForegroundContext'] = contextStub;
+        drawServiceSpy.isCurrentActionRectangle.and.returnValue(false);
+        service['setActiveContext'](CanvasPosition.Left);
+        expect(drawServiceSpy.setActiveContext).toHaveBeenCalledOnceWith(service['leftForegroundContext']);
+    });
+
+    it('setActiveContext called with rightPosition should call drawService.setActiveContext with rightFrontContext if action is Rectangle', () => {
+        service['rightFrontContext'] = contextStub;
+        drawServiceSpy.isCurrentActionRectangle.and.returnValue(true);
+        service['setActiveContext'](CanvasPosition.Right);
+        expect(drawServiceSpy.setActiveContext).toHaveBeenCalledOnceWith(service['rightFrontContext']);
+    });
+
+    it('setActiveContext called with rightPosition should call drawService.setActiveContext with rightForeground if action is not Rectangle', () => {
+        service['rightForegroundContext'] = contextStub;
+        drawServiceSpy.isCurrentActionRectangle.and.returnValue(false);
+        service['setActiveContext'](CanvasPosition.Right);
+        expect(drawServiceSpy.setActiveContext).toHaveBeenCalledOnceWith(service['rightForegroundContext']);
+    });
+
+    it('redrawForegrounds should call resetForeground and putImageData on both foregroundContexts', () => {
+        const leftContextStub = CanvasTestHelper.createCanvas(0, 0).getContext('2d') as CanvasRenderingContext2D;
+        service['leftForegroundContext'] = leftContextStub;
+        service['rightForegroundContext'] = contextStub;
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const leftForegroundPutImageDataSpy = spyOn(service['leftForegroundContext'], 'putImageData').and.callFake(() => {});
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const rightForegroundPutImageDataSpy = spyOn(service['rightForegroundContext'], 'putImageData').and.callFake(() => {});
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const resetForegroundSpy = spyOn(service, 'resetForeground').and.callFake(() => {});
+        const foregroundStatesStub = {} as ForegroundsState;
+        service['redrawForegrounds'](foregroundStatesStub);
+        expect(leftForegroundPutImageDataSpy).toHaveBeenCalled();
+        expect(rightForegroundPutImageDataSpy).toHaveBeenCalled();
+        expect(resetForegroundSpy).toHaveBeenCalledOnceWith(CanvasPosition.Both);
+    });
+
+    it('getForegroundsState should call getImageData on both foregroundContexts and return them', () => {
+        const rightContext = CanvasTestHelper.createCanvas(0, 0).getContext('2d') as CanvasRenderingContext2D;
+        service['leftForegroundContext'] = contextStub;
+        service['rightForegroundContext'] = rightContext;
+        const mockLeftImageData = {} as ImageData;
+        const mockRightImageData = {} as ImageData;
+
+        const leftForegroundGetImageDataSpy = spyOn(service['leftForegroundContext'], 'getImageData').and.callFake(() => {
+            return mockLeftImageData;
+        });
+        const rightForegroundGetImageDataSpy = spyOn(service['rightForegroundContext'], 'getImageData').and.callFake(() => {
+            return mockRightImageData;
+        });
+        expect(service['getForegroundsState']()).toEqual({ left: mockLeftImageData, right: mockRightImageData });
+        expect(leftForegroundGetImageDataSpy).toHaveBeenCalled();
+        expect(rightForegroundGetImageDataSpy).toHaveBeenCalled();
+    });
+
+    // TODO: isCanvasNextState
+
+    // TODO: saveCurrentForegroundsState
+
+    it('resetCanvasContext should call clearRect the context its called with', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const clearRectSpy = spyOn(contextStub, 'clearRect').and.callFake(() => {});
+        service['resetCanvasContext'](contextStub);
+        expect(clearRectSpy).toHaveBeenCalled();
+    });
+
+    it('resetFrontCanvasContext called with leftPosition should call resetCanvasContext with leftFrontContext', () => {
+        service['leftFrontContext'] = contextStub;
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const resetCanvasContextSpy = spyOn<any>(service, 'resetCanvasContext').and.callFake(() => {});
+        service['resetFrontCanvasContext'](CanvasPosition.Left);
+        expect(resetCanvasContextSpy).toHaveBeenCalledOnceWith(service['leftFrontContext']);
+    });
+
+    it('resetFrontCanvasContext called with rightPosition should call resetCanvasContext with rightFrontContext', () => {
+        service['rightFrontContext'] = contextStub;
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const resetCanvasContextSpy = spyOn<any>(service, 'resetCanvasContext').and.callFake(() => {});
+        service['resetFrontCanvasContext'](CanvasPosition.Right);
+        expect(resetCanvasContextSpy).toHaveBeenCalledOnceWith(service['rightFrontContext']);
     });
 });

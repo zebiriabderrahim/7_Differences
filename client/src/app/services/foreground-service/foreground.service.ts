@@ -156,10 +156,10 @@ export class ForegroundService {
         }
     }
 
-    private redrawForegrounds(canvasState: ForegroundsState) {
+    private redrawForegrounds(foregroundsState: ForegroundsState) {
         this.resetForeground(CanvasPosition.Both);
-        this.leftForegroundContext.putImageData(canvasState.left, 0, 0);
-        this.rightForegroundContext.putImageData(canvasState.right, 0, 0);
+        this.leftForegroundContext.putImageData(foregroundsState.left, 0, 0);
+        this.rightForegroundContext.putImageData(foregroundsState.right, 0, 0);
     }
 
     private getForegroundsState(): ForegroundsState {
