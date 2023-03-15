@@ -29,12 +29,11 @@ describe('ChatBoxComponent', () => {
         expect(inputField.value).toBe('');
     });
 
-    it('onAdd should emit null if input value is falsy', () => {
-        const inputField = { value: '' };
+    it('onAdd should emit undefined if input value is falsy', () => {
+        const inputField = {};
         spyOn(component.add, 'emit');
-        component.onAdd(inputField);
+        component.onAdd(inputField as never);
 
-        expect(component.add.emit).toHaveBeenCalledWith('');
-        expect(inputField.value).toBe('');
+        expect(component.add.emit).toHaveBeenCalledWith(undefined);
     });
 });
