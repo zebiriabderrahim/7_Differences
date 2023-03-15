@@ -8,7 +8,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 export class RoomManagerService implements OnDestroy {
     private joinedPlayerNames: BehaviorSubject<WaitingPlayerNameList>;
     private isPlayerNameTaken: Subject<PlayerNameAvailability>;
-    private oneVsOneRoomsAvailabilityByGameId: BehaviorSubject<RoomAvailability>;
+    private oneVsOneRoomsAvailabilityByGameId: Subject<RoomAvailability>;
     private acceptedPlayerByRoom: BehaviorSubject<AcceptedPlayer>;
     private roomId: Subject<string>;
 
@@ -24,10 +24,7 @@ export class RoomManagerService implements OnDestroy {
             gameId: '',
             playerNamesList: [],
         });
-        this.oneVsOneRoomsAvailabilityByGameId = new BehaviorSubject<RoomAvailability>({
-            gameId: '',
-            isAvailableToJoin: false,
-        });
+        this.oneVsOneRoomsAvailabilityByGameId = new Subject<RoomAvailability>();
     }
 
     get joinedPlayerNamesByGameId$() {

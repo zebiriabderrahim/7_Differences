@@ -48,6 +48,7 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
     cancelJoining() {
         this.roomManagerService.cancelJoining(this.data.gameId, this.data.player);
     }
+
     handleRefusedPlayer(playerNames: string[]) {
         if (!playerNames.includes(this.data.player)) {
             this.countdown = TEN_SECONDS;
@@ -68,13 +69,18 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
     handleAcceptedPlayer() {
         this.acceptedPlayerSubscription = this.roomManagerService.acceptedPlayerByRoom$
             .pipe(
-                filter((data) => data?.playerName === this.data.player && data?.gameId === this.data.gameId),
+                filter((acceptedPlayer) => acceptedPlayer?.playerName === this.data.player && acceptedPlayer?.gameId === this.data.gameId),
                 take(1),
             )
-            .subscribe((data) => {
+            .subscribe((acceptedPlayer) => {
                 this.dialogRef.close();
-                this.router.navigate(['/game', data.roomId]);
+                this.navigateToGame(acceptedPlayer.roomId);
             });
+    }
+    navigateToGame(roomId: string) {
+        this.dialogRef.afterClosed().subscribe(() => {
+            this.router.navigate(['/game', roomId]);
+        });
     }
 
     ngOnDestroy(): void {
@@ -82,6 +88,5 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
         this.countdownSubscription?.unsubscribe();
         this.roomIdSubscription?.unsubscribe();
         this.acceptedPlayerSubscription?.unsubscribe();
-        this.roomManagerService.disconnect();
     }
 }

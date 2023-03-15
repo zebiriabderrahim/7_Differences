@@ -3,7 +3,6 @@ import { Coordinate } from '@common/coordinate';
 export interface ClientSideGame {
     id: string;
     name: string;
-    player: string;
     mode: string;
     original: string;
     modified: string;
@@ -42,13 +41,13 @@ export interface ClassicPlayRoom {
     clientGame: ClientSideGame;
     endMessage: string;
     timer: number;
-    differencesData: Differences;
     originalDifferences: Coordinate[][];
-    isAvailableToJoin?: boolean;
     player2?: Player;
+    player1?: Player;
 }
 
 export interface Player {
+    playerId?: string;
     name: string;
     diffData: Differences;
 }
@@ -80,9 +79,10 @@ export interface WaitingPlayerNameList {
 }
 
 
+
+
 export enum GameEvents {
     ValidateCoords = 'validateCoords',
-    Penalty = 'penalty',
     CheckStatus = 'checkStatus',
     CreateSoloGame = 'createSoloGame',
     RoomOneVsOneCreated = 'roomOneVsOneCreated',
@@ -95,8 +95,6 @@ export enum GameEvents {
     UpdateRoomOneVsOneAvailability = 'UpdateRoomOneVsOneAvailability',
     DeleteCreatedOneVsOneRoom = 'DeleteCreatedOneVsOneRoom',
     UpdateWaitingPlayerNameList = 'UpdateWaitingPlayerNameList',
-    WaitingPlayerNameListByGameId = 'WaitingPlayerNameListByGameId',
-    Disconnect = 'Disconnect',
     RefusePlayer = 'RefusePlayer',
     CheckIfPlayerNameIsAvailable = 'CheckIfPlayerNameIsAvailable',
     PlayerNameTaken = 'PlayerNameTaken',
@@ -106,9 +104,9 @@ export enum GameEvents {
     OneVsOneRoomDeleted = 'OneVsOneRoomDeleted',
     PlayerAccepted = 'PlayerAccepted',
     GameStarted = 'OneVsOneStarted',
-    CreateSoloRoom = 'CreateSoloRoom',
     RoomSoloCreated = 'RoomSoloCreated',
-    AbandonGame = "AbandonGame"
+    AbandonGame = "AbandonGame",
+    Disconnect = "Disconnect"
 }
 
 export enum GameModes {
