@@ -66,8 +66,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     @SubscribeMessage(GameEvents.RemoveDiff)
     validateCoords(@ConnectedSocket() socket: Socket, @MessageBody() coords: Coordinate) {
-        const roomId = Array.from(socket.rooms.values())[1];
-        this.classicModeService.verifyCoords(roomId, coords, this.server);
+        this.classicModeService.verifyCoords(socket, coords, this.server);
     }
 
     @SubscribeMessage(GameEvents.CheckStatus)
