@@ -44,15 +44,15 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
     }
 
     acceptPlayer(playerName: string) {
-        this.roomManagerService.acceptPlayer(this.data.gameId, this.data.roomId, this.data.player);
         this.playerNames.forEach((player) => {
             if (player !== playerName) {
                 this.refusePlayer(player);
             }
         });
-        this.dialogRef.close();
-        this.router.navigate(['/game', this.data.roomId]);
-        this.undoCreateOneVsOneRoom();
+        this.roomManagerService.acceptPlayer(this.data.gameId, this.data.roomId, this.data.player);
+        this.dialogRef.afterClosed().subscribe(() => {
+            this.router.navigate(['/game', this.data.roomId]);
+        });
     }
 
     undoCreateOneVsOneRoom() {
@@ -64,6 +64,5 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.playerNamesSubscription?.unsubscribe();
-        this.roomManagerService.disconnect();
     }
 }

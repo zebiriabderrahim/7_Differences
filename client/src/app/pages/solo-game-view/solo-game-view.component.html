@@ -4,7 +4,7 @@
         <h1>Temps: {{ timer*1000 | date: 'mm:ss' }}</h1>
         <h1> Différences trouvées: {{ differencesFound }}</h1>
     </div>
-    <app-game-infos [game]="game" [differencesCount]="game.differencesCount"></app-game-infos>
+    <app-game-infos [game]="game" [playerName]="playerName" [differencesCount]="game.differencesCount"></app-game-infos>
 </div>
 <div class="canvas-container">
     <div class="game-canvas">
