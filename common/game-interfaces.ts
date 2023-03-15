@@ -79,9 +79,10 @@ export interface WaitingPlayerNameList {
 }
 
 
+
+
 export enum GameEvents {
     ValidateCoords = 'validateCoords',
-    Penalty = 'penalty',
     CheckStatus = 'checkStatus',
     CreateSoloGame = 'createSoloGame',
     RoomOneVsOneCreated = 'roomOneVsOneCreated',
@@ -94,8 +95,6 @@ export enum GameEvents {
     UpdateRoomOneVsOneAvailability = 'UpdateRoomOneVsOneAvailability',
     DeleteCreatedOneVsOneRoom = 'DeleteCreatedOneVsOneRoom',
     UpdateWaitingPlayerNameList = 'UpdateWaitingPlayerNameList',
-    WaitingPlayerNameListByGameId = 'WaitingPlayerNameListByGameId',
-    Disconnect = 'Disconnect',
     RefusePlayer = 'RefusePlayer',
     CheckIfPlayerNameIsAvailable = 'CheckIfPlayerNameIsAvailable',
     PlayerNameTaken = 'PlayerNameTaken',
@@ -105,9 +104,9 @@ export enum GameEvents {
     OneVsOneRoomDeleted = 'OneVsOneRoomDeleted',
     PlayerAccepted = 'PlayerAccepted',
     GameStarted = 'OneVsOneStarted',
-    CreateSoloRoom = 'CreateSoloRoom',
     RoomSoloCreated = 'RoomSoloCreated',
-    AbandonGame = "AbandonGame"
+    AbandonGame = "AbandonGame",
+    Disconnect = "Disconnect"
 }
 
 export enum GameModes {

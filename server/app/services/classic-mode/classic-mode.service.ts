@@ -107,7 +107,7 @@ export class ClassicModeService {
             currentDifference: diffData.currentDifference,
             differencesFound: diffData.differencesFound,
         };
-        server.to(room.roomId).emit(GameEvents.RemoveDiff, { differencesData, playerId: socket.id });
+        server.to(room.roomId).emit(GameEvents.RemoveDiff, differencesData);
     }
 
     buildClientGameVersion(game: Game): ClientSideGame {
