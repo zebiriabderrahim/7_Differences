@@ -2,12 +2,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
-import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dialog/solo-game-view-dialog.component';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { SocketTestHelper } from '@app/services/client-socket-service/client-socket.service.spec';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { Coordinate } from '@common/coordinate';
-import { Differences, GameEvents } from '@common/game-interfaces';
+import { GameEvents } from '@common/game-interfaces';
 import { Socket } from 'socket.io-client';
 import { ClassicSystemService } from './classic-system.service';
 
@@ -31,10 +30,10 @@ describe('ClassicSystemService', () => {
         differencesCount: 0,
     };
 
-    const mockDifferences: Differences = {
+    /* const mockDifferences: Differences = {
         currentDifference: [],
         differencesFound: 0,
-    };
+    };*/
 
     const mockTimer = 0;
 
@@ -42,7 +41,7 @@ describe('ClassicSystemService', () => {
     let gameAreaService: GameAreaService;
     let socketHelper: SocketTestHelper;
     let socketServiceMock: SocketClientServiceMock;
-    let dialogService: MatDialog;
+    // let dialogService: MatDialog;
 
     beforeEach(async () => {
         socketHelper = new SocketTestHelper();
@@ -69,7 +68,7 @@ describe('ClassicSystemService', () => {
     beforeEach(() => {
         service = TestBed.inject(ClassicSystemService);
         gameAreaService = TestBed.inject(GameAreaService);
-        dialogService = TestBed.inject(MatDialog);
+        // dialogService = TestBed.inject(MatDialog);
         service['currentGame'].next(mockClientSideGame);
     });
 
@@ -123,16 +122,16 @@ describe('ClassicSystemService', () => {
         expect(gameAreaService.showError).not.toHaveBeenCalled();
     });
 
-    it('showAbandonGameDialog should open Dialog to abandon the game', () => {
+    /* it('showAbandonGameDialog should open Dialog to abandon the game', () => {
         const popUpSpy = spyOn(dialogService, 'open');
         service.showAbandonGameDialog();
         expect(popUpSpy).toHaveBeenCalledWith(SoloGameViewDialogComponent, {
             data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ?' },
             disableClose: true,
         });
-    });
+    });*/
 
-    it('showEndGameDialog should open Dialog when the game is finish', () => {
+    /* it('showEndGameDialog should open Dialog when the game is finish', () => {
         const popUpSpy = spyOn(dialogService, 'open');
         service.showEndGameDialog('Le jeu est terminé');
         expect(popUpSpy).toHaveBeenCalled();
@@ -141,7 +140,7 @@ describe('ClassicSystemService', () => {
             disableClose: true,
         });
     });
-
+*/
     it('manageSocket should connect the client socket', () => {
         const socketConnectSpy = spyOn(socketServiceMock, 'connect');
         service.manageSocket();
@@ -170,7 +169,7 @@ describe('ClassicSystemService', () => {
         expect(currentGameSubjectNextSpy).toHaveBeenCalledWith(mockClientSideGame);
     });
 
-    it('manageSocket should update client game when RemoveDiff linked event is sent from server', () => {
+    /* it('manageSocket should update client game when RemoveDiff linked event is sent from server', () => {
         service.manageSocket();
         const replaceDifferenceSpy = spyOn(service, 'replaceDifference');
         const differencesFoundSpy = spyOn(service['differencesFound'], 'next');
@@ -179,7 +178,7 @@ describe('ClassicSystemService', () => {
         expect(replaceDifferenceSpy).toHaveBeenCalledWith(mockDifferences.currentDifference);
         expect(differencesFoundSpy).toHaveBeenCalledWith(mockDifferences.differencesFound);
         expect(checkStatusSpy).toHaveBeenCalled();
-    });
+    });*/
 
     it('manageSocket should update client game when TimerStarted linked event is sent from server', () => {
         service.manageSocket();

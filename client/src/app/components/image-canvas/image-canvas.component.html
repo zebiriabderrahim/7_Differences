@@ -1,9 +1,8 @@
-<app-canvas-top-buttons [position]="this.position"></app-canvas-top-buttons>
 <div id="image-editor">
     <canvas id="background-canvas" [height]="canvasSizes.height" [width]="canvasSizes.width" #backgroundCanvas></canvas>
     <canvas id="foreground-canvas" [height]="canvasSizes.height" [width]="canvasSizes.width" #foregroundCanvas></canvas>
     <canvas id="front-canvas" [height]="canvasSizes.height" [width]="canvasSizes.width" #frontCanvas
-        (mousedown)="startCanvasOperation($event)" (mousemove)="continueCanvasOperation($event)"
-        (mouseup)="stopCanvasOperation($event)"></canvas>
+        (mousedown)="startCanvasOperation($event)" (mouseleave)="setMouseLeavingBoolean($event)"
+        (mousemove)="continueCanvasOperation($event)" (mouseup)="stopCanvasOperation($event)"></canvas>
 </div>
 <app-canvas-under-buttons [canvasPositionType]="this.position"></app-canvas-under-buttons>
