@@ -3,8 +3,8 @@ import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasAction } from '@app/enum/canvas-action';
 import { CanvasPosition } from '@app/enum/canvas-position';
-import { DrawService } from './draw.service';
 import { Coordinate } from '@common/coordinate';
+import { DrawService } from './draw.service';
 
 describe('DrawService', () => {
     let service: DrawService;
@@ -107,5 +107,43 @@ describe('DrawService', () => {
         service['isMouseBeingDragged'] = false;
         service.disableMouseDrag();
         expect(service['isMouseBeingDragged']).toBeFalse();
+    });
+
+    it('drawRectangle should call clearRect and fillRect on activeContext', () => {
+        const fakeCoordinate: Coordinate = { x: 33, y: 33 };
+        service['clickPosition'] = fakeCoordinate;
+        service['rectangleTopCorner'] = fakeCoordinate;
+        service['isSquareModeOn'] = false;
+        service['activeContext'] = contextStub;
+        const spyClearRect = spyOn(contextStub, 'clearRect');
+        const spyFillRect = spyOn(contextStub, 'fillRect');
+        service['drawRectangle']();
+        expect(spyClearRect).toHaveBeenCalled();
+        expect(spyFillRect).toHaveBeenCalled();
+    });
+
+    it('drawRectangle should call fillRect with rectangle Height as its width if squareMode is On ', () => {
+        const fakeCoordinate: Coordinate = { x: 33, y: 66 };
+        const fakeRectangleTopCorner: Coordinate = { x: 0, y: 0 };
+        const rectangleWidth = fakeCoordinate.x - fakeRectangleTopCorner.x;
+
+        service['clickPosition'] = fakeCoordinate;
+        service['rectangleTopCorner'] = fakeRectangleTopCorner;
+        service['isSquareModeOn'] = true;
+        service['activeContext'] = contextStub;
+        const spyFillRect = spyOn(contextStub, 'fillRect');
+        service['drawRectangle']();
+        expect(spyFillRect).toHaveBeenCalledOnceWith(fakeRectangleTopCorner.x, fakeRectangleTopCorner.y, rectangleWidth, rectangleWidth);
+    });
+
+    it('drawLine should call stroke and lineTo on activeContext', () => {
+        const fakeCoordinate: Coordinate = { x: 33, y: 33 };
+        service['clickPosition'] = fakeCoordinate;
+        service['activeContext'] = contextStub;
+        const spyStroke = spyOn(contextStub, 'stroke');
+        const spyLineTo = spyOn(contextStub, 'lineTo');
+        service['drawLine']();
+        expect(spyStroke).toHaveBeenCalled();
+        expect(spyLineTo).toHaveBeenCalled();
     });
 });
