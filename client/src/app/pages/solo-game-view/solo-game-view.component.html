@@ -2,11 +2,18 @@
     <h1>{{ game.name }}</h1>
     <div class="game-feedback">
         <mat-icon class="personIcon">person</mat-icon>
-        <h1>{{ player }} &nbsp; Différences trouvées: {{ differencesFound }}</h1>
+        <h1>
+            {{ player }}
+            Différences trouvées: {{ differencesFound }}
+        </h1>
         &nbsp;
         <h1>Temps: {{ timer * 1000 | date: 'mm:ss' }}</h1>
-        &nbsp;<mat-icon *ngIf="game.mode === 'Classic->OneVsOne'" class="personIcon">person</mat-icon>
-        <h1 *ngIf="game.mode === 'Classic->OneVsOne'">{{ players.player2.name }} &nbsp; Différences trouvées: {{ opponentDifferencesFound }}</h1>
+        &nbsp;
+        <mat-icon *ngIf="game.mode === 'Classic->OneVsOne'" class="personIcon">person</mat-icon>
+        <h1 *ngIf="game.mode === 'Classic->OneVsOne'">
+            {{ player === players.player1.name ? players.player2.name : players.player1.name }} &nbsp; Différences trouvées:
+            {{ opponentDifferencesFound }}
+        </h1>
     </div>
     <app-game-infos [game]="game" [differencesCount]="game.differencesCount"></app-game-infos>
 </div>
@@ -45,7 +52,6 @@
     </div>
 </div>
 <button class="importantButton" (click)="showAbandonDialog()">Abandonner la partie</button>
-<app-chat-box
-    (add)="addRightSideMessage($event)"
-    [messages]="messages"
-></app-chat-box>
+<div *ngIf="game">
+    <app-chat-box (add)="addRightSideMessage($event)" [messages]="messages"></app-chat-box>
+</div>
