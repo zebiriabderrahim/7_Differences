@@ -95,7 +95,6 @@ export class ClassicSystemService implements OnDestroy {
         });
 
         this.clientSocket.on(GameEvents.GameStarted, (data: { clientGame: ClientSideGame; players: { player1: Player; player2: Player } }) => {
-            console.log('Game started', data.players.player1.name);
             this.currentGame.next(data.clientGame);
             if (data.players) {
                 this.players.next(data.players);

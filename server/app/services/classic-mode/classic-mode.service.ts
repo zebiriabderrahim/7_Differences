@@ -44,7 +44,7 @@ export class ClassicModeService {
         };
         const room: ClassicPlayRoom = {
             roomId: this.generateRoomId(),
-            clientGame: this.buildClientGameVersion(playerName, game),
+            clientGame: this.buildClientGameVersion(game),
             timer: 0,
             endMessage: '',
             originalDifferences: structuredClone(JSON.parse(fs.readFileSync(`assets/${game.name}/differences.json`, 'utf-8'))),
@@ -78,14 +78,20 @@ export class ClassicModeService {
         }
     }
 
-    verifyCoords(roomId: string, coords: Coordinate, server: io.Server): void {
+    getRoomIdFromSocket(socket: io.Socket): string {
+        return Array.from(socket.rooms.values())[1];
+    }
+
+    verifyCoords(socket: io.Socket, coords: Coordinate, server: io.Server): void {
+        const roomId = this.getRoomIdFromSocket(socket);
         const room = this.rooms.get(roomId);
         const { originalDifferences } = room;
+        const { diffData } = room.player1.playerId === socket.id ? room.player1 : room.player2;
         let index = 0;
         for (; index < originalDifferences.length; index++) {
             if (originalDifferences[index].some((coord: Coordinate) => coord.x === coords.x && coord.y === coords.y)) {
-                room.player1.diffData.differencesFound++;
-                room.player1.diffData.currentDifference = originalDifferences[index];
+                diffData.differencesFound++;
+                diffData.currentDifference = originalDifferences[index];
                 break;
             }
         }
@@ -93,18 +99,18 @@ export class ClassicModeService {
         if (index !== originalDifferences.length) {
             originalDifferences.splice(index, 1);
         } else {
-            room.player1.diffData.currentDifference = [];
+            diffData.currentDifference = [];
         }
 
         this.rooms.set(room.roomId, room);
-        const diffData: Differences = {
-            currentDifference: room.player1.diffData.currentDifference,
-            differencesFound: room.player1.diffData.differencesFound,
+        const differencesData: Differences = {
+            currentDifference: diffData.currentDifference,
+            differencesFound: diffData.differencesFound,
         };
-        server.to(room.roomId).emit(GameEvents.RemoveDiff, diffData);
+        server.to(room.roomId).emit(GameEvents.RemoveDiff, { differencesData, playerId: socket.id });
     }
 
-    buildClientGameVersion(playerName: string, game: Game): ClientSideGame {
+    buildClientGameVersion(game: Game): ClientSideGame {
         const clientGame: ClientSideGame = {
             id: game._id.toString(),
             name: game.name,
@@ -116,6 +122,7 @@ export class ClassicModeService {
         };
         return clientGame;
     }
+
     deleteCreatedSoloGameRoom(roomId: string): void {
         this.rooms.delete(roomId);
     }
