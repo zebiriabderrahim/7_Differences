@@ -2,7 +2,6 @@
     <div class="content">
         <div class="contact-profile">
             <img src="assets/raccoonChatAvatarOther.png" alt="" />
-            <p *ngIf="opponentName !== ''"> {{opponentName}}</p>
         </div>
         <div class="messages">
             <ul>
@@ -13,7 +12,7 @@
                 </li>
             </ul>
         </div>
-        <div *ngIf="opponentName !== ''" class="message-input">
+        <div *ngIf="opponentName" class="message-input">
             <div class="wrap">
                 <input type="text" #inputText placeholder="Entrez un message" (keyup.enter)="onAdd(inputText)" maxlength="200" />
                 <i class="fa fa-paperclip attachment" aria-hidden="true"></i>
