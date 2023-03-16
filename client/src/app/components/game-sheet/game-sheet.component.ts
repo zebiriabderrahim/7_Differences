@@ -53,13 +53,12 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         return dialogRef;
     }
 
-    createSoloRoom() {
+    createSoloRoom(): void {
         this.openDialog()
             .afterClosed()
+            .pipe(filter((playerName) => !!playerName))
             .subscribe((playerName) => {
-                if (playerName) {
-                    this.roomManagerService.createSoloRoom(this.game._id, playerName);
-                }
+                this.roomManagerService.createSoloRoom(this.game._id, playerName);
             });
     }
 
@@ -84,9 +83,10 @@ export class GameSheetComponent implements OnDestroy, OnInit {
                     this.roomManagerService.createOneVsOneRoom(this.game._id);
                     this.openWaitingDialog(playerName);
                 } else {
-                    this.roomManagerService.updateRoomOneVsOneAvailability(this.game._id);
+                    this.roomManagerService.deleteCreatedOneVsOneRoom(this.game._id);
                 }
             });
+        this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
     }
 
     joinOneVsOne(): void {
@@ -121,17 +121,17 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         return this.isAvailable;
     }
 
-    ngOnDestroy(): void {
-        this.roomManagerService.disconnect();
-        this.roomIdSubscription?.unsubscribe();
-        this.roomAvailabilitySubscription?.unsubscribe();
-    }
-
     deleteGameCard() {
         this.communicationService.deleteGameById(this.game._id).subscribe(() => {
             this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
                 this.router.navigate(['/config']);
             });
         });
+    }
+
+    ngOnDestroy(): void {
+        this.roomManagerService.disconnect();
+        this.roomIdSubscription?.unsubscribe();
+        this.roomAvailabilitySubscription?.unsubscribe();
     }
 }

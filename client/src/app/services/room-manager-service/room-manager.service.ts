@@ -6,9 +6,9 @@ import { BehaviorSubject, Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class RoomManagerService implements OnDestroy {
-    private joinedPlayerNames: BehaviorSubject<WaitingPlayerNameList>;
+    private joinedPlayerNames: Subject<WaitingPlayerNameList>;
     private isPlayerNameTaken: Subject<PlayerNameAvailability>;
-    private oneVsOneRoomsAvailabilityByGameId: BehaviorSubject<RoomAvailability>;
+    private oneVsOneRoomsAvailabilityByGameId: Subject<RoomAvailability>;
     private acceptedPlayerByRoom: BehaviorSubject<AcceptedPlayer>;
     private roomId: Subject<string>;
 
@@ -20,14 +20,8 @@ export class RoomManagerService implements OnDestroy {
             roomId: '',
             playerName: '',
         });
-        this.joinedPlayerNames = new BehaviorSubject<WaitingPlayerNameList>({
-            gameId: '',
-            playerNamesList: [],
-        });
-        this.oneVsOneRoomsAvailabilityByGameId = new BehaviorSubject<RoomAvailability>({
-            gameId: '',
-            isAvailableToJoin: false,
-        });
+        this.joinedPlayerNames = new Subject<WaitingPlayerNameList>();
+        this.oneVsOneRoomsAvailabilityByGameId = new Subject<RoomAvailability>();
     }
 
     get joinedPlayerNamesByGameId$() {
