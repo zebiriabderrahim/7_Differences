@@ -4,13 +4,16 @@
 /* eslint-disable no-underscore-dangle */
 import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
+import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { Coordinate } from '@common/coordinate';
 import {
+    ChatMessage,
     ClassicPlayRoom,
     ClientSideGame,
     Differences,
     GameEvents,
     GameModes,
+    MessageEvents,
     Player,
     PlayerNameAvailability,
     RoomAvailability,
@@ -26,7 +29,7 @@ export class ClassicModeService {
     private joinedPlayerNamesByGameId: Map<string, string[]>;
     private roomAvailability: Map<string, RoomAvailability>;
 
-    constructor(private readonly gameService: GameService) {
+    constructor(private readonly gameService: GameService, private readonly messageManager: MessageManagerService) {
         this.rooms = new Map<string, ClassicPlayRoom>();
         this.joinedPlayerNamesByGameId = new Map<string, string[]>();
         this.roomAvailability = new Map<string, RoomAvailability>();
@@ -38,14 +41,17 @@ export class ClassicModeService {
             currentDifference: [],
             differencesFound: 0,
         };
+        const player: Player = {
+            name: playerName,
+            diffData,
+        };
         const room: ClassicPlayRoom = {
             roomId: this.generateRoomId(),
-            clientGame: this.buildClientGameVersion(playerName, game),
+            clientGame: this.buildClientGameVersion(game),
             timer: 0,
             endMessage: '',
-            differencesData: diffData,
             originalDifferences: structuredClone(JSON.parse(fs.readFileSync(`assets/${game.name}/differences.json`, 'utf-8'))),
-            isAvailableToJoin: true,
+            player1: player,
         };
         return room;
     }
@@ -53,6 +59,14 @@ export class ClassicModeService {
     async createOneVsOneGame(gameId: string, playerName: string) {
         const room = await this.createRoom(playerName, gameId);
         if (room) {
+            const player1: Player = {
+                name: playerName,
+                diffData: {
+                    currentDifference: [],
+                    differencesFound: 0,
+                },
+            };
+            room.player1 = player1;
             room.clientGame.mode = GameModes.ClassicOneVsOne;
             return room;
         }
@@ -67,36 +81,45 @@ export class ClassicModeService {
         }
     }
 
-    verifyCoords(roomId: string, coords: Coordinate, server: io.Server): void {
+    getRoomIdFromSocket(socket: io.Socket): string {
+        return Array.from(socket.rooms.values())[1];
+    }
+
+    verifyCoords(socket: io.Socket, coords: Coordinate, server: io.Server): void {
+        const roomId = this.getRoomIdFromSocket(socket);
         const room = this.rooms.get(roomId);
         const { originalDifferences } = room;
+        const { diffData } = room.player1.playerId === socket.id ? room.player1 : room.player2;
+        const playerName = room.player1.playerId === socket.id ? room.player1.name : room.player2.name;
         let index = 0;
+        let localMessage: ChatMessage;
         for (; index < originalDifferences.length; index++) {
             if (originalDifferences[index].some((coord: Coordinate) => coord.x === coords.x && coord.y === coords.y)) {
-                room.differencesData.differencesFound++;
-                room.differencesData.currentDifference = originalDifferences[index];
+                diffData.differencesFound++;
+                diffData.currentDifference = originalDifferences[index];
                 break;
             }
         }
-
         if (index !== originalDifferences.length) {
             originalDifferences.splice(index, 1);
+            localMessage = this.messageManager.getLocalMessage(room.clientGame.mode, true, playerName);
+            server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
         } else {
-            room.differencesData.currentDifference = [];
+            diffData.currentDifference = [];
+            localMessage = this.messageManager.getLocalMessage(room.clientGame.mode, false, playerName);
+            server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
         }
-
         this.rooms.set(room.roomId, room);
-        const diffData: Differences = {
-            currentDifference: room.differencesData.currentDifference,
-            differencesFound: room.differencesData.differencesFound,
+        const differencesData: Differences = {
+            currentDifference: diffData.currentDifference,
+            differencesFound: diffData.differencesFound,
         };
-        server.to(room.roomId).emit(GameEvents.RemoveDiff, diffData);
+        server.to(room.roomId).emit(GameEvents.RemoveDiff, { differencesData, playerId: socket.id });
     }
 
-    buildClientGameVersion(playerName: string, game: Game): ClientSideGame {
+    buildClientGameVersion(game: Game): ClientSideGame {
         const clientGame: ClientSideGame = {
             id: game._id.toString(),
-            player: playerName,
             name: game.name,
             mode: '',
             original: 'data:image/png;base64,'.concat(fs.readFileSync(`assets/${game.name}/original.bmp`, 'base64')),
@@ -106,17 +129,27 @@ export class ClassicModeService {
         };
         return clientGame;
     }
+
     deleteCreatedSoloGameRoom(roomId: string): void {
         this.rooms.delete(roomId);
     }
 
-    endGame(roomId: string, server: io.Server): void {
-        const room = this.rooms.get(roomId);
-        if (room && room.clientGame.differencesCount === room.differencesData.differencesFound) {
+    endGame(socket: io.Socket, server: io.Server): void {
+        const roomId = Array.from(socket.rooms.values())[1];
+        const room = this.getRoomByRoomId(roomId);
+        const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
+        if (room && room.clientGame.differencesCount === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicSolo) {
             room.endMessage = `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo!`;
-            server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
-            this.deleteCreatedSoloGameRoom(room.roomId);
-            this.roomAvailability.delete(room.clientGame.id);
+            server.to(roomId).emit(GameEvents.EndGame, room.endMessage);
+            this.deleteCreatedSoloGameRoom(roomId);
+        } else if (
+            room &&
+            Math.ceil(room.clientGame.differencesCount / 2) === player.diffData.differencesFound &&
+            room.clientGame.mode === GameModes.ClassicOneVsOne
+        ) {
+            room.endMessage = `${player.name} remporte la partie avec ${player.diffData.differencesFound} différences trouvées!`;
+            server.to(roomId).emit(GameEvents.EndGame, room.endMessage);
+            this.deleteCreatedSoloGameRoom(roomId);
         }
     }
 
@@ -140,44 +173,37 @@ export class ClassicModeService {
         const roomAvailability = this.roomAvailability.get(gameId) || { gameId, isAvailableToJoin: false };
         roomAvailability.isAvailableToJoin = !roomAvailability.isAvailableToJoin;
         this.roomAvailability.set(gameId, roomAvailability);
-        this.checkRoomOneVsOneAvailability(gameId, server);
+        server.emit(GameEvents.RoomOneVsOneAvailable, roomAvailability);
     }
 
     checkRoomOneVsOneAvailability(gameId: string, server: io.Server): void {
-        const room = this.roomAvailability.get(gameId);
-        if (room) {
-            const availabilityData: RoomAvailability = {
-                gameId,
-                isAvailableToJoin: room.isAvailableToJoin,
-            };
-            server.emit(GameEvents.RoomOneVsOneAvailable, availabilityData);
-        }
+        const availabilityData: RoomAvailability = this.roomAvailability.has(gameId)
+            ? { gameId, isAvailableToJoin: this.roomAvailability.get(gameId).isAvailableToJoin }
+            : { gameId, isAvailableToJoin: false };
+        server.emit(GameEvents.RoomOneVsOneAvailable, availabilityData);
     }
-    async createOneVsOneRoom(gameId: string): Promise<string> {
+
+    async createOneVsOneRoom(gameId: string): Promise<ClassicPlayRoom> {
         const oneVsOneGame = await this.createOneVsOneGame(gameId, 'Player 1');
         if (oneVsOneGame) {
             const roomId = this.generateRoomId();
             oneVsOneGame.roomId = roomId;
             this.rooms.set(oneVsOneGame.roomId, oneVsOneGame);
-            return roomId;
+            return oneVsOneGame;
         }
     }
 
-    deleteCreatedOneVsOneRoom(gameId: string, server: io.Server): void {
-        const roomTarget = this.roomAvailability.get(gameId);
-        if (roomTarget) {
-            // this.rooms.delete(roomId);
-            this.roomAvailability.delete(gameId);
-            const availabilityData: RoomAvailability = {
-                gameId,
-                isAvailableToJoin: false,
-            };
-            server.emit(GameEvents.OneVsOneRoomDeleted, availabilityData);
+    getOneVsOneRoomByGameId(gameId: string): ClassicPlayRoom {
+        return Array.from(this.rooms.values()).find((room) => room.clientGame.id === gameId && room.clientGame.mode === GameModes.ClassicOneVsOne);
+    }
+
+    deleteOneVsOneRoomAvailability(gameId: string, server: io.Server): void {
+        if (this.roomAvailability.delete(gameId)) {
+            this.checkRoomOneVsOneAvailability(gameId, server);
         }
     }
 
-    saveRoom(room: ClassicPlayRoom, socket: io.Socket): void {
-        socket.join(room.roomId);
+    saveRoom(room: ClassicPlayRoom): void {
         this.rooms.set(room.roomId, room);
     }
 
@@ -201,21 +227,21 @@ export class ClassicModeService {
         const room = this.rooms.get(roomId);
         if (!room) return;
 
-        const playerName = this.joinedPlayerNamesByGameId.get(gameId)?.[0];
-        if (!playerName) return;
-
-        room.clientGame.player = playerNameCreator;
+        const acceptedPlayerName = this.joinedPlayerNamesByGameId.get(gameId)?.[0];
+        if (!acceptedPlayerName) return;
         const player2: Player = {
-            name: playerName,
+            name: acceptedPlayerName,
             diffData: {
                 currentDifference: [],
                 differencesFound: 0,
             },
         };
+        room.player1.name = playerNameCreator;
         room.player2 = player2;
         this.rooms.set(roomId, room);
-        this.rooms.set(roomId, room);
-        return playerName;
+        this.joinedPlayerNamesByGameId.delete(gameId);
+        this.roomAvailability.delete(gameId);
+        return acceptedPlayerName;
     }
 
     checkIfPlayerNameIsAvailable(gameId: string, playerNames: string, server: io.Server): void {
@@ -244,12 +270,17 @@ export class ClassicModeService {
         }
     }
 
-    abandonGame(roomId: string, server: io.Server): void {
-        const room = this.rooms.get(roomId);
-        if (room) {
+    abandonGame(socket: io.Socket, server: io.Server): void {
+        const roomId = Array.from(socket.rooms.values())[1];
+        const room = this.getRoomByRoomId(roomId);
+        if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
+            const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
             room.endMessage = "L'adversaire a abandonné la partie!";
-            server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
-            this.roomAvailability.delete(room.clientGame.id);
+            const localMessage: ChatMessage = this.messageManager.getQuitMessage(player.name);
+            server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
         }
+        this.deleteCreatedSoloGameRoom(roomId);
+        server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
+        this.roomAvailability.delete(room.clientGame.id);
     }
 }
