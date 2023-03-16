@@ -131,9 +131,10 @@ export class ClassicModeService {
         const room = this.rooms.get(roomId);
         if (room && room.clientGame.differencesCount === room.player1.diffData.differencesFound) {
             room.endMessage = `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo!`;
+            this.roomAvailability.delete(room.clientGame.id);
+            this.joinedPlayerNamesByGameId.delete(room.clientGame.id);
             server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
             this.deleteCreatedSoloGameRoom(room.roomId);
-            this.roomAvailability.delete(room.clientGame.id);
         }
     }
 
