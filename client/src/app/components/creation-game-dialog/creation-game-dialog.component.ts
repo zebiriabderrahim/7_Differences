@@ -42,7 +42,7 @@ export class CreationGameDialogComponent implements OnInit {
         this.gameName = '';
         this.differenceCanvas.nativeElement.width = IMG_WIDTH;
         this.differenceCanvas.nativeElement.height = IMG_HEIGHT;
-        const differences = this.differenceService.generateDifferences(this.imageService.getGamePixels(), this.radius);
+        const differences = this.differenceService.generateDifferences(this.imageService.generateGamePixels(), this.radius);
         const differenceContext = this.differenceCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.imageService.drawDifferences(differenceContext, differences);
     }
