@@ -1,3 +1,5 @@
+// Needed for empty callFake
+/* eslint-disable @typescript-eslint/no-empty-function */
 // Needed more lines for the tests
 /* eslint-disable max-lines */
 // Needed to test private methods
@@ -136,9 +138,7 @@ describe('DrawService', () => {
     it('startOperation should set isMouseBeingDragged to true, call setCanvasOperationStyle', () => {
         service['isMouseBeingDragged'] = false;
         service['activeContext'] = contextStub;
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         spyOn<any>(service, 'drawLine').and.callFake(() => {});
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const setCanvasOperationStyleSpy = spyOn<any>(service, 'setCanvasOperationStyle').and.callFake(() => {});
         service.startOperation();
         expect(service['isMouseBeingDragged']).toBeTruthy();
@@ -149,10 +149,7 @@ describe('DrawService', () => {
         service['activeContext'] = contextStub;
         const beginPathSpy = spyOn(contextStub, 'beginPath');
         spyOn(service, 'isCurrentActionRectangle').and.callFake(() => false);
-
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const drawLineSpy = spyOn<any>(service, 'drawLine').and.callFake(() => {});
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         spyOn<any>(service, 'setCanvasOperationStyle').and.callFake(() => {});
 
         service.startOperation();
@@ -166,7 +163,6 @@ describe('DrawService', () => {
         service['activeContext'] = contextStub;
         spyOn(service, 'isCurrentActionRectangle').and.callFake(() => true);
 
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         spyOn<any>(service, 'setCanvasOperationStyle').and.callFake(() => {});
         expect(service['rectangleTopCorner']).not.toBe(service['clickPosition']);
         service.startOperation();
@@ -222,7 +218,6 @@ describe('DrawService', () => {
 
     it('stopOperation should call disableMouseDrag and drawCanvasOperation', () => {
         const disableMouseDragSpy = spyOn<any>(service, 'disableMouseDrag');
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const drawCanvasOperationSpy = spyOn<any>(service, 'drawCanvasOperation').and.callFake(() => {});
         service.stopOperation();
         expect(drawCanvasOperationSpy).toHaveBeenCalled();
@@ -239,9 +234,7 @@ describe('DrawService', () => {
 
     it('drawCanvasOperation should call drawRectangle if isCurrentActionRectangle is true', () => {
         spyOn(service, 'isCurrentActionRectangle').and.callFake(() => true);
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const drawRectangleSpy = spyOn<any>(service, 'drawRectangle').and.callFake(() => {});
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const drawLineSpy = spyOn<any>(service, 'drawLine').and.callFake(() => {});
         service.stopOperation();
         expect(drawRectangleSpy).toHaveBeenCalled();
@@ -250,9 +243,7 @@ describe('DrawService', () => {
 
     it('drawCanvasOperation should call drawLine if isCurrentActionRectangle is false', () => {
         spyOn(service, 'isCurrentActionRectangle').and.callFake(() => false);
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const drawRectangleSpy = spyOn<any>(service, 'drawRectangle').and.callFake(() => {});
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const drawLineSpy = spyOn<any>(service, 'drawLine').and.callFake(() => {});
         service.stopOperation();
         expect(drawRectangleSpy).not.toHaveBeenCalled();
@@ -273,7 +264,6 @@ describe('DrawService', () => {
         service['isMouseBeingDragged'] = true;
         spyOn(service, 'isCurrentActionRectangle').and.callFake(() => true);
 
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const drawRectangleSpy = spyOn<any>(service, 'drawRectangle').and.callFake(() => {});
         expect(service['isSquareModeOn']).not.toBe(mockSquareMode);
         service.setSquareMode(mockSquareMode);
