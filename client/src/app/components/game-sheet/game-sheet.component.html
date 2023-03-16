@@ -1,7 +1,7 @@
 <div *ngIf="game" class="gameSheet">
     <h1 class="title">{{ game.name }}</h1>
     <div class="gameContainer">
-        <img class="thumbnail" [src]="'data:image/png;base64,' + game.thumbnail" alt="track" />
+        <img class="thumbnail" [src]="url" alt="track" />
         <div class="gameInfo">
             <h2>Difficulté: {{ game.difficultyLevel ? ' Difficile' : ' Facile' }}</h2>
             <div class="ranking">

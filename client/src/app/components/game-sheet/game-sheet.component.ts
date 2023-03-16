@@ -2,6 +2,7 @@
 /* eslint-disable no-underscore-dangle */
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { JoinedPlayerDialogComponent } from '@app/components/joined-player-dialog/joined-player-dialog.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
@@ -18,6 +19,7 @@ import { filter, Subscription, take } from 'rxjs';
 })
 export class GameSheetComponent implements OnDestroy, OnInit {
     @Input() game: GameCard;
+    url: SafeResourceUrl;
     private isAvailable: boolean;
     private roomIdSubscription: Subscription;
     private roomAvailabilitySubscription: Subscription;
@@ -29,10 +31,12 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         public router: Router,
         private readonly roomManagerService: RoomManagerService,
         private readonly communicationService: CommunicationService,
+        private sanitizer: DomSanitizer,
     ) {
         this.roomManagerService.handleRoomEvents();
     }
     ngOnInit(): void {
+        this.url = this.sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + this.game.thumbnail);
         this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
         this.roomAvailabilitySubscription = this.roomManagerService.oneVsOneRoomsAvailabilityByRoomId$
             .pipe(filter((data) => data.gameId === this.game._id))
