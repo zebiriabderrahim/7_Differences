@@ -1,3 +1,5 @@
+// Needed more lines for the tests
+/* eslint-disable max-lines */
 // needed to spy on private methods
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TestBed } from '@angular/core/testing';
@@ -187,10 +189,10 @@ describe('ForegroundService', () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const redrawForegroundsSpy = spyOn<any>(service, 'redrawForegrounds').and.callFake(() => {});
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
-        const foregroundStackPeekSpy = spyOn<any>(service, 'foregroundStackPeek').and.callFake(() => {});
+        const foregroundStateStackPeekSpy = spyOn<any>(service, 'foregroundStateStackPeek').and.callFake(() => {});
         service.undoCanvasOperation();
         expect(redrawForegroundsSpy).toHaveBeenCalled();
-        expect(foregroundStackPeekSpy).toHaveBeenCalled();
+        expect(foregroundStateStackPeekSpy).toHaveBeenCalled();
     });
 
     it('redoCanvasOperation should not call redrawForegrounds if the undoneForegroundsStateStack is empty', () => {
@@ -211,7 +213,23 @@ describe('ForegroundService', () => {
 
     // TODO : startForegroundOperation
 
-    // TODO : disableDragging
+    it('disableDragging should not call disableMouseDrag and saveCurrentForegroundsState if drawService.isMouseDragged return false', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const saveCurrentForegroundsStateSpy = spyOn<any>(service, 'saveCurrentForegroundsState').and.callFake(() => {});
+        drawServiceSpy.isMouseDragged.and.returnValue(false);
+        service.disableDragging();
+        expect(drawServiceSpy.disableMouseDrag).not.toHaveBeenCalled();
+        expect(saveCurrentForegroundsStateSpy).not.toHaveBeenCalled();
+    });
+
+    it('disableDragging should call disableMouseDrag and saveCurrentForegroundsState if drawService.isMouseDragged return true', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const saveCurrentForegroundsStateSpy = spyOn<any>(service, 'saveCurrentForegroundsState').and.callFake(() => {});
+        drawServiceSpy.isMouseDragged.and.returnValue(true);
+        service.disableDragging();
+        expect(drawServiceSpy.disableMouseDrag).toHaveBeenCalled();
+        expect(saveCurrentForegroundsStateSpy).toHaveBeenCalled();
+    });
 
     // TODO : stopForegroundOperation
 
@@ -316,9 +334,25 @@ describe('ForegroundService', () => {
         expect(rightForegroundGetImageDataSpy).toHaveBeenCalled();
     });
 
-    // TODO: isCanvasNextState
+    it('foregroundStateStackPeek should return the last element in the foregroundsStateStack', () => {
+        const foregroundsStateStub = {} as ForegroundsState;
+        const foregroundsStateStackStub = [{} as ForegroundsState, foregroundsStateStub];
+        service['foregroundsStateStack'] = foregroundsStateStackStub;
+        expect(service['foregroundStateStackPeek']()).toEqual(foregroundsStateStub);
+    });
 
-    // TODO: saveCurrentForegroundsState
+    it('saveCurrentForegroundsState should call getForegroundsState and push the result to foregroundsStates', () => {
+        const foregroundsStateStub = {} as ForegroundsState;
+        const foregroundsStateStackStub = [] as ForegroundsState[];
+        service['foregroundsStateStack'] = foregroundsStateStackStub;
+        const getForegroundsStateSpy = spyOn<any>(service, 'getForegroundsState').and.callFake(() => {
+            return foregroundsStateStub;
+        });
+        expect(service['foregroundsStateStack']).toEqual([]);
+        service['saveCurrentForegroundsState']();
+        expect(getForegroundsStateSpy).toHaveBeenCalled();
+        expect(service['foregroundsStateStack']).toEqual([foregroundsStateStub]);
+    });
 
     it('resetCanvasContext should call clearRect the context its called with', () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
