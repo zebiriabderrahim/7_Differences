@@ -108,7 +108,12 @@ export class ForegroundService {
     disableDragging() {
         if (this.drawService.isMouseDragged()) {
             this.drawService.disableMouseDrag();
-            this.saveCurrentForegroundsState();
+            if (this.drawService.isCurrentActionRectangle()) {
+                this.copyFrontCanvasToForeground(this.drawService.getActiveCanvasPosition());
+                this.resetFrontCanvasContext(this.drawService.getActiveCanvasPosition());
+            } else {
+                this.saveCurrentForegroundsState();
+            }
         }
     }
 
@@ -117,8 +122,8 @@ export class ForegroundService {
         if (this.drawService.isOperationValid(canvasPosition)) {
             this.drawService.stopOperation();
             if (this.drawService.isCurrentActionRectangle()) {
-                this.copyFrontCanvasToForeground(canvasPosition);
-                this.resetFrontCanvasContext(canvasPosition);
+                this.copyFrontCanvasToForeground(this.drawService.getActiveCanvasPosition());
+                this.resetFrontCanvasContext(this.drawService.getActiveCanvasPosition());
             } else {
                 this.saveCurrentForegroundsState();
             }

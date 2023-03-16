@@ -24,8 +24,12 @@ export class DrawService {
         this.isMouseBeingDragged = false;
     }
 
+    getActiveCanvasPosition(): CanvasPosition {
+        return this.activeCanvasPosition;
+    }
+
     mouseIsOutOfCanvas(): void {
-        this.isMouseOutOfCanvas = false;
+        this.isMouseOutOfCanvas = true;
     }
 
     setDrawingColor(color: string): void {
@@ -88,14 +92,14 @@ export class DrawService {
     continueCanvasOperation(canvasPosition: CanvasPosition, event: MouseEvent) {
         this.setClickPosition(event);
         if (this.isOperationValid(canvasPosition)) {
+            if (this.isMouseOutOfCanvas) {
+                this.activeContext.closePath();
+                this.activeContext.beginPath();
+                this.isMouseOutOfCanvas = false;
+            }
             if (this.isCurrentActionRectangle()) {
                 this.drawRectangle();
             } else {
-                if (this.isMouseOutOfCanvas) {
-                    this.activeContext.closePath();
-                    this.activeContext.beginPath();
-                    this.mouseIsOutOfCanvas();
-                }
                 this.drawLine();
             }
         }
