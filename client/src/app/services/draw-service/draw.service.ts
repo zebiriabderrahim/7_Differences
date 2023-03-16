@@ -118,25 +118,15 @@ export class DrawService {
     }
 
     private setCanvasOperationStyle() {
-        switch (this.currentAction) {
-            case CanvasAction.Pencil:
-                this.activeContext.lineWidth = this.pencilWidth;
-                this.activeContext.strokeStyle = this.drawingColor;
-                this.activeContext.globalCompositeOperation = 'source-over';
-                this.activeContext.lineCap = 'round';
-                this.activeContext.lineJoin = 'round';
-                break;
-            case CanvasAction.Eraser:
-                this.activeContext.lineWidth = this.eraserLength;
-                this.activeContext.strokeStyle = this.drawingColor;
-                this.activeContext.globalCompositeOperation = 'destination-out';
-                this.activeContext.lineCap = 'square';
-                this.activeContext.lineJoin = 'round';
-                break;
-            case CanvasAction.Rectangle:
-                this.activeContext.globalCompositeOperation = 'source-over';
-                this.activeContext.fillStyle = this.drawingColor;
-                break;
+        if (this.isCurrentActionRectangle()) {
+            this.activeContext.globalCompositeOperation = 'source-over';
+            this.activeContext.fillStyle = this.drawingColor;
+        } else {
+            this.activeContext.strokeStyle = this.drawingColor;
+            this.activeContext.lineJoin = 'round';
+            this.activeContext.globalCompositeOperation = this.currentAction === CanvasAction.Pencil ? 'source-over' : 'destination-out';
+            this.activeContext.lineCap = this.currentAction === CanvasAction.Pencil ? 'round' : 'square';
+            this.activeContext.lineWidth = this.currentAction === CanvasAction.Pencil ? this.pencilWidth : this.eraserLength;
         }
     }
 
