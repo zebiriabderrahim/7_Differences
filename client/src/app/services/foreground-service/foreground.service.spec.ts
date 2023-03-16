@@ -170,7 +170,44 @@ describe('ForegroundService', () => {
         expect(saveCurrentForegroundsStateSpy).toHaveBeenCalled();
     });
 
-    // TODO: undo-redo test / refactor
+    it('undoCanvasOperation should not call anything if the foregroundsStack is smaller than 1', () => {
+        service['foregroundsStateStack'] = [];
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const redrawForegroundsSpy = spyOn<any>(service, 'redrawForegrounds').and.callFake(() => {});
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const foregroundStackPeekSpy = spyOn<any>(service, 'foregroundStackPeek').and.callFake(() => {});
+        service.undoCanvasOperation();
+        expect(redrawForegroundsSpy).not.toHaveBeenCalled();
+        expect(foregroundStackPeekSpy).not.toHaveBeenCalled();
+    });
+
+    it('undoCanvasOperation should call redrawForegrounds and foregroundStackPeek', () => {
+        service['foregroundsStateStack'] = [{} as ForegroundsState, {} as ForegroundsState];
+        service['undoneForegroundsStateStack'] = [];
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const redrawForegroundsSpy = spyOn<any>(service, 'redrawForegrounds').and.callFake(() => {});
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const foregroundStackPeekSpy = spyOn<any>(service, 'foregroundStackPeek').and.callFake(() => {});
+        service.undoCanvasOperation();
+        expect(redrawForegroundsSpy).toHaveBeenCalled();
+        expect(foregroundStackPeekSpy).toHaveBeenCalled();
+    });
+
+    it('redoCanvasOperation should not call redrawForegrounds if the undoneForegroundsStateStack is empty', () => {
+        service['undoneForegroundsStateStack'] = [];
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const redrawForegroundsSpy = spyOn<any>(service, 'redrawForegrounds').and.callFake(() => {});
+        service.redoCanvasOperation();
+        expect(redrawForegroundsSpy).not.toHaveBeenCalled();
+    });
+
+    it('redoCanvasOperation should call redrawForegrounds', () => {
+        service['undoneForegroundsStateStack'] = [{} as ForegroundsState];
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const redrawForegroundsSpy = spyOn<any>(service, 'redrawForegrounds').and.callFake(() => {});
+        service.redoCanvasOperation();
+        expect(redrawForegroundsSpy).toHaveBeenCalled();
+    });
 
     // TODO : startForegroundOperation
 

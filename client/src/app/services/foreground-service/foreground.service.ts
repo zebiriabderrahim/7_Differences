@@ -74,26 +74,18 @@ export class ForegroundService {
     }
 
     undoCanvasOperation() {
-        if (this.foregroundsStateStack.length > 0) {
-            const lastState: ForegroundsState = this.foregroundsStateStack.pop() as ForegroundsState;
-            this.undoneForegroundsStateStack.push(lastState);
-            if (!this.isCanvasStateNextState(lastState)) {
-                this.redrawForegrounds(lastState);
-            } else {
-                this.undoCanvasOperation();
-            }
+        if (this.foregroundsStateStack.length > 1) {
+            const actualState: ForegroundsState = this.foregroundsStateStack.pop() as ForegroundsState;
+            this.undoneForegroundsStateStack.push(actualState);
+            this.redrawForegrounds(this.foregroundStackPeek(this.foregroundsStateStack));
         }
     }
 
     redoCanvasOperation() {
         if (this.undoneForegroundsStateStack.length > 0) {
-            const lastState: ForegroundsState = this.undoneForegroundsStateStack.pop() as ForegroundsState;
-            this.foregroundsStateStack.push(lastState);
-            if (!this.isCanvasStateNextState(lastState)) {
-                this.redrawForegrounds(lastState);
-            } else {
-                this.redoCanvasOperation();
-            }
+            const actualState: ForegroundsState = this.undoneForegroundsStateStack.pop() as ForegroundsState;
+            this.foregroundsStateStack.push(actualState);
+            this.redrawForegrounds(actualState);
         }
     }
 
@@ -168,16 +160,12 @@ export class ForegroundService {
         return { left: leftForegroundData, right: rightForegroundData };
     }
 
-    private isCanvasStateNextState(nextState: ForegroundsState): boolean {
-        const canvasState: ForegroundsState = this.getForegroundsState();
-        return (
-            canvasState.left.data.toString() === nextState.left.data.toString() &&
-            canvasState.right.data.toString() === nextState.right.data.toString()
-        );
-    }
-
     private saveCurrentForegroundsState() {
         this.foregroundsStateStack.push(this.getForegroundsState());
+    }
+
+    private foregroundStackPeek(foregroundsStateStack: ForegroundsState[]): ForegroundsState {
+        return foregroundsStateStack[foregroundsStateStack.length - 1];
     }
 
     private resetCanvasContext(context: CanvasRenderingContext2D) {
