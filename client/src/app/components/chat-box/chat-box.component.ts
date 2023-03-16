@@ -8,6 +8,7 @@ import { ChatMessage, GameModes } from '@common/game-interfaces';
 })
 export class ChatBoxComponent {
     @Input() messages: ChatMessage[] = [];
+    @Input() gameMode: string;
     @Output() add = new EventEmitter<string>();
 
     oneVsOneGameMode = GameModes.ClassicOneVsOne;
