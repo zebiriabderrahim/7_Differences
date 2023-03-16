@@ -76,6 +76,7 @@ export class ClassicSystemService implements OnDestroy {
         if (differences.length === 0) {
             this.gameAreaService.showError(this.isLeftCanvas);
         } else {
+            this.gameAreaService.setAllData();
             this.gameAreaService.replaceDifference(differences);
         }
     }

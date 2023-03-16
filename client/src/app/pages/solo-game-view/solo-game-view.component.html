@@ -53,5 +53,5 @@
 </div>
 <button class="importantButton" (click)="showAbandonDialog()">Abandonner la partie</button>
 <div *ngIf="game">
-    <app-chat-box (add)="addRightSideMessage($event)" [messages]="messages"></app-chat-box>
+    <app-chat-box (add)="addRightSideMessage($event)" [messages]="messages" [gameMode]="game.mode"></app-chat-box>
 </div>
