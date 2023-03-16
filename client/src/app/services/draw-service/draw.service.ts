@@ -24,8 +24,12 @@ export class DrawService {
         this.isMouseBeingDragged = false;
     }
 
-    setMouseStatus(isMouseLeaving: boolean): void {
-        this.isMouseOutOfCanvas = isMouseLeaving;
+    getActiveCanvasPosition(): CanvasPosition {
+        return this.activeCanvasPosition;
+    }
+
+    mouseIsOutOfCanvas(): void {
+        this.isMouseOutOfCanvas = true;
     }
 
     setDrawingColor(color: string): void {
@@ -88,25 +92,17 @@ export class DrawService {
     continueCanvasOperation(canvasPosition: CanvasPosition, event: MouseEvent) {
         this.setClickPosition(event);
         if (this.isOperationValid(canvasPosition)) {
-            if (this.isCurrentActionRectangle()) {
-                this.drawRectangle();
-            } else {
-                if (this.isMouseOutOfCanvas) {
-                    this.activeContext.closePath();
-                    this.activeContext.beginPath();
-                    this.isMouseOutOfCanvas = false;
-                }
-                this.drawLine();
+            if (this.isMouseOutOfCanvas) {
+                this.activeContext.closePath();
+                this.activeContext.beginPath();
+                this.isMouseOutOfCanvas = false;
             }
+            this.drawCanvasOperation();
         }
     }
 
     stopOperation() {
-        if (this.isCurrentActionRectangle()) {
-            this.drawRectangle();
-        } else {
-            this.drawLine();
-        }
+        this.drawCanvasOperation();
         this.disableMouseDrag();
     }
 
@@ -117,26 +113,24 @@ export class DrawService {
         }
     }
 
+    private drawCanvasOperation() {
+        if (this.isCurrentActionRectangle()) {
+            this.drawRectangle();
+        } else {
+            this.drawLine();
+        }
+    }
+
     private setCanvasOperationStyle() {
-        switch (this.currentAction) {
-            case CanvasAction.Pencil:
-                this.activeContext.lineWidth = this.pencilWidth;
-                this.activeContext.strokeStyle = this.drawingColor;
-                this.activeContext.globalCompositeOperation = 'source-over';
-                this.activeContext.lineCap = 'round';
-                this.activeContext.lineJoin = 'round';
-                break;
-            case CanvasAction.Eraser:
-                this.activeContext.lineWidth = this.eraserLength;
-                this.activeContext.strokeStyle = this.drawingColor;
-                this.activeContext.globalCompositeOperation = 'destination-out';
-                this.activeContext.lineCap = 'square';
-                this.activeContext.lineJoin = 'round';
-                break;
-            case CanvasAction.Rectangle:
-                this.activeContext.globalCompositeOperation = 'source-over';
-                this.activeContext.fillStyle = this.drawingColor;
-                break;
+        if (this.isCurrentActionRectangle()) {
+            this.activeContext.globalCompositeOperation = 'source-over';
+            this.activeContext.fillStyle = this.drawingColor;
+        } else {
+            this.activeContext.strokeStyle = this.drawingColor;
+            this.activeContext.lineJoin = 'round';
+            this.activeContext.globalCompositeOperation = this.currentAction === CanvasAction.Pencil ? 'source-over' : 'destination-out';
+            this.activeContext.lineCap = this.currentAction === CanvasAction.Pencil ? 'round' : 'square';
+            this.activeContext.lineWidth = this.currentAction === CanvasAction.Pencil ? this.pencilWidth : this.eraserLength;
         }
     }
 
