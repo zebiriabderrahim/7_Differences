@@ -97,20 +97,12 @@ export class DrawService {
                 this.activeContext.beginPath();
                 this.isMouseOutOfCanvas = false;
             }
-            if (this.isCurrentActionRectangle()) {
-                this.drawRectangle();
-            } else {
-                this.drawLine();
-            }
+            this.drawCanvasOperation();
         }
     }
 
     stopOperation() {
-        if (this.isCurrentActionRectangle()) {
-            this.drawRectangle();
-        } else {
-            this.drawLine();
-        }
+        this.drawCanvasOperation();
         this.disableMouseDrag();
     }
 
@@ -118,6 +110,14 @@ export class DrawService {
         if (this.isMouseBeingDragged && this.isCurrentActionRectangle()) {
             this.drawRectangle();
             this.isSquareModeOn = squareMode;
+        }
+    }
+
+    private drawCanvasOperation() {
+        if (this.isCurrentActionRectangle()) {
+            this.drawRectangle();
+        } else {
+            this.drawLine();
         }
     }
 
