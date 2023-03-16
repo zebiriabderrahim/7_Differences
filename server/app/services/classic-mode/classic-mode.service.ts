@@ -276,7 +276,8 @@ export class ClassicModeService {
         if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
             const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
             room.endMessage = "L'adversaire a abandonné la partie!";
-            server.to(room.roomId).emit(MessageEvents.LocalMessage, this.messageManager.getQuitMessage(player.name));
+            const localMessage: ChatMessage = this.messageManager.getQuitMessage(player.name);
+            server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
         }
         this.deleteCreatedSoloGameRoom(roomId);
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
