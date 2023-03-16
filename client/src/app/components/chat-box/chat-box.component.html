@@ -12,7 +12,7 @@
                 </li>
             </ul>
         </div>
-        <div class="message-input">
+        <div *ngIf="gameMode !== 'Classic->Solo'" class="message-input">
             <div class="wrap">
                 <input type="text" #inputText placeholder="Entrez un message" (keyup.enter)="onAdd(inputText)" maxlength="200" />
                 <i class="fa fa-paperclip attachment" aria-hidden="true"></i>
