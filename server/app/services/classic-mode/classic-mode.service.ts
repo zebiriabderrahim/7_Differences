@@ -100,27 +100,20 @@ export class ClassicModeService {
                 break;
             }
         }
-
         if (index !== originalDifferences.length) {
             originalDifferences.splice(index, 1);
-            localMessage =
-                room.clientGame.mode === GameModes.ClassicSolo
-                    ? this.messageManager.getSoloDifferenceMessage()
-                    : this.messageManager.getOneVsOneDifferenceMessage(playerName);
+            localMessage = this.messageManager.getLocalMessage(room.clientGame.mode, true, playerName);
+            server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
         } else {
             diffData.currentDifference = [];
-            localMessage =
-                room.clientGame.mode === GameModes.ClassicSolo
-                    ? this.messageManager.getSoloErrorMessage()
-                    : this.messageManager.getOneVsOneErrorMessage(playerName);
+            localMessage = this.messageManager.getLocalMessage(room.clientGame.mode, false, playerName);
+            server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
         }
-
         this.rooms.set(room.roomId, room);
         const differencesData: Differences = {
             currentDifference: diffData.currentDifference,
             differencesFound: diffData.differencesFound,
         };
-        server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
         server.to(room.roomId).emit(GameEvents.RemoveDiff, { differencesData, playerId: socket.id });
     }
 
@@ -283,7 +276,8 @@ export class ClassicModeService {
         if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
             const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
             room.endMessage = "L'adversaire a abandonné la partie!";
-            server.to(room.roomId).emit(MessageEvents.LocalMessage, this.messageManager.getQuitMessage(player.name));
+            const localMessage: ChatMessage = this.messageManager.getQuitMessage(player.name);
+            server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
         }
         this.deleteCreatedSoloGameRoom(roomId);
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
