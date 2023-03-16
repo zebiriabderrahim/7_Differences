@@ -218,6 +218,60 @@ describe('DrawService', () => {
         expect(service['isSquareModeOn']).toBe(mockSquareMode);
     });
 
+    it('setCanvasOperationStyle should set composition to source-over and fillStyle to drawingColor if rectangle', () => {
+        service['currentAction'] = CanvasAction.Rectangle;
+        service['activeContext'] = contextStub;
+        service['activeContext'].globalCompositeOperation = 'destination-over';
+        service['drawingColor'] = '#ff0000';
+        expect(service['activeContext'].globalCompositeOperation).not.toBe('source-over');
+        expect(service['activeContext'].fillStyle).not.toBe(service['drawingColor']);
+        service['setCanvasOperationStyle']();
+        expect(service['activeContext'].globalCompositeOperation).toBe('source-over');
+        expect(service['activeContext'].fillStyle).toBe(service['drawingColor']);
+    });
+
+    it('setCanvasOperationStyle should set source-over, round, color, round and pencilWidth if pencil', () => {
+        service['currentAction'] = CanvasAction.Pencil;
+        service['activeContext'] = contextStub;
+        service['activeContext'].globalCompositeOperation = 'destination-over';
+        service['activeContext'].lineCap = 'butt';
+        service['activeContext'].lineJoin = 'bevel';
+        service['drawingColor'] = '#ff0000';
+        service['pencilWidth'] = 5;
+        expect(service['activeContext'].globalCompositeOperation).not.toBe('source-over');
+        expect(service['activeContext'].strokeStyle).not.toBe(service['drawingColor']);
+        expect(service['activeContext'].lineCap).not.toBe('round');
+        expect(service['activeContext'].lineWidth).not.toBe(service['pencilWidth']);
+        expect(service['activeContext'].lineJoin).not.toBe('round');
+        service['setCanvasOperationStyle']();
+        expect(service['activeContext'].lineJoin).toBe('round');
+        expect(service['activeContext'].lineWidth).toBe(service['pencilWidth']);
+        expect(service['activeContext'].lineCap).toBe('round');
+        expect(service['activeContext'].globalCompositeOperation).toBe('source-over');
+        expect(service['activeContext'].strokeStyle).toBe(service['drawingColor']);
+    });
+
+    it('setCanvasOperationStyle should set destination-out, round, color, square and eraserWidth if eraser', () => {
+        service['currentAction'] = CanvasAction.Eraser;
+        service['activeContext'] = contextStub;
+        service['activeContext'].globalCompositeOperation = 'destination-over';
+        service['activeContext'].lineCap = 'butt';
+        service['activeContext'].lineJoin = 'bevel';
+        service['drawingColor'] = '#ff0000';
+        service['eraserLength'] = 5;
+        expect(service['activeContext'].globalCompositeOperation).not.toBe('destination-out');
+        expect(service['activeContext'].strokeStyle).not.toBe(service['drawingColor']);
+        expect(service['activeContext'].lineCap).not.toBe('square');
+        expect(service['activeContext'].lineWidth).not.toBe(service['eraserLength']);
+        expect(service['activeContext'].lineJoin).not.toBe('round');
+        service['setCanvasOperationStyle']();
+        expect(service['activeContext'].lineJoin).toBe('round');
+        expect(service['activeContext'].lineWidth).toBe(service['eraserLength']);
+        expect(service['activeContext'].lineCap).toBe('square');
+        expect(service['activeContext'].globalCompositeOperation).toBe('destination-out');
+        expect(service['activeContext'].strokeStyle).toBe(service['drawingColor']);
+    });
+
     it('drawRectangle should call clearRect and fillRect on activeContext', () => {
         const fakeCoordinate: Coordinate = { x: 33, y: 33 };
         service['clickPosition'] = fakeCoordinate;
