@@ -33,11 +33,6 @@ describe('PlayerNameDialogBoxComponent', () => {
         expect(component.playerNameForm.controls.name instanceof FormControl).toBeTruthy();
     });
 
-    // it('should close the dialog onNoClick', () => {
-    //     component.onNoClick();
-    //     expect(dialogRef.close).toHaveBeenCalled();
-    // });
-
     it('should emit the player name and close the dialog if the form is valid', () => {
         component.playerNameForm = new FormGroup({ name: new FormControl('test') });
         component.submitForm();
