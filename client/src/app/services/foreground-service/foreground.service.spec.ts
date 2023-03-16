@@ -176,11 +176,8 @@ describe('ForegroundService', () => {
         service['foregroundsStateStack'] = [];
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const redrawForegroundsSpy = spyOn<any>(service, 'redrawForegrounds').and.callFake(() => {});
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
-        const foregroundStackPeekSpy = spyOn<any>(service, 'foregroundStackPeek').and.callFake(() => {});
         service.undoCanvasOperation();
         expect(redrawForegroundsSpy).not.toHaveBeenCalled();
-        expect(foregroundStackPeekSpy).not.toHaveBeenCalled();
     });
 
     it('undoCanvasOperation should call redrawForegrounds and foregroundStackPeek', () => {
@@ -188,11 +185,8 @@ describe('ForegroundService', () => {
         service['undoneForegroundsStateStack'] = [];
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const redrawForegroundsSpy = spyOn<any>(service, 'redrawForegrounds').and.callFake(() => {});
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
-        const foregroundStateStackPeekSpy = spyOn<any>(service, 'foregroundStateStackPeek').and.callFake(() => {});
         service.undoCanvasOperation();
         expect(redrawForegroundsSpy).toHaveBeenCalled();
-        expect(foregroundStateStackPeekSpy).toHaveBeenCalled();
     });
 
     it('redoCanvasOperation should not call redrawForegrounds if the undoneForegroundsStateStack is empty', () => {
@@ -231,7 +225,46 @@ describe('ForegroundService', () => {
         expect(saveCurrentForegroundsStateSpy).toHaveBeenCalled();
     });
 
-    // TODO : stopForegroundOperation
+    it('stopForegroundOperation should not call drawService.stopOperation if drawService.isOperationValid returns false', () => {
+        drawServiceSpy.isOperationValid.and.returnValue(false);
+        const mockMouseEvent = new MouseEvent('click', { button: 0, clientX: 0, clientY: 0 });
+        service.stopForegroundOperation(CanvasPosition.Left, mockMouseEvent);
+        expect(drawServiceSpy.stopOperation).not.toHaveBeenCalled();
+    });
+
+    it('stopForegroundOperation should call drawService.stopOperation, saveCanvas if drawService.isOperationValid is true and not rectangle', () => {
+        drawServiceSpy.isOperationValid.and.returnValue(true);
+        drawServiceSpy.isCurrentActionRectangle.and.returnValue(false);
+        const mockMouseEvent = new MouseEvent('click', { button: 0, clientX: 0, clientY: 0 });
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const saveCurrentForegroundsStateSpy = spyOn<any>(service, 'saveCurrentForegroundsState').and.callFake(() => {});
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const copyFrontCanvasToForegroundSpy = spyOn<any>(service, 'copyFrontCanvasToForeground').and.callFake(() => {});
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const resetFrontCanvasContextSpy = spyOn<any>(service, 'resetFrontCanvasContext').and.callFake(() => {});
+        service.stopForegroundOperation(CanvasPosition.Left, mockMouseEvent);
+        expect(drawServiceSpy.stopOperation).toHaveBeenCalled();
+        expect(saveCurrentForegroundsStateSpy).toHaveBeenCalled();
+        expect(copyFrontCanvasToForegroundSpy).not.toHaveBeenCalled();
+        expect(resetFrontCanvasContextSpy).not.toHaveBeenCalled();
+    });
+
+    it('stopForegroundOperation should call drawService.stopOperation, saveCanvas if drawService.isOperationValid is true and rectangle', () => {
+        drawServiceSpy.isOperationValid.and.returnValue(true);
+        drawServiceSpy.isCurrentActionRectangle.and.returnValue(true);
+        const mockMouseEvent = new MouseEvent('click', { button: 0, clientX: 0, clientY: 0 });
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const saveCurrentForegroundsStateSpy = spyOn<any>(service, 'saveCurrentForegroundsState').and.callFake(() => {});
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const copyFrontCanvasToForegroundSpy = spyOn<any>(service, 'copyFrontCanvasToForeground').and.callFake(() => {});
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const resetFrontCanvasContextSpy = spyOn<any>(service, 'resetFrontCanvasContext').and.callFake(() => {});
+        service.stopForegroundOperation(CanvasPosition.Left, mockMouseEvent);
+        expect(drawServiceSpy.stopOperation).toHaveBeenCalled();
+        expect(saveCurrentForegroundsStateSpy).not.toHaveBeenCalled();
+        expect(copyFrontCanvasToForegroundSpy).toHaveBeenCalled();
+        expect(resetFrontCanvasContextSpy).toHaveBeenCalled();
+    });
 
     it('copyFrontCanvasToForeground called with leftCanvasPosition should call drawImage on leftForegroundContext and save state', () => {
         const rightContext = CanvasTestHelper.createCanvas(0, 0).getContext('2d') as CanvasRenderingContext2D;
@@ -332,13 +365,6 @@ describe('ForegroundService', () => {
         expect(service['getForegroundsState']()).toEqual({ left: mockLeftImageData, right: mockRightImageData });
         expect(leftForegroundGetImageDataSpy).toHaveBeenCalled();
         expect(rightForegroundGetImageDataSpy).toHaveBeenCalled();
-    });
-
-    it('foregroundStateStackPeek should return the last element in the foregroundsStateStack', () => {
-        const foregroundsStateStub = {} as ForegroundsState;
-        const foregroundsStateStackStub = [{} as ForegroundsState, foregroundsStateStub];
-        service['foregroundsStateStack'] = foregroundsStateStackStub;
-        expect(service['foregroundStateStackPeek']()).toEqual(foregroundsStateStub);
     });
 
     it('saveCurrentForegroundsState should call getForegroundsState and push the result to foregroundsStates', () => {
