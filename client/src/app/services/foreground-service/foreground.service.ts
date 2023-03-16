@@ -77,7 +77,7 @@ export class ForegroundService {
         if (this.foregroundsStateStack.length > 1) {
             const actualState: ForegroundsState = this.foregroundsStateStack.pop() as ForegroundsState;
             this.undoneForegroundsStateStack.push(actualState);
-            this.redrawForegrounds(this.foregroundStateStackPeek());
+            this.redrawForegrounds(this.foregroundsStateStack[this.foregroundsStateStack.length - 1]);
         }
     }
 
@@ -91,7 +91,6 @@ export class ForegroundService {
 
     startForegroundOperation(canvasPosition: CanvasPosition, event: MouseEvent) {
         this.undoneForegroundsStateStack = [];
-        console.log(this.foregroundsStateStack.length);
         if (this.foregroundsStateStack.length === 0) {
             this.foregroundsStateStack.push(this.getForegroundsState());
         }
@@ -163,10 +162,6 @@ export class ForegroundService {
 
     private saveCurrentForegroundsState() {
         this.foregroundsStateStack.push(this.getForegroundsState());
-    }
-
-    private foregroundStateStackPeek(): ForegroundsState {
-        return this.foregroundsStateStack[this.foregroundsStateStack.length - 1];
     }
 
     private resetCanvasContext(context: CanvasRenderingContext2D) {
