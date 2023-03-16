@@ -184,7 +184,6 @@ describe('GameSheetComponent', () => {
 
     it('Should return true if the game is available', () => {
         const isAvailableToJoin = component.isAvailableToJoin();
-
         expect(component['isAvailable']).toEqual(isAvailableToJoin);
     });
 });
