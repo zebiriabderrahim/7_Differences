@@ -5,7 +5,7 @@ import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dial
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
-import { ChatMessage, ClientSideGame, GameModes, MessageTag, Player } from '@common/game-interfaces';
+import { ChatMessage, ClientSideGame, MessageTag, Player } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -23,17 +23,16 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     opponentDifferencesFound: number = 0;
     timer: number = 0;
     messages: ChatMessage[] = [];
-    gameModes: typeof GameModes;
     player: string = '';
     players: { player1: Player; player2: Player } = {
         player1: { name: '', diffData: { currentDifference: [], differencesFound: 0 } },
         player2: { name: '', diffData: { currentDifference: [], differencesFound: 0 } },
     };
     readonly canvasSize = { width: IMG_WIDTH, height: IMG_HEIGHT };
-    private timerSubscription: Subscription;
-    private gameSubscription: Subscription;
+    private timerSub: Subscription;
+    private gameSub: Subscription;
     private differenceSub: Subscription;
-    private routeParamSubscription: Subscription;
+    private routeParamSub: Subscription;
     private messageSub: Subscription;
     private endGameSub: Subscription;
     private opponentDifferenceSub: Subscription;
@@ -50,7 +49,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        this.routeParamSubscription = this.route.params.subscribe((params) => {
+        this.routeParamSub = this.route.params.subscribe((params) => {
             if (params['roomId']) {
                 this.classicService.startGameByRoomId(params['roomId']);
             }
@@ -65,7 +64,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
             }
         });
 
-        this.gameSubscription = this.classicService.currentGame$.subscribe((game) => {
+        this.gameSub = this.classicService.currentGame$.subscribe((game) => {
             this.game = game;
             if (this.game) {
                 this.gameAreaService.setOgContext(
@@ -93,7 +92,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
                 this.gameAreaService.setAllData();
             }
         });
-        this.timerSubscription = this.classicService.timer$.subscribe((timer) => {
+        this.timerSub = this.classicService.timer$.subscribe((timer) => {
             this.timer = timer;
         });
         this.differenceSub = this.classicService.differencesFound$.subscribe((differencesFound) => {
@@ -145,10 +144,10 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.gameSubscription?.unsubscribe();
-        this.timerSubscription?.unsubscribe();
+        this.gameSub?.unsubscribe();
+        this.timerSub?.unsubscribe();
         this.differenceSub?.unsubscribe();
-        this.routeParamSubscription?.unsubscribe();
+        this.routeParamSub?.unsubscribe();
         this.messageSub.unsubscribe();
         this.endGameSub.unsubscribe();
         this.opponentDifferenceSub?.unsubscribe();
