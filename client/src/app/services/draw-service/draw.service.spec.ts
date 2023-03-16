@@ -1,3 +1,5 @@
+// Needed more lines for the tests
+/* eslint-disable max-lines */
 // Needed to test private methods
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TestBed } from '@angular/core/testing';
