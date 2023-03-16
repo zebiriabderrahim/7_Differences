@@ -14,6 +14,7 @@ import { ForegroundService } from './foreground.service';
 describe('ForegroundService', () => {
     let service: ForegroundService;
     let contextStub: CanvasRenderingContext2D;
+    let mouseEventStub: MouseEvent;
     let drawServiceSpy: jasmine.SpyObj<DrawService>;
 
     beforeEach(() => {
@@ -33,6 +34,7 @@ describe('ForegroundService', () => {
         });
         service = TestBed.inject(ForegroundService);
         contextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
+        mouseEventStub = new MouseEvent('click', { button: 0, clientX: 0, clientY: 0 });
     });
 
     it('should be created', () => {
@@ -205,7 +207,53 @@ describe('ForegroundService', () => {
         expect(redrawForegroundsSpy).toHaveBeenCalled();
     });
 
-    // TODO : startForegroundOperation
+    it('startForegroundOperation should reset the undoneForegroundsStateStack', () => {
+        service['undoneForegroundsStateStack'] = [{} as ForegroundsState];
+        service['foregroundsStateStack'] = [{} as ForegroundsState];
+        service.startForegroundOperation(CanvasPosition.Left, mouseEventStub);
+        expect(service['undoneForegroundsStateStack']).toEqual([]);
+    });
+
+    it('startForegroundOperation should push the return value of getForegroundsState in foregroundStateStack if empty', () => {
+        const mockForegroundsState = {} as ForegroundsState;
+        service['undoneForegroundsStateStack'] = [{} as ForegroundsState];
+        service['foregroundsStateStack'] = [];
+        const getForegroundsStateSpy = spyOn<any>(service, 'getForegroundsState').and.callFake(() => {
+            return mockForegroundsState;
+        });
+        expect(service['foregroundsStateStack']).toEqual([]);
+        service.startForegroundOperation(CanvasPosition.Left, mouseEventStub);
+        expect(getForegroundsStateSpy).toHaveBeenCalled();
+        expect(service['foregroundsStateStack']).toEqual([service['getForegroundsState']()]);
+    });
+
+    it('startForegroundOperation should call drawService Operations and setActiveContext', () => {
+        service['undoneForegroundsStateStack'] = [{} as ForegroundsState];
+        service['foregroundsStateStack'] = [{} as ForegroundsState];
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const setActiveContextSpy = spyOn<any>(service, 'setActiveContext').and.callFake(() => {});
+        service.startForegroundOperation(CanvasPosition.Left, mouseEventStub);
+        expect(setActiveContextSpy).toHaveBeenCalled();
+        expect(drawServiceSpy.setActiveCanvasPosition).toHaveBeenCalled();
+        expect(drawServiceSpy.setClickPosition).toHaveBeenCalled();
+        expect(drawServiceSpy.startOperation).toHaveBeenCalled();
+    });
+
+    it('startForegroundOperation should set foregrounds contexts globalComposite to source-over', () => {
+        const rightContext = CanvasTestHelper.createCanvas(0, 0).getContext('2d') as CanvasRenderingContext2D;
+        service['leftForegroundContext'] = contextStub;
+        service['rightForegroundContext'] = rightContext;
+        service['undoneForegroundsStateStack'] = [{} as ForegroundsState];
+        service['foregroundsStateStack'] = [{} as ForegroundsState];
+        drawServiceSpy.isCurrentActionRectangle.and.returnValue(true);
+
+        service['leftForegroundContext'].globalCompositeOperation = 'destination-out';
+        service['rightForegroundContext'].globalCompositeOperation = 'destination-out';
+
+        service.startForegroundOperation(CanvasPosition.Left, mouseEventStub);
+        expect(service['leftForegroundContext'].globalCompositeOperation).toEqual('source-over');
+        expect(service['rightForegroundContext'].globalCompositeOperation).toEqual('source-over');
+    });
 
     it('disableDragging should not call disableMouseDrag and saveCurrentForegroundsState if drawService.isMouseDragged return false', () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
@@ -227,22 +275,20 @@ describe('ForegroundService', () => {
 
     it('stopForegroundOperation should not call drawService.stopOperation if drawService.isOperationValid returns false', () => {
         drawServiceSpy.isOperationValid.and.returnValue(false);
-        const mockMouseEvent = new MouseEvent('click', { button: 0, clientX: 0, clientY: 0 });
-        service.stopForegroundOperation(CanvasPosition.Left, mockMouseEvent);
+        service.stopForegroundOperation(CanvasPosition.Left, mouseEventStub);
         expect(drawServiceSpy.stopOperation).not.toHaveBeenCalled();
     });
 
     it('stopForegroundOperation should call drawService.stopOperation, saveCanvas if drawService.isOperationValid is true and not rectangle', () => {
         drawServiceSpy.isOperationValid.and.returnValue(true);
         drawServiceSpy.isCurrentActionRectangle.and.returnValue(false);
-        const mockMouseEvent = new MouseEvent('click', { button: 0, clientX: 0, clientY: 0 });
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const saveCurrentForegroundsStateSpy = spyOn<any>(service, 'saveCurrentForegroundsState').and.callFake(() => {});
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const copyFrontCanvasToForegroundSpy = spyOn<any>(service, 'copyFrontCanvasToForeground').and.callFake(() => {});
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const resetFrontCanvasContextSpy = spyOn<any>(service, 'resetFrontCanvasContext').and.callFake(() => {});
-        service.stopForegroundOperation(CanvasPosition.Left, mockMouseEvent);
+        service.stopForegroundOperation(CanvasPosition.Left, mouseEventStub);
         expect(drawServiceSpy.stopOperation).toHaveBeenCalled();
         expect(saveCurrentForegroundsStateSpy).toHaveBeenCalled();
         expect(copyFrontCanvasToForegroundSpy).not.toHaveBeenCalled();
@@ -252,14 +298,13 @@ describe('ForegroundService', () => {
     it('stopForegroundOperation should call drawService.stopOperation, saveCanvas if drawService.isOperationValid is true and rectangle', () => {
         drawServiceSpy.isOperationValid.and.returnValue(true);
         drawServiceSpy.isCurrentActionRectangle.and.returnValue(true);
-        const mockMouseEvent = new MouseEvent('click', { button: 0, clientX: 0, clientY: 0 });
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const saveCurrentForegroundsStateSpy = spyOn<any>(service, 'saveCurrentForegroundsState').and.callFake(() => {});
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const copyFrontCanvasToForegroundSpy = spyOn<any>(service, 'copyFrontCanvasToForeground').and.callFake(() => {});
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const resetFrontCanvasContextSpy = spyOn<any>(service, 'resetFrontCanvasContext').and.callFake(() => {});
-        service.stopForegroundOperation(CanvasPosition.Left, mockMouseEvent);
+        service.stopForegroundOperation(CanvasPosition.Left, mouseEventStub);
         expect(drawServiceSpy.stopOperation).toHaveBeenCalled();
         expect(saveCurrentForegroundsStateSpy).not.toHaveBeenCalled();
         expect(copyFrontCanvasToForegroundSpy).toHaveBeenCalled();
