@@ -32,7 +32,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     readonly canvasSize = { width: IMG_WIDTH, height: IMG_HEIGHT };
     private timerSubscription: Subscription;
     private gameSubscription: Subscription;
-    private differenceSubscription: Subscription;
+    private differenceSub: Subscription;
     private routeParamSubscription: Subscription;
     private messageSub: Subscription;
     private endGameSub: Subscription;
@@ -96,7 +96,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.timerSubscription = this.classicService.timer$.subscribe((timer) => {
             this.timer = timer;
         });
-        this.differenceSubscription = this.classicService.differencesFound$.subscribe((differencesFound) => {
+        this.differenceSub = this.classicService.differencesFound$.subscribe((differencesFound) => {
             this.differencesFound = differencesFound;
         });
         this.messageSub = this.classicService.message$.subscribe((message) => {
@@ -147,11 +147,11 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     ngOnDestroy(): void {
         this.gameSubscription?.unsubscribe();
         this.timerSubscription?.unsubscribe();
-        this.differenceSubscription?.unsubscribe();
+        this.differenceSub?.unsubscribe();
         this.routeParamSubscription?.unsubscribe();
         this.messageSub.unsubscribe();
         this.endGameSub.unsubscribe();
-        this.opponentDifferenceSub.unsubscribe();
+        this.opponentDifferenceSub?.unsubscribe();
         this.classicService.disconnect();
     }
 }
