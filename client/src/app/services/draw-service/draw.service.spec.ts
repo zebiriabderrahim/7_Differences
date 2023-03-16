@@ -22,10 +22,15 @@ describe('DrawService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('mouseIsOutOfCanvas should set isMouseOutOfCanvas to false', () => {
-        service['isMouseOutOfCanvas'] = true;
+    it('getActiveCanvasPosition should return activeCanvasPosition', () => {
+        service['activeCanvasPosition'] = CanvasPosition.Left;
+        expect(service.getActiveCanvasPosition()).toEqual(service['activeCanvasPosition']);
+    });
+
+    it('mouseIsOutOfCanvas should set isMouseOutOfCanvas to true', () => {
+        service['isMouseOutOfCanvas'] = false;
         service.mouseIsOutOfCanvas();
-        expect(service['isMouseOutOfCanvas']).toBe(false);
+        expect(service['isMouseOutOfCanvas']).toBeTruthy();
     });
 
     it('setDrawingColor should set drawingColor to appropriate value', () => {
@@ -166,25 +171,59 @@ describe('DrawService', () => {
         expect(service['rectangleTopCorner']).toBe(service['clickPosition']);
     });
 
-    // TODO: ContinueCanvasOperation
-
-    it('stopOperation should call disableMouseDrag and drawLine if isCurrentActionRectangle is false', () => {
-        spyOn(service, 'isCurrentActionRectangle').and.callFake(() => false);
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
-        const drawLineSpy = spyOn<any>(service, 'drawLine').and.callFake(() => {});
-        const disableMouseDragSpy = spyOn<any>(service, 'disableMouseDrag');
-        service.stopOperation();
-        expect(drawLineSpy).toHaveBeenCalled();
-        expect(disableMouseDragSpy).toHaveBeenCalled();
+    it('continueCanvasOperation should only call setClickPosition is the operation is invalid', () => {
+        service['activeContext'] = contextStub;
+        const mockMouseEvent = new MouseEvent('click', { button: 0, clientX: 0, clientY: 0 });
+        const closePathSpy = spyOn(contextStub, 'closePath');
+        const beginPathSpy = spyOn(contextStub, 'beginPath');
+        const drawCanvasOperationSpy = spyOn<any>(service, 'drawCanvasOperation');
+        const setClickPositionSpy = spyOn(service, 'setClickPosition');
+        spyOn(service, 'isOperationValid').and.callFake(() => false);
+        service.continueCanvasOperation(CanvasPosition.Left, mockMouseEvent);
+        expect(setClickPositionSpy).toHaveBeenCalled();
+        expect(drawCanvasOperationSpy).not.toHaveBeenCalled();
+        expect(beginPathSpy).not.toHaveBeenCalled();
+        expect(closePathSpy).not.toHaveBeenCalled();
     });
 
-    it('stopOperation should call disableMouseDrag and drawRectangle if isCurrentActionRectangle is true', () => {
-        spyOn(service, 'isCurrentActionRectangle').and.callFake(() => true);
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
-        const drawRectangleSpy = spyOn<any>(service, 'drawRectangle').and.callFake(() => {});
+    it('continueCanvasOperation should only call drawCanvasOperation is the operation is valid', () => {
+        service['activeContext'] = contextStub;
+        service['isMouseOutOfCanvas'] = false;
+        const mockMouseEvent = new MouseEvent('click', { button: 0, clientX: 0, clientY: 0 });
+        const closePathSpy = spyOn(contextStub, 'closePath');
+        const beginPathSpy = spyOn(contextStub, 'beginPath');
+        const drawCanvasOperationSpy = spyOn<any>(service, 'drawCanvasOperation');
+        const setClickPositionSpy = spyOn(service, 'setClickPosition');
+        spyOn(service, 'isOperationValid').and.callFake(() => true);
+        service.continueCanvasOperation(CanvasPosition.Left, mockMouseEvent);
+        expect(setClickPositionSpy).toHaveBeenCalled();
+        expect(drawCanvasOperationSpy).toHaveBeenCalled();
+        expect(beginPathSpy).not.toHaveBeenCalled();
+        expect(closePathSpy).not.toHaveBeenCalled();
+    });
+
+    it('continueCanvasOperation should only call drawCanvasOperation and change path is the operation is valid', () => {
+        service['activeContext'] = contextStub;
+        service['isMouseOutOfCanvas'] = true;
+        const mockMouseEvent = new MouseEvent('click', { button: 0, clientX: 0, clientY: 0 });
+        const closePathSpy = spyOn(contextStub, 'closePath');
+        const beginPathSpy = spyOn(contextStub, 'beginPath');
+        const drawCanvasOperationSpy = spyOn<any>(service, 'drawCanvasOperation');
+        const setClickPositionSpy = spyOn(service, 'setClickPosition');
+        spyOn(service, 'isOperationValid').and.callFake(() => true);
+        service.continueCanvasOperation(CanvasPosition.Left, mockMouseEvent);
+        expect(setClickPositionSpy).toHaveBeenCalled();
+        expect(drawCanvasOperationSpy).toHaveBeenCalled();
+        expect(beginPathSpy).toHaveBeenCalled();
+        expect(closePathSpy).toHaveBeenCalled();
+    });
+
+    it('stopOperation should call disableMouseDrag and drawCanvasOperation', () => {
         const disableMouseDragSpy = spyOn<any>(service, 'disableMouseDrag');
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const drawCanvasOperationSpy = spyOn<any>(service, 'drawCanvasOperation').and.callFake(() => {});
         service.stopOperation();
-        expect(drawRectangleSpy).toHaveBeenCalled();
+        expect(drawCanvasOperationSpy).toHaveBeenCalled();
         expect(disableMouseDragSpy).toHaveBeenCalled();
     });
 
@@ -194,6 +233,28 @@ describe('DrawService', () => {
         expect(service['isSquareModeOn']).not.toBe(mockSquareMode);
         service.setSquareMode(mockSquareMode);
         expect(service['isSquareModeOn']).not.toBe(mockSquareMode);
+    });
+
+    it('drawCanvasOperation should call drawRectangle if isCurrentActionRectangle is true', () => {
+        spyOn(service, 'isCurrentActionRectangle').and.callFake(() => true);
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const drawRectangleSpy = spyOn<any>(service, 'drawRectangle').and.callFake(() => {});
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const drawLineSpy = spyOn<any>(service, 'drawLine').and.callFake(() => {});
+        service.stopOperation();
+        expect(drawRectangleSpy).toHaveBeenCalled();
+        expect(drawLineSpy).not.toHaveBeenCalled();
+    });
+
+    it('drawCanvasOperation should call drawLine if isCurrentActionRectangle is false', () => {
+        spyOn(service, 'isCurrentActionRectangle').and.callFake(() => false);
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const drawRectangleSpy = spyOn<any>(service, 'drawRectangle').and.callFake(() => {});
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
+        const drawLineSpy = spyOn<any>(service, 'drawLine').and.callFake(() => {});
+        service.stopOperation();
+        expect(drawRectangleSpy).not.toHaveBeenCalled();
+        expect(drawLineSpy).toHaveBeenCalled();
     });
 
     it('setSquareMode should not set isSquareModeOn to value if not in rectangle action', () => {
