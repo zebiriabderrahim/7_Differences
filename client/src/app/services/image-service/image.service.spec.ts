@@ -14,6 +14,7 @@ describe('ImageService', () => {
     let contextStub: CanvasRenderingContext2D;
     let imageBitmap: ImageBitmap;
     let foregroundServiceSpy: jasmine.SpyObj<ForegroundService>;
+    let timerCallback: jasmine.Spy<jasmine.Func> | (() => void);
 
     beforeEach(() => {
         foregroundServiceSpy = jasmine.createSpyObj('ForegroundService', ['getForegroundCanvasElements']);
@@ -29,6 +30,15 @@ describe('ImageService', () => {
 
     beforeEach(async () => {
         imageBitmap = await createImageBitmap(new ImageData(IMG_WIDTH, IMG_HEIGHT));
+    });
+
+    beforeEach(() => {
+        timerCallback = jasmine.createSpy('timerCallback');
+        jasmine.clock().install();
+    });
+
+    afterEach(() => {
+        jasmine.clock().uninstall();
     });
 
     it('should be created', () => {
@@ -258,5 +268,20 @@ describe('ImageService', () => {
         const secondFakeCanvas = {} as HTMLCanvasElement;
         service['combineCanvas'](firstFakeCanvas, secondFakeCanvas);
         expect(drawImageSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('loadImage should properly load an image', () => {
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
+        const context: CanvasRenderingContext2D = canvas.getContext('2d') as CanvasRenderingContext2D;
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        service.loadImage(context, 'assets/RatCoon.png');
+        setTimeout(() => {
+            timerCallback();
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        }, 350);
+        expect(timerCallback).not.toHaveBeenCalled();
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        jasmine.clock().tick(351);
+        expect(timerCallback).toHaveBeenCalled();
     });
 });

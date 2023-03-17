@@ -6,7 +6,7 @@ import { ClassicSystemService } from '@app/services/classic-system-service/class
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 // import { ClientSideGame } from '@common/game-interfaces';
 // import { Subject } from 'rxjs';
-import { SoloGameViewComponent } from './solo-game-view.component';
+import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.component';
 
 describe('SoloGameViewComponent', () => {
     let component: SoloGameViewComponent;

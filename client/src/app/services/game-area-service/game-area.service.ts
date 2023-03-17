@@ -1,7 +1,7 @@
 import { HostListener, Injectable } from '@angular/core';
 import { FLASH_WAIT_TIME, GREEN_FLASH_TIME, LEFT_BUTTON, ONE_SECOND, X_CENTERING_DISTANCE, YELLOW_FLASH_TIME } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
-import { N_PIXEL_ATTRIBUTE } from '@app/constants/pixels';
+import { GREEN_PIXEL, N_PIXEL_ATTRIBUTE, YELLOW_PIXEL } from '@app/constants/pixels';
 import { Coordinate } from '@common/coordinate';
 
 @Injectable({
@@ -18,23 +18,8 @@ export class GameAreaService {
     private modifiedContextFrontLayer: CanvasRenderingContext2D;
     private mousePosition: Coordinate = { x: 0, y: 0 };
     private clickDisabled: boolean = false;
-    private correctSoundEffect: HTMLAudioElement;
-    private incorrectSoundEffect: HTMLAudioElement;
-
-    constructor() {
-        this.correctSoundEffect = new Audio('assets/sound/WinSoundEffect.mp3');
-        this.incorrectSoundEffect = new Audio('assets/sound/ErrorSoundEffect.mp3');
-    }
 
     @HostListener('keydown', ['$event'])
-    loadImage(context: CanvasRenderingContext2D, path: string) {
-        const image = new Image();
-        image.onload = async () => {
-            context.drawImage(await createImageBitmap(image), 0, 0);
-        };
-        image.src = path;
-    }
-
     setAllData(): void {
         this.originalPixelData = this.originalContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.modifiedPixelData = this.modifiedContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
@@ -47,22 +32,11 @@ export class GameAreaService {
     }
 
     detectLeftClick(event: MouseEvent): boolean {
-        if (event.button === LEFT_BUTTON && !this.clickDisabled) {
-            this.saveCoord(event);
-            return true;
-        } else {
-            return false;
-        }
+        return event.button === LEFT_BUTTON && !this.clickDisabled ? (this.saveCoord(event), true) : false;
     }
 
     showError(isMainCanvas: boolean): void {
-        let frontContext: CanvasRenderingContext2D;
-        if (isMainCanvas) {
-            frontContext = this.originalContextFrontLayer;
-        } else {
-            frontContext = this.modifiedContextFrontLayer;
-        }
-        this.playErrorSound();
+        const frontContext: CanvasRenderingContext2D = isMainCanvas ? this.originalContextFrontLayer : this.modifiedContextFrontLayer;
         frontContext.fillStyle = 'red';
         this.clickDisabled = true;
         frontContext.font = 'bold 30px sheriff';
@@ -71,15 +45,6 @@ export class GameAreaService {
             frontContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
             this.clickDisabled = false;
         }, ONE_SECOND);
-    }
-
-    convert2DCoordToPixelIndex(differenceCoord: Coordinate[]): number[] {
-        const imageDataIndex: number[] = [];
-        for (const coord of differenceCoord) {
-            const flatIndex = (coord.x + IMG_WIDTH * coord.y) * N_PIXEL_ATTRIBUTE;
-            imageDataIndex.push(flatIndex);
-        }
-        return imageDataIndex;
     }
 
     replaceDifference(differenceCoord: Coordinate[]): void {
@@ -94,62 +59,61 @@ export class GameAreaService {
     }
 
     flashCorrectPixels(differenceCoord: Coordinate[]): void {
-        this.playCorrectSound();
         const imageDataIndexes = this.convert2DCoordToPixelIndex(differenceCoord);
+        this.flashPixels(imageDataIndexes);
+    }
+
+    flashPixels(imageDataIndexes: number[]): void {
         const firstInterval = setInterval(() => {
             const secondInterval = setInterval(() => {
-                for (const index of imageDataIndexes) {
-                    this.modifiedFrontPixelData.data[index] = 255;
-                    this.modifiedFrontPixelData.data[index + 1] = 244;
-                    this.modifiedFrontPixelData.data[index + 2] = 0;
-                    this.modifiedFrontPixelData.data[index + 3] = 255;
-
-                    this.originalFrontPixelData.data[index] = 255;
-                    this.originalFrontPixelData.data[index + 1] = 244;
-                    this.originalFrontPixelData.data[index + 2] = 0;
-                    this.originalFrontPixelData.data[index + 3] = 255;
-                }
-                this.modifiedContextFrontLayer.putImageData(this.modifiedFrontPixelData, 0, 0);
-                this.originalContextFrontLayer.putImageData(this.originalFrontPixelData, 0, 0);
+                this.setPixelData(imageDataIndexes, this.modifiedFrontPixelData, this.originalFrontPixelData);
+                this.putImageDataToContexts();
             }, GREEN_FLASH_TIME);
 
+            const color = [YELLOW_PIXEL.red, YELLOW_PIXEL.green, YELLOW_PIXEL.blue, YELLOW_PIXEL.alpha];
             for (const index of imageDataIndexes) {
-                this.modifiedFrontPixelData.data[index] = 0;
-                this.modifiedFrontPixelData.data[index + 1] = 255;
-                this.modifiedFrontPixelData.data[index + 2] = 0;
-                this.modifiedFrontPixelData.data[index + 3] = 255;
-
-                this.originalFrontPixelData.data[index] = 0;
-                this.originalFrontPixelData.data[index + 1] = 255;
-                this.originalFrontPixelData.data[index + 2] = 0;
-                this.originalFrontPixelData.data[index + 3] = 255;
+                this.modifiedFrontPixelData.data.set(color, index);
+                this.originalFrontPixelData.data.set(color, index);
             }
-            this.modifiedContextFrontLayer.putImageData(this.modifiedFrontPixelData, 0, 0);
-            this.originalContextFrontLayer.putImageData(this.originalFrontPixelData, 0, 0);
+            this.putImageDataToContexts();
 
             setTimeout(() => {
                 clearInterval(secondInterval);
-                this.modifiedContextFrontLayer.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-                this.originalContextFrontLayer.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-                this.clickDisabled = false;
+                this.clearFlashing();
             }, FLASH_WAIT_TIME);
         }, YELLOW_FLASH_TIME);
 
         setTimeout(() => {
             clearInterval(firstInterval);
-            this.modifiedContextFrontLayer.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-            this.originalContextFrontLayer.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-            this.clickDisabled = false;
+            this.clearFlashing();
         }, FLASH_WAIT_TIME);
     }
 
-    playErrorSound(): void {
-        this.incorrectSoundEffect.play();
+    setPixelData(imageDataIndexes: number[], modifiedFrontPixelData: ImageData, originalFrontPixelData: ImageData): void {
+        for (const index of imageDataIndexes) {
+            modifiedFrontPixelData.data[index] = GREEN_PIXEL.red;
+            modifiedFrontPixelData.data[index + 1] = GREEN_PIXEL.green;
+            modifiedFrontPixelData.data[index + 2] = GREEN_PIXEL.blue;
+            modifiedFrontPixelData.data[index + 3] = GREEN_PIXEL.alpha;
+
+            originalFrontPixelData.data[index] = GREEN_PIXEL.red;
+            originalFrontPixelData.data[index + 1] = GREEN_PIXEL.green;
+            originalFrontPixelData.data[index + 2] = GREEN_PIXEL.blue;
+            originalFrontPixelData.data[index + 3] = GREEN_PIXEL.alpha;
+        }
     }
 
-    playCorrectSound(): void {
-        this.correctSoundEffect.play();
+    putImageDataToContexts(): void {
+        this.modifiedContextFrontLayer.putImageData(this.modifiedFrontPixelData, 0, 0);
+        this.originalContextFrontLayer.putImageData(this.originalFrontPixelData, 0, 0);
     }
+
+    clearFlashing(): void {
+        this.modifiedContextFrontLayer.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        this.originalContextFrontLayer.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        this.clickDisabled = false;
+    }
+
     getOgContext(): CanvasRenderingContext2D {
         return this.originalContext;
     }
@@ -184,5 +148,14 @@ export class GameAreaService {
 
     getMousePosition(): Coordinate {
         return this.mousePosition;
+    }
+
+    private convert2DCoordToPixelIndex(differenceCoord: Coordinate[]): number[] {
+        const imageDataIndex: number[] = [];
+        for (const coord of differenceCoord) {
+            const flatIndex = (coord.x + IMG_WIDTH * coord.y) * N_PIXEL_ATTRIBUTE;
+            imageDataIndex.push(flatIndex);
+        }
+        return imageDataIndex;
     }
 }
