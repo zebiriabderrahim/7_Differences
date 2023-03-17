@@ -7,6 +7,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { SocketTestHelper } from '@app/services/client-socket-service/client-socket.service.spec';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { SoundService } from '@app/services/sound-service/sound.service';
 import { GameEvents } from '@common/game-interfaces';
 import { Socket } from 'socket.io-client';
 import { ClassicSystemService } from './classic-system.service';
@@ -42,12 +43,14 @@ describe('ClassicSystemService', () => {
     let gameAreaService: GameAreaService;
     let socketHelper: SocketTestHelper;
     let socketServiceMock: SocketClientServiceMock;
+    let soundServiceSpy: jasmine.SpyObj<SoundService>;
     // let dialogService: MatDialog;
 
     beforeEach(async () => {
         socketHelper = new SocketTestHelper();
         socketServiceMock = new SocketClientServiceMock();
         socketServiceMock.socket = socketHelper as unknown as Socket;
+        soundServiceSpy = jasmine.createSpyObj('SoundService', ['playCorrectSound', 'playErrorSound']);
 
         await TestBed.configureTestingModule({
             imports: [HttpClientModule, RouterTestingModule, MatDialogModule],
@@ -62,6 +65,7 @@ describe('ClassicSystemService', () => {
                     provide: MAT_DIALOG_DATA,
                     useValue: {},
                 },
+                { provide: SoundService, useValue: soundServiceSpy },
             ],
         }).compileComponents();
     });
@@ -110,6 +114,7 @@ describe('ClassicSystemService', () => {
     it('replaceDifference should throw an error if Coordinate length is 0', () => {
         service.replaceDifference([]);
         expect(gameAreaService.showError).toHaveBeenCalled();
+        expect(soundServiceSpy.playErrorSound).toHaveBeenCalled();
     });
 
     /* it('replaceDifference should modify coordinate if coordinate length is greater than 0', () => {
