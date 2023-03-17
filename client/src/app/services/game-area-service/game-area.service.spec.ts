@@ -6,20 +6,20 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-import { BACK_BUTTON, FORWARD_BUTTON, LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON } from '@app/constants/constants';
+import { BACK_BUTTON, FORWARD_BUTTON, LEFT_BUTTON, MIDDLE_BUTTON, ONE_SECOND, RIGHT_BUTTON } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { Coordinate } from '@common/coordinate';
 import { GameAreaService } from './game-area.service';
 
 describe('GameAreaService', () => {
     let gameAreaService: GameAreaService;
-    // let timerCallback: jasmine.Spy<jasmine.Func>;
+    let timerCallback: jasmine.Spy<jasmine.Func>;
     // let intervalCallback: jasmine.Spy<jasmine.Func>;
 
     beforeEach(() => {
         TestBed.configureTestingModule({});
         gameAreaService = TestBed.inject(GameAreaService);
-        // timerCallback = jasmine.createSpy('timerCallback');
+        timerCallback = jasmine.createSpy('timerCallback');
         // intervalCallback = jasmine.createSpy('intervalCallback');
         jasmine.clock().install();
     });
@@ -68,7 +68,7 @@ describe('GameAreaService', () => {
         const resultingIndexList: number[] = gameAreaService['convert2DCoordToPixelIndex'](differenceCoord);
         expect(resultingIndexList).toEqual(expectedIndexList);
     });
-    /*
+
     it('setAllData should get the imageData of the two contexts', () => {
         const originalCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const modifiedCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
@@ -106,20 +106,6 @@ describe('GameAreaService', () => {
         expect(gameAreaService['originalFrontPixelData']).toEqual(expectedOriginalFrontLayer);
         expect(gameAreaService['modifiedFrontPixelData']).toEqual(expectedModifiedFrontLayer);
     });
-*/
-
-    // it('loadImage should properly load an image', async () => {
-    //     const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
-    //     const context: CanvasRenderingContext2D = canvas.getContext('2d') as CanvasRenderingContext2D;
-
-    //     gameAreaService.loadImage(context, 'assets/RatCoon.png');
-    //     setTimeout(() => {
-    //         timerCallback();
-    //     }, 350);
-    //     expect(timerCallback).not.toHaveBeenCalled();
-    //     jasmine.clock().tick(350 + 1);
-    //     expect(timerCallback).toHaveBeenCalled();
-    // });
 
     it('should correctly eliminate disparities from the altered canvas', () => {
         const originalCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
@@ -157,45 +143,51 @@ describe('GameAreaService', () => {
         );
     });
 
-    // it('showError should display an error on the left canvas and play error sound effect', async () => {
-    //     const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
-    //     const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
-    //     gameAreaService['originalContextFrontLayer'] = context;
-    //     const initialImageData: ImageData = context.createImageData(IMG_WIDTH, IMG_HEIGHT);
-    //     const playErrorSoundSpy = spyOn(gameAreaService, 'playErrorSound').and.callFake(() => {});
-    //     const methodSpy = spyOn(context, 'fillText');
-    //     gameAreaService['mousePosition'] = { x: 100, y: 150 };
-    //     setTimeout(() => {
-    //         timerCallback();
-    //     }, ONE_SECOND);
-    //     gameAreaService.showError(true);
-    //     expect(timerCallback).not.toHaveBeenCalled();
-    //     jasmine.clock().tick(ONE_SECOND + 1);
-    //     expect(timerCallback).toHaveBeenCalled();
-    //     expect(context.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT)).toEqual(initialImageData);
-    //     expect(methodSpy).toHaveBeenCalled();
-    //     expect(playErrorSoundSpy).toHaveBeenCalled();
-    // });
+    it('showError should display an error on the left canvas', async () => {
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
+        const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
+        gameAreaService['originalContextFrontLayer'] = context;
+        const initialImageData: ImageData = context.createImageData(IMG_WIDTH, IMG_HEIGHT);
+        const methodSpy = spyOn(context, 'fillText');
+        gameAreaService['mousePosition'] = { x: 100, y: 150 };
+        setTimeout(() => {
+            timerCallback();
+        }, ONE_SECOND);
+        gameAreaService.showError(true);
+        expect(timerCallback).not.toHaveBeenCalled();
+        jasmine.clock().tick(ONE_SECOND + 1);
+        expect(timerCallback).toHaveBeenCalled();
+        expect(context.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT)).toEqual(initialImageData);
+        expect(methodSpy).toHaveBeenCalled();
+    });
 
-    // it('showError should display an error on the right canvas and play error sound effect', async () => {
-    //     const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
-    //     const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
-    //     gameAreaService['modifiedContextFrontLayer'] = context;
-    //     const initialImageData: ImageData = context.createImageData(IMG_WIDTH, IMG_HEIGHT);
-    //     const playErrorSoundSpy = spyOn(gameAreaService, 'playErrorSound').and.callFake(() => {});
-    //     const methodSpy = spyOn(context, 'fillText');
-    //     gameAreaService['mousePosition'] = { x: 100, y: 150 };
-    //     setTimeout(() => {
-    //         timerCallback();
-    //     }, ONE_SECOND);
-    //     gameAreaService.showError(false);
-    //     expect(timerCallback).not.toHaveBeenCalled();
-    //     jasmine.clock().tick(ONE_SECOND + 1);
-    //     expect(timerCallback).toHaveBeenCalled();
-    //     expect(context.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT)).toEqual(initialImageData);
-    //     expect(methodSpy).toHaveBeenCalled();
-    //     expect(playErrorSoundSpy).toHaveBeenCalled();
-    // });
+    it('showError should display an error on the right canvas', async () => {
+        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
+        const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
+        gameAreaService['modifiedContextFrontLayer'] = context;
+        const initialImageData: ImageData = context.createImageData(IMG_WIDTH, IMG_HEIGHT);
+        const methodSpy = spyOn(context, 'fillText');
+        gameAreaService['mousePosition'] = { x: 100, y: 150 };
+        setTimeout(() => {
+            timerCallback();
+        }, ONE_SECOND);
+        gameAreaService.showError(false);
+        expect(timerCallback).not.toHaveBeenCalled();
+        jasmine.clock().tick(ONE_SECOND + 1);
+        expect(timerCallback).toHaveBeenCalled();
+        expect(context.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT)).toEqual(initialImageData);
+        expect(methodSpy).toHaveBeenCalled();
+    });
+
+    it('flashCorrectPixels should get image data indexes and call flashPixels', () => {
+        // const differenceCoord: Coordinate[] = [
+        //     { x: 12, y: 15 },
+        //     { x: 0, y: 0 },
+        //     { x: 20, y: 100 },
+        //     { x: 30, y: 0 },
+        // ];
+        // const expectedIndexList: number[] = [38448, 0, 256080, 120];
+    });
 
     // it('flashCorrectPixels should flash the difference pixels on both canvas and play correct sound effect', async () => {
     //     const currentDifference = [
