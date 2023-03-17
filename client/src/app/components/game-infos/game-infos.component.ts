@@ -9,4 +9,5 @@ import { ClientSideGame } from '@common/game-interfaces';
 export class GameInfosComponent {
     @Input() game: ClientSideGame;
     @Input() differencesCount: number;
+    @Input() playerName: string;
 }

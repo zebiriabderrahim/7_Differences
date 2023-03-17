@@ -1,0 +1,13 @@
+#buttons {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    flex-direction: column;
+}
+
+#undo-redo-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-direction: row;
+}

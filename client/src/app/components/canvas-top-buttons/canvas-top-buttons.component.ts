@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { AfterViewInit, Component, Input } from '@angular/core';
 import { COLORS, DEFAULT_COLOR, DEFAULT_WIDTH, DRAW_VALUES } from '@app/constants/drawing';
 import { CanvasAction } from '@app/enum/canvas-action';
 import { CanvasPosition } from '@app/enum/canvas-position';
@@ -10,10 +10,10 @@ import { DrawService } from '@app/services/draw-service/draw.service';
     templateUrl: './canvas-top-buttons.component.html',
     styleUrls: ['./canvas-top-buttons.component.scss'],
 })
-export class CanvasTopButtonsComponent {
+export class CanvasTopButtonsComponent implements AfterViewInit {
     @Input() position: CanvasPosition;
     operationDetails: CanvasOperation;
-    selectedCanvasAction: CanvasAction;
+    selectedCanvasAction: CanvasAction = CanvasAction.Pencil;
     isColorSelected: boolean = false;
     canvasAction: typeof CanvasAction;
     pencilDiameter: number;
@@ -29,18 +29,32 @@ export class CanvasTopButtonsComponent {
         this.selectedCanvasAction = CanvasAction.Pencil;
     }
 
-    getOperationDetails(): CanvasOperation {
-        const width: number = this.selectedCanvasAction === CanvasAction.Pencil ? this.pencilDiameter : this.eraserLength;
-        this.operationDetails = {
-            action: this.selectedCanvasAction,
-            position: this.position,
-            color: this.drawColor,
-            width,
-        };
-        return this.operationDetails;
+    ngAfterViewInit(): void {
+        this.pencilDiameter = DEFAULT_WIDTH;
+        this.eraserLength = DEFAULT_WIDTH;
+        this.canvasAction = CanvasAction;
+        this.selectedCanvasAction = CanvasAction.Pencil;
+        this.setCanvasAction(this.selectedCanvasAction);
+        this.setDrawingColor(this.drawColor);
+        this.setPencilWidth(this.pencilDiameter);
+        this.setEraserLength(this.eraserLength);
     }
 
-    resetForeground(): void {
-        this.drawService.resetForeground(this.position);
+    setDrawingColor(color: string): void {
+        this.drawColor = color;
+        this.isColorSelected = false;
+        this.drawService.setDrawingColor(this.drawColor);
+    }
+
+    setCanvasAction(canvasAction: CanvasAction): void {
+        this.drawService.setCanvasAction(canvasAction);
+    }
+
+    setPencilWidth(width: number): void {
+        this.drawService.setPencilWidth(width);
+    }
+
+    setEraserLength(width: number): void {
+        this.drawService.setEraserLength(width);
     }
 }
