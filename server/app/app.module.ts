@@ -9,6 +9,7 @@ import { ClassicModeService } from './services/classic-mode/classic-mode.service
 import { GameListsManagerService } from './services/game-lists-manager/game-lists-manager.service';
 import { Game, gameSchema } from './model/database/game';
 import { GameCard, gameCardSchema } from './model/database/game-card';
+import { MessageManagerService } from './services/message-manager/message-manager.service';
 
 @Module({
     imports: [
@@ -26,6 +27,6 @@ import { GameCard, gameCardSchema } from './model/database/game-card';
         ]),
     ],
     controllers: [GameController],
-    providers: [Logger, GameService, DatabaseService, ConfigService, GameGateway, ClassicModeService, GameListsManagerService],
+    providers: [Logger, GameService, DatabaseService, ConfigService, GameGateway, ClassicModeService, GameListsManagerService, MessageManagerService],
 })
 export class AppModule {}

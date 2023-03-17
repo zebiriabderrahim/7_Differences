@@ -1,12 +1,15 @@
 <div id="canvas-action-buttons">
     <button mat-raised-button color="basic" matTooltip="L'image doit être en format BMP 24 bits et de taille 640x480"
         (click)="fileUpload.click()">
-        Téléverser une image {{position === canvasPosition.Both ? 'pour les deux zones' : ''}}
+        Téléverser une image {{canvasPositionType === canvasPosition.Both ? 'pour les deux zones' : ''}}
         <mat-icon>attach_file</mat-icon>
     </button>
     <input #uploadInput type="file" id="upload-btn" (change)="onSelectFile($event)" #fileUpload />
     <button mat-raised-button color="primary" (click)="resetBackground()">
-        Réinitialiser {{position === canvasPosition.Both ? 'les arrières-plans' : 'l\'arrière-plan'}}
+        Réinitialiser {{canvasPositionType === canvasPosition.Both ? 'les arrières-plans' : 'l\'arrière-plan'}}
+    </button>
+    <button mat-raised-button color="accent" *ngIf="canvasPositionType !== canvasPosition.Both" (click)="resetForeground()">
+        Réinitialiser l'avant-plan
     </button>
 </div>
 

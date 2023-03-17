@@ -26,11 +26,14 @@ import { SelectionPageComponent } from '@app/pages/selection-page/selection-page
 import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.component';
 import { CanvasTopButtonsComponent } from './components/canvas-top-buttons/canvas-top-buttons.component';
 import { CanvasUnderButtonsComponent } from './components/canvas-under-buttons/canvas-under-buttons.component';
+import { ChatBoxComponent } from './components/chat-box/chat-box.component';
 import { ImageCanvasComponent } from './components/image-canvas/image-canvas.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { SoloGameViewDialogComponent } from './components/solo-game-view-dialog/solo-game-view-dialog.component';
 import { WaitingForPlayerToJoinComponent } from './components/waiting-player-to-join/waiting-player-to-join.component';
 import { ConfigPageComponent } from './pages/config-page/config-page.component';
+import { JoinedPlayerDialogComponent } from './components/joined-player-dialog/joined-player-dialog.component';
+import { CanvasMiddleButtonsComponent } from './components/canvas-middle-buttons/canvas-middle-buttons.component';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -54,7 +57,10 @@ import { ConfigPageComponent } from './pages/config-page/config-page.component';
         SoloGameViewDialogComponent,
         WaitingForPlayerToJoinComponent,
         CanvasTopButtonsComponent,
+        JoinedPlayerDialogComponent,
         NavBarComponent,
+        ChatBoxComponent,
+        CanvasMiddleButtonsComponent,
     ],
     imports: [
         AppMaterialModule,

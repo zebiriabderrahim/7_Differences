@@ -2,6 +2,7 @@ import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core'
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
+import { CanvasPosition } from '@app/enum/canvas-position';
 import { GameDetails } from '@app/interfaces/game-interfaces';
 import { ImageSources } from '@app/interfaces/image-sources';
 import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
@@ -19,8 +20,6 @@ import { map, Observable } from 'rxjs';
 export class CreationGameDialogComponent implements OnInit {
     @ViewChild('differenceCanvas', { static: true }) differenceCanvas: ElementRef;
     gameName: string;
-    nDifferences: number;
-    readonly routerConfig: string = '/config/';
     gameNameForm = new FormGroup({
         name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)], [this.validateGameName.bind(this)]),
     });
@@ -43,18 +42,13 @@ export class CreationGameDialogComponent implements OnInit {
         this.gameName = '';
         this.differenceCanvas.nativeElement.width = IMG_WIDTH;
         this.differenceCanvas.nativeElement.height = IMG_HEIGHT;
-        const differences = this.differenceService.generateDifferences(this.imageService.getGamePixels(), this.radius);
+        const differences = this.differenceService.generateDifferences(this.imageService.generateGamePixels(), this.radius);
         const differenceContext = this.differenceCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.imageService.drawDifferences(differenceContext, differences);
     }
 
     isNumberOfDifferencesValid(): boolean {
-        this.nDifferences = this.differenceService.getNumberOfDifferences();
         return this.differenceService.isNumberOfDifferencesValid();
-    }
-
-    onNoClick(): void {
-        this.dialogRef.close();
     }
 
     submitForm() {
@@ -70,7 +64,7 @@ export class CreationGameDialogComponent implements OnInit {
                 isHard: this.differenceService.isGameHard(),
             };
             this.dialogRef.close(gameDetails);
-            this.imageService.resetBothBackgrounds();
+            this.imageService.resetBackground(CanvasPosition.Both);
         }
     }
 

@@ -1,9 +1,9 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
-import { CanvasTopButtonsComponent } from '@app/components/canvas-top-buttons/canvas-top-buttons.component';
+import { LEFT_BUTTON } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasPosition } from '@app/enum/canvas-position';
-import { CanvasOperation } from '@app/interfaces/canvas-operation';
 import { DrawService } from '@app/services/draw-service/draw.service';
+import { ForegroundService } from '@app/services/foreground-service/foreground.service';
 import { ImageService } from '@app/services/image-service/image.service';
 
 @Component({
@@ -16,20 +16,22 @@ export class ImageCanvasComponent implements AfterViewInit {
     @ViewChild('backgroundCanvas') backgroundCanvas: ElementRef;
     @ViewChild('foregroundCanvas') foregroundCanvas: ElementRef;
     @ViewChild('frontCanvas') frontCanvas: ElementRef;
-    @ViewChild(CanvasTopButtonsComponent) canvasTopButtonsComponent!: CanvasTopButtonsComponent;
     readonly canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
-    operationDetails: CanvasOperation;
 
-    constructor(private readonly imageService: ImageService, private readonly drawService: DrawService) {}
+    constructor(
+        private readonly imageService: ImageService,
+        private readonly drawService: DrawService,
+        private readonly foregroundService: ForegroundService,
+    ) {}
 
     @HostListener('window:keydown.shift', ['$event'])
     onShiftDown() {
-        this.drawService.enableSquareMode();
+        this.drawService.setSquareMode(true);
     }
 
     @HostListener('window:keyup.shift', ['$event'])
     onShiftUp() {
-        this.drawService.disableSquareMode();
+        this.drawService.setSquareMode(false);
     }
 
     ngAfterViewInit(): void {
@@ -37,11 +39,13 @@ export class ImageCanvasComponent implements AfterViewInit {
         this.imageService.setBackgroundContext(this.position, backgroundContext);
         const foregroundContext: CanvasRenderingContext2D = this.foregroundCanvas.nativeElement.getContext('2d', { willReadFrequently: true });
         const frontContext: CanvasRenderingContext2D = this.frontCanvas.nativeElement.getContext('2d', { willReadFrequently: true });
-        this.drawService.setForegroundContext(this.position, foregroundContext, frontContext);
+        this.foregroundService.setForegroundContext(this.position, foregroundContext, frontContext);
     }
 
-    resetForeground(): void {
-        this.drawService.resetForeground(this.position);
+    onMouseLeavingCanvas(event: MouseEvent): void {
+        if (event.button === LEFT_BUTTON) {
+            this.drawService.mouseIsOutOfCanvas();
+        }
     }
 
     continueCanvasOperation(event: MouseEvent): void {
@@ -49,10 +53,10 @@ export class ImageCanvasComponent implements AfterViewInit {
     }
 
     startCanvasOperation(event: MouseEvent): void {
-        this.drawService.startCanvasOperation(this.canvasTopButtonsComponent.getOperationDetails(), event);
+        this.foregroundService.startForegroundOperation(this.position, event);
     }
 
     stopCanvasOperation(event: MouseEvent): void {
-        this.drawService.stopCanvasOperation(this.position, event);
+        this.foregroundService.stopForegroundOperation(this.position, event);
     }
 }
