@@ -58,10 +58,10 @@ describe('ClassicSystemService', () => {
         },
     };
 
-    const mockDataDifference = {
-        differencesData: mockDifferences,
-        player: mockPlayer1,
-    };
+    // const mockDataDifference = {
+    //     differencesData: mockDifferences,
+    //     player: mockPlayer1,
+    // };
 
     const mockTimer = 0;
     const mockEndMessage = 'Fin de partie';
