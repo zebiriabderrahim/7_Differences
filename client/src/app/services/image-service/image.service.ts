@@ -21,6 +21,14 @@ export class ImageService {
 
     constructor(private readonly foregroundService: ForegroundService) {}
 
+    loadImage(context: CanvasRenderingContext2D, path: string) {
+        const image = new Image();
+        image.onload = async () => {
+            context.drawImage(await createImageBitmap(image), 0, 0);
+        };
+        image.src = path;
+    }
+
     resetBackground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
