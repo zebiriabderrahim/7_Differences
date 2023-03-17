@@ -114,6 +114,7 @@ describe('RoomManagerService', () => {
     it('handleRoomEvents should connect socket and set on for GameEvents related to room', () => {
         service.handleRoomEvents();
         expect(clientSocketSpy.connect).toHaveBeenCalled();
+        expect(clientSocketSpy.on).toHaveBeenCalledWith(GameEvents.RoomSoloCreated, jasmine.any(Function));
         expect(clientSocketSpy.on).toHaveBeenCalledWith(GameEvents.RoomOneVsOneAvailable, jasmine.any(Function));
         expect(clientSocketSpy.on).toHaveBeenCalledWith(GameEvents.OneVsOneRoomDeleted, jasmine.any(Function));
         expect(clientSocketSpy.on).toHaveBeenCalledWith(GameEvents.UpdateWaitingPlayerNameList, jasmine.any(Function));
