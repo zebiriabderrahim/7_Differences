@@ -8,7 +8,8 @@ import { ClientSocketService } from '@app/services/client-socket-service/client-
 import { SocketTestHelper } from '@app/services/client-socket-service/client-socket.service.spec';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
-import { ChatMessage, GameEvents, MessageEvents } from '@common/game-interfaces';
+import { Coordinate } from '@common/coordinate';
+import { ChatMessage, Differences, GameEvents, MessageEvents, MessageTag } from '@common/game-interfaces';
 import { Socket } from 'socket.io-client';
 import { ClassicSystemService } from './classic-system.service';
 
@@ -32,10 +33,35 @@ describe('ClassicSystemService', () => {
         differencesCount: 0,
     };
 
-    /* const mockDifferences: Differences = {
+    const mockDifferences: Differences = {
         currentDifference: [],
         differencesFound: 0,
-    };*/
+    };
+
+    const mockPlayer1 = {
+        playerId: 'Bob',
+        name: 'Jackob',
+        diffData: mockDifferences,
+    };
+
+    const mockPlayer2 = {
+        playerId: 'Boby',
+        name: 'Michel',
+        diffData: mockDifferences,
+    };
+
+    const mockData = {
+        clientGame: mockClientSideGame,
+        players: {
+            player1: mockPlayer1,
+            player2: mockPlayer2,
+        },
+    };
+
+    const mockDataDifference = {
+        differencesData: mockDifferences,
+        player: mockPlayer1,
+    };
 
     const mockTimer = 0;
     const mockEndMessage = 'Fin de partie';
@@ -59,7 +85,7 @@ describe('ClassicSystemService', () => {
             declarations: [],
             providers: [
                 { provide: ClientSocketService, useValue: socketServiceMock },
-                { provide: GameAreaService, useValue: jasmine.createSpyObj('GameAreaService', ['replaceDifference', 'showError']) },
+                { provide: GameAreaService, useValue: jasmine.createSpyObj('GameAreaService', ['replaceDifference', 'showError', 'setAllData']) },
                 {
                     provide: MatDialog,
                 },
@@ -105,18 +131,17 @@ describe('ClassicSystemService', () => {
         expect(soundServiceSpy.playErrorSound).toHaveBeenCalled();
     });
 
-    // it('replaceDifference should modify coordinate if coordinate length is greater than 0', () => {
-    //     const setAllDataSpy = spyOn(gameAreaService, 'setAllData').and.callFake(() => {});
-    //     const cord: Coordinate[] = [
-    //         { x: 1, y: 1 },
-    //         { x: 2, y: 2 },
-    //     ];
-    //     service['isLeftCanvas'] = true;
-    //     service.replaceDifference(cord);
-    //     expect(gameAreaService.replaceDifference).toHaveBeenCalledWith(cord);
-    //     expect(gameAreaService.showError).not.toHaveBeenCalled();
-    //     expect(setAllDataSpy).toHaveBeenCalled();
-    // });
+    it('replaceDifference should modify coordinate if coordinate length is greater than 0', () => {
+        const cord: Coordinate[] = [
+            { x: 1, y: 1 },
+            { x: 2, y: 2 },
+        ];
+        service['isLeftCanvas'] = true;
+        service.replaceDifference(cord);
+        expect(gameAreaService.replaceDifference).toHaveBeenCalledWith(cord);
+        expect(gameAreaService.showError).not.toHaveBeenCalled();
+        expect(gameAreaService.setAllData).toHaveBeenCalled();
+    });
 
     it('manageSocket should connect the client socket', () => {
         const socketConnectSpy = spyOn(socketServiceMock, 'connect');
@@ -173,6 +198,12 @@ describe('ClassicSystemService', () => {
         expect(socketSendSpy).toHaveBeenCalledWith(GameEvents.JoinOneVsOneGame, { gameId, playerName });
     });
 
+    it('should send a message to the client socket', () => {
+        socketServiceMock.send = jasmine.createSpy('send');
+        service.sendMessage('Hello world');
+        expect(socketServiceMock.send).toHaveBeenCalledWith(MessageEvents.LocalMessage, { tag: MessageTag.received, message: 'Hello world' });
+    });
+
     it('manageSocket should add the events listeners to CreateSoloGame, RemoveDiff and TimerStarted events', () => {
         const socketOnSpy = spyOn(socketServiceMock, 'on');
         service.manageSocket();
@@ -191,20 +222,18 @@ describe('ClassicSystemService', () => {
 
     it('manageSocket should update client game when GameStarted linked event is sent from server', () => {
         service.manageSocket();
-        // const currentGameSubjectNextSpy = spyOn(service['currentGame'], 'next');
-        socketHelper.peerSideEmit(GameEvents.GameStarted, mockClientSideGame);
-        // expect(currentGameSubjectNextSpy).toHaveBeenCalledWith(mockClientSideGame);
+        const currentGameSubjectNextSpy = spyOn(service['players'], 'next');
+        socketHelper.peerSideEmit(GameEvents.GameStarted, mockData);
+        expect(currentGameSubjectNextSpy).toHaveBeenCalledWith(mockData.players);
     });
 
     // it('manageSocket should update client game when RemoveDiff linked event is sent from server', () => {
     //     service.manageSocket();
-    //     const replaceDifferenceSpy = spyOn(service, 'replaceDifference');
     //     const differencesFoundSpy = spyOn(service['differencesFound'], 'next');
-    //     const checkStatusSpy = spyOn(service, 'checkStatus');
     //     socketHelper.peerSideEmit(GameEvents.RemoveDiff, mockDifferences);
-    //     expect(replaceDifferenceSpy).toHaveBeenCalledWith(mockDifferences.currentDifference);
-    //     expect(differencesFoundSpy).toHaveBeenCalledWith(mockDifferences.differencesFound);
-    //     expect(checkStatusSpy).toHaveBeenCalled();
+    //     expect(service['replaceDifference']).toHaveBeenCalledWith(mockDataDifference.differencesData.currentDifference);
+    //     expect(differencesFoundSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.differencesFound);
+    //     expect(service['checkStatus']).toHaveBeenCalled();
     // });
 
     it('manageSocket should update client game when TimerStarted linked event is sent from server', () => {
