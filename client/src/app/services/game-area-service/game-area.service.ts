@@ -47,15 +47,6 @@ export class GameAreaService {
         }, ONE_SECOND);
     }
 
-    convert2DCoordToPixelIndex(differenceCoord: Coordinate[]): number[] {
-        const imageDataIndex: number[] = [];
-        for (const coord of differenceCoord) {
-            const flatIndex = (coord.x + IMG_WIDTH * coord.y) * N_PIXEL_ATTRIBUTE;
-            imageDataIndex.push(flatIndex);
-        }
-        return imageDataIndex;
-    }
-
     replaceDifference(differenceCoord: Coordinate[]): void {
         const imageDataIndex = this.convert2DCoordToPixelIndex(differenceCoord);
         for (const index of imageDataIndex) {
@@ -157,5 +148,14 @@ export class GameAreaService {
 
     getMousePosition(): Coordinate {
         return this.mousePosition;
+    }
+
+    private convert2DCoordToPixelIndex(differenceCoord: Coordinate[]): number[] {
+        const imageDataIndex: number[] = [];
+        for (const coord of differenceCoord) {
+            const flatIndex = (coord.x + IMG_WIDTH * coord.y) * N_PIXEL_ATTRIBUTE;
+            imageDataIndex.push(flatIndex);
+        }
+        return imageDataIndex;
     }
 }
