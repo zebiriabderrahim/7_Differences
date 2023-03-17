@@ -65,7 +65,7 @@ describe('GameAreaService', () => {
             { x: 30, y: 0 },
         ];
         const expectedIndexList: number[] = [38448, 0, 256080, 120];
-        const resultingIndexList: number[] = gameAreaService.convert2DCoordToPixelIndex(differenceCoord);
+        const resultingIndexList: number[] = gameAreaService['convert2DCoordToPixelIndex'](differenceCoord);
         expect(resultingIndexList).toEqual(expectedIndexList);
     });
     /*

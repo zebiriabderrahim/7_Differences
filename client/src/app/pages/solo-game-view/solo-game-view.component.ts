@@ -42,7 +42,8 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     // eslint-disable-next-line max-params
     constructor(
         private gameAreaService: GameAreaService,
-        private classicService: ClassicSystemService, private imageService: ImageService,
+        private classicService: ClassicSystemService,
+        private imageService: ImageService,
         private readonly matDialog: MatDialog,
         private route: ActivatedRoute,
     ) {

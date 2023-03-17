@@ -19,10 +19,7 @@ export class ImageService {
     private leftImage: string;
     private rightImage: string;
 
-    constructor(private readonly drawService: DrawService) {
-        this.leftBackground = '';
-        this.rightBackground = '';
-    }
+    constructor(private readonly foregroundService: ForegroundService) {}
 
     loadImage(context: CanvasRenderingContext2D, path: string) {
         const image = new Image();
@@ -30,10 +27,6 @@ export class ImageService {
             context.drawImage(await createImageBitmap(image), 0, 0);
         };
         image.src = path;
-    }
-
-    areImagesSet(): boolean {
-        return this.leftBackground !== '' && this.rightBackground !== '';
     }
 
     resetBackground(canvasPosition: CanvasPosition) {

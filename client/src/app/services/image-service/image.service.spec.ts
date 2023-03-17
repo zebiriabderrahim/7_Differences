@@ -259,4 +259,17 @@ describe('ImageService', () => {
         service['combineCanvas'](firstFakeCanvas, secondFakeCanvas);
         expect(drawImageSpy).toHaveBeenCalledTimes(2);
     });
+
+    // it('loadImage should properly load an image', () => {
+    //     const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
+    //     const context: CanvasRenderingContext2D = canvas.getContext('2d') as CanvasRenderingContext2D;
+    //     // eslint-disable-next-line @typescript-eslint/no-empty-function
+    //     const drawImageSpy = spyOn(context, 'drawImage').and.callFake(() => {});
+
+    //     service.loadImage(context, 'assets/RatCoon.png');
+    //     setTimeout(() => {
+    //         expect(drawImageSpy).toHaveBeenCalled();
+    //         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+    //     }, 350);
+    // });
 });
