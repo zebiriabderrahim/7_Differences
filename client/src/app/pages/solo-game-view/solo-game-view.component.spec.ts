@@ -163,4 +163,10 @@ describe('SoloGameViewComponent', () => {
         component.showAbandonDialog();
         expect(dialog.open).toHaveBeenCalled();
     });
+
+    it('showEndGameDialog should call dialog.open with the correct arguments', () => {
+        const endingMessage = 'Bravo !';
+        component.showEndGameDialog(endingMessage);
+        expect(dialog.open).toHaveBeenCalled();
+    });
 });
