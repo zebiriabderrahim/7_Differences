@@ -15,6 +15,7 @@ describe('SoloGameViewComponent', () => {
     let gameAreaService: GameAreaService;
     let classicService: ClassicSystemService;
     let dialog: jasmine.SpyObj<MatDialog>;
+    let classicServiceSpy: jasmine.SpyObj<ClassicSystemService>;
     // const clientSideGameTest: ClientSideGame = {
     //     id: '1',
     //     name: 'test',
@@ -37,6 +38,7 @@ describe('SoloGameViewComponent', () => {
     // let classicServiceGetDifferencesFoundSpy: () => Subject<number>;
 
     beforeEach(async () => {
+        classicServiceSpy = jasmine.createSpyObj('ClassicService', ['sendMessage', 'requestVerification']);
         dialog = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
             imports: [HttpClientModule, RouterTestingModule, MatDialogModule],
@@ -135,7 +137,6 @@ describe('SoloGameViewComponent', () => {
 
     it('should set isLeftCanvas to true if the left click on original image is detected', () => {
         const gameAreaSpy = spyOn(gameAreaService, 'setAllData');
-        const classicServiceSpy = spyOn(classicService, 'requestVerification');
         mouse = new MouseEvent('click', { button: 0 });
         component.mouseClickOnOriginal(mouse);
         expect(classicService['isLeftCanvas']).toBeTruthy();
@@ -151,7 +152,6 @@ describe('SoloGameViewComponent', () => {
 
     it('should set isLeftCanvas to false if the left click on modified image is detected', () => {
         const gameAreaSpy = spyOn(gameAreaService, 'setAllData');
-        const classicServiceSpy = spyOn(classicService, 'requestVerification');
         mouse = new MouseEvent('click', { button: 0 });
         component.mouseClickOnModified(mouse);
         expect(classicService['isLeftCanvas']).toBeFalsy();
@@ -168,5 +168,11 @@ describe('SoloGameViewComponent', () => {
         const endingMessage = 'Bravo !';
         component.showEndGameDialog(endingMessage);
         expect(dialog.open).toHaveBeenCalled();
+    });
+
+    it('addRightSideMessage should add a message to the messages array and call ClassicService.sendMessage', () => {
+        const text = 'Bravo !';
+        component.addRightSideMessage(text);
+        expect(classicServiceSpy.sendMessage).toHaveBeenCalledWith(text);
     });
 });
