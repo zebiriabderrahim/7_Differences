@@ -1,6 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
@@ -14,6 +14,7 @@ describe('SoloGameViewComponent', () => {
     let mouse: MouseEvent;
     let gameAreaService: GameAreaService;
     let classicService: ClassicSystemService;
+    let dialog: jasmine.SpyObj<MatDialog>;
     // const clientSideGameTest: ClientSideGame = {
     //     id: '1',
     //     name: 'test',
@@ -36,10 +37,11 @@ describe('SoloGameViewComponent', () => {
     // let classicServiceGetDifferencesFoundSpy: () => Subject<number>;
 
     beforeEach(async () => {
+        dialog = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
             imports: [HttpClientModule, RouterTestingModule, MatDialogModule],
             declarations: [SoloGameViewComponent],
-            providers: [GameAreaService, ClassicSystemService],
+            providers: [GameAreaService, ClassicSystemService, { provide: MatDialog, useValue: dialog }],
         }).compileComponents();
     });
 
@@ -49,6 +51,8 @@ describe('SoloGameViewComponent', () => {
         gameAreaService = TestBed.inject(GameAreaService);
         classicService = TestBed.inject(ClassicSystemService);
         fixture.detectChanges();
+        // dialog = TestBed.inject(MatDialog);
+        // spyOn(dialog, 'open');
         // classicServiceGetCurrentGameSpy = spyOn(classicService, 'getCurrentGame').and.callFake(() => {
         //     return clientSideGameSubjectTest;
         // });
@@ -153,5 +157,10 @@ describe('SoloGameViewComponent', () => {
         expect(classicService['isLeftCanvas']).toBeFalsy();
         expect(gameAreaSpy).toHaveBeenCalled();
         expect(classicServiceSpy).toBeTruthy();
+    });
+
+    it('showAbandonDialog should open abandon dialog', () => {
+        component.showAbandonDialog();
+        expect(dialog.open).toHaveBeenCalled();
     });
 });
