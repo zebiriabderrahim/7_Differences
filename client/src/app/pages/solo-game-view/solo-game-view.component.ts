@@ -5,6 +5,7 @@ import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dial
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { ImageService } from '@app/services/image-service/image.service';
 import { ChatMessage, ClientSideGame, MessageTag, Player } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
@@ -42,6 +43,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     constructor(
         private gameAreaService: GameAreaService,
         private classicService: ClassicSystemService,
+        private imageService: ImageService,
         private readonly matDialog: MatDialog,
         private route: ActivatedRoute,
     ) {
@@ -87,8 +89,8 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
                         willReadFrequently: true,
                     }) as CanvasRenderingContext2D,
                 );
-                this.gameAreaService.loadImage(this.gameAreaService.getOgContext(), this.game.original);
-                this.gameAreaService.loadImage(this.gameAreaService.getMdContext(), this.game.modified);
+                this.imageService.loadImage(this.gameAreaService.getOgContext(), this.game.original);
+                this.imageService.loadImage(this.gameAreaService.getMdContext(), this.game.modified);
                 this.gameAreaService.setAllData();
             }
         });

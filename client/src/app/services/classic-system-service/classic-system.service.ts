@@ -1,6 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
 import { ChatMessage, ClientSideGame, Differences, GameEvents, MessageEvents, MessageTag, Player } from '@common/game-interfaces';
 import { filter, Subject } from 'rxjs';
@@ -17,7 +18,11 @@ export class ClassicSystemService implements OnDestroy {
     private endMessage: Subject<string>;
     private players: Subject<{ player1: Player; player2: Player }>;
 
-    constructor(private clientSocket: ClientSocketService, private gameAreaService: GameAreaService) {
+    constructor(
+        private readonly clientSocket: ClientSocketService,
+        private readonly gameAreaService: GameAreaService,
+        private readonly soundService: SoundService,
+    ) {
         this.currentGame = new Subject<ClientSideGame>();
         this.differencesFound = new Subject<number>();
         this.timer = new Subject<number>();
@@ -74,8 +79,10 @@ export class ClassicSystemService implements OnDestroy {
 
     replaceDifference(differences: Coordinate[]): void {
         if (differences.length === 0) {
+            this.soundService.playErrorSound();
             this.gameAreaService.showError(this.isLeftCanvas);
         } else {
+            this.soundService.playCorrectSound();
             this.gameAreaService.setAllData();
             this.gameAreaService.replaceDifference(differences);
         }
