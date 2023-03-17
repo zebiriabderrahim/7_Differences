@@ -1,12 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dialog/solo-game-view-dialog.component';
+import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 
 describe('SoloGameViewDialogComponent', () => {
     let component: SoloGameViewDialogComponent;
     let fixture: ComponentFixture<SoloGameViewDialogComponent>;
+    let classicServiceSpy: jasmine.SpyObj<ClassicSystemService>;
 
     beforeEach(async () => {
+        classicServiceSpy = jasmine.createSpyObj('ClassicService', ['abandonGame']);
         await TestBed.configureTestingModule({
             declarations: [SoloGameViewDialogComponent],
             imports: [MatDialogModule],
@@ -18,6 +21,10 @@ describe('SoloGameViewDialogComponent', () => {
                 {
                     provide: MatDialog,
                 },
+                {
+                    provide: ClassicSystemService,
+                    useValue: classicServiceSpy,
+                }
             ],
         }).compileComponents();
 
@@ -28,6 +35,11 @@ describe('SoloGameViewDialogComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('abandonGame should call classicService.abandonGame', () => {
+        component.abandonGame();
+        expect(classicServiceSpy.abandonGame).toHaveBeenCalled();
     });
 
     it('should display the correct header and message based on the action', () => {
