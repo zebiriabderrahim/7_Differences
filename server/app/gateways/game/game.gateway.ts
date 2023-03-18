@@ -49,9 +49,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
                 room.player2.playerId = socket.id;
             }
             this.classicModeService.saveRoom(room);
-            this.server
-                .to(roomId)
-                ?.emit(GameEvents.GameStarted, { clientGame: room.clientGame, players: { player1: room.player1, player2: room.player2 } });
+            this.server.to(roomId)?.emit(GameEvents.GameStarted, {
+                clientGame: room.clientGame,
+                players: { player1: room.player1, player2: room.player2 },
+                cheatDifferences: room.originalDifferences.flat(),
+            });
         }
     }
 
