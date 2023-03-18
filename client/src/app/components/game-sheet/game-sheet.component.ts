@@ -29,9 +29,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         public router: Router,
         private readonly roomManagerService: RoomManagerService,
         private readonly communicationService: CommunicationService,
-    ) {
-        this.roomManagerService.handleRoomEvents();
-    }
+    ) {}
     ngOnInit(): void {
         this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
         this.roomAvailabilitySubscription = this.roomManagerService.oneVsOneRoomsAvailabilityByRoomId$
@@ -121,7 +119,6 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     }
 
     ngOnDestroy(): void {
-        this.roomManagerService.disconnect();
         this.roomIdSubscription?.unsubscribe();
         this.roomAvailabilitySubscription?.unsubscribe();
     }
