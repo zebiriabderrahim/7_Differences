@@ -170,9 +170,12 @@ describe('SoloGameViewComponent', () => {
         expect(dialog.open).toHaveBeenCalled();
     });
 
-    // it('addRightSideMessage should add a message to the messages array and call ClassicService.sendMessage', () => {
-    //     const text = 'Bravo !';
-    //     component.addRightSideMessage(text);
-    //     expect(classicServiceSpy.sendMessage).toHaveBeenCalledWith(text);
-    // });
+    it('addRightSideMessage should add a message to the messages array and call ClassicService.sendMessage', () => {
+        const sendMessageSpy = spyOn(component['classicService'], 'sendMessage');
+        const text = 'Bravo !';
+        const messagesLength = component.messages.length;
+        component.addRightSideMessage(text);
+        expect(messagesLength).toBeLessThan(component.messages.length);
+        expect(sendMessageSpy).toHaveBeenCalledWith(text);
+    });
 });
