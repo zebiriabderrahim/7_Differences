@@ -1,3 +1,5 @@
+// Needed for empty callFake
+/* eslint-disable @typescript-eslint/no-empty-function */
 // needed to spy on private methods
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -71,14 +73,12 @@ describe('ImageService', () => {
     });
 
     it('setBackground called with rightCanvasPosition should call setBackgroundImage with rightBackgroundContext', () => {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const setBackgroundImageSpy = spyOn<any>(service, 'setBackgroundImage').and.callThrough();
         service.setBackground(CanvasPosition.Right, imageBitmap);
         expect(setBackgroundImageSpy).toHaveBeenCalledOnceWith(imageBitmap, service['rightBackgroundContext']);
     });
 
     it('setBackground called with CanvasPosition both should call setBackgroundImage with both background context', () => {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const setBackgroundImageSpy = spyOn<any>(service, 'setBackgroundImage').and.callFake(() => {});
         service.setBackground(CanvasPosition.Both, imageBitmap);
         expect(setBackgroundImageSpy).toHaveBeenCalledWith(imageBitmap, service['leftBackgroundContext']);
@@ -92,7 +92,6 @@ describe('ImageService', () => {
     });
 
     it('setBackgroundContext called with leftCanvasPosition should set the leftBackgroundContext and call resetBackgroundContext with it', () => {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for empty callFake
         const resetBackgroundContextSpy = spyOn<any>(service, 'resetBackgroundContext').and.callFake(() => {});
         const mockLeftBackgroundContext = {} as CanvasRenderingContext2D;
         expect(service['leftBackgroundContext']).not.toEqual(mockLeftBackgroundContext);
@@ -102,7 +101,6 @@ describe('ImageService', () => {
     });
 
     it('setBackgroundContext called with rightCanvasPosition should set the rightBackgroundContext and call resetBackgroundContext with it', () => {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for callFake
         const resetBackgroundContextSpy = spyOn<any>(service, 'resetBackgroundContext').and.callFake(() => {});
         const mockRightBackgroundContext = {} as CanvasRenderingContext2D;
         expect(service['rightBackgroundContext']).not.toEqual(mockRightBackgroundContext);
@@ -131,7 +129,6 @@ describe('ImageService', () => {
             { x: 1, y: 1 },
         ];
 
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed to callFake
         const putImageDataSpy = spyOn(contextStub, 'putImageData').and.callFake(() => {});
 
         service.drawDifferences(contextStub, mockDifferences);
@@ -169,9 +166,7 @@ describe('ImageService', () => {
     });
 
     it('setBackgroundImage should call clearRect and drawImage on the context its called with', () => {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed to callFake
         const clearRectSpy = spyOn(contextStub, 'clearRect').and.callFake(() => {});
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed to callFake
         const drawImageSpy = spyOn(contextStub, 'drawImage').and.callFake(() => {});
 
         service['setBackgroundImage'](imageBitmap, contextStub);
@@ -180,7 +175,6 @@ describe('ImageService', () => {
     });
 
     it('setBackgroundImage should call fillRect on the context its called with and change fillStyle', () => {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed to callFake
         const fillRectSpy = spyOn(contextStub, 'fillRect').and.callFake(() => {});
         const backgroundColor = '#ffffff';
 
@@ -214,9 +208,7 @@ describe('ImageService', () => {
 
     it('generatePixels should call combineCanvas and setImage', () => {
         service['combinedContext'] = contextStub;
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed to callFake
         const combineCanvasSpy = spyOn<any>(service, 'combineCanvas').and.callFake(() => {});
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed to callFake
         const setImageSpy = spyOn<any>(service, 'setImage').and.callFake(() => {});
         const fakeCanvas = {} as HTMLCanvasElement;
 
@@ -227,7 +219,6 @@ describe('ImageService', () => {
 
     it('generatePixels should call getImageData on combinedContext and transformImageToDataPixelArray with his data', () => {
         service['combinedContext'] = contextStub;
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed to callFake
         spyOn<any>(service, 'combineCanvas').and.callFake(() => {});
         const fakeCanvas = {} as HTMLCanvasElement;
         const mockImageData = new ImageData(1, 1);
@@ -261,7 +252,6 @@ describe('ImageService', () => {
 
     it('combineCanvas should call drawImage twice on the provided canvas', () => {
         service['combinedContext'] = contextStub;
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed to callFake
         const drawImageSpy = spyOn(contextStub, 'drawImage').and.callFake(() => {});
 
         const firstFakeCanvas = {} as HTMLCanvasElement;
@@ -273,14 +263,13 @@ describe('ImageService', () => {
     it('loadImage should properly load an image', () => {
         const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d') as CanvasRenderingContext2D;
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
         service.loadImage(context, 'assets/RatCoon.png');
         setTimeout(() => {
             timerCallback();
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- needed for test
         }, 350);
         expect(timerCallback).not.toHaveBeenCalled();
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- needed for test
         jasmine.clock().tick(351);
         expect(timerCallback).toHaveBeenCalled();
     });
