@@ -17,6 +17,7 @@ export class ClassicSystemService implements OnDestroy {
     private isLeftCanvas: boolean;
     private endMessage: Subject<string>;
     private players: Subject<{ player1: Player; player2: Player }>;
+    private cheatDifferences: Subject<Coordinate[]>;
 
     constructor(
         private readonly clientSocket: ClientSocketService,
@@ -30,6 +31,7 @@ export class ClassicSystemService implements OnDestroy {
         this.message = new Subject<ChatMessage>();
         this.endMessage = new Subject<string>();
         this.opponentDifferencesFound = new Subject<number>();
+        this.cheatDifferences = new Subject<Coordinate[]>();
     }
 
     get currentGame$() {
@@ -56,6 +58,10 @@ export class ClassicSystemService implements OnDestroy {
 
     get players$() {
         return this.players.asObservable();
+    }
+
+    get cheatDifferences$() {
+        return this.cheatDifferences.asObservable();
     }
 
     getSocketId(): string {
@@ -116,13 +122,17 @@ export class ClassicSystemService implements OnDestroy {
             this.currentGame.next(clientGame);
         });
 
-        this.clientSocket.on(GameEvents.GameStarted, (data: { clientGame: ClientSideGame; players: { player1: Player; player2: Player } }) => {
-            this.currentGame.next(data.clientGame);
-            if (data.players) {
-                this.players.next(data.players);
-            }
-        });
-        this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string }) => {
+        this.clientSocket.on(
+            GameEvents.GameStarted,
+            (data: { clientGame: ClientSideGame; players: { player1: Player; player2: Player }; cheatDifferences: Coordinate[] }) => {
+                this.currentGame.next(data.clientGame);
+                this.cheatDifferences.next(data.cheatDifferences);
+                if (data.players) {
+                    this.players.next(data.players);
+                }
+            },
+        );
+        this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[] }) => {
             if (data.playerId === this.getSocketId()) {
                 this.replaceDifference(data.differencesData.currentDifference);
                 this.differencesFound.next(data.differencesData.differencesFound);
@@ -131,6 +141,7 @@ export class ClassicSystemService implements OnDestroy {
                 this.replaceDifference(data.differencesData.currentDifference);
                 this.opponentDifferencesFound.next(data.differencesData.differencesFound);
             }
+            this.cheatDifferences.next(data.cheatDifferences);
         });
 
         this.clientSocket.on(GameEvents.TimerStarted, (timer: number) => {

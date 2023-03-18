@@ -13,8 +13,12 @@ export const FORWARD_BUTTON = 4;
 export const X_CENTERING_DISTANCE = 38;
 export const GREEN_FLASH_TIME = 40;
 export const YELLOW_FLASH_TIME = 50;
+export const RED_FLASH_TIME = 125;
 export const FLASH_WAIT_TIME = 500;
 export const SUBMIT_WAIT_TIME = 200;
+export const CHEAT_MODE_WAIT_TIME = 250;
 
 export const MAX_NAME_LENGTH = 10;
 export const MIN_NAME_LENGTH = 3;
+
+export const INPUT_TAG_NAME = 'INPUT';
