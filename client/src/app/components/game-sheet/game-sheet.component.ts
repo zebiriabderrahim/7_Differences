@@ -60,14 +60,9 @@ export class GameSheetComponent implements OnDestroy, OnInit {
 
     playSolo(): void {
         this.createSoloRoom();
-        this.roomIdSubscription = this.roomManagerService.roomId$
-            .pipe(
-                filter((roomId) => !!roomId),
-                take(1),
-            )
-            .subscribe((roomId) => {
-                this.router.navigate(['/game', roomId]);
-            });
+        this.roomIdSubscription = this.roomManagerService.roomId$.pipe(filter((roomId) => !!roomId)).subscribe((roomId) => {
+            this.router.navigate(['/game', roomId]);
+        });
     }
 
     createOneVsOne(): void {

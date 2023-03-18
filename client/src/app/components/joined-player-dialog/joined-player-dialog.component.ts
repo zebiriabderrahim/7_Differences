@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ONE_SECOND, TEN_SECONDS } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { filter, interval, skip, Subscription, take, takeWhile } from 'rxjs';
+import { filter, interval, Subscription, takeWhile } from 'rxjs';
 
 @Component({
     selector: 'app-joined-player-dialog',
@@ -33,10 +33,7 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
 
     getJoinedPlayerNamesByGameId() {
         this.playerNamesSubscription = this.roomManagerService.joinedPlayerNamesByGameId$
-            .pipe(
-                skip(1),
-                filter((data) => data.gameId === this.data.gameId && !!data.playerNamesList),
-            )
+            .pipe(filter((data) => data.gameId === this.data.gameId && !!data.playerNamesList))
             .subscribe((data) => {
                 this.handleRefusedPlayer(data.playerNamesList);
                 this.handleAcceptedPlayer();
@@ -66,10 +63,7 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
 
     handleAcceptedPlayer() {
         this.acceptedPlayerSubscription = this.roomManagerService.acceptedPlayerByRoom$
-            .pipe(
-                filter((acceptedPlayer) => acceptedPlayer?.playerName === this.data.player && acceptedPlayer?.gameId === this.data.gameId),
-                take(1),
-            )
+            .pipe(filter((acceptedPlayer) => acceptedPlayer?.playerName === this.data.player && acceptedPlayer?.gameId === this.data.gameId))
             .subscribe((acceptedPlayer) => {
                 this.dialogRef.close();
                 this.navigateToGame(acceptedPlayer.roomId);
