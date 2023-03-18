@@ -11,16 +11,28 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { CanvasTopButtonsComponent } from '@app/components/canvas-top-buttons/canvas-top-buttons.component';
 import { CanvasUnderButtonsComponent } from '@app/components/canvas-under-buttons/canvas-under-buttons.component';
+import { LEFT_BUTTON } from '@app/constants/constants';
+import { CanvasPosition } from '@app/enum/canvas-position';
+import { DrawService } from '@app/services/draw-service/draw.service';
+import { ForegroundService } from '@app/services/foreground-service/foreground.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ImageCanvasComponent } from './image-canvas.component';
 
 describe('ImageCanvasComponent', () => {
     let component: ImageCanvasComponent;
     let fixture: ComponentFixture<ImageCanvasComponent>;
-    let imageService: ImageService;
-    // let contextStub: CanvasRenderingContext2D;
+    let imageServiceSpy: jasmine.SpyObj<ImageService>;
+    let foregroundServiceSpy: jasmine.SpyObj<ForegroundService>;
+    let drawServiceSpy: jasmine.SpyObj<DrawService>;
 
     beforeEach(async () => {
+        imageServiceSpy = jasmine.createSpyObj('ImageService', ['setBackgroundContext']);
+        foregroundServiceSpy = jasmine.createSpyObj('ForegroundService', [
+            'setForegroundContext',
+            'startForegroundOperation',
+            'stopForegroundOperation',
+        ]);
+        drawServiceSpy = jasmine.createSpyObj('DrawService', ['setSquareMode', 'mouseIsOutOfCanvas', 'continueCanvasOperation']);
         await TestBed.configureTestingModule({
             declarations: [ImageCanvasComponent, CanvasTopButtonsComponent, CanvasUnderButtonsComponent],
             imports: [
@@ -40,11 +52,21 @@ describe('ImageCanvasComponent', () => {
                 {
                     provide: MatDialog,
                 },
+                {
+                    provide: ImageService,
+                    useValue: imageServiceSpy,
+                },
+                {
+                    provide: ForegroundService,
+                    useValue: foregroundServiceSpy,
+                },
+                {
+                    provide: DrawService,
+                    useValue: drawServiceSpy,
+                },
             ],
         }).compileComponents();
-        imageService = TestBed.inject(ImageService);
         fixture = TestBed.createComponent(ImageCanvasComponent);
-        // contextStub = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
@@ -53,18 +75,61 @@ describe('ImageCanvasComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should call imageService.setBackgroundContext with appropriate values', () => {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for spy
-        const imageServiceSpy = spyOn(imageService, 'setBackgroundContext').and.callFake(() => {});
-
+    it('should call imageService.setBackgroundContext and foregroundService.setForegroundContext on ngAfterViewInit', () => {
         component.ngAfterViewInit();
-        expect(imageServiceSpy).toHaveBeenCalled();
+        expect(imageServiceSpy.setBackgroundContext).toHaveBeenCalled();
+        expect(foregroundServiceSpy.setForegroundContext).toHaveBeenCalled();
     });
 
-    // it('should call get Context of backgroundCanvas', () => {
-    //     spyOn(component.backgroundCanvas.nativeElement, 'getContext').and.returnValue(contextStub);
-    //     component.ngAfterViewInit();
-    //     expect(component.backgroundCanvas.nativeElement.getContext).toHaveBeenCalled();
-    //     expect(component.backgroundContext).toEqual(contextStub);
-    // });
+    it('pressing shift key should call drawService.setSquareMode with true', () => {
+        const onShiftDownSpy = spyOn(component, 'onShiftDown').and.callThrough();
+        const mockShiftDownEvent = new KeyboardEvent('keydown', { key: 'Shift' });
+        window.dispatchEvent(mockShiftDownEvent);
+        expect(onShiftDownSpy).toHaveBeenCalled();
+        expect(drawServiceSpy.setSquareMode).toHaveBeenCalledOnceWith(true);
+    });
+
+    it('releasing shift key should call drawService.setSquareMode with false', () => {
+        const onShiftUpSpy = spyOn(component, 'onShiftUp').and.callThrough();
+        const mockShiftUpEvent = new KeyboardEvent('keyup', { key: 'Shift' });
+        window.dispatchEvent(mockShiftUpEvent);
+        expect(onShiftUpSpy).toHaveBeenCalled();
+        expect(drawServiceSpy.setSquareMode).toHaveBeenCalledOnceWith(false);
+    });
+
+    it('onMouseLeavingCanvas should call drawService.mouseIsOutOfCanvas when called with appropriate event', () => {
+        const mockMouseClickEvent: MouseEvent = { button: LEFT_BUTTON } as MouseEvent;
+        component.onMouseLeavingCanvas(mockMouseClickEvent);
+        expect(drawServiceSpy.mouseIsOutOfCanvas).toHaveBeenCalled();
+    });
+
+    it('onMouseLeavingCanvas should not call drawService.mouseIsOutOfCanvas when called with inappropriate event', () => {
+        const mockMouseClickEvent: MouseEvent = { button: -1 } as MouseEvent;
+        component.onMouseLeavingCanvas(mockMouseClickEvent);
+        expect(drawServiceSpy.mouseIsOutOfCanvas).not.toHaveBeenCalled();
+    });
+
+    it('continueCanvasOperation should call drawService.continueCanvasOperation with appropriate values', () => {
+        const mockMouseClickEvent: MouseEvent = new MouseEvent('mousemove');
+        const mockCanvasPosition = CanvasPosition.Left;
+        component['position'] = mockCanvasPosition;
+        component.continueCanvasOperation(mockMouseClickEvent);
+        expect(drawServiceSpy.continueCanvasOperation).toHaveBeenCalledOnceWith(mockCanvasPosition, mockMouseClickEvent);
+    });
+
+    it('startCanvasOperation should call foregroundService.startForegroundOperation with appropriate values', () => {
+        const mockMouseClickEvent: MouseEvent = new MouseEvent('mousemove');
+        const mockCanvasPosition = CanvasPosition.Left;
+        component['position'] = mockCanvasPosition;
+        component.startCanvasOperation(mockMouseClickEvent);
+        expect(foregroundServiceSpy.startForegroundOperation).toHaveBeenCalledOnceWith(mockCanvasPosition, mockMouseClickEvent);
+    });
+
+    it('stopCanvasOperation should call foregroundService.stopForegroundOperation with appropriate values', () => {
+        const mockMouseClickEvent: MouseEvent = new MouseEvent('mousemove');
+        const mockCanvasPosition = CanvasPosition.Left;
+        component['position'] = mockCanvasPosition;
+        component.stopCanvasOperation(mockMouseClickEvent);
+        expect(foregroundServiceSpy.stopForegroundOperation).toHaveBeenCalledOnceWith(mockCanvasPosition, mockMouseClickEvent);
+    });
 });
