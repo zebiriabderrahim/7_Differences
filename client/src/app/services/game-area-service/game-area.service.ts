@@ -66,6 +66,7 @@ export class GameAreaService {
             }
         }
         this.modifiedContext.putImageData(this.modifiedPixelData, 0, 0);
+        this.resetCheatMode();
         this.flashCorrectPixels(differenceCoord);
     }
 
@@ -145,6 +146,8 @@ export class GameAreaService {
     clearFlashing(): void {
         this.modifiedContextFrontLayer.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.originalContextFrontLayer.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        this.originalFrontPixelData = this.originalContextFrontLayer.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        this.modifiedFrontPixelData = this.modifiedContextFrontLayer.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.clickDisabled = false;
     }
 
@@ -182,6 +185,11 @@ export class GameAreaService {
 
     getMousePosition(): Coordinate {
         return this.mousePosition;
+    }
+
+    resetCheatMode(): void {
+        this.isCheatMode = false;
+        clearInterval(this.cheatModeInterval);
     }
 
     private convert2DCoordToPixelIndex(differenceCoord: Coordinate[]): number[] {
