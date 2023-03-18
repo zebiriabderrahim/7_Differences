@@ -58,10 +58,10 @@ describe('ClassicSystemService', () => {
         },
     };
 
-    // const mockDataDifference = {
-    //     differencesData: mockDifferences,
-    //     player: mockPlayer1,
-    // };
+    const mockDataDifference = {
+        differencesData: mockDifferences,
+        playerId: 'mockId',
+    };
 
     const mockTimer = 0;
     const mockEndMessage = 'Fin de partie';
@@ -227,14 +227,31 @@ describe('ClassicSystemService', () => {
         expect(currentGameSubjectNextSpy).toHaveBeenCalledWith(mockData.players);
     });
 
-    // it('manageSocket should update client game when RemoveDiff linked event is sent from server', () => {
-    //     service.manageSocket();
-    //     const differencesFoundSpy = spyOn(service['differencesFound'], 'next');
-    //     socketHelper.peerSideEmit(GameEvents.RemoveDiff, mockDifferences);
-    //     expect(service['replaceDifference']).toHaveBeenCalledWith(mockDataDifference.differencesData.currentDifference);
-    //     expect(differencesFoundSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.differencesFound);
-    //     expect(service['checkStatus']).toHaveBeenCalled();
-    // });
+    it('manageSocket should update client game when RemoveDiff linked event is sent from server', () => {
+        const replaceDifferenceSpy = spyOn(service, 'replaceDifference');
+        const checkStatusSpy = spyOn(service, 'checkStatus');
+        service.manageSocket();
+        const differencesFoundSpy = spyOn(service['differencesFound'], 'next');
+        socketHelper.peerSideEmit(GameEvents.RemoveDiff, mockDataDifference);
+        expect(replaceDifferenceSpy).not.toHaveBeenCalledWith(mockDataDifference.differencesData.currentDifference);
+        expect(differencesFoundSpy).not.toHaveBeenCalledWith(mockDataDifference.differencesData.differencesFound);
+        expect(checkStatusSpy).not.toHaveBeenCalled();
+    });
+
+    it('manageSocket should update client game when RemoveDiff linked event is sent from server and matches socketId', () => {
+        const checkStatusSpy = spyOn(service, 'checkStatus');
+        const getSocketIdSpy = spyOn(service, 'getSocketId').and.callFake(() => {
+            return mockDataDifference.playerId;
+        });
+        const replaceDifferenceSpy = spyOn(service, 'replaceDifference');
+        service.manageSocket();
+        const differencesFoundSpy = spyOn(service['differencesFound'], 'next');
+        socketHelper.peerSideEmit(GameEvents.RemoveDiff, mockDataDifference);
+        expect(replaceDifferenceSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.currentDifference);
+        expect(differencesFoundSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.differencesFound);
+        expect(checkStatusSpy).toHaveBeenCalled();
+        expect(getSocketIdSpy).toHaveBeenCalled();
+    });
 
     it('manageSocket should update client game when TimerStarted linked event is sent from server', () => {
         service.manageSocket();
