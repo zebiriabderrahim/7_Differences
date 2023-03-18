@@ -1,9 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { TEN_SECONDS } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { WaitingPlayerNameList } from '@common/game-interfaces';
-import { BehaviorSubject } from 'rxjs';
+import { AcceptedPlayer, WaitingPlayerNameList } from '@common/game-interfaces';
+import { BehaviorSubject, of } from 'rxjs';
 import { JoinedPlayerDialogComponent } from './joined-player-dialog.component';
 
 describe('JoinedPlayerDialogComponent', () => {
@@ -11,16 +13,26 @@ describe('JoinedPlayerDialogComponent', () => {
     let fixture: ComponentFixture<JoinedPlayerDialogComponent>;
     let roomManagerServiceSpy: jasmine.SpyObj<RoomManagerService>;
     let joinedPlayerNamesMock: BehaviorSubject<WaitingPlayerNameList>;
+    let acceptPlayerNamesMock: BehaviorSubject<AcceptedPlayer>;
     let dialogRefSpy: jasmine.SpyObj<MatDialogRef<JoinedPlayerDialogComponent>>;
+    let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(async () => {
         joinedPlayerNamesMock = new BehaviorSubject<WaitingPlayerNameList>({
             gameId: 'test-game-id',
-            playerNamesList: ['Alice', 'Bob'],
+            playerNamesList: ['Alice', 'Bob', 'Charlie'],
         });
+        acceptPlayerNamesMock = new BehaviorSubject<AcceptedPlayer>({
+            gameId: 'Jeu de la mort',
+            roomId: 'test-room-id',
+            playerName: 'Alice',
+        });
+        routerSpy = jasmine.createSpyObj('RouterTestingModule', ['navigate']);
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['close', 'afterClosed']);
+        dialogRefSpy.afterClosed.and.returnValue(of('dialog closed'));
         roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['cancelJoining'], {
             joinedPlayerNamesByGameId$: joinedPlayerNamesMock,
+            acceptedPlayerByRoom$: acceptPlayerNamesMock,
         });
         await TestBed.configureTestingModule({
             declarations: [JoinedPlayerDialogComponent],
@@ -29,6 +41,7 @@ describe('JoinedPlayerDialogComponent', () => {
                 { provide: MAT_DIALOG_DATA, useValue: { gameId: 'test-game-id', player: 'Alice' } },
                 { provide: RoomManagerService, useValue: roomManagerServiceSpy },
                 { provide: MatDialogRef, useValue: dialogRefSpy },
+                { provide: Router, useValue: routerSpy },
             ],
         }).compileComponents();
 
@@ -62,16 +75,36 @@ describe('JoinedPlayerDialogComponent', () => {
         expect(component.handleAcceptedPlayer).toHaveBeenCalled();
     });
 
-    it('should start countdown and show message if player is not in playerNames', () => {
-        // component['data'] = { gameId: 'game123', player: 'testPlayer' };
-        // const playerNames = ['Alice', 'Charlie'];
-        // component.handleRefusedPlayer(playerNames);
-        // expect(component.countdown).toBe(10);
-        // expect(component.refusedMessage).toBe(`You have been refused. You will be redirected in ${component.countdown} seconds`);
-        // // Simulate countdown
-        // // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        // jasmine.clock().install();
-        // jasmine.clock().tick(10000);
+    it('should start countdown and show message if player is not in playerNames', fakeAsync(() => {
+        component['data'] = { gameId: 'Charlie', player: 'testPlayer' };
+        const playerNames = ['Alice', 'Charlie'];
+        component.handleRefusedPlayer(playerNames);
+        expect(component.countdown).toBe(TEN_SECONDS);
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- needed for test
+        tick(12000);
+        expect(component.refusedMessage).toBe(`You have been refused. You will be redirected in ${component.countdown} seconds`);
+        expect(dialogRefSpy.close).toHaveBeenCalled();
+    }));
+
+    it('should close dialog and navigate to game when player is accepted', fakeAsync(() => {
+        spyOn(component, 'navigateToGame');
+        const acceptedPlayer = {
+            gameId: 'test-game-id',
+            playerName: 'Alice',
+            roomId: 'test-room-id',
+        };
+        component.handleAcceptedPlayer();
+        acceptPlayerNamesMock.next(acceptedPlayer);
+
+        tick();
+
         // expect(dialogRefSpy.close).toHaveBeenCalled();
+        expect(component.navigateToGame).toHaveBeenCalled();
+    }));
+
+    it('NavigateTOGame should navigate to the room-id', () => {
+        fixture.detectChanges();
+        component.navigateToGame('test-room-id');
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/game', 'test-room-id']);
     });
 });

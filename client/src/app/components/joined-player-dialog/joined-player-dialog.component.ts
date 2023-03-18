@@ -75,6 +75,7 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
                 this.navigateToGame(acceptedPlayer.roomId);
             });
     }
+    
     navigateToGame(roomId: string) {
         this.dialogRef.afterClosed().subscribe(() => {
             this.router.navigate(['/game', roomId]);
