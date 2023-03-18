@@ -45,6 +45,10 @@ describe('WaitingPlayerToJoinComponent', () => {
         fixture.detectChanges();
     });
 
+    afterEach(() => {
+        component.ngOnDestroy();
+    });
+
     it('should create', () => {
         expect(component).toBeTruthy();
     });
@@ -97,5 +101,11 @@ describe('WaitingPlayerToJoinComponent', () => {
         playerNames.forEach((player) => {
             expect(component.refusePlayer).toHaveBeenCalledWith(player);
         });
+    });
+
+    it('ngOnDestroy should not unsubscribe from playerNamesSubscription if it is undefined', () => {
+        component['playerNamesSubscription'] = undefined;
+        component.ngOnDestroy();
+        expect(component['playerNamesSubscription']).toBeUndefined();
     });
 });
