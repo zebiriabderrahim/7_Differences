@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, ViewChil
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dialog/solo-game-view-dialog.component';
+import { INPUT_TAG_NAME } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
@@ -56,7 +57,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     @HostListener('window:keydown', ['$event'])
     keyboardEvent(event: KeyboardEvent) {
         const eventHTMLElement = event.target as HTMLElement;
-        if (event.key === 't' && eventHTMLElement.tagName !== 'INPUT') {
+        if (event.key === 't' && eventHTMLElement.tagName !== INPUT_TAG_NAME) {
             this.gameAreaService.toggleCheatMode(this.cheatDifferences);
         }
     }

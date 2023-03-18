@@ -20,3 +20,5 @@ export const CHEAT_MODE_WAIT_TIME = 250;
 
 export const MAX_NAME_LENGTH = 10;
 export const MIN_NAME_LENGTH = 3;
+
+export const INPUT_TAG_NAME = 'INPUT';
