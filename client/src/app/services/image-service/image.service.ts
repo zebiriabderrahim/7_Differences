@@ -6,8 +6,8 @@ import { CanvasPosition } from '@app/enum/canvas-position';
 import { ForegroundCanvasElements } from '@app/interfaces/foreground-canvas-elements';
 import { ImageSources } from '@app/interfaces/image-sources';
 import { GamePixels, Pixel } from '@app/interfaces/pixel';
-import { Coordinate } from '@common/coordinate';
 import { ForegroundService } from '@app/services/foreground-service/foreground.service';
+import { Coordinate } from '@common/coordinate';
 
 @Injectable({
     providedIn: 'root',
@@ -20,6 +20,14 @@ export class ImageService {
     private rightImage: string;
 
     constructor(private readonly foregroundService: ForegroundService) {}
+
+    loadImage(context: CanvasRenderingContext2D, path: string) {
+        const image = new Image();
+        image.onload = async () => {
+            context.drawImage(await createImageBitmap(image), 0, 0);
+        };
+        image.src = path;
+    }
 
     resetBackground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
@@ -77,15 +85,11 @@ export class ImageService {
         differenceContext.putImageData(new ImageData(differenceImageData, IMG_WIDTH, IMG_HEIGHT), 0, 0);
     }
 
-    getGamePixels(): GamePixels {
+    generateGamePixels(): GamePixels {
         const foregroundCanvasElements: ForegroundCanvasElements = this.foregroundService.getForegroundCanvasElements();
-        const leftPixels: Pixel[] = this.getPixels(foregroundCanvasElements.left, this.leftBackgroundContext.canvas);
-        this.leftImage = this.combinedContext.canvas.toDataURL();
-        const rightPixels: Pixel[] = this.getPixels(foregroundCanvasElements.right, this.rightBackgroundContext.canvas);
-        this.rightImage = this.combinedContext.canvas.toDataURL();
         return {
-            leftImage: leftPixels,
-            rightImage: rightPixels,
+            leftImage: this.generatePixels(foregroundCanvasElements.left, CanvasPosition.Left),
+            rightImage: this.generatePixels(foregroundCanvasElements.right, CanvasPosition.Right),
         };
     }
 
@@ -128,14 +132,28 @@ export class ImageService {
         return imageData;
     }
 
-    private getPixels(foregroundCanvas: HTMLCanvasElement, backgroundCanvas: HTMLCanvasElement): Pixel[] {
-        const combinedCanvasData: Uint8ClampedArray = this.combineCanvas(backgroundCanvas, foregroundCanvas);
+    private generatePixels(foregroundCanvas: HTMLCanvasElement, canvasPosition: CanvasPosition): Pixel[] {
+        const backgroundCanvas: HTMLCanvasElement =
+            canvasPosition === CanvasPosition.Left ? this.leftBackgroundContext.canvas : this.rightBackgroundContext.canvas;
+        this.combineCanvas(backgroundCanvas, foregroundCanvas);
+        this.setImage(canvasPosition, this.combinedContext.canvas.toDataURL());
+        const combinedCanvasData: Uint8ClampedArray = this.combinedContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data;
         return this.transformImageDataToPixelArray(combinedCanvasData);
     }
 
-    private combineCanvas(firstCanvas: HTMLCanvasElement, secondCanvas: HTMLCanvasElement): Uint8ClampedArray {
+    private setImage(canvasPosition: CanvasPosition, image: string) {
+        switch (canvasPosition) {
+            case CanvasPosition.Left:
+                this.leftImage = image;
+                break;
+            case CanvasPosition.Right:
+                this.rightImage = image;
+                break;
+        }
+    }
+
+    private combineCanvas(firstCanvas: HTMLCanvasElement, secondCanvas: HTMLCanvasElement): void {
         this.combinedContext.drawImage(firstCanvas, 0, 0);
         this.combinedContext.drawImage(secondCanvas, 0, 0);
-        return this.combinedContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data;
     }
 }

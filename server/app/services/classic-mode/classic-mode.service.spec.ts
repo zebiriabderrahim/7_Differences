@@ -8,6 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { BroadcastOperator, Server } from 'socket.io';
 import { ClassicModeService } from './classic-mode.service';
+import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 
 describe('ClassicModeService', () => {
     let service: ClassicModeService;
@@ -59,6 +60,7 @@ describe('ClassicModeService', () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 ClassicModeService,
+                MessageManagerService,
                 {
                     provide: GameService,
                     useValue: gameService,

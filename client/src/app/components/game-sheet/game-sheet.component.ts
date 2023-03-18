@@ -29,9 +29,10 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         public router: Router,
         private readonly roomManagerService: RoomManagerService,
         private readonly communicationService: CommunicationService,
-    ) {}
-    ngOnInit(): void {
+    ) {
         this.roomManagerService.handleRoomEvents();
+    }
+    ngOnInit(): void {
         this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
         this.roomAvailabilitySubscription = this.roomManagerService.oneVsOneRoomsAvailabilityByRoomId$
             .pipe(filter((data) => data.gameId === this.game._id))
@@ -48,7 +49,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         return dialogRef;
     }
 
-    createSoloRoom() {
+    createSoloRoom(): void {
         this.openDialog()
             .afterClosed()
             .pipe(filter((playerName) => !!playerName))
