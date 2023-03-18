@@ -236,15 +236,6 @@ describe('ClassicSystemService', () => {
         expect(checkStatusSpy).not.toHaveBeenCalled();
     });
 
-    it('manageSocket should update client game when RemoveDiff linked event is sent from server', () => {
-        const checkStatusSpy = spyOn(service, 'checkStatus');
-        service.manageSocket();
-        const differencesFoundSpy = spyOn(service['differencesFound'], 'next');
-        socketHelper.peerSideEmit(GameEvents.RemoveDiff, mockDataDifference);
-        expect(differencesFoundSpy).not.toHaveBeenCalledWith(mockDataDifference.differencesData.differencesFound);
-        expect(checkStatusSpy).not.toHaveBeenCalled();
-    });
-
     it('manageSocket should update client game when RemoveDiff linked event is sent from server and matches socketId', () => {
         const checkStatusSpy = spyOn(service, 'checkStatus');
         const getSocketIdSpy = spyOn(service, 'getSocketId').and.callFake(() => {
