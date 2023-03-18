@@ -55,7 +55,8 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
 
     @HostListener('window:keydown', ['$event'])
     keyboardEvent(event: KeyboardEvent) {
-        if (event.key === 't') {
+        const eventHTMLElement = event.target as HTMLElement;
+        if (event.key === 't' && eventHTMLElement.tagName !== 'INPUT') {
             this.gameAreaService.toggleCheatMode(this.cheatDifferences);
         }
     }
@@ -159,6 +160,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.gameAreaService.resetCheatMode();
         this.gameSub?.unsubscribe();
         this.timerSub?.unsubscribe();
         this.differenceSub?.unsubscribe();
