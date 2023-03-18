@@ -58,7 +58,7 @@ describe('ClassicSystemService', () => {
         },
     };
 
-    const mockDataDifference = {
+    let mockDataDifference = {
         differencesData: mockDifferences,
         playerId: 'mockId',
     };
@@ -238,6 +238,17 @@ describe('ClassicSystemService', () => {
         expect(checkStatusSpy).not.toHaveBeenCalled();
     });
 
+    it('manageSocket should update client game when RemoveDiff linked event is sent from server', () => {
+        const replaceDifferenceSpy = spyOn(service, 'replaceDifference');
+        const checkStatusSpy = spyOn(service, 'checkStatus');
+        service.manageSocket();
+        const differencesFoundSpy = spyOn(service['differencesFound'], 'next');
+        socketHelper.peerSideEmit(GameEvents.RemoveDiff, mockDataDifference);
+        expect(replaceDifferenceSpy).not.toHaveBeenCalledWith(mockDataDifference.differencesData.currentDifference);
+        expect(differencesFoundSpy).not.toHaveBeenCalledWith(mockDataDifference.differencesData.differencesFound);
+        expect(checkStatusSpy).not.toHaveBeenCalled();
+    });
+
     it('manageSocket should update client game when RemoveDiff linked event is sent from server and matches socketId', () => {
         const checkStatusSpy = spyOn(service, 'checkStatus');
         const getSocketIdSpy = spyOn(service, 'getSocketId').and.callFake(() => {
@@ -250,6 +261,29 @@ describe('ClassicSystemService', () => {
         expect(replaceDifferenceSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.currentDifference);
         expect(differencesFoundSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.differencesFound);
         expect(checkStatusSpy).toHaveBeenCalled();
+        expect(getSocketIdSpy).toHaveBeenCalled();
+    });
+
+    it('manageSocket should update client game when RemoveDiff linked event is sent from server and do not match with non-empty array', () => {
+        mockDataDifference = {
+            differencesData: {
+                currentDifference: [{ x: 1, y: 1 }],
+                differencesFound: 0,
+            },
+            playerId: 'mockId',
+        };
+        const checkStatusSpy = spyOn(service, 'checkStatus');
+        const getSocketIdSpy = spyOn(service, 'getSocketId').and.callFake(() => {
+            return 'notMatchingSocketId';
+        });
+
+        const replaceDifferenceSpy = spyOn(service, 'replaceDifference');
+        service.manageSocket();
+        const differencesFoundSpy = spyOn(service['differencesFound'], 'next');
+        socketHelper.peerSideEmit(GameEvents.RemoveDiff, mockDataDifference);
+        expect(replaceDifferenceSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.currentDifference);
+        expect(differencesFoundSpy).not.toHaveBeenCalledWith(mockDataDifference.differencesData.differencesFound);
+        expect(checkStatusSpy).not.toHaveBeenCalled();
         expect(getSocketIdSpy).toHaveBeenCalled();
     });
 
