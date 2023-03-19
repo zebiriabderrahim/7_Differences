@@ -7,6 +7,7 @@ import { GameAreaService } from '@app/services/game-area-service/game-area.servi
 // import { ClientSideGame } from '@common/game-interfaces';
 // import { Subject } from 'rxjs';
 import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.component';
+import { Subscription } from 'rxjs';
 
 describe('SoloGameViewComponent', () => {
     let component: SoloGameViewComponent;
@@ -177,5 +178,16 @@ describe('SoloGameViewComponent', () => {
         component.addRightSideMessage(text);
         expect(messagesLength).toBeLessThan(component.messages.length);
         expect(sendMessageSpy).toHaveBeenCalledWith(text);
+    });
+
+    it('ngOnDestroy should unsubscribe from subscriptions', () => {
+        component['gameSub'] = undefined as unknown as Subscription;
+        component['timerSub'] = undefined as unknown as Subscription;
+        component['differenceSub'] = undefined as unknown as Subscription;
+        component['routeParamSub'] = undefined as unknown as Subscription;
+        component['opponentDifferenceSub'] = undefined as unknown as Subscription;
+        const resetCheatModeSpy = spyOn(gameAreaService, 'resetCheatMode');
+        component.ngOnDestroy();
+        expect(resetCheatModeSpy).toHaveBeenCalled();
     });
 });
