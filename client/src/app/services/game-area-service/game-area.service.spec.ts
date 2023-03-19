@@ -278,7 +278,7 @@ describe('GameAreaService', () => {
     //     // );
     // });
 
-    it('should disable cheat mode and stop flashing red pixels', () => {
+    it('toggleCheatMode should disable cheat mode and stop flashing red pixels', () => {
         spyOn(window, 'clearInterval').and.callThrough();
         spyOn(window, 'setTimeout').and.callThrough();
 
