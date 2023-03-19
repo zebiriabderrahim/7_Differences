@@ -10,11 +10,13 @@ import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import {
     BACK_BUTTON,
+    CHEAT_MODE_WAIT_TIME,
     FLASH_WAIT_TIME,
     FORWARD_BUTTON,
     LEFT_BUTTON,
     MIDDLE_BUTTON,
     ONE_SECOND,
+    RED_FLASH_TIME,
     RIGHT_BUTTON,
     YELLOW_FLASH_TIME,
 } from '@app/constants/constants';
@@ -203,6 +205,40 @@ describe('GameAreaService', () => {
         gameAreaService.flashCorrectPixels(differenceCoord);
         expect(convert2DCoordToPixelIndexSpy).toHaveBeenCalledWith(differenceCoord);
         expect(flashPixelsSpy).toHaveBeenCalledWith(expectedIndexList);
+    });
+
+    it('toggleCheatMode should get the current differences to flash in the first call and stop the flash in the second call', () => {
+        const differenceCoord: Coordinate[] = [
+            { x: 12, y: 15 },
+            { x: 0, y: 0 },
+            { x: 20, y: 100 },
+            { x: 30, y: 0 },
+        ];
+        const convert2DCoordToPixelIndexSpy = spyOn<any>(gameAreaService, 'convert2DCoordToPixelIndex').and.callThrough();
+        const toggleCheatModeSpy = spyOn(gameAreaService, 'toggleCheatMode');
+        const clearFlashingSpy = spyOn(gameAreaService, 'clearFlashing').and.callFake(() => {});
+        const putImageDataToContextsSpy = spyOn(gameAreaService, 'putImageDataToContexts').and.callFake(() => {});
+        const isCheatMode = gameAreaService['isCheatMode'];
+
+        gameAreaService.toggleCheatMode(differenceCoord);
+
+        setInterval(() => {
+            intervalCallback();
+            setTimeout(() => {
+                timerCallback();
+                expect(putImageDataToContextsSpy).toHaveBeenCalled();
+                expect(clearFlashingSpy).toHaveBeenCalled();
+            }, RED_FLASH_TIME);
+        }, CHEAT_MODE_WAIT_TIME);
+
+        jasmine.clock().tick(RED_FLASH_TIME + 1);
+        jasmine.clock().tick(CHEAT_MODE_WAIT_TIME + 1);
+        expect(convert2DCoordToPixelIndexSpy).toHaveBeenCalledWith(differenceCoord);
+        expect(toggleCheatModeSpy).toHaveBeenCalled();
+        expect(isCheatMode).not.toEqual(gameAreaService['isCheatMode']);
+        gameAreaService.toggleCheatMode(differenceCoord);
+        expect(clearFlashingSpy).toHaveBeenCalled();
+        expect(isCheatMode).toEqual(gameAreaService['isCheatMode']);
     });
 
     it('flashPixels should flash the difference pixels on both canvas', async () => {
