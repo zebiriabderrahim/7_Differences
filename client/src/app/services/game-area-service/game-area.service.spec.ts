@@ -36,7 +36,6 @@ describe('GameAreaService', () => {
         gameAreaService = TestBed.inject(GameAreaService);
         timerCallback = jasmine.createSpy('timerCallback');
         intervalCallback = jasmine.createSpy('intervalCallback');
-        // jasmine.clock().install();
     });
 
     afterEach(() => {
