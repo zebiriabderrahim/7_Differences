@@ -39,7 +39,10 @@ describe('GameSheetComponent', () => {
             ],
             {
                 roomId$: roomIdSpy,
-                oneVsOneRoomsAvailabilityByRoomId$: new BehaviorSubject({}),
+                oneVsOneRoomsAvailabilityByRoomId$: new BehaviorSubject({
+                    gameId: '0',
+                    isAvailableToJoin: true,
+                }),
             },
         );
         await TestBed.configureTestingModule({
@@ -95,12 +98,11 @@ describe('GameSheetComponent', () => {
     });
 
     it('should open MatDialog pop up and redirect to game', () => {
-        const popUpSpy = spyOn(component, 'openDialog').and.returnValue({
-            afterClosed: () => of('test'),
-        } as MatDialogRef<PlayerNameDialogBoxComponent, unknown>);
-
+        const roomId = 'test-room-id';
+        roomIdSpy.next(roomId);
         component.playSolo();
-        expect(popUpSpy).toHaveBeenCalled();
+        roomIdSpy.next(roomId);
+        expect(routerSpy.navigate).toHaveBeenCalled();
     });
 
     it('should call deleteGameById method of communicationService and redirect to config page', () => {
@@ -151,12 +153,15 @@ describe('GameSheetComponent', () => {
         expect(roomManagerServiceSpy.updateWaitingPlayerNameList).toHaveBeenCalled();
     });
 
-    it('joinOneVsOne should call updateWaitingPlayerNameList if a player2 subscribe a game', () => {
+    it('openWaitingDialog should open dialog if a player2 waiting to join a game', () => {
+        const dialogSpy = spyOn(component['dialog'], 'open');
         roomIdSpy.next('0');
         spyOn(component, 'openDialog').and.returnValue({
-            afterClosed: () => of('Alice'),
+            afterClosed: () => of('test'),
         } as MatDialogRef<PlayerNameDialogBoxComponent, unknown>);
-        component.openWaitingDialog('Alice');
+        component.openWaitingDialog('test');
+        roomIdSpy.next('0');
+        expect(dialogSpy).toHaveBeenCalled();
     });
 
     it('Should return true if the game is available', () => {
