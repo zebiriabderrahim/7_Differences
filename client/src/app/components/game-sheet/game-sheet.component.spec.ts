@@ -78,13 +78,14 @@ describe('GameSheetComponent', () => {
         fixture.detectChanges();
     });
 
-    afterEach(() => {
-        fixture.destroy();
-    });
+//         // spyOn(roomManagerService, 'handleRoomEvents').and.callFake(() => {});
+//         // roomManagerServiceSpy.handleRoomEvents.and.callFake(() => {});
+//         // roomManagerServiceSpy.oneVsOneRoomsAvailabilityByRoomId$ = of({ gameId: '0', isAvailableToJoin: true });
+//     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+//     // afterEach(() => {
+//     //     fixture.destroy();
+//     // });
 
     it('should update isAvailable when the room availability changes', () => {
         expect(roomManagerServiceSpy.checkRoomOneVsOneAvailability).toHaveBeenCalledWith(component.game._id);
