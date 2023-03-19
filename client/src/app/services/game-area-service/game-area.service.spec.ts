@@ -282,28 +282,16 @@ describe('GameAreaService', () => {
     it('toggleCheatMode should disable cheat mode and stop flashing red pixels', () => {
         spyOn(window, 'clearInterval').and.callThrough();
         spyOn(window, 'setTimeout').and.callThrough();
-
         gameAreaService['isCheatMode'] = true;
         gameAreaService['cheatModeInterval'] = setInterval(() => {}, 1000) as unknown as number;
         gameAreaService['toggleCheatMode']([
             { x: 1, y: 2 },
             { x: 3, y: 4 },
         ]);
-
         expect(gameAreaService['isCheatMode']).toBeFalse();
         expect(window.clearInterval).toHaveBeenCalledOnceWith(gameAreaService['cheatModeInterval']);
-        // expect(gameAreaService['cheatModeInterval']).toBeUndefined();
-        // spyOn(gameAreaService['originalContextFrontLayer'], 'clearRect').and.returnValue();
-        // spyOn(gameAreaService['modifiedContextFrontLayer'], 'clearRect').and.returnValue();
         gameAreaService.clearFlashing();
-
         expect(window.setTimeout).not.toHaveBeenCalled();
-        // expect(gameAreaService['modifiedFrontPixelData'].data).not.toEqual(
-        //     jasmine.arrayContaining([RED_PIXEL.red, RED_PIXEL.green, RED_PIXEL.blue, RED_PIXEL.alpha]),
-        // );
-        // expect(gameAreaService['originalFrontPixelData'].data).not.toEqual(
-        //     jasmine.arrayContaining([RED_PIXEL.red, RED_PIXEL.green, RED_PIXEL.blue, RED_PIXEL.alpha]),
-        // );
     });
 
     it('flashPixels should flash the difference pixels on both canvas', async () => {
