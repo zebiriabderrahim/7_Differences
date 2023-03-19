@@ -82,7 +82,7 @@ describe('JoinedPlayerDialogComponent', () => {
         expect(component.countdown).toBe(TEN_SECONDS);
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- needed for test
         tick(12000);
-        expect(component.refusedMessage).toBe(`You have been refused. You will be redirected in ${component.countdown} seconds`);
+        expect(component.refusedMessage).toBe(`Vous avez été refusé. Vous serez redirigé dans ${component.countdown} secondes`);
         expect(dialogRefSpy.close).toHaveBeenCalled();
     }));
 
@@ -98,8 +98,17 @@ describe('JoinedPlayerDialogComponent', () => {
 
         tick();
 
-        // expect(dialogRefSpy.close).toHaveBeenCalled();
         expect(component.navigateToGame).toHaveBeenCalled();
+    }));
+
+    it('should not navigate to game when player is accepted as undefined', fakeAsync(() => {
+        spyOn(component, 'navigateToGame');
+        component.handleAcceptedPlayer();
+        acceptPlayerNamesMock.next(undefined as unknown as AcceptedPlayer);
+
+        tick();
+
+        expect(component.navigateToGame).not.toHaveBeenCalled();
     }));
 
     it('NavigateTOGame should navigate to the room-id', () => {
