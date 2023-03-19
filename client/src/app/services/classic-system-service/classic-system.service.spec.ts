@@ -72,7 +72,6 @@ describe('ClassicSystemService', () => {
     let socketHelper: SocketTestHelper;
     let socketServiceMock: SocketClientServiceMock;
     let soundServiceSpy: jasmine.SpyObj<SoundService>;
-    // let mockDifferences: Differences;
 
     beforeEach(async () => {
         socketHelper = new SocketTestHelper();
@@ -100,13 +99,37 @@ describe('ClassicSystemService', () => {
 
     beforeEach(() => {
         service = TestBed.inject(ClassicSystemService);
+        service = new ClassicSystemService(socketServiceMock, TestBed.inject(GameAreaService), TestBed.inject(SoundService));
         gameAreaService = TestBed.inject(GameAreaService);
-        // dialogService = TestBed.inject(MatDialog);
         service['currentGame'].next(mockClientSideGame);
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('should emit game when game is truthy', (done) => {
+        service['currentGame'].subscribe((emittedGame) => {
+            expect(emittedGame).toEqual(mockClientSideGame);
+            done();
+        });
+
+        service['currentGame'].next(mockClientSideGame);
+    });
+
+    it('should not emit game when game is falsy', () => {
+        spyOn(service['currentGame'], 'next');
+        service['currentGame'].subscribe();
+        expect(service['currentGame'].next).not.toHaveBeenCalled();
+    });
+
+    it('should only emit game when it is truthy', () => {
+        service.currentGame$.subscribe((emittedGame) => {
+            expect(emittedGame).toEqual(mockClientSideGame);
+        });
+
+        service['currentGame'].next(mockClientSideGame);
+        service['currentGame'].next(mockClientSideGame);
     });
 
     it('connectPlayer should call connect if socket is not alive', () => {
