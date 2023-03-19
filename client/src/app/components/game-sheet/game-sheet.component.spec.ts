@@ -78,15 +78,6 @@ describe('GameSheetComponent', () => {
         fixture.detectChanges();
     });
 
-//         // spyOn(roomManagerService, 'handleRoomEvents').and.callFake(() => {});
-//         // roomManagerServiceSpy.handleRoomEvents.and.callFake(() => {});
-//         // roomManagerServiceSpy.oneVsOneRoomsAvailabilityByRoomId$ = of({ gameId: '0', isAvailableToJoin: true });
-//     });
-
-//     // afterEach(() => {
-//     //     fixture.destroy();
-//     // });
-
     it('should update isAvailable when the room availability changes', () => {
         expect(roomManagerServiceSpy.checkRoomOneVsOneAvailability).toHaveBeenCalledWith(component.game._id);
     });
@@ -111,18 +102,6 @@ describe('GameSheetComponent', () => {
         component.playSolo();
         expect(popUpSpy).toHaveBeenCalled();
     });
-
-    /*
-    it('should open MatDialog pop up and redirect host to waitingRoom ', () => {
-        const gameListSpy = spyOn(component, 'createOneVsOne').and.callFake(() => {});
-        const popUpSpy = spyOn(component, 'openDialog').and.returnValue({
-            afterClosed: () => of('test'),
-        } as MatDialogRef<PlayerNameDialogBoxComponent, unknown>);
-
-        component.createOneVsOne();
-        expect(popUpSpy).toHaveBeenCalled();
-        expect(gameListSpy).toHaveBeenCalled();
-    });*/
 
     it('should call deleteGameById method of communicationService and redirect to config page', () => {
         const deleteGameByIdSpy = spyOn(communicationService, 'deleteGameById').and.returnValue(of());
