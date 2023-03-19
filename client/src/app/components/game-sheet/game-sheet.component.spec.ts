@@ -102,7 +102,7 @@ describe('GameSheetComponent', () => {
         roomIdSpy.next(roomId);
         component.playSolo();
         roomIdSpy.next(roomId);
-        // expect(routerSpy).toHaveBeenCalledWith(['/game', roomId]);
+        expect(routerSpy.navigate).toHaveBeenCalled();
     });
 
     it('should call deleteGameById method of communicationService and redirect to config page', () => {
@@ -154,11 +154,14 @@ describe('GameSheetComponent', () => {
     });
 
     it('openWaitingDialog should open dialog if a player2 waiting to join a game', () => {
+        const dialogSpy = spyOn(component['dialog'], 'open');
         roomIdSpy.next('0');
         spyOn(component, 'openDialog').and.returnValue({
             afterClosed: () => of('test'),
         } as MatDialogRef<PlayerNameDialogBoxComponent, unknown>);
         component.openWaitingDialog('test');
+        roomIdSpy.next('0');
+        expect(dialogSpy).toHaveBeenCalled();
     });
 
     it('Should return true if the game is available', () => {
