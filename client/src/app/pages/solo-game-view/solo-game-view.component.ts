@@ -139,18 +139,10 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.matDialog.open(SoloGameViewDialogComponent, { data: { action: 'endGame', message: endingMessage }, disableClose: true });
     }
 
-    mouseClickOnOriginal(event: MouseEvent) {
+    mouseClickOnCanvas(event: MouseEvent, isLeft: boolean) {
         if (this.gameAreaService.detectLeftClick(event)) {
             this.gameAreaService.setAllData();
-            this.classicService.setIsLeftCanvas(true);
-            this.classicService.requestVerification(this.gameAreaService.getMousePosition());
-        }
-    }
-
-    mouseClickOnModified(event: MouseEvent) {
-        if (this.gameAreaService.detectLeftClick(event)) {
-            this.gameAreaService.setAllData();
-            this.classicService.setIsLeftCanvas(false);
+            this.classicService.setIsLeftCanvas(isLeft);
             this.classicService.requestVerification(this.gameAreaService.getMousePosition());
         }
     }
