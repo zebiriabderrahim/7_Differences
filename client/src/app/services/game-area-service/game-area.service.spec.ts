@@ -12,18 +12,17 @@ import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import {
     BACK_BUTTON,
-    // CHEAT_MODE_WAIT_TIME,
+    CHEAT_MODE_WAIT_TIME,
     FLASH_WAIT_TIME,
     FORWARD_BUTTON,
     LEFT_BUTTON,
     MIDDLE_BUTTON,
     ONE_SECOND,
-    // RED_FLASH_TIME,
+    RED_FLASH_TIME,
     RIGHT_BUTTON,
-    YELLOW_FLASH_TIME,
+    YELLOW_FLASH_TIME
 } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
-// import { RED_PIXEL } from '@app/constants/pixels';
 import { Coordinate } from '@common/coordinate';
 import { GameAreaService } from './game-area.service';
 
@@ -185,6 +184,7 @@ describe('GameAreaService', () => {
     });
 
     it('flashCorrectPixels should get image data indexes and call flashPixels', () => {
+        spyOn(gameAreaService, 'putImageDataToContexts');
         const differenceCoord: Coordinate[] = [
             { x: 12, y: 15 },
             { x: 0, y: 0 },
@@ -199,85 +199,24 @@ describe('GameAreaService', () => {
         expect(flashPixelsSpy).toHaveBeenCalledWith(expectedIndexList);
     });
 
-    // it('toggleCheatMode should get the current differences to flash in the first call and stop the flash in the second call', () => {
-    //     const differenceCoord: Coordinate[] = [
-    //         { x: 12, y: 15 },
-    //         { x: 0, y: 0 },
-    //         { x: 20, y: 100 },
-    //         { x: 30, y: 0 },
-    //     ];
-    //     // const convert2DCoordToPixelIndexSpy = spyOn<any>(gameAreaService, 'convert2DCoordToPixelIndex').and.callThrough();
-    //     const toggleCheatModeSpy = spyOn(gameAreaService, 'toggleCheatMode');
-    //     // const clearFlashingSpy = spyOn(gameAreaService, 'clearFlashing').and.returnValue();
-    //     // const putImageDataToContextsSpy = spyOn(gameAreaService, 'putImageDataToContexts').and.returnValue();
-    //     const isCheatMode = gameAreaService['isCheatMode'];
-    //     gameAreaService['isCheatMode'] = false;
-    //     gameAreaService.toggleCheatMode(differenceCoord);
-    //     setInterval(() => {
-    //         intervalCallback();
-    //         // expect(putImageDataToContextsSpy).toHaveBeenCalled();
-    //         // expect(clearFlashingSpy).toHaveBeenCalled();
-    //         setTimeout(() => {
-    //             timerCallback();
-    //         }, RED_FLASH_TIME);
-    //     }, CHEAT_MODE_WAIT_TIME);
-    //     expect(timerCallback).not.toHaveBeenCalled();
-    //     expect(intervalCallback).not.toHaveBeenCalled();
-    //     jasmine.clock().tick(RED_FLASH_TIME + 1);
-    //     jasmine.clock().tick(CHEAT_MODE_WAIT_TIME + 1);
-    //     expect(toggleCheatModeSpy).toHaveBeenCalled();
-    //     // expect(clearFlashingSpy).toHaveBeenCalled();
-    //     expect(isCheatMode).toEqual(gameAreaService['isCheatMode']);
-    //     expect(timerCallback).toHaveBeenCalled();
-    //     expect(intervalCallback).toHaveBeenCalled();
-    // });
-
-    // it('should enable cheat mode and start flashing red pixels', () => {
-    //     jasmine.clock().install();
-    //     spyOn(window, 'setInterval').and.callThrough();
-    //     spyOn(window, 'setTimeout').and.callThrough();
-
-    //     gameAreaService['toggleCheatMode']([
-    //         { x: 1, y: 2 },
-    //         { x: 3, y: 4 },
-    //     ]);
-
-    //     expect(gameAreaService['isCheatMode']).toBeTrue();
-    //     expect(window.setInterval).toHaveBeenCalledOnceWith(jasmine.any(Function), CHEAT_MODE_WAIT_TIME);
-    //     expect(gameAreaService['cheatModeInterval']).toBeDefined();
-
-    //     // Simulate interval execution
-    //     jasmine.clock().tick(CHEAT_MODE_WAIT_TIME + 1);
-
-    //     // expect(window.setTimeout).toHaveBeenCalledOnceWith(jasmine.any(Function), RED_FLASH_TIME);
-    //     // expect(gameAreaService['modifiedFrontPixelData'].data).toEqual(
-    //     //     jasmine.arrayContaining([RED_PIXEL.red, RED_PIXEL.green, RED_PIXEL.blue, RED_PIXEL.alpha]),
-    //     // );
-    //     // expect(gameAreaService['originalFrontPixelData'].data).toEqual(
-    //     //     jasmine.arrayContaining([RED_PIXEL.red, RED_PIXEL.green, RED_PIXEL.blue, RED_PIXEL.alpha]),
-    //     // );
-
-    //     // Simulate setTimeout execution
-    //     jasmine.clock().tick(RED_FLASH_TIME + 1);
-
-    //     // expect(gameAreaService['modifiedFrontPixelData'].data).not.toEqual(
-    //     //     jasmine.arrayContaining([RED_PIXEL.red, RED_PIXEL.green, RED_PIXEL.blue, RED_PIXEL.alpha]),
-    //     // );
-    //     // expect(gameAreaService['originalFrontPixelData'].data).not.toEqual(
-    //     //     jasmine.arrayContaining([RED_PIXEL.red, RED_PIXEL.green, RED_PIXEL.blue, RED_PIXEL.alpha]),
-    //     // );
-
-    //     gameAreaService.clearFlashing();
-
-    //     expect(window.clearInterval).not.toHaveBeenCalled();
-    //     expect(window.setTimeout).toHaveBeenCalled();
-    //     // expect(gameAreaService['modifiedFrontPixelData'].data).not.toEqual(
-    //     //     jasmine.arrayContaining([RED_PIXEL.red, RED_PIXEL.green, RED_PIXEL.blue, RED_PIXEL.alpha]),
-    //     // );
-    //     // expect(gameAreaService['originalFrontPixelData'].data).not.toEqual(
-    //     //     jasmine.arrayContaining([RED_PIXEL.red, RED_PIXEL.green, RED_PIXEL.blue, RED_PIXEL.alpha]),
-    //     // );
-    // });
+    it('toggleCheatMode should enable cheat mode and start flashing red pixels', () => {
+        jasmine.clock().install();
+        spyOn(window, 'setInterval').and.callThrough();
+        spyOn(window, 'setTimeout').and.callThrough();
+        gameAreaService['originalFrontPixelData'] = new ImageData(IMG_WIDTH, IMG_HEIGHT);
+        gameAreaService['modifiedFrontPixelData'] = new ImageData(IMG_WIDTH, IMG_HEIGHT);
+        gameAreaService['toggleCheatMode']([
+            { x: 1, y: 2 },
+            { x: 3, y: 4 },
+        ]);
+        expect(gameAreaService['isCheatMode']).toBeTrue();
+        expect(window.setInterval).toHaveBeenCalledOnceWith(jasmine.any(Function), CHEAT_MODE_WAIT_TIME);
+        expect(gameAreaService['cheatModeInterval']).toBeDefined();
+        jasmine.clock().tick(CHEAT_MODE_WAIT_TIME + 1);
+        expect(window.setTimeout).toHaveBeenCalledOnceWith(jasmine.any(Function), RED_FLASH_TIME);
+        jasmine.clock().tick(RED_FLASH_TIME + 1);
+        expect(window.setTimeout).toHaveBeenCalledTimes(1);
+    });
 
     it('toggleCheatMode should disable cheat mode and stop flashing red pixels', () => {
         spyOn(window, 'clearInterval').and.callThrough();
