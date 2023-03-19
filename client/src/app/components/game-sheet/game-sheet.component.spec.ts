@@ -13,7 +13,7 @@ import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { BehaviorSubject, of, Subject } from 'rxjs';
+import { BehaviorSubject, of, Subject, Subscription } from 'rxjs';
 
 describe('GameSheetComponent', () => {
     let component: GameSheetComponent;
@@ -167,5 +167,14 @@ describe('GameSheetComponent', () => {
     it('Should return true if the game is available', () => {
         const isAvailableToJoin = component.isAvailableToJoin();
         expect(component['isAvailable']).toEqual(isAvailableToJoin);
+    });
+
+    it('this.roomAvailabilitySubscription?.unsubscribe() should ne call if undefined', () => {
+        component['roomAvailabilitySubscription'] = undefined as unknown as Subscription;
+        const mockSubscription = new Subscription();
+        component['roomIdSubscription'] = mockSubscription;
+        const unsubscribeSpy = spyOn(component['roomIdSubscription'], 'unsubscribe');
+        component.ngOnDestroy();
+        expect(unsubscribeSpy).toHaveBeenCalled();
     });
 });
