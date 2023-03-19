@@ -24,7 +24,7 @@ describe('SoloGameViewDialogComponent', () => {
                 {
                     provide: ClassicSystemService,
                     useValue: classicServiceSpy,
-                }
+                },
             ],
         }).compileComponents();
 
