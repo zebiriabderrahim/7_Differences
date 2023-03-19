@@ -15,7 +15,6 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
     refusedMessage: string;
     private playerNamesSubscription: Subscription;
     private countdownSubscription: Subscription;
-    private roomIdSubscription: Subscription;
     private acceptedPlayerSubscription: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
@@ -63,7 +62,7 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
 
     handleAcceptedPlayer() {
         this.acceptedPlayerSubscription = this.roomManagerService.acceptedPlayerByRoom$
-            .pipe(filter((acceptedPlayer) => acceptedPlayer?.playerName === this.data.player && acceptedPlayer?.gameId === this.data.gameId))
+            .pipe(filter((acceptedPlayer) => acceptedPlayer?.playerName === this.data.player && acceptedPlayer.gameId === this.data.gameId))
             .subscribe((acceptedPlayer) => {
                 this.dialogRef.close();
                 this.navigateToGame(acceptedPlayer.roomId);
@@ -79,7 +78,6 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.playerNamesSubscription?.unsubscribe();
         this.countdownSubscription?.unsubscribe();
-        this.roomIdSubscription?.unsubscribe();
         this.acceptedPlayerSubscription?.unsubscribe();
     }
 }

@@ -98,8 +98,17 @@ describe('JoinedPlayerDialogComponent', () => {
 
         tick();
 
-        // expect(dialogRefSpy.close).toHaveBeenCalled();
         expect(component.navigateToGame).toHaveBeenCalled();
+    }));
+
+    it('should not navigate to game when player is accepted as undefined', fakeAsync(() => {
+        spyOn(component, 'navigateToGame');
+        component.handleAcceptedPlayer();
+        acceptPlayerNamesMock.next(undefined as unknown as AcceptedPlayer);
+
+        tick();
+
+        expect(component.navigateToGame).not.toHaveBeenCalled();
     }));
 
     it('NavigateTOGame should navigate to the room-id', () => {
