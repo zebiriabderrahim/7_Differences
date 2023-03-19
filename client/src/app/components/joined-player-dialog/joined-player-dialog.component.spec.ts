@@ -82,7 +82,7 @@ describe('JoinedPlayerDialogComponent', () => {
         expect(component.countdown).toBe(TEN_SECONDS);
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- needed for test
         tick(12000);
-        expect(component.refusedMessage).toBe(`You have been refused. You will be redirected in ${component.countdown} seconds`);
+        expect(component.refusedMessage).toBe(`Vous avez été refusé. Vous serez redirigé dans ${component.countdown} secondes`);
         expect(dialogRefSpy.close).toHaveBeenCalled();
     }));
 
