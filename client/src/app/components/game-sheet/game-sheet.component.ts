@@ -32,9 +32,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         private readonly roomManagerService: RoomManagerService,
         private readonly communicationService: CommunicationService,
         private sanitizer: DomSanitizer,
-    ) {
-        this.roomManagerService.handleRoomEvents();
-    }
+    ) {}
     ngOnInit(): void {
         this.url = this.sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + this.game.thumbnail);
         this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
@@ -64,14 +62,9 @@ export class GameSheetComponent implements OnDestroy, OnInit {
 
     playSolo(): void {
         this.createSoloRoom();
-        this.roomIdSubscription = this.roomManagerService.roomId$
-            .pipe(
-                filter((roomId) => !!roomId),
-                take(1),
-            )
-            .subscribe((roomId) => {
-                this.router.navigate(['/game', roomId]);
-            });
+        this.roomIdSubscription = this.roomManagerService.roomId$.pipe(filter((roomId) => !!roomId)).subscribe((roomId) => {
+            this.router.navigate(['/game', roomId]);
+        });
     }
 
     createOneVsOne(): void {
@@ -130,7 +123,6 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     }
 
     ngOnDestroy(): void {
-        this.roomManagerService.disconnect();
         this.roomIdSubscription?.unsubscribe();
         this.roomAvailabilitySubscription?.unsubscribe();
     }
