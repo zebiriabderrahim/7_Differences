@@ -1,4 +1,4 @@
-// Needed for lines for tests
+// Needed to test everything in the service
 /* eslint-disable max-lines */
 // to spyOn private function
 /* eslint-disable @typescript-eslint/no-explicit-any */
