@@ -111,18 +111,6 @@ describe('GameSheetComponent', () => {
         expect(popUpSpy).toHaveBeenCalled();
     });
 
-    /*
-    it('should open MatDialog pop up and redirect host to waitingRoom ', () => {
-        const gameListSpy = spyOn(component, 'createOneVsOne').and.callFake(() => {});
-        const popUpSpy = spyOn(component, 'openDialog').and.returnValue({
-            afterClosed: () => of('test'),
-        } as MatDialogRef<PlayerNameDialogBoxComponent, unknown>);
-
-        component.createOneVsOne();
-        expect(popUpSpy).toHaveBeenCalled();
-        expect(gameListSpy).toHaveBeenCalled();
-    });*/
-
     it('should call deleteGameById method of communicationService and redirect to config page', () => {
         const deleteGameByIdSpy = spyOn(communicationService, 'deleteGameById').and.returnValue(of());
         component.deleteGameCard();
