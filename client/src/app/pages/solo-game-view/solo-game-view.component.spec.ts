@@ -131,14 +131,14 @@ describe('SoloGameViewComponent', () => {
 
     it('should do nothing if the left click on original image is not detected', () => {
         mouse = new MouseEvent('click', { button: 1 });
-        component.mouseClickOnOriginal(mouse);
+        component.mouseClickOnCanvas(mouse, false);
         expect(classicService['isLeftCanvas']).toBeFalsy();
     });
 
     it('should set isLeftCanvas to true if the left click on original image is detected', () => {
         const gameAreaSpy = spyOn(gameAreaService, 'setAllData');
         mouse = new MouseEvent('click', { button: 0 });
-        component.mouseClickOnOriginal(mouse);
+        component.mouseClickOnCanvas(mouse, true);
         expect(classicService['isLeftCanvas']).toBeTruthy();
         expect(gameAreaSpy).toHaveBeenCalled();
         expect(classicServiceSpy).toBeTruthy();
@@ -146,14 +146,14 @@ describe('SoloGameViewComponent', () => {
 
     it('should do nothing if the left click on modified image is not detected', () => {
         mouse = new MouseEvent('click', { button: 1 });
-        component.mouseClickOnModified(mouse);
+        component.mouseClickOnCanvas(mouse, false);
         expect(classicService['isLeftCanvas']).toBeFalsy();
     });
 
     it('should set isLeftCanvas to false if the left click on modified image is detected', () => {
         const gameAreaSpy = spyOn(gameAreaService, 'setAllData');
         mouse = new MouseEvent('click', { button: 0 });
-        component.mouseClickOnModified(mouse);
+        component.mouseClickOnCanvas(mouse, false);
         expect(classicService['isLeftCanvas']).toBeFalsy();
         expect(gameAreaSpy).toHaveBeenCalled();
         expect(classicServiceSpy).toBeTruthy();
