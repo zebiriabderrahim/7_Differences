@@ -138,8 +138,8 @@ export class GameAreaService {
     }
 
     putImageDataToContexts(): void {
-        this.modifiedContextFrontLayer.putImageData(this.modifiedFrontPixelData, 0, 0);
-        this.originalContextFrontLayer.putImageData(this.originalFrontPixelData, 0, 0);
+        this.modifiedContextFrontLayer?.putImageData(this.modifiedFrontPixelData, 0, 0);
+        this.originalContextFrontLayer?.putImageData(this.originalFrontPixelData, 0, 0);
     }
 
     clearFlashing(): void {
