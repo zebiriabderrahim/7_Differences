@@ -50,7 +50,7 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
             const countdownObserver = {
                 next: () => {
                     this.countdown--;
-                    this.refusedMessage = `You have been refused. You will be redirected in ${this.countdown} seconds`;
+                    this.refusedMessage = `Vous avez été refusé. Vous serez redirigé dans ${this.countdown} secondes`;
                 },
                 complete: () => {
                     this.dialogRef.close();
