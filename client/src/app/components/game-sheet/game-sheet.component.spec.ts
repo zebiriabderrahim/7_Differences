@@ -171,6 +171,8 @@ describe('GameSheetComponent', () => {
 
     it('this.roomAvailabilitySubscription?.unsubscribe() should ne call if undefined', () => {
         component['roomAvailabilitySubscription'] = undefined as unknown as Subscription;
+        const mockSubscription = new Subscription();
+        component['roomIdSubscription'] = mockSubscription;
         const unsubscribeSpy = spyOn(component['roomIdSubscription'], 'unsubscribe');
         component.ngOnDestroy();
         expect(unsubscribeSpy).toHaveBeenCalled();
