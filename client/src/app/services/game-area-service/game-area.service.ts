@@ -104,7 +104,6 @@ export class GameAreaService {
     toggleCheatMode(startDifferences: Coordinate[]): void {
         const imageDataIndexes: number[] = this.convert2DCoordToPixelIndex(startDifferences);
         if (!this.isCheatMode) {
-            this.isCheatMode = true;
             this.cheatModeInterval = setInterval(() => {
                 const color = [RED_PIXEL.red, RED_PIXEL.green, RED_PIXEL.blue, RED_PIXEL.alpha];
                 for (const index of imageDataIndexes) {
@@ -118,10 +117,10 @@ export class GameAreaService {
                 }, RED_FLASH_TIME);
             }, CHEAT_MODE_WAIT_TIME) as unknown as number;
         } else {
-            this.isCheatMode = false;
             clearInterval(this.cheatModeInterval);
             this.clearFlashing();
         }
+        this.isCheatMode = !this.isCheatMode;
     }
 
     setPixelData(imageDataIndexes: number[], modifiedFrontPixelData: ImageData, originalFrontPixelData: ImageData): void {
