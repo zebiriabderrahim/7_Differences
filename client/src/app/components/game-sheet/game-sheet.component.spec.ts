@@ -4,68 +4,60 @@
 /* eslint-disable no-underscore-dangle */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameSheetComponent } from '@app/components/game-sheet/game-sheet.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { routes } from '@app/modules/app-routing.module';
-import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { of } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 
 describe('GameSheetComponent', () => {
     let component: GameSheetComponent;
     let fixture: ComponentFixture<GameSheetComponent>;
-    let communicationService: CommunicationService;
-    let roomManagerService: RoomManagerService;
     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl', 'navigate']);
-    // const roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', [
-    //     'handleRoomEvents',
-    //     'checkRoomOneVsOneAvailability',
-    //     'disconnect',
-    //     'pipe',
-    // ]);
+    let roomManagerServiceSpy: jasmine.SpyObj<RoomManagerService>;
+    let roomIdSpy: Subject<string>;
+    let communicationService: CommunicationService;
 
     beforeEach(async () => {
+        roomIdSpy = new Subject<string>();
+        roomManagerServiceSpy = jasmine.createSpyObj(
+            'RoomManagerService',
+            [
+                'updateRoomOneVsOneAvailability',
+                'handleRoomEvents',
+                'checkRoomOneVsOneAvailability',
+                'disconnect',
+                'deleteCreatedOneVsOneRoom',
+                'createOneVsOneRoom',
+                'createSoloRoom',
+                'updateWaitingPlayerNameList',
+            ],
+            {
+                roomId$: roomIdSpy,
+                oneVsOneRoomsAvailabilityByRoomId$: new BehaviorSubject({}),
+            },
+        );
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule.withRoutes(routes), BrowserAnimationsModule, MatDialogModule, HttpClientTestingModule],
             declarations: [GameSheetComponent],
             providers: [
                 CommunicationService,
                 {
-                    provide: ClassicSystemService,
-                    // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for fake
-                    useValue: {
-                        playerName: { next: () => {} },
-                        id: { next: () => {} },
-                        manageSocket: () => {},
-                        checkIfOneVsOneIsAvailable: () => {},
-                        disconnect: () => {},
-                    },
-                    // TODO : Fix this freaking mess
-                },
-                {
-                    provide: MatDialogRef,
-                    useValue: {},
-                },
-                {
                     provide: MatDialog,
-                },
-                {
-                    provide: MAT_DIALOG_DATA,
-                    useValue: {},
                 },
                 {
                     provide: Router,
                     useValue: routerSpy,
                 },
-                // {
-                //     provide: RoomManagerService,
-                //     useValue: roomManagerServiceSpy,
-                // },
+                {
+                    provide: RoomManagerService,
+                    useValue: roomManagerServiceSpy,
+                },
             ],
         }).compileComponents();
     });
@@ -73,7 +65,6 @@ describe('GameSheetComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(GameSheetComponent);
         communicationService = TestBed.inject(CommunicationService);
-        roomManagerService = TestBed.inject(RoomManagerService);
         component = fixture.componentInstance;
 
         component.game = {
@@ -85,10 +76,6 @@ describe('GameSheetComponent', () => {
             thumbnail: '',
         };
         fixture.detectChanges();
-
-        // spyOn(roomManagerService, 'handleRoomEvents').and.callFake(() => {});
-        // roomManagerServiceSpy.handleRoomEvents.and.callFake(() => {});
-        // roomManagerServiceSpy.oneVsOneRoomsAvailabilityByRoomId$ = of({ gameId: '0', isAvailableToJoin: true });
     });
 
     afterEach(() => {
@@ -99,12 +86,9 @@ describe('GameSheetComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    // it('should update isAvailable when the room availability changes', () => {
-    //     roomManagerServiceSpy.checkRoomOneVsOneAvailability.and.returnValue(of({ gameId: '0', isAvailableToJoin: true }));
-    //     component.ngOnInit();
-    //     expect(roomManagerServiceSpy.checkRoomOneVsOneAvailability).toHaveBeenCalledWith(component.game._id);
-    //     expect(component['isAvailable']).toBeTrue();
-    // });
+    it('should update isAvailable when the room availability changes', () => {
+        expect(roomManagerServiceSpy.checkRoomOneVsOneAvailability).toHaveBeenCalledWith(component.game._id);
+    });
 
     it('OpenDialog should open dialog box and call gameCardService with game id and name', () => {
         const dialogSpy = spyOn(component['dialog'], 'open').and.returnValue({
@@ -161,7 +145,7 @@ describe('GameSheetComponent', () => {
     });
 
     it('createOneVsOne should call createOneVsOneRoom and openWaitingDialog if a player create a game ', () => {
-        spyOn(roomManagerService, 'updateRoomOneVsOneAvailability').and.callFake(() => {
+        roomManagerServiceSpy.updateRoomOneVsOneAvailability.and.callFake(() => {
             component.game._id = '0';
         });
         const openDialogSpy = spyOn(component, 'openDialog').and.returnValue({
@@ -172,14 +156,27 @@ describe('GameSheetComponent', () => {
     });
 
     it('createOneVsOne should call updateRoomOneVsOneAvailability if a player unsubscribe a game', () => {
-        const roomManagerServiceSPy = spyOn(roomManagerService, 'updateRoomOneVsOneAvailability').and.callFake(() => {
-            component.game._id = '1';
-        });
         spyOn(component, 'openDialog').and.returnValue({
             afterClosed: () => of(''),
         } as MatDialogRef<PlayerNameDialogBoxComponent, unknown>);
         component.createOneVsOne();
-        expect(roomManagerServiceSPy).toHaveBeenCalled();
+        expect(roomManagerServiceSpy.updateRoomOneVsOneAvailability).toHaveBeenCalled();
+    });
+
+    it('joinOneVsOne should call updateWaitingPlayerNameList if a player2 subscribe a game', () => {
+        spyOn(component, 'openDialog').and.returnValue({
+            afterClosed: () => of('Alice'),
+        } as MatDialogRef<PlayerNameDialogBoxComponent, unknown>);
+        component.joinOneVsOne();
+        expect(roomManagerServiceSpy.updateWaitingPlayerNameList).toHaveBeenCalled();
+    });
+
+    it('joinOneVsOne should call updateWaitingPlayerNameList if a player2 subscribe a game', () => {
+        roomIdSpy.next('0');
+        spyOn(component, 'openDialog').and.returnValue({
+            afterClosed: () => of('Alice'),
+        } as MatDialogRef<PlayerNameDialogBoxComponent, unknown>);
+        component.openWaitingDialog('Alice');
     });
 
     it('Should return true if the game is available', () => {
