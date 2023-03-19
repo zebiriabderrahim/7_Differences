@@ -1,7 +1,16 @@
 import { HostListener, Injectable } from '@angular/core';
-import { FLASH_WAIT_TIME, GREEN_FLASH_TIME, LEFT_BUTTON, ONE_SECOND, X_CENTERING_DISTANCE, YELLOW_FLASH_TIME } from '@app/constants/constants';
+import {
+    CHEAT_MODE_WAIT_TIME,
+    FLASH_WAIT_TIME,
+    GREEN_FLASH_TIME,
+    LEFT_BUTTON,
+    ONE_SECOND,
+    RED_FLASH_TIME,
+    X_CENTERING_DISTANCE,
+    YELLOW_FLASH_TIME,
+} from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
-import { GREEN_PIXEL, N_PIXEL_ATTRIBUTE, YELLOW_PIXEL } from '@app/constants/pixels';
+import { GREEN_PIXEL, N_PIXEL_ATTRIBUTE, RED_PIXEL, YELLOW_PIXEL } from '@app/constants/pixels';
 import { Coordinate } from '@common/coordinate';
 
 @Injectable({
@@ -18,6 +27,8 @@ export class GameAreaService {
     private modifiedContextFrontLayer: CanvasRenderingContext2D;
     private mousePosition: Coordinate = { x: 0, y: 0 };
     private clickDisabled: boolean = false;
+    private isCheatMode: boolean = false;
+    private cheatModeInterval: number | undefined;
 
     @HostListener('keydown', ['$event'])
     setAllData(): void {
@@ -55,6 +66,7 @@ export class GameAreaService {
             }
         }
         this.modifiedContext.putImageData(this.modifiedPixelData, 0, 0);
+        this.resetCheatMode();
         this.flashCorrectPixels(differenceCoord);
     }
 
@@ -89,6 +101,29 @@ export class GameAreaService {
         }, FLASH_WAIT_TIME);
     }
 
+    toggleCheatMode(startDifferences: Coordinate[]): void {
+        const imageDataIndexes: number[] = this.convert2DCoordToPixelIndex(startDifferences);
+        if (!this.isCheatMode) {
+            this.isCheatMode = true;
+            this.cheatModeInterval = setInterval(() => {
+                const color = [RED_PIXEL.red, RED_PIXEL.green, RED_PIXEL.blue, RED_PIXEL.alpha];
+                for (const index of imageDataIndexes) {
+                    this.modifiedFrontPixelData.data.set(color, index);
+                    this.originalFrontPixelData.data.set(color, index);
+                }
+                this.putImageDataToContexts();
+
+                setTimeout(() => {
+                    this.clearFlashing();
+                }, RED_FLASH_TIME);
+            }, CHEAT_MODE_WAIT_TIME) as unknown as number;
+        } else {
+            this.isCheatMode = false;
+            clearInterval(this.cheatModeInterval);
+            this.clearFlashing();
+        }
+    }
+
     setPixelData(imageDataIndexes: number[], modifiedFrontPixelData: ImageData, originalFrontPixelData: ImageData): void {
         for (const index of imageDataIndexes) {
             modifiedFrontPixelData.data[index] = GREEN_PIXEL.red;
@@ -111,6 +146,8 @@ export class GameAreaService {
     clearFlashing(): void {
         this.modifiedContextFrontLayer.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.originalContextFrontLayer.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        this.originalFrontPixelData = this.originalContextFrontLayer.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        this.modifiedFrontPixelData = this.modifiedContextFrontLayer.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.clickDisabled = false;
     }
 
@@ -148,6 +185,11 @@ export class GameAreaService {
 
     getMousePosition(): Coordinate {
         return this.mousePosition;
+    }
+
+    resetCheatMode(): void {
+        this.isCheatMode = false;
+        clearInterval(this.cheatModeInterval);
     }
 
     private convert2DCoordToPixelIndex(differenceCoord: Coordinate[]): number[] {

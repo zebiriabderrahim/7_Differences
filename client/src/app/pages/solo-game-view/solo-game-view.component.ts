@@ -1,11 +1,13 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dialog/solo-game-view-dialog.component';
+import { INPUT_TAG_NAME } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { ImageService } from '@app/services/image-service/image.service';
+import { Coordinate } from '@common/coordinate';
 import { ChatMessage, ClientSideGame, MessageTag, Player } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
@@ -30,6 +32,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         player2: { name: '', diffData: { currentDifference: [], differencesFound: 0 } },
     };
     readonly canvasSize = { width: IMG_WIDTH, height: IMG_HEIGHT };
+    private cheatDifferences: Coordinate[];
     private timerSub: Subscription;
     private gameSub: Subscription;
     private differenceSub: Subscription;
@@ -37,6 +40,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     private messageSub: Subscription;
     private endGameSub: Subscription;
     private opponentDifferenceSub: Subscription;
+    private cheatDifferencesSub: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
@@ -48,6 +52,14 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         private route: ActivatedRoute,
     ) {
         this.classicService.manageSocket();
+    }
+
+    @HostListener('window:keydown', ['$event'])
+    keyboardEvent(event: KeyboardEvent) {
+        const eventHTMLElement = event.target as HTMLElement;
+        if (event.key === 't' && eventHTMLElement.tagName !== INPUT_TAG_NAME) {
+            this.gameAreaService.toggleCheatMode(this.cheatDifferences);
+        }
     }
 
     ngAfterViewInit(): void {
@@ -111,6 +123,9 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.opponentDifferenceSub = this.classicService.opponentDifferencesFound$.subscribe((opponentDifferencesFound) => {
             this.opponentDifferencesFound = opponentDifferencesFound;
         });
+        this.cheatDifferencesSub = this.classicService.cheatDifferences$.subscribe((cheatDifferences) => {
+            this.cheatDifferences = cheatDifferences;
+        });
     }
 
     showAbandonDialog(): void {
@@ -146,6 +161,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.gameAreaService.resetCheatMode();
         this.gameSub?.unsubscribe();
         this.timerSub?.unsubscribe();
         this.differenceSub?.unsubscribe();
@@ -153,6 +169,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.messageSub.unsubscribe();
         this.endGameSub.unsubscribe();
         this.opponentDifferenceSub?.unsubscribe();
+        this.cheatDifferencesSub.unsubscribe();
         this.classicService.disconnect();
     }
 }
