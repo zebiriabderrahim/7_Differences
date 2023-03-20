@@ -145,6 +145,7 @@ export class ClassicModeService {
     endGame(socket: io.Socket, server: io.Server): void {
         const roomId = Array.from(socket.rooms.values())[1];
         const room = this.getRoomByRoomId(roomId);
+        if (!room) return;
         const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
         if (room && room.clientGame.differencesCount === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicSolo) {
             room.endMessage = `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo!`;
