@@ -16,13 +16,15 @@ export class ImageCanvasComponent implements AfterViewInit {
     @ViewChild('backgroundCanvas') backgroundCanvas: ElementRef;
     @ViewChild('foregroundCanvas') foregroundCanvas: ElementRef;
     @ViewChild('frontCanvas') frontCanvas: ElementRef;
-    readonly canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
+    readonly canvasSizes;
 
     constructor(
         private readonly imageService: ImageService,
         private readonly drawService: DrawService,
         private readonly foregroundService: ForegroundService,
-    ) {}
+    ) {
+        this.canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
+    }
 
     @HostListener('window:keydown.shift', ['$event'])
     onShiftDown() {
