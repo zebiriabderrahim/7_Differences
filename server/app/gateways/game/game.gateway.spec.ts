@@ -202,8 +202,14 @@ describe('GameGateway', () => {
     });
 
     it('deleteCreatedOneVsOneRoom should call deleteOneVsOneRoomAvailability', () => {
+        server.to.returns({
+            emit: (event: string) => {
+                expect(event).toEqual(GameEvents.UndoCreation);
+            },
+        } as BroadcastOperator<unknown, unknown>);
         gateway.deleteCreatedOneVsOneRoom('fakeRoomId');
         expect(classicService.deleteOneVsOneRoomAvailability.calledOnce).toBeTruthy();
+        expect(classicService.cancelAllJoining.calledOnce).toBeTruthy();
     });
 
     it('updateWaitingPlayerNameList should call updateWaitingPlayerNameList', () => {
@@ -268,6 +274,15 @@ describe('GameGateway', () => {
         expect(classicService.getRoomIdFromSocket).toHaveBeenCalledWith(mockSocket);
         expect(mockBroadcast.to).toHaveBeenCalledWith(roomId);
         expect(mockBroadcast.emit).toHaveBeenCalledWith(MessageEvents.LocalMessage, fakeMessage);
+    });
+
+    it('gameCardDeleted should emit GameCardDeleted on event', () => {
+        server.to.returns({
+            emit: (event: string) => {
+                expect(event).toEqual(GameEvents.AcceptPlayer);
+            },
+        } as BroadcastOperator<unknown, unknown>);
+        gateway.gameCardDeleted('fakeRoomId');
     });
 
     it('afterInit() should emit time after 1s', () => {
