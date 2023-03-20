@@ -1,27 +1,22 @@
 // Id comes from database to allow _id
 /* eslint-disable no-underscore-dangle */
 import { Game } from '@app/model/database/game';
-import { GAME_CARROUSEL_SIZE } from '@common/constants';
-import { CarouselPaginator, GameCard, PlayerTime } from '@common/game-interfaces';
+import { GAME_CARROUSEL_SIZE, DEFAULT_BEST_TIMES } from '@common/constants';
+import { CarouselPaginator, GameCard } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 
 @Injectable()
 export class GameListsManagerService {
     private carouselGames: CarouselPaginator[] = [];
-    private defaultBestTimes: PlayerTime[] = [
-        { name: 'John Doe', time: 100 },
-        { name: 'Jane Doe', time: 200 },
-        { name: 'the scream', time: 250 },
-    ];
 
     buildGameCardFromGame(game: Game): GameCard {
         const gameCard: GameCard = {
             _id: game._id,
             name: game.name,
             difficultyLevel: game.isHard,
-            soloTopTime: this.defaultBestTimes,
-            oneVsOneTopTime: this.defaultBestTimes,
+            soloTopTime: DEFAULT_BEST_TIMES,
+            oneVsOneTopTime: DEFAULT_BEST_TIMES,
             thumbnail: `assets/${game.name}/original.bmp`,
         };
         return gameCard;

@@ -3,7 +3,7 @@ import { ClientSocketService } from '@app/services/client-socket-service/client-
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
-import { ChatMessage, ClientSideGame, Differences, GameEvents, MessageEvents, MessageTag, Player } from '@common/game-interfaces';
+import { ChatMessage, ClientSideGame, Differences, GameEvents, MessageEvents, MessageTag, Players } from '@common/game-interfaces';
 import { filter, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
@@ -16,9 +16,8 @@ export class ClassicSystemService implements OnDestroy {
     private message: Subject<ChatMessage>;
     private isLeftCanvas: boolean;
     private endMessage: Subject<string>;
-    private players: Subject<{ player1: Player; player2: Player }>;
+    private players: Subject<Players>;
     private cheatDifferences: Subject<Coordinate[]>;
-    private deletedGameId: Subject<string>;
 
     constructor(
         private readonly clientSocket: ClientSocketService,
@@ -28,12 +27,11 @@ export class ClassicSystemService implements OnDestroy {
         this.currentGame = new Subject<ClientSideGame>();
         this.differencesFound = new Subject<number>();
         this.timer = new Subject<number>();
-        this.players = new Subject<{ player1: Player; player2: Player }>();
+        this.players = new Subject<Players>();
         this.message = new Subject<ChatMessage>();
         this.endMessage = new Subject<string>();
         this.opponentDifferencesFound = new Subject<number>();
         this.cheatDifferences = new Subject<Coordinate[]>();
-        this.deletedGameId = new Subject<string>();
     }
 
     get currentGame$() {
@@ -66,10 +64,6 @@ export class ClassicSystemService implements OnDestroy {
         return this.cheatDifferences.asObservable();
     }
 
-    get isGameCardDeleted$() {
-        return this.deletedGameId.asObservable();
-    }
-
     getSocketId(): string {
         return this.clientSocket.socket.id;
     }
@@ -77,8 +71,8 @@ export class ClassicSystemService implements OnDestroy {
     createSoloGame(gameId: string, playerName: string): void {
         this.clientSocket.send(GameEvents.CreateSoloGame, { gameId, playerName });
     }
-    startGameByRoomId(roomId: string): void {
-        this.clientSocket.send(GameEvents.StartGameByRoomId, roomId);
+    startGameByRoomId(roomId: string, playerName: string): void {
+        this.clientSocket.send(GameEvents.StartGameByRoomId, { roomId, playerName });
     }
 
     checkStatus(): void {
@@ -122,26 +116,19 @@ export class ClassicSystemService implements OnDestroy {
         this.clientSocket.send(GameEvents.JoinOneVsOneGame, { gameId, playerName });
     }
 
-    gameCardDeleted(gameId: string) {
-        this.clientSocket.send(GameEvents.DeleteGameCard, gameId);
-    }
-
     manageSocket(): void {
         this.clientSocket.connect();
         this.clientSocket.on(GameEvents.CreateSoloGame, (clientGame: ClientSideGame) => {
             this.currentGame.next(clientGame);
         });
 
-        this.clientSocket.on(
-            GameEvents.GameStarted,
-            (data: { clientGame: ClientSideGame; players: { player1: Player; player2: Player }; cheatDifferences: Coordinate[] }) => {
-                this.currentGame.next(data.clientGame);
-                this.cheatDifferences.next(data.cheatDifferences);
-                if (data.players) {
-                    this.players.next(data.players);
-                }
-            },
-        );
+        this.clientSocket.on(GameEvents.GameStarted, (data: { clientGame: ClientSideGame; players: Players; cheatDifferences: Coordinate[] }) => {
+            this.currentGame.next(data.clientGame);
+            this.cheatDifferences.next(data.cheatDifferences);
+            if (data.players) {
+                this.players.next(data.players);
+            }
+        });
         this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[] }) => {
             if (data.playerId === this.getSocketId()) {
                 this.replaceDifference(data.differencesData.currentDifference);
@@ -164,10 +151,6 @@ export class ClassicSystemService implements OnDestroy {
 
         this.clientSocket.on(MessageEvents.LocalMessage, (receivedMessage: ChatMessage) => {
             this.message.next(receivedMessage);
-        });
-
-        this.clientSocket.on(GameEvents.GameCardDeleted, (gameId: string) => {
-            this.deletedGameId.next(gameId);
         });
     }
 

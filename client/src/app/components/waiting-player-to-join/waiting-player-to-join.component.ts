@@ -15,7 +15,7 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
     refusedMessage: string;
     countdown: number;
     actions: typeof GameCardActions = GameCardActions;
-    private playerNamesSubscription: Subscription;
+    private playerNamesSubscription?: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
@@ -49,7 +49,7 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         });
         this.roomManagerService.acceptPlayer(this.data.gameId, this.data.roomId, this.data.player);
         this.dialogRef.afterClosed().subscribe(() => {
-            this.router.navigate(['/game', this.data.roomId]);
+            this.router.navigate(['/game', this.data.roomId, this.data.player]);
         });
     }
 
