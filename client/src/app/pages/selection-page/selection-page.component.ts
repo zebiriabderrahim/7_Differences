@@ -1,8 +1,10 @@
+// Id comes from database to allow _id
+/* eslint-disable no-underscore-dangle */
 import { AfterViewInit, Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { CarouselPaginator } from '@common/game-interfaces';
+import { CarouselPaginator, GameCard } from '@common/game-interfaces';
 
 @Component({
     selector: 'app-selection-page',
@@ -29,10 +31,21 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
+        this.loadGameCarrousel();
+    }
+
+    loadGameCarrousel() {
         this.communicationService.loadGameCarrousel(this.index).subscribe((gameCarrousel) => {
             if (gameCarrousel) {
                 this.gameCarrousel = gameCarrousel;
+                this.handleGameCardDelete(this.gameCarrousel.gameCards);
             }
+        });
+    }
+
+    handleGameCardDelete(gameCards: GameCard[]) {
+        this.roomManagerService.isGameCardDeleted$.subscribe((gameId) => {
+            this.gameCarrousel.gameCards = gameCards.filter((gameCard) => gameCard._id !== gameId);
         });
     }
 

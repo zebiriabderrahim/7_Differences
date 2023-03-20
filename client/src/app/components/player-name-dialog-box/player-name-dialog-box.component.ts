@@ -1,9 +1,9 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { AsyncValidatorFn, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MAX_NAME_LENGTH, MIN_NAME_LENGTH } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { firstValueFrom } from 'rxjs';
+import { filter, firstValueFrom } from 'rxjs';
 
 @Component({
     selector: 'app-player-name-dialog-box',
@@ -36,6 +36,12 @@ export class PlayerNameDialogBoxComponent {
         if (this.playerNameForm.valid && this.playerNameForm.value.name) {
             this.dialogRef.close(this.playerNameForm.value.name);
         }
+    }
+
+    handelCreateUndoCreation(gameId: string) {
+        this.roomManagerService.gameIdOfRoomToBeDeleted$.pipe(filter((id) => id === gameId)).subscribe(() => {
+            this.dialogRef.close();
+        });
     }
 
     async validatePlayerName(control: FormControl): Promise<{ [key: string]: unknown } | null> {
