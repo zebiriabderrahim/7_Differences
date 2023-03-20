@@ -71,8 +71,8 @@ export class ClassicSystemService implements OnDestroy {
     createSoloGame(gameId: string, playerName: string): void {
         this.clientSocket.send(GameEvents.CreateSoloGame, { gameId, playerName });
     }
-    startGameByRoomId(roomId: string, playerName: string): void {
-        this.clientSocket.send(GameEvents.StartGameByRoomId, { roomId, playerName });
+    startGameByRoomId(roomId: string): void {
+        this.clientSocket.send(GameEvents.StartGameByRoomId, roomId);
     }
 
     checkStatus(): void {
