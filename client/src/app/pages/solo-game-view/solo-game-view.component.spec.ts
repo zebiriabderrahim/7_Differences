@@ -47,9 +47,6 @@ describe('SoloGameViewComponent', () => {
     const opponentDifferencesFoundSubjectTest = new Subject<number>();
     const cheatDifferencesSubjectTest = new Subject<Coordinate[]>();
     const paramsSubjectTest = new Subject<{ roomId: string }>();
-    // let classicServiceGetCurrentGameSpy: () => Subject<ClientSideGame>;
-    // let classicServiceGetTimerSpy: () => Subject<number>;
-    // let classicServiceGetDifferencesFoundSpy: () => Subject<number>;
 
     beforeEach(async () => {
         classicServiceSpy = jasmine.createSpyObj(

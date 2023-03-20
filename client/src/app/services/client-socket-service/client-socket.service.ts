@@ -19,9 +19,8 @@ export class ClientSocketService {
         this.socket = io(this.baseUrl, { transports: ['websocket'], upgrade: false });
     }
 
-    // TODO REVIEW ?
     disconnect() {
-        this.socket?.disconnect();
+        this.socket.disconnect();
     }
 
     on<T>(event: string, action: (data: T) => void): void {

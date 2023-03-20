@@ -55,14 +55,6 @@ describe('ClientSocketService', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should not disconnect from socket if undefined', () => {
-        const socketMock = jasmine.createSpyObj('Socket', ['disconnect']);
-        service.socket = undefined as unknown as Socket;
-        service.disconnect();
-        expect(socketMock.disconnect).not.toHaveBeenCalled();
-        expect(service.socket).toBeUndefined();
-    });
-
     it('isSocketAlive should return true if the socket is still connected', () => {
         service.socket.connected = true;
         const isAlive = service.isSocketAlive();
