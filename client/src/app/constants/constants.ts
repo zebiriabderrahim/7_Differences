@@ -22,3 +22,8 @@ export const MAX_NAME_LENGTH = 10;
 export const MIN_NAME_LENGTH = 3;
 
 export const INPUT_TAG_NAME = 'INPUT';
+
+export const DEFAULT_PLAYERS = {
+    player1: { name: '', diffData: { currentDifference: [], differencesFound: 0 } },
+    player2: { name: '', diffData: { currentDifference: [], differencesFound: 0 } },
+};
