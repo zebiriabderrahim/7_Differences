@@ -11,23 +11,27 @@ import { filter, firstValueFrom } from 'rxjs';
     styleUrls: ['./player-name-dialog-box.component.scss'],
 })
 export class PlayerNameDialogBoxComponent implements OnInit {
-    playerNameForm = new FormGroup({
-        name: new FormControl('', {
-            validators: [
-                Validators.required,
-                Validators.pattern(/^\S*$/),
-                Validators.maxLength(MAX_NAME_LENGTH),
-                Validators.minLength(MIN_NAME_LENGTH),
-            ],
-            asyncValidators: [this.validatePlayerName.bind(this) as AsyncValidatorFn],
-            updateOn: 'blur',
-        }),
-    });
+    playerNameForm: FormGroup;
+
     constructor(
         private dialogRef: MatDialogRef<PlayerNameDialogBoxComponent>,
         @Inject(MAT_DIALOG_DATA) private data: { gameId: string },
         private readonly roomManagerService: RoomManagerService,
-    ) {}
+    ) {
+        this.playerNameForm = new FormGroup({
+            name: new FormControl('', {
+                validators: [
+                    Validators.required,
+                    Validators.pattern(/^\S*$/),
+                    Validators.maxLength(MAX_NAME_LENGTH),
+                    Validators.minLength(MIN_NAME_LENGTH),
+                ],
+                asyncValidators: [this.validatePlayerName.bind(this) as AsyncValidatorFn],
+                updateOn: 'blur',
+            }),
+        });
+    }
+
     ngOnInit(): void {
         this.handelCreateUndoCreation(this.data.gameId);
     }

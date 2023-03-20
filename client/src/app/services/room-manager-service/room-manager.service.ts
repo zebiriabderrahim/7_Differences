@@ -14,7 +14,7 @@ export class RoomManagerService implements OnDestroy {
     private gameIdOfRoomToBeDeleted: Subject<string>;
     private deletedGameId: Subject<string>;
 
-    constructor(private clientSocket: ClientSocketService) {
+    constructor(private readonly clientSocket: ClientSocketService) {
         this.isPlayerNameTaken = new Subject<PlayerNameAvailability>();
         this.roomId = new Subject<string>();
         this.acceptedPlayerByRoom = new BehaviorSubject<AcceptedPlayer>({

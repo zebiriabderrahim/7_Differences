@@ -20,9 +20,7 @@ import { map, Observable } from 'rxjs';
 export class CreationGameDialogComponent implements OnInit {
     @ViewChild('differenceCanvas', { static: true }) differenceCanvas: ElementRef;
     gameName: string;
-    gameNameForm = new FormGroup({
-        name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)], [this.validateGameName.bind(this)]),
-    });
+    gameNameForm: FormGroup;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
@@ -32,7 +30,11 @@ export class CreationGameDialogComponent implements OnInit {
         private readonly differenceService: DifferenceService,
         private readonly dialogRef: MatDialogRef<CreationPageComponent>,
         @Inject(MAT_DIALOG_DATA) public radius: number,
-    ) {}
+    ) {
+        this.gameNameForm = new FormGroup({
+            name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)], [this.validateGameName.bind(this)]),
+        });
+    }
 
     get displayDifferences(): number {
         return this.differenceService.getNumberOfDifferences();
