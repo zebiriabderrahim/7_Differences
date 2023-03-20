@@ -14,7 +14,7 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
     playerNames: string[];
     refusedMessage: string;
     countdown: number;
-    actions: typeof GameCardActions = GameCardActions;
+    actions: typeof GameCardActions;
     private playerNamesSubscription?: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
@@ -26,6 +26,7 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         private readonly router: Router,
     ) {
         this.playerNames = [];
+        this.actions = GameCardActions;
     }
     ngOnInit(): void {
         this.getJoinedPlayerNamesByGameId();
