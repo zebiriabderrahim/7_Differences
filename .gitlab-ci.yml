@@ -120,6 +120,7 @@ pages:
     script:
         - cd client
         - npm ci --cache .npm --prefer-offline
+        - sed -i "s|myServerURL|${EC2_HOST}|g" ./src/environments/environment.prod.ts
         - npm run deploy -- --base-href $BASE_HREF
         - mkdir ../public
         - mv dist/client/* ../public/
