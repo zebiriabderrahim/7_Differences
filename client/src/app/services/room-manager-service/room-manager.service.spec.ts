@@ -216,4 +216,28 @@ describe('RoomManagerService', () => {
         service.ngOnDestroy();
         expect(disconnectSpy).toHaveBeenCalled();
     });
+
+    it('gameIdOfRoomToBeDeleted$ should return gameIdOfRoomToBeDeleted as observable', () => {
+        expect(service.gameIdOfRoomToBeDeleted$).toEqual(service['gameIdOfRoomToBeDeleted'].asObservable());
+    });
+
+    it('gameCardDeleted should call clientSocket.send with DeleteGameCard and gameId', () => {
+        const sendSpy = spyOn(socketServiceMock, 'send');
+        service.gameCardDeleted(mockGameId);
+        expect(sendSpy).toHaveBeenCalledWith(GameEvents.DeleteGameCard, mockGameId);
+    });
+
+    it('should call gameIdOfRoomToBeDeleted.next when GameEvents.UndoCreation is received', () => {
+        service.handleRoomEvents();
+        const gameIdOfRoomToBeDeletedSpy = spyOn(service['gameIdOfRoomToBeDeleted'], 'next');
+        socketHelper.peerSideEmit(GameEvents.UndoCreation, mockGameId);
+        expect(gameIdOfRoomToBeDeletedSpy).toHaveBeenCalledOnceWith(mockGameId);
+    });
+
+    it('should call deletedGameId.next when GameEvents.GameCardDeleted is received', () => {
+        service.handleRoomEvents();
+        const deletedGameIdSpy = spyOn(service['deletedGameId'], 'next');
+        socketHelper.peerSideEmit(GameEvents.GameCardDeleted, mockGameId);
+        expect(deletedGameIdSpy).toHaveBeenCalledOnceWith(mockGameId);
+    });
 });
