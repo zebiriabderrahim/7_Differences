@@ -10,7 +10,6 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-// import { Router, RouterModule } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CanvasMiddleButtonsComponent } from '@app/components/canvas-middle-buttons/canvas-middle-buttons.component';
@@ -28,7 +27,6 @@ describe('CreationPageComponent', () => {
     let component: CreationPageComponent;
     let fixture: ComponentFixture<CreationPageComponent>;
     let matDialogSpy: jasmine.SpyObj<MatDialog>;
-    // let routerSpy: jasmine.SpyObj<Router>;
     let foregroundServiceSpy: jasmine.SpyObj<ForegroundService>;
     let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
 
@@ -173,22 +171,4 @@ describe('CreationPageComponent', () => {
 
         expect(matDialogSpy.open).toHaveBeenCalled();
     });
-
-    // it('validateDifferences should navigate to the config page after posting the game details', fakeAsync(() => {
-    //     const game = { id: 1, name: 'testGame' };
-    //     communicationServiceSpy.postGame.and.returnValue(of(void 0));
-    //     matDialogSpy.open.and.returnValue({
-    //         afterClosed: () => of(game),
-    //     } as MatDialogRef<unknown, unknown>);
-    //     routerSpy.navigateByUrl.and.returnValue(Promise.resolve(true));
-    //     component.validateDifferences();
-    //     tick();
-    //     expect(routerSpy.navigateByUrl).toHaveBeenCalledWith(
-    //         '/',
-    //         jasmine.objectContaining({
-    //             skipLocationChange: true,
-    //         }),
-    //     );
-    //     expect(routerSpy.navigate).toHaveBeenCalledWith(['/config']);
-    // }));
 });

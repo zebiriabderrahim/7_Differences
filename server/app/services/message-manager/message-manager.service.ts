@@ -13,7 +13,7 @@ export class MessageManagerService {
     getSoloDifferenceMessage(): ChatMessage {
         const localMessage: ChatMessage = {
             tag: MessageTag.common,
-            message: this.getFormatTime() + ' - Différences trouvé',
+            message: this.getFormatTime() + ' - Différence trouvée',
         };
         return localMessage;
     }
@@ -21,7 +21,7 @@ export class MessageManagerService {
     getOneVsOneDifferenceMessage(playerName: string): ChatMessage {
         const localMessage: ChatMessage = {
             tag: MessageTag.common,
-            message: this.getFormatTime() + `- Différences trouvé par ${playerName}`,
+            message: this.getFormatTime() + ` - Différence trouvée par ${playerName}`,
         };
         return localMessage;
     }
@@ -37,7 +37,7 @@ export class MessageManagerService {
     getOneVsOneErrorMessage(playerName: string): ChatMessage {
         const localMessage: ChatMessage = {
             tag: MessageTag.common,
-            message: this.getFormatTime() + `- Erreur par ${playerName}`,
+            message: this.getFormatTime() + ` - Erreur par ${playerName}`,
         };
         return localMessage;
     }
@@ -45,7 +45,7 @@ export class MessageManagerService {
     getQuitMessage(playerName: string): ChatMessage {
         const localMessage: ChatMessage = {
             tag: MessageTag.common,
-            message: this.getFormatTime() + `- ${playerName} a abandonné la partie`,
+            message: this.getFormatTime() + ` - ${playerName} a abandonné la partie`,
         };
         return localMessage;
     }
