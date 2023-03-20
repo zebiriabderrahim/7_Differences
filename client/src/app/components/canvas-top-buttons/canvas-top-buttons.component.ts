@@ -18,15 +18,18 @@ export class CanvasTopButtonsComponent implements AfterViewInit {
     canvasAction: typeof CanvasAction;
     pencilDiameter: number;
     eraserLength: number;
-    drawValues: number[] = DRAW_VALUES;
-    drawColor: string = DEFAULT_COLOR;
-    colors: string[] = COLORS;
+    drawValues: number[];
+    drawColor: string;
+    colors: string[];
 
     constructor(private readonly drawService: DrawService) {
         this.pencilDiameter = DEFAULT_WIDTH;
         this.eraserLength = DEFAULT_WIDTH;
         this.canvasAction = CanvasAction;
         this.selectedCanvasAction = CanvasAction.Pencil;
+        this.drawValues = DRAW_VALUES;
+        this.drawColor = DEFAULT_COLOR;
+        this.colors = COLORS;
     }
 
     ngAfterViewInit(): void {
