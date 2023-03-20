@@ -149,7 +149,7 @@ export class ClassicModeService {
         if (room && room.clientGame.differencesCount === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicSolo) {
             room.endMessage = `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo!`;
             server.to(roomId).emit(GameEvents.EndGame, room.endMessage);
-            this.deleteCreatedRoom(roomId, server);
+            this.rooms.delete(roomId);
             this.joinedPlayerNamesByGameId.delete(room.clientGame.id);
         } else if (
             room &&
