@@ -246,8 +246,12 @@ describe('ClassicSystemService', () => {
 
     it('should send a "StartGameByRoomId" message to the server', () => {
         socketServiceMock.send = jasmine.createSpy('send');
-        const roomId = 'abc123';
-        service.startGameByRoomId(roomId, playerNameStub);
+        const mockId = '1234';
+        const roomId = {
+            roomId: mockId,
+            playerName: playerNameStub,
+        };
+        service.startGameByRoomId(mockId, playerNameStub);
         expect(socketServiceMock.send).toHaveBeenCalledWith(GameEvents.StartGameByRoomId, roomId);
     });
 

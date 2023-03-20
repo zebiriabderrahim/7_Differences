@@ -115,6 +115,6 @@ describe('JoinedPlayerDialogComponent', () => {
     it('NavigateTOGame should navigate to the room-id', () => {
         fixture.detectChanges();
         component.navigateToGame('test-room-id', playerNameStub);
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/game', 'test-room-id']);
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/game', 'test-room-id', playerNameStub]);
     });
 });

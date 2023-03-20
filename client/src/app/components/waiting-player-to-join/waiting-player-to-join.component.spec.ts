@@ -75,18 +75,19 @@ describe('WaitingPlayerToJoinComponent', () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for fake afterClosed
         dialogRefSpy.afterClosed.and.returnValue(of({}).pipe(map(() => {})));
         component.acceptPlayer('Alice');
-        expect(router.navigate).toHaveBeenCalledWith(['/game', undefined]);
+        expect(router.navigate).toHaveBeenCalledWith(['/game', undefined, 'Alice']);
     });
 
     it('acceptPlayer should refuse all other players and accept the given player', () => {
         const refusePlayerSpy = spyOn(component, 'refusePlayer');
-        component.playerNames = ['Alice', 'Bob', 'Charlie'];
+        const stubName = 'Alice';
+        component.playerNames = [stubName, 'Bob', 'Charlie'];
         fixture.detectChanges();
-        component.acceptPlayer('Alice');
+        component.acceptPlayer(stubName);
         expect(refusePlayerSpy).toHaveBeenCalledWith('Bob');
         expect(refusePlayerSpy).toHaveBeenCalledWith('Charlie');
         expect(roomManagerServiceSpy.acceptPlayer).toHaveBeenCalled();
-        expect(router.navigate).toHaveBeenCalledWith(['/game', undefined]);
+        expect(router.navigate).toHaveBeenCalledWith(['/game', undefined, stubName]);
     });
 
     it('undoCreateOneVsOneRoom should delete created one vs one room and refuse all players', () => {
