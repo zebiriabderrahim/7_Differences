@@ -33,7 +33,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         const room = await this.classicModeService.createRoom(playerName, gameId);
         if (room) {
             room.clientGame.mode = GameModes.ClassicSolo;
-            room.player1.playerId = socket.id;
+            room.player1.playerId = room.roomId;
             this.classicModeService.saveRoom(room);
             this.server.to(socket.id).emit(GameEvents.RoomSoloCreated, room.roomId);
         }
