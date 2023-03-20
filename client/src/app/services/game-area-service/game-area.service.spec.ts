@@ -1,4 +1,4 @@
-// Needed for lines for tests
+// Needed to test everything in the service
 /* eslint-disable max-lines */
 // to spyOn private function
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -12,13 +12,15 @@ import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import {
     BACK_BUTTON,
+    CHEAT_MODE_WAIT_TIME,
     FLASH_WAIT_TIME,
     FORWARD_BUTTON,
     LEFT_BUTTON,
     MIDDLE_BUTTON,
     ONE_SECOND,
+    RED_FLASH_TIME,
     RIGHT_BUTTON,
-    YELLOW_FLASH_TIME,
+    YELLOW_FLASH_TIME
 } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { Coordinate } from '@common/coordinate';
@@ -34,7 +36,6 @@ describe('GameAreaService', () => {
         gameAreaService = TestBed.inject(GameAreaService);
         timerCallback = jasmine.createSpy('timerCallback');
         intervalCallback = jasmine.createSpy('intervalCallback');
-        jasmine.clock().install();
     });
 
     afterEach(() => {
@@ -87,29 +88,23 @@ describe('GameAreaService', () => {
         const modifiedCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const originalCanvasForeground: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const modifiedCanvasForeground: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
-
         gameAreaService['originalContext'] = originalCanvas.getContext('2d')!;
         gameAreaService['modifiedContext'] = modifiedCanvas.getContext('2d')!;
         gameAreaService['originalContextFrontLayer'] = originalCanvasForeground.getContext('2d')!;
         gameAreaService['modifiedContextFrontLayer'] = modifiedCanvasForeground.getContext('2d')!;
-
         gameAreaService['originalContext'].createImageData(IMG_WIDTH, IMG_HEIGHT);
         gameAreaService['modifiedContext'].createImageData(IMG_WIDTH, IMG_HEIGHT);
         gameAreaService['originalContextFrontLayer'].createImageData(IMG_WIDTH, IMG_HEIGHT);
         gameAreaService['modifiedContextFrontLayer'].createImageData(IMG_WIDTH, IMG_HEIGHT);
-
         const originalGetImageDataSpy = spyOn(gameAreaService['originalContext'], 'getImageData');
         const modifiedGetImageDataSpy = spyOn(gameAreaService['modifiedContext'], 'getImageData');
         const originalFrontLayerGetImageDataSpy = spyOn(gameAreaService['originalContextFrontLayer'], 'getImageData');
         const modifiedFrontLayerGetImageDataSpy = spyOn(gameAreaService['modifiedContextFrontLayer'], 'getImageData');
-
         gameAreaService.setAllData();
-
         const expectedOriginal = gameAreaService['originalContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         const expectedModified = gameAreaService['modifiedContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         const expectedOriginalFrontLayer = gameAreaService['originalContextFrontLayer'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         const expectedModifiedFrontLayer = gameAreaService['modifiedContextFrontLayer'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-
         expect(originalGetImageDataSpy).toHaveBeenCalled();
         expect(modifiedGetImageDataSpy).toHaveBeenCalled();
         expect(originalFrontLayerGetImageDataSpy).toHaveBeenCalled();
@@ -123,16 +118,12 @@ describe('GameAreaService', () => {
     it('should correctly eliminate disparities from the altered canvas', () => {
         const originalCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const modifiedCanvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
-
         gameAreaService['originalContext'] = originalCanvas.getContext('2d')!;
         gameAreaService['modifiedContext'] = modifiedCanvas.getContext('2d')!;
-
         const putImageDataSpy = spyOn(gameAreaService['modifiedContext'], 'putImageData');
         const flashCorrectPixelsSpy = spyOn(gameAreaService, 'flashCorrectPixels').and.callFake(() => {});
-
         gameAreaService['originalContext'].fillRect(0, 0, 3, 1);
         gameAreaService['modifiedContext'].createImageData(IMG_WIDTH, IMG_HEIGHT);
-
         const rectangleDifference = [
             { x: 0, y: 0 },
             { x: 1, y: 0 },
@@ -143,20 +134,18 @@ describe('GameAreaService', () => {
             { x: 1, y: 2 },
             { x: 1, y: 3 },
         ];
-
         gameAreaService['originalPixelData'] = gameAreaService['originalContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         gameAreaService['modifiedPixelData'] = gameAreaService['modifiedContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         gameAreaService.replaceDifference(rectangleDifference);
-
         expect(putImageDataSpy).toHaveBeenCalled();
         expect(flashCorrectPixelsSpy).toHaveBeenCalled();
-
         expect(gameAreaService['modifiedContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT)).toEqual(
             gameAreaService['modifiedContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT),
         );
     });
 
     it('showError should display an error on the left canvas', async () => {
+        jasmine.clock().install();
         const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService['originalContextFrontLayer'] = context;
@@ -175,6 +164,7 @@ describe('GameAreaService', () => {
     });
 
     it('showError should display an error on the right canvas', async () => {
+        jasmine.clock().install();
         const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService['modifiedContextFrontLayer'] = context;
@@ -193,6 +183,7 @@ describe('GameAreaService', () => {
     });
 
     it('flashCorrectPixels should get image data indexes and call flashPixels', () => {
+        spyOn(gameAreaService, 'putImageDataToContexts');
         const differenceCoord: Coordinate[] = [
             { x: 12, y: 15 },
             { x: 0, y: 0 },
@@ -207,41 +198,45 @@ describe('GameAreaService', () => {
         expect(flashPixelsSpy).toHaveBeenCalledWith(expectedIndexList);
     });
 
-    // it('toggleCheatMode should get the current differences to flash in the first call and stop the flash in the second call', () => {
-    //     const differenceCoord: Coordinate[] = [
-    //         { x: 12, y: 15 },
-    //         { x: 0, y: 0 },
-    //         { x: 20, y: 100 },
-    //         { x: 30, y: 0 },
-    //     ];
-    //     const convert2DCoordToPixelIndexSpy = spyOn<any>(gameAreaService, 'convert2DCoordToPixelIndex').and.callThrough();
-    //     const toggleCheatModeSpy = spyOn(gameAreaService, 'toggleCheatMode');
-    //     const clearFlashingSpy = spyOn(gameAreaService, 'clearFlashing').and.callFake(() => {});
-    //     const putImageDataToContextsSpy = spyOn(gameAreaService, 'putImageDataToContexts').and.callFake(() => {});
-    //     const isCheatMode = gameAreaService['isCheatMode'];
+    it('toggleCheatMode should enable cheat mode and start flashing red pixels', () => {
+        jasmine.clock().install();
+        setInterval(() => {
+            intervalCallback();
+            setTimeout(() => {
+                timerCallback();
+            }, RED_FLASH_TIME);
+        }, CHEAT_MODE_WAIT_TIME);
+        gameAreaService['originalFrontPixelData'] = new ImageData(IMG_WIDTH, IMG_HEIGHT);
+        gameAreaService['modifiedFrontPixelData'] = new ImageData(IMG_WIDTH, IMG_HEIGHT);
+        gameAreaService['toggleCheatMode']([
+            { x: 1, y: 2 },
+            { x: 3, y: 4 },
+        ]);
+        expect(gameAreaService['isCheatMode']).toBeTrue();
+        expect(gameAreaService['cheatModeInterval']).toBeDefined();
+        jasmine.clock().tick(CHEAT_MODE_WAIT_TIME + 1);
+        jasmine.clock().tick(RED_FLASH_TIME + 1);
+    });
 
-    //     gameAreaService.toggleCheatMode(differenceCoord);
-
-    //     setInterval(() => {
-    //         intervalCallback();
-    //         setTimeout(() => {
-    //             timerCallback();
-    //             expect(putImageDataToContextsSpy).toHaveBeenCalled();
-    //             expect(clearFlashingSpy).toHaveBeenCalled();
-    //         }, RED_FLASH_TIME);
-    //     }, CHEAT_MODE_WAIT_TIME);
-
-    //     jasmine.clock().tick(RED_FLASH_TIME + 1);
-    //     jasmine.clock().tick(CHEAT_MODE_WAIT_TIME + 1);
-    //     expect(convert2DCoordToPixelIndexSpy).toHaveBeenCalledWith(differenceCoord);
-    //     expect(toggleCheatModeSpy).toHaveBeenCalled();
-    //     expect(isCheatMode).not.toEqual(gameAreaService['isCheatMode']);
-    //     gameAreaService.toggleCheatMode(differenceCoord);
-    //     expect(clearFlashingSpy).toHaveBeenCalled();
-    //     expect(isCheatMode).toEqual(gameAreaService['isCheatMode']);
-    // });
+    it('toggleCheatMode should disable cheat mode and stop flashing red pixels', () => {
+        setInterval(() => {
+            intervalCallback();
+            setTimeout(() => {
+                timerCallback();
+            }, RED_FLASH_TIME);
+        }, CHEAT_MODE_WAIT_TIME);
+        gameAreaService['isCheatMode'] = true;
+        gameAreaService['cheatModeInterval'] = setInterval(() => {}, 1000) as unknown as number;
+        gameAreaService['toggleCheatMode']([
+            { x: 1, y: 2 },
+            { x: 3, y: 4 },
+        ]);
+        expect(gameAreaService['isCheatMode']).toBeFalse();
+        gameAreaService.clearFlashing();
+    });
 
     it('flashPixels should flash the difference pixels on both canvas', async () => {
+        jasmine.clock().install();
         const currentDifference = [
             { x: 100, y: 150 },
             { x: 100, y: 200 },
@@ -261,9 +256,7 @@ describe('GameAreaService', () => {
             IMG_WIDTH,
             IMG_HEIGHT,
         ));
-
         gameAreaService.flashCorrectPixels(currentDifference);
-
         setInterval(() => {
             intervalCallback();
             setTimeout(() => {
