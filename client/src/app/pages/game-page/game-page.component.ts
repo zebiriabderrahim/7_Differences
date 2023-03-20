@@ -70,7 +70,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
         this.routeParamSub = this.route.params.subscribe((params) => {
             if (params['roomId']) {
-                this.classicService.startGameByRoomId(params['roomId']);
+                this.classicService.startGameByRoomId(params['roomId'], params['playerName']);
             }
         });
         this.classicService.players$.subscribe((players) => {

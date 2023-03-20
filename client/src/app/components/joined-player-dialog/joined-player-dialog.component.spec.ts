@@ -16,6 +16,7 @@ describe('JoinedPlayerDialogComponent', () => {
     let acceptPlayerNamesMock: BehaviorSubject<AcceptedPlayer>;
     let dialogRefSpy: jasmine.SpyObj<MatDialogRef<JoinedPlayerDialogComponent>>;
     let routerSpy: jasmine.SpyObj<Router>;
+    const playerNameStub = 'playerNameTest';
 
     beforeEach(async () => {
         joinedPlayerNamesMock = new BehaviorSubject<WaitingPlayerNameList>({
@@ -113,7 +114,7 @@ describe('JoinedPlayerDialogComponent', () => {
 
     it('NavigateTOGame should navigate to the room-id', () => {
         fixture.detectChanges();
-        component.navigateToGame('test-room-id');
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/game', 'test-room-id']);
+        component.navigateToGame('test-room-id', playerNameStub);
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/game', 'test-room-id', playerNameStub]);
     });
 });
