@@ -11,7 +11,7 @@
         &nbsp;
         <mat-icon *ngIf="game.mode === 'Classic->OneVsOne'" class="personIcon">person</mat-icon>
         <h1 *ngIf="game.mode === 'Classic->OneVsOne'">
-            {{ player === players.player1.name ? players.player2.name : players.player1.name }} &nbsp; Différences trouvées:
+            {{ player === players.player1.name ? players.player2?.name : players.player1.name }} &nbsp; Différences trouvées:
             {{ opponentDifferencesFound }}
         </h1>
     </div>
