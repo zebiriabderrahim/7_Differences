@@ -104,7 +104,6 @@ export class GameAreaService {
     toggleCheatMode(startDifferences: Coordinate[]): void {
         const imageDataIndexes: number[] = this.convert2DCoordToPixelIndex(startDifferences);
         if (!this.isCheatMode) {
-            this.isCheatMode = true;
             this.cheatModeInterval = setInterval(() => {
                 const color = [RED_PIXEL.red, RED_PIXEL.green, RED_PIXEL.blue, RED_PIXEL.alpha];
                 for (const index of imageDataIndexes) {
@@ -118,10 +117,10 @@ export class GameAreaService {
                 }, RED_FLASH_TIME);
             }, CHEAT_MODE_WAIT_TIME) as unknown as number;
         } else {
-            this.isCheatMode = false;
             clearInterval(this.cheatModeInterval);
             this.clearFlashing();
         }
+        this.isCheatMode = !this.isCheatMode;
     }
 
     setPixelData(imageDataIndexes: number[], modifiedFrontPixelData: ImageData, originalFrontPixelData: ImageData): void {
@@ -139,15 +138,15 @@ export class GameAreaService {
     }
 
     putImageDataToContexts(): void {
-        this.modifiedContextFrontLayer.putImageData(this.modifiedFrontPixelData, 0, 0);
-        this.originalContextFrontLayer.putImageData(this.originalFrontPixelData, 0, 0);
+        this.modifiedContextFrontLayer?.putImageData(this.modifiedFrontPixelData, 0, 0);
+        this.originalContextFrontLayer?.putImageData(this.originalFrontPixelData, 0, 0);
     }
 
     clearFlashing(): void {
-        this.modifiedContextFrontLayer.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.originalContextFrontLayer.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.originalFrontPixelData = this.originalContextFrontLayer.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.modifiedFrontPixelData = this.modifiedContextFrontLayer.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        this.modifiedContextFrontLayer?.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        this.originalContextFrontLayer?.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        this.originalFrontPixelData = this.originalContextFrontLayer?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        this.modifiedFrontPixelData = this.modifiedContextFrontLayer?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         this.clickDisabled = false;
     }
 
