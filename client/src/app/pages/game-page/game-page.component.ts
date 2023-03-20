@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dialog/solo-game-view-dialog.component';
+import { GamePageDialogComponent } from '@app/components/game-page-dialog/game-page-dialog.component';
 import { DEFAULT_PLAYERS, INPUT_TAG_NAME } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
@@ -12,11 +12,11 @@ import { ChatMessage, ClientSideGame, MessageTag, Players } from '@common/game-i
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-solo-game-view',
-    templateUrl: './solo-game-view.component.html',
-    styleUrls: ['./solo-game-view.component.scss'],
+    selector: 'app-game-page',
+    templateUrl: './game-page.component.html',
+    styleUrls: ['./game-page.component.scss'],
 })
-export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
+export class GamePageComponent implements AfterViewInit, OnDestroy {
     @ViewChild('originalCanvas', { static: false }) originalCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('modifiedCanvas', { static: false }) modifiedCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('originalCanvasFG', { static: false }) originalCanvasForeground!: ElementRef<HTMLCanvasElement>;
@@ -125,14 +125,14 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     }
 
     showAbandonDialog(): void {
-        this.matDialog.open(SoloGameViewDialogComponent, {
+        this.matDialog.open(GamePageDialogComponent, {
             data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ?' },
             disableClose: true,
         });
     }
 
     showEndGameDialog(endingMessage: string): void {
-        this.matDialog.open(SoloGameViewDialogComponent, { data: { action: 'endGame', message: endingMessage }, disableClose: true });
+        this.matDialog.open(GamePageDialogComponent, { data: { action: 'endGame', message: endingMessage }, disableClose: true });
     }
 
     mouseClickOnCanvas(event: MouseEvent, isLeft: boolean) {
