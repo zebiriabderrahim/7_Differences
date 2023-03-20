@@ -11,7 +11,7 @@ import { filter, Subscription } from 'rxjs';
     styleUrls: ['./waiting-player-to-join.component.scss'],
 })
 export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
-    playerNames: string[] = [];
+    playerNames: string[];
     refusedMessage: string;
     countdown: number;
     actions: typeof GameCardActions = GameCardActions;
@@ -24,7 +24,9 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         private readonly roomManagerService: RoomManagerService,
         private dialogRef: MatDialogRef<WaitingForPlayerToJoinComponent>,
         private readonly router: Router,
-    ) {}
+    ) {
+        this.playerNames = [];
+    }
     ngOnInit(): void {
         this.getJoinedPlayerNamesByGameId();
     }
