@@ -6,6 +6,7 @@ import {
     ConnectedSocket,
     MessageBody,
     OnGatewayConnection,
+    OnGatewayDisconnect,
     OnGatewayInit,
     SubscribeMessage,
     WebSocketGateway,
@@ -22,7 +23,7 @@ import { DELAY_BEFORE_EMITTING_TIME } from './game.gateway.constants';
     }),
 )
 @Injectable()
-export class GameGateway implements OnGatewayConnection, OnGatewayInit {
+export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
     @WebSocketServer() private server: Server;
 
     constructor(private readonly logger: Logger, private readonly classicModeService: ClassicModeService) {}
@@ -32,20 +33,20 @@ export class GameGateway implements OnGatewayConnection, OnGatewayInit {
         const room = await this.classicModeService.createRoom(playerName, gameId);
         if (room) {
             room.clientGame.mode = GameModes.ClassicSolo;
-            room.player1.playerId = room.roomId;
+            room.player1.name = playerName;
             this.classicModeService.saveRoom(room);
             this.server.to(socket.id).emit(GameEvents.RoomSoloCreated, room.roomId);
         }
     }
 
     @SubscribeMessage(GameEvents.StartGameByRoomId)
-    startGame(@ConnectedSocket() socket: Socket, @MessageBody() roomId: string) {
+    startGame(@ConnectedSocket() socket: Socket, @MessageBody('roomId') roomId: string, @MessageBody('playerName') playerName: string) {
         const room = this.classicModeService.getRoomByRoomId(roomId);
         if (!room) return;
         socket.join(roomId);
-        if (room.player1.playerId === room.roomId && room.timer === 0) {
+        if (room.player1.name === playerName) {
             room.player1.playerId = socket.id;
-        } else {
+        } else if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
             room.player2.playerId = socket.id;
         }
         this.classicModeService.saveRoom(room);
@@ -60,7 +61,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayInit {
     async createOneVsOneRoom(@ConnectedSocket() socket: Socket, @MessageBody('gameId') gameId: string) {
         const oneVsOneRoom = await this.classicModeService.createOneVsOneRoom(gameId);
         if (oneVsOneRoom) {
-            oneVsOneRoom.player1.playerId = oneVsOneRoom.roomId;
+            oneVsOneRoom.player1.playerId = socket.id;
             this.classicModeService.saveRoom(oneVsOneRoom);
             this.server.to(socket.id).emit(GameEvents.RoomOneVsOneCreated, oneVsOneRoom.roomId);
         }
@@ -150,10 +151,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayInit {
         this.logger.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
     }
 
-    // handleDisconnect(@ConnectedSocket() socket: Socket) {
-    //     this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
-    //     this.classicModeService.handleSocketDisconnect(socket, this.server);
-    // }
+    handleDisconnect(@ConnectedSocket() socket: Socket) {
+        this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
+        this.classicModeService.handleSocketDisconnect(socket, this.server);
+    }
 
     updateTimers() {
         for (const roomId of this.classicModeService['rooms'].keys()) {
