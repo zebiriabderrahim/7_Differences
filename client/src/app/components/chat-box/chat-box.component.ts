@@ -7,11 +7,15 @@ import { ChatMessage, GameModes } from '@common/game-interfaces';
     styleUrls: ['./chat-box.component.scss'],
 })
 export class ChatBoxComponent {
-    @Input() messages: ChatMessage[] = [];
+    @Input() messages: ChatMessage[];
     @Input() gameMode: string;
     @Output() add = new EventEmitter<string>();
+    oneVsOneGameMode: string;
 
-    oneVsOneGameMode = GameModes.ClassicOneVsOne;
+    constructor() {
+        this.messages = [];
+        this.oneVsOneGameMode = GameModes.ClassicOneVsOne;
+    }
 
     onAdd(inputField: { value: string }): void {
         this.add.emit(inputField.value?.trim());
