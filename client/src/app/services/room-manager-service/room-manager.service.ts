@@ -11,6 +11,7 @@ export class RoomManagerService implements OnDestroy {
     private oneVsOneRoomsAvailabilityByGameId: Subject<RoomAvailability>;
     private acceptedPlayerByRoom: BehaviorSubject<AcceptedPlayer>;
     private roomId: Subject<string>;
+    private gameIdOfRoomToBeDeleted: Subject<string>;
 
     constructor(private clientSocket: ClientSocketService) {
         this.isPlayerNameTaken = new Subject<PlayerNameAvailability>();
@@ -22,6 +23,7 @@ export class RoomManagerService implements OnDestroy {
         });
         this.joinedPlayerNames = new Subject<WaitingPlayerNameList>();
         this.oneVsOneRoomsAvailabilityByGameId = new Subject<RoomAvailability>();
+        this.gameIdOfRoomToBeDeleted = new Subject<string>();
     }
 
     get joinedPlayerNamesByGameId$() {
@@ -42,6 +44,9 @@ export class RoomManagerService implements OnDestroy {
 
     get acceptedPlayerByRoom$() {
         return this.acceptedPlayerByRoom.asObservable();
+    }
+    get gameIdOfRoomToBeDeleted$() {
+        return this.gameIdOfRoomToBeDeleted.asObservable();
     }
 
     createSoloRoom(gameId: string, playerName: string) {
@@ -113,6 +118,10 @@ export class RoomManagerService implements OnDestroy {
 
         this.clientSocket.on(GameEvents.RoomOneVsOneCreated, (roomId: string) => {
             this.roomId.next(roomId);
+        });
+
+        this.clientSocket.on(GameEvents.UndoCreation, (gameId: string) => {
+            this.gameIdOfRoomToBeDeleted.next(gameId);
         });
 
         this.clientSocket.on(GameEvents.PlayerAccepted, (acceptedPlayer: AcceptedPlayer) => {

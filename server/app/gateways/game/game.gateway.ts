@@ -93,6 +93,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage(GameEvents.DeleteCreatedOneVsOneRoom)
     deleteCreatedOneVsOneRoom(@MessageBody() gameId: string) {
         this.classicModeService.deleteOneVsOneRoomAvailability(gameId, this.server);
+        this.classicModeService.cancelAllJoining(gameId, this.server);
+        this.server.emit(GameEvents.UndoCreation, gameId);
     }
 
     @SubscribeMessage(GameEvents.UpdateWaitingPlayerNameList)
@@ -142,6 +144,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     sendMessage(@ConnectedSocket() socket: Socket, @MessageBody() data: ChatMessage) {
         const roomId = this.classicModeService.getRoomIdFromSocket(socket);
         socket.broadcast.to(roomId).emit(MessageEvents.LocalMessage, data);
+    }
+    @SubscribeMessage(GameEvents.DeleteGameCard)
+    gameCardDeleted(@MessageBody() gameId: string) {
+        this.server.emit(GameEvents.GameCardDeleted, gameId);
     }
 
     afterInit() {
