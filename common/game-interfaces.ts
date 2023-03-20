@@ -1,5 +1,10 @@
 import { Coordinate } from '@common/coordinate';
 
+export interface Players {
+    player1: Player;
+    player2?: Player;
+}
+
 export interface ClientSideGame {
     id: string;
     name: string;
@@ -132,3 +137,5 @@ export enum GameCardActions {
     Create = 'create',
     Join = 'join',
 }
+export { Coordinate };
+

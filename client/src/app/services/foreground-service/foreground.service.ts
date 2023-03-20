@@ -170,15 +170,4 @@ export class ForegroundService {
     private resetCanvasContext(context: CanvasRenderingContext2D) {
         context.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
     }
-
-    // private resetFrontCanvasContext(canvasPosition: CanvasPosition) {
-    //     switch (canvasPosition) {
-    //         case CanvasPosition.Left:
-    //             this.resetCanvasContext(this.leftFrontContext);
-    //             break;
-    //         case CanvasPosition.Right:
-    //             this.resetCanvasContext(this.rightFrontContext);
-    //             break;
-    //     }
-    // }
 }
