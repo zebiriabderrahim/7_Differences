@@ -9,12 +9,13 @@ import { ChatMessage, GameModes } from '@common/game-interfaces';
 export class ChatBoxComponent {
     @Input() messages: ChatMessage[];
     @Input() gameMode: string;
-    @Output() add = new EventEmitter<string>();
+    @Output() add: EventEmitter<string>;
     oneVsOneGameMode: string;
 
     constructor() {
         this.messages = [];
         this.oneVsOneGameMode = GameModes.ClassicOneVsOne;
+        this.add = new EventEmitter<string>();
     }
 
     onAdd(inputField: { value: string }): void {
