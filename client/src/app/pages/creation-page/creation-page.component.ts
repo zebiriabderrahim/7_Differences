@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
 import { LEFT_BUTTON } from '@app/constants/constants';
 import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/difference';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
+import { CANVAS_MEASUREMENTS } from '@app/constants/image';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { CanvasMeasurements, GameDetails } from '@app/interfaces/game-interfaces';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
@@ -36,7 +36,7 @@ export class CreationPageComponent implements AfterViewInit {
         this.radiusSizes = RADIUS_SIZES;
         this.radius = DEFAULT_RADIUS;
         this.canvasPosition = CanvasPosition;
-        this.canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
+        this.canvasSizes = CANVAS_MEASUREMENTS;
         this.configRoute = '/config';
     }
 

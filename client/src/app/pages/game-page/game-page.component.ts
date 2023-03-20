@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { GamePageDialogComponent } from '@app/components/game-page-dialog/game-page-dialog.component';
 import { DEFAULT_PLAYERS, INPUT_TAG_NAME } from '@app/constants/constants';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
+import { CANVAS_MEASUREMENTS } from '@app/constants/image';
 import { CanvasMeasurements } from '@app/interfaces/game-interfaces';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
@@ -56,7 +56,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.messages = [];
         this.player = '';
         this.players = DEFAULT_PLAYERS;
-        this.canvasSize = { width: IMG_WIDTH, height: IMG_HEIGHT };
+        this.canvasSize = CANVAS_MEASUREMENTS;
     }
 
     @HostListener('window:keydown', ['$event'])
