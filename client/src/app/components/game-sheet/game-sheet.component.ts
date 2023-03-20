@@ -21,6 +21,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     @Input() game: GameCard;
     url: SafeResourceUrl;
     private isAvailable: boolean;
+    private player: string;
     private roomIdSubscription: Subscription;
     private roomAvailabilitySubscription: Subscription;
 
@@ -56,6 +57,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
             .afterClosed()
             .pipe(filter((playerName) => !!playerName))
             .subscribe((playerName) => {
+                this.player = playerName;
                 this.roomManagerService.createSoloRoom(this.game._id, playerName);
             });
     }
@@ -63,7 +65,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     playSolo(): void {
         this.createSoloRoom();
         this.roomIdSubscription = this.roomManagerService.roomId$.pipe(filter((roomId) => !!roomId)).subscribe((roomId) => {
-            this.router.navigate(['/game', roomId]);
+            this.router.navigate(['/game', roomId, this.player]);
         });
     }
 
