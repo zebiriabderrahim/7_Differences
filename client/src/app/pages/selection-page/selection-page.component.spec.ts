@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -13,8 +14,13 @@ import { SelectionPageComponent } from './selection-page.component';
 describe('SelectionPageComponent', () => {
     let component: SelectionPageComponent;
     let fixture: ComponentFixture<SelectionPageComponent>;
+    // let roomManagerServiceSpy: jasmine.SpyObj<RoomManagerService>;
+    // const cardGameDeletedSubTest = new Subject<string>();
 
     beforeEach(async () => {
+        // roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['handleRoomEvents', 'disconnect'], {
+        //     isGameCardDeleted$: cardGameDeletedSubTest,
+        // });
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule.withRoutes(routes), MatGridListModule, FormsModule, MatIconModule],
             declarations: [SelectionPageComponent, NavBarComponent],
@@ -27,6 +33,10 @@ describe('SelectionPageComponent', () => {
                         loadGameCarrousel: of({ hasNext: false, hasPrevious: false, gameCards: [] }),
                     }),
                 },
+                // {
+                //     provide: RoomManagerService,
+                //     useValue: roomManagerServiceSpy,
+                // },
             ],
         }).compileComponents();
 
@@ -58,5 +68,15 @@ describe('SelectionPageComponent', () => {
         component.previousCarrousel();
         expect(component.gameCarrousel).toEqual({ hasNext: false, hasPrevious: true, gameCards: [] });
         expect(component['index']).toEqual(0);
+    });
+
+    it('should delete a game card', () => {
+        /* const game1 = { _id: '1', name: 'game1', difficultyLevel: true, soloTopTime: [], oneVsOneTopTime: [], thumbnail: '' };
+        const game2 = { _id: '2', name: 'game1', difficultyLevel: true, soloTopTime: [], oneVsOneTopTime: [], thumbnail: '' };
+        const gameCards = [game1, game2];
+        component.handleGameCardDelete(gameCards);
+        // cardGameDeletedSubTest.next('game1');
+        expect(component.gameCarrousel.gameCards.length).toBe(0);
+        expect(component.gameCarrousel.gameCards[0]._id).toBe('1');*/
     });
 });
