@@ -2,14 +2,14 @@ import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
+import { LEFT_BUTTON } from '@app/constants/constants';
 import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/difference';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasPosition } from '@app/enum/canvas-position';
-import { GameDetails } from '@app/interfaces/game-interfaces';
-import { LEFT_BUTTON } from '@app/constants/constants';
+import { CanvasMeasurements, GameDetails } from '@app/interfaces/game-interfaces';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
-import { ImageService } from '@app/services/image-service/image.service';
 import { ForegroundService } from '@app/services/foreground-service/foreground.service';
+import { ImageService } from '@app/services/image-service/image.service';
 
 @Component({
     selector: 'app-root',
@@ -18,7 +18,7 @@ import { ForegroundService } from '@app/services/foreground-service/foreground.s
 })
 export class CreationPageComponent implements AfterViewInit {
     @ViewChild('combinedCanvas') combinedCanvas: ElementRef;
-    readonly canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
+    readonly canvasSizes: CanvasMeasurements;
     readonly configRoute = '/config';
     canvasPosition: typeof CanvasPosition;
     readonly radiusSizes: number[];
@@ -36,6 +36,7 @@ export class CreationPageComponent implements AfterViewInit {
         this.radiusSizes = RADIUS_SIZES;
         this.radius = DEFAULT_RADIUS;
         this.canvasPosition = CanvasPosition;
+        this.canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
     }
 
     @HostListener('window:keydown', ['$event'])
