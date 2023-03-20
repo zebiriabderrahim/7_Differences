@@ -12,7 +12,7 @@ export class RoomManagerService implements OnDestroy {
     private acceptedPlayerByRoom: BehaviorSubject<AcceptedPlayer>;
     private roomId: Subject<string>;
 
-    constructor(private clientSocket: ClientSocketService) {
+    constructor(private readonly clientSocket: ClientSocketService) {
         this.isPlayerNameTaken = new Subject<PlayerNameAvailability>();
         this.roomId = new Subject<string>();
         this.acceptedPlayerByRoom = new BehaviorSubject<AcceptedPlayer>({
