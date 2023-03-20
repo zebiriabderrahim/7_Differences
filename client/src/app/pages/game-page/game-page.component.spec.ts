@@ -47,6 +47,7 @@ describe('GamePageComponent', () => {
     const opponentDifferencesFoundSubjectTest = new Subject<number>();
     const cheatDifferencesSubjectTest = new Subject<Coordinate[]>();
     const paramsSubjectTest = new Subject<{ roomId: string }>();
+    const playerNameStub = 'playerNameTest';
 
     beforeEach(async () => {
         classicServiceSpy = jasmine.createSpyObj(
@@ -272,7 +273,7 @@ describe('GamePageComponent', () => {
         const mockId = '1';
         component.ngAfterViewInit();
         paramsSubjectTest.next({ roomId: mockId });
-        expect(classicServiceSpy.startGameByRoomId).toHaveBeenCalledWith(mockId);
+        expect(classicServiceSpy.startGameByRoomId).toHaveBeenCalledWith(mockId, playerNameStub);
         expect(routeSpy.params).toEqual(paramsSubjectTest);
     });
 });
