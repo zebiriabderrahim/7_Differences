@@ -9,13 +9,15 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./config-page.component.scss'],
 })
 export class ConfigPageComponent implements OnInit, OnDestroy {
-    readonly createRoute: string = '/create';
-    readonly homeRoute: string = '/home';
+    readonly createRoute: string;
+    readonly homeRoute: string;
     configConstants: GameConfigConst;
     private communicationSubscription: Subscription;
 
     constructor(private readonly communicationService: CommunicationService) {
         this.configConstants = { countdownTime: 0, penaltyTime: 0, bonusTime: 0 };
+        this.homeRoute = '/home';
+        this.createRoute = '/create';
     }
 
     ngOnInit() {
