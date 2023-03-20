@@ -44,11 +44,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         const room = this.classicModeService.getRoomByRoomId(roomId);
         if (!room) return;
         socket.join(roomId);
-        if (room.player1 && !room.player2?.playerId) {
+        if (room.player1.playerId === room.roomId && room.timer === 0) {
             room.player1.playerId = socket.id;
-            if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
-                room.player2.playerId = socket.id;
-            }
         } else {
             room.player2.playerId = socket.id;
         }
@@ -64,7 +61,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     async createOneVsOneRoom(@ConnectedSocket() socket: Socket, @MessageBody('gameId') gameId: string) {
         const oneVsOneRoom = await this.classicModeService.createOneVsOneRoom(gameId);
         if (oneVsOneRoom) {
-            oneVsOneRoom.player1.playerId = socket.id;
+            oneVsOneRoom.player1.playerId = room.roomId;
             this.classicModeService.saveRoom(oneVsOneRoom);
             this.server.to(socket.id).emit(GameEvents.RoomOneVsOneCreated, oneVsOneRoom.roomId);
         }
