@@ -232,10 +232,6 @@ export class ClassicModeService {
         return Array.from(this.joinedPlayerNamesByGameId.get(gameId) ?? []).map((player) => player.name);
     }
 
-    getAcceptedPlayerName(gameId: string): string {
-        return this.joinedPlayerNamesByGameId.get(gameId)?.[0].name;
-    }
-
     refusePlayer(gameId: string, playerName: string, server: io.Server): void {
         this.cancelJoining(gameId, playerName, server);
     }
@@ -256,7 +252,7 @@ export class ClassicModeService {
         room.player1.name = playerNameCreator;
         room.player2 = player2;
         this.rooms.set(roomId, room);
-        // this.joinedPlayerNamesByGameId.delete(gameId);
+        this.joinedPlayerNamesByGameId.delete(gameId);
         return acceptedPlayer.name;
     }
 

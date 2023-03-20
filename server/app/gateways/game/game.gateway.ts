@@ -1,6 +1,6 @@
 import { ClassicModeService } from '@app/services/classic-mode/classic-mode.service';
 import { Coordinate } from '@common/coordinate';
-import { AcceptedPlayer, ChatMessage, GameEvents, GameModes, MessageEvents, Player, WaitingPlayerNameList } from '@common/game-interfaces';
+import { AcceptedPlayer, ChatMessage, GameEvents, GameModes, MessageEvents, WaitingPlayerNameList } from '@common/game-interfaces';
 import { Injectable, Logger } from '@nestjs/common';
 import {
     ConnectedSocket,
@@ -10,7 +10,7 @@ import {
     OnGatewayInit,
     SubscribeMessage,
     WebSocketGateway,
-    WebSocketServer,
+    WebSocketServer
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { DELAY_BEFORE_EMITTING_TIME } from './game.gateway.constants';
@@ -40,21 +40,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameEvents.StartGameByRoomId)
-    startGame(@ConnectedSocket() socket: Socket, @MessageBody() roomId: string) {
+    startGame(@ConnectedSocket() socket: Socket, @MessageBody('roomId') roomId: string, @MessageBody('playerName') playerName: string) {
         const room = this.classicModeService.getRoomByRoomId(roomId);
         if (!room) return;
-        const acceptedPlayer = this.classicModeService.getAcceptedPlayerName(room.clientGame.id);
         socket.join(roomId);
-        if (room.player1.name !== acceptedPlayer && !room.player2?.name) {
+        if (room.player1.name === playerName) {
             room.player1.playerId = socket.id;
-            room.player2 = room.player2 || ({} as Player);
-            room.player2.name = acceptedPlayer;
-        } else if (room.player2.name && room.player2.name === acceptedPlayer) {
+        } else if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
             room.player2.playerId = socket.id;
-            this.classicModeService['joinedPlayerNamesByGameId'].delete(room.clientGame.id);
         }
         this.classicModeService.saveRoom(room);
-        this.server.to(roomId).emit(GameEvents.GameStarted, {
+        this.server.to(roomId)?.emit(GameEvents.GameStarted, {
             clientGame: room.clientGame,
             players: { player1: room.player1, player2: room.player2 },
             cheatDifferences: room.originalDifferences.flat(),

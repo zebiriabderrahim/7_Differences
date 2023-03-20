@@ -49,7 +49,7 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         });
         this.roomManagerService.acceptPlayer(this.data.gameId, this.data.roomId, this.data.player);
         this.dialogRef.afterClosed().subscribe(() => {
-            this.router.navigate(['/game', this.data.roomId]);
+            this.router.navigate(['/game', this.data.roomId, this.data.player]);
         });
     }
 
