@@ -13,16 +13,20 @@ import { CarouselPaginator, GameCard } from '@common/game-interfaces';
 })
 export class SelectionPageComponent implements AfterViewInit, OnDestroy {
     gameCarrousel: CarouselPaginator;
-    readonly homeRoute: string = '/home';
-    readonly selectionRoute: string = '/selection';
-    readonly configRoute: string = '/config';
-    private index: number = 0;
+    readonly homeRoute: string;
+    readonly selectionRoute: string;
+    readonly configRoute: string;
+    private index: number;
     constructor(
         private readonly communicationService: CommunicationService,
         public router: Router,
         private readonly roomManagerService: RoomManagerService,
     ) {
         this.gameCarrousel = { hasNext: false, hasPrevious: false, gameCards: [] };
+        this.homeRoute = '/home';
+        this.selectionRoute = '/selection';
+        this.configRoute = '/config';
+        this.index = 0;
         this.roomManagerService.handleRoomEvents();
     }
 

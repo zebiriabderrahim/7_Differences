@@ -18,14 +18,13 @@
 </div>
 <div *ngIf="router.url === '/selection'" class="footerPreview">
     <div class="section blabla">
-        <h2 class="sectionOne button" >Créer ton propre Jeux dès maintenant</h2>
-        <p>Tu peux créer ton propre jeux des 7 différences pour y jouer en solo ou en duo</p>
-        <p> Ne perd pas de temps est créer ton premier jeu</p>
-        <div class="buttonCreate"><a [routerLink]="configRoute"> Créer mon Jeu</a></div>
+        <h2 class="sectionOne button" >Créer ton propre jeu</h2>
+        <p>Tu peux créer ton propre jeu des sept différences pour y jouer en solo ou en duo</p>
+        <p> Ne perds pas de temps et fais ton premier jeu !</p>
+        <div class="buttonCreate"><a [routerLink]="configRoute"> Créer mon jeu</a></div>
     </div>
     <div class="section logo">
         <img class="project-logo justified" src="./assets/RatCoon.png" alt="Logo Projet " [routerLink]="homeRoute" />
-        <p>Design by RatCoon Teams</p>
     </div>
 </div>
 <div *ngIf="router.url === '/selection'" class="footer">

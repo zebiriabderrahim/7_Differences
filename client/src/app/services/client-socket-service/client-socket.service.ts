@@ -9,8 +9,10 @@ import { environment } from 'src/environments/environment';
 })
 export class ClientSocketService {
     socket: Socket;
-    private readonly baseUrl: string = environment.serverUrl.replace('/api', '');
-
+    private readonly baseUrl: string;
+    constructor() {
+        this.baseUrl = environment.serverUrl.replace('/api', '');
+    }
     isSocketAlive() {
         return this.socket && this.socket.connected;
     }

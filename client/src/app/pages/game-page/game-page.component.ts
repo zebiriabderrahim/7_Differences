@@ -3,7 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { GamePageDialogComponent } from '@app/components/game-page-dialog/game-page-dialog.component';
 import { DEFAULT_PLAYERS, INPUT_TAG_NAME } from '@app/constants/constants';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
+import { CANVAS_MEASUREMENTS } from '@app/constants/image';
+import { CanvasMeasurements } from '@app/interfaces/game-interfaces';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { ImageService } from '@app/services/image-service/image.service';
@@ -22,13 +23,13 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     @ViewChild('originalCanvasFG', { static: false }) originalCanvasForeground!: ElementRef<HTMLCanvasElement>;
     @ViewChild('modifiedCanvasFG', { static: false }) modifiedCanvasForeground!: ElementRef<HTMLCanvasElement>;
     game: ClientSideGame;
-    differencesFound: number = 0;
-    opponentDifferencesFound: number = 0;
-    timer: number = 0;
-    messages: ChatMessage[] = [];
-    player: string = '';
-    players: Players = DEFAULT_PLAYERS;
-    readonly canvasSize = { width: IMG_WIDTH, height: IMG_HEIGHT };
+    differencesFound: number;
+    opponentDifferencesFound: number;
+    timer: number;
+    messages: ChatMessage[];
+    player: string;
+    players: Players;
+    readonly canvasSize: CanvasMeasurements;
     private cheatDifferences: Coordinate[];
     private timerSub: Subscription;
     private gameSub: Subscription;
@@ -42,13 +43,20 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
     constructor(
-        private gameAreaService: GameAreaService,
-        private classicService: ClassicSystemService,
-        private imageService: ImageService,
+        private readonly gameAreaService: GameAreaService,
+        private readonly classicService: ClassicSystemService,
+        private readonly imageService: ImageService,
         private readonly matDialog: MatDialog,
         private route: ActivatedRoute,
     ) {
         this.classicService.manageSocket();
+        this.differencesFound = 0;
+        this.opponentDifferencesFound = 0;
+        this.timer = 0;
+        this.messages = [];
+        this.player = '';
+        this.players = DEFAULT_PLAYERS;
+        this.canvasSize = CANVAS_MEASUREMENTS;
     }
 
     @HostListener('window:keydown', ['$event'])
