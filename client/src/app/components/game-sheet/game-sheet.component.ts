@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { JoinedPlayerDialogComponent } from '@app/components/joined-player-dialog/joined-player-dialog.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { WaitingForPlayerToJoinComponent } from '@app/components/waiting-player-to-join/waiting-player-to-join.component';
+import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameCard } from '@common/game-interfaces';
@@ -29,6 +30,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         public router: Router,
         private readonly roomManagerService: RoomManagerService,
         private readonly communicationService: CommunicationService,
+        private readonly classicSystemService: ClassicSystemService,
     ) {}
     ngOnInit(): void {
         this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
@@ -111,6 +113,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     }
 
     deleteGameCard() {
+        this.classicSystemService.gameCardDeleted(this.game._id);
         this.communicationService.deleteGameById(this.game._id).subscribe(() => {
             this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
                 this.router.navigate(['/config']);

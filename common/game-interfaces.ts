@@ -78,6 +78,9 @@ export interface WaitingPlayerNameList {
     playerNamesList: string[];
 }
 
+
+
+
 export enum GameEvents {
     ValidateCoords = 'validateCoords',
     CheckStatus = 'checkStatus',
@@ -104,7 +107,11 @@ export enum GameEvents {
     RoomSoloCreated = 'RoomSoloCreated',
     AbandonGame = 'AbandonGame',
     JoinOneVsOneGame = 'JoinOneVsOneGame',
-    Disconnect = "Disconnect"
+    Disconnect = 'Disconnect',
+    DeleteGameCard = 'GameCardDeleted',
+    GetGameCards = 'GetGameCards',
+    GameCardDeleted = "GameCardDeleted",
+    UndoCreation = "UndoCreation"
 }
 
 export enum GameModes {

@@ -18,6 +18,7 @@ export class ClassicSystemService implements OnDestroy {
     private endMessage: Subject<string>;
     private players: Subject<{ player1: Player; player2: Player }>;
     private cheatDifferences: Subject<Coordinate[]>;
+    private deletedGameId: Subject<string>;
 
     constructor(
         private readonly clientSocket: ClientSocketService,
@@ -32,6 +33,7 @@ export class ClassicSystemService implements OnDestroy {
         this.endMessage = new Subject<string>();
         this.opponentDifferencesFound = new Subject<number>();
         this.cheatDifferences = new Subject<Coordinate[]>();
+        this.deletedGameId = new Subject<string>();
     }
 
     get currentGame$() {
@@ -62,6 +64,10 @@ export class ClassicSystemService implements OnDestroy {
 
     get cheatDifferences$() {
         return this.cheatDifferences.asObservable();
+    }
+
+    get isGameCardDeleted$() {
+        return this.deletedGameId.asObservable();
     }
 
     getSocketId(): string {
@@ -116,6 +122,10 @@ export class ClassicSystemService implements OnDestroy {
         this.clientSocket.send(GameEvents.JoinOneVsOneGame, { gameId, playerName });
     }
 
+    gameCardDeleted(gameId: string) {
+        this.clientSocket.send(GameEvents.DeleteGameCard, gameId);
+    }
+
     manageSocket(): void {
         this.clientSocket.connect();
         this.clientSocket.on(GameEvents.CreateSoloGame, (clientGame: ClientSideGame) => {
@@ -154,6 +164,10 @@ export class ClassicSystemService implements OnDestroy {
 
         this.clientSocket.on(MessageEvents.LocalMessage, (receivedMessage: ChatMessage) => {
             this.message.next(receivedMessage);
+        });
+
+        this.clientSocket.on(GameEvents.GameCardDeleted, (gameId: string) => {
+            this.deletedGameId.next(gameId);
         });
     }
 
