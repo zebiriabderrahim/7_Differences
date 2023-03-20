@@ -15,7 +15,7 @@ export class CanvasUnderButtonsComponent {
     @ViewChild('uploadInput') uploadInput: ElementRef;
     @ViewChild('invalidImageDialog', { static: true })
     private readonly invalidImageDialog: TemplateRef<HTMLElement>;
-    readonly canvasPosition: typeof CanvasPosition = CanvasPosition;
+    readonly canvasPosition: typeof CanvasPosition;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
@@ -24,7 +24,9 @@ export class CanvasUnderButtonsComponent {
         private readonly foregroundService: ForegroundService,
         private readonly validationService: ValidationService,
         private readonly matDialog: MatDialog,
-    ) {}
+    ) {
+        this.canvasPosition = CanvasPosition;
+    }
 
     async onSelectFile(event: Event): Promise<void> {
         const target = event.target as HTMLInputElement;
