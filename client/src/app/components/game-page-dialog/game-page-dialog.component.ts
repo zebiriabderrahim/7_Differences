@@ -7,7 +7,7 @@ import { ClassicSystemService } from '@app/services/classic-system-service/class
     styleUrls: ['./game-page-dialog.component.scss'],
 })
 export class GamePageDialogComponent {
-    constructor(@Inject(MAT_DIALOG_DATA) public data: { action: string; message: string }, public classicSystem: ClassicSystemService) {}
+    constructor(@Inject(MAT_DIALOG_DATA) public data: { action: string; message: string }, private readonly classicSystem: ClassicSystemService) {}
     abandonGame(): void {
         this.classicSystem.abandonGame();
     }
