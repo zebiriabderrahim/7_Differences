@@ -109,7 +109,9 @@ export enum GameEvents {
     RoomSoloCreated = 'RoomSoloCreated',
     AbandonGame = 'AbandonGame',
     JoinOneVsOneGame = 'JoinOneVsOneGame',
-    Disconnect = "Disconnect"
+    Disconnect = 'Disconnect',
+    DeleteGameCard = "DeleteGameCard",
+    GameCardDeleted = "GameCardDeleted",
 }
 
 export enum GameModes {
@@ -138,4 +140,3 @@ export enum GameCardActions {
     Join = 'join',
 }
 export { Coordinate };
-

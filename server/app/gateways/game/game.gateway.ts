@@ -33,24 +33,27 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         const room = await this.classicModeService.createRoom(playerName, gameId);
         if (room) {
             room.clientGame.mode = GameModes.ClassicSolo;
-            room.player1.name = playerName;
+            room.player1.playerId = socket.id;
             this.classicModeService.saveRoom(room);
             this.server.to(socket.id).emit(GameEvents.RoomSoloCreated, room.roomId);
         }
     }
 
     @SubscribeMessage(GameEvents.StartGameByRoomId)
-    startGame(@ConnectedSocket() socket: Socket, @MessageBody('roomId') roomId: string, @MessageBody('playerName') playerName: string) {
+    startGame(@ConnectedSocket() socket: Socket, @MessageBody() roomId: string) {
         const room = this.classicModeService.getRoomByRoomId(roomId);
         if (!room) return;
         socket.join(roomId);
-        if (room.player1.name === playerName) {
+        if (room.player1 && !room.player2?.playerId) {
             room.player1.playerId = socket.id;
-        } else if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
+            if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
+                room.player2.playerId = socket.id;
+            }
+        } else {
             room.player2.playerId = socket.id;
         }
         this.classicModeService.saveRoom(room);
-        this.server.to(roomId)?.emit(GameEvents.GameStarted, {
+        this.server.to(roomId).emit(GameEvents.GameStarted, {
             clientGame: room.clientGame,
             players: { player1: room.player1, player2: room.player2 },
             cheatDifferences: room.originalDifferences.flat(),
@@ -139,6 +142,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     sendMessage(@ConnectedSocket() socket: Socket, @MessageBody() data: ChatMessage) {
         const roomId = this.classicModeService.getRoomIdFromSocket(socket);
         socket.broadcast.to(roomId).emit(MessageEvents.LocalMessage, data);
+    }
+    @SubscribeMessage(GameEvents.DeleteGameCard)
+    gameCardDeleted(@MessageBody() gameId: string) {
+        this.server.emit(GameEvents.GameCardDeleted, gameId);
     }
 
     afterInit() {
