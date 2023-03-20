@@ -6,15 +6,15 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DEFAULT_PLAYERS } from '@app/constants/constants';
-import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.component';
+import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { ChatMessage, ClientSideGame, Coordinate, MessageTag, Players } from '@common/game-interfaces';
 import { Subject, Subscription } from 'rxjs';
 
-describe('SoloGameViewComponent', () => {
-    let component: SoloGameViewComponent;
-    let fixture: ComponentFixture<SoloGameViewComponent>;
+describe('GamePageComponent', () => {
+    let component: GamePageComponent;
+    let fixture: ComponentFixture<GamePageComponent>;
     let mouse: MouseEvent;
     let gameAreaService: GameAreaService;
     let classicService: ClassicSystemService;
@@ -67,7 +67,7 @@ describe('SoloGameViewComponent', () => {
         dialog = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
             imports: [HttpClientModule, RouterTestingModule, MatDialogModule],
-            declarations: [SoloGameViewComponent],
+            declarations: [GamePageComponent],
             providers: [
                 GameAreaService,
                 { provide: ClassicSystemService, useValue: classicServiceSpy },
@@ -78,7 +78,7 @@ describe('SoloGameViewComponent', () => {
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(SoloGameViewComponent);
+        fixture = TestBed.createComponent(GamePageComponent);
         component = fixture.componentInstance;
         gameAreaService = TestBed.inject(GameAreaService);
         classicService = TestBed.inject(ClassicSystemService);
