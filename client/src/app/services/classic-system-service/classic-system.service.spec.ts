@@ -9,7 +9,8 @@ import { SocketTestHelper } from '@app/services/client-socket-service/client-soc
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
-import { ChatMessage, Differences, GameEvents, MessageEvents, MessageTag } from '@common/game-interfaces';
+import { ChatMessage, Differences, GameEvents, MessageEvents, MessageTag, Players } from '@common/game-interfaces';
+import { Subject } from 'rxjs';
 import { Socket } from 'socket.io-client';
 import { ClassicSystemService } from './classic-system.service';
 
@@ -117,6 +118,48 @@ describe('ClassicSystemService', () => {
         service['currentGame'].next(mockClientSideGame);
     });
 
+    it('timer$ should return timer as Observable', () => {
+        const mockTimerSubject = new Subject<number>();
+        service['timer'] = mockTimerSubject;
+        expect(service.timer$).toEqual(mockTimerSubject.asObservable());
+    });
+
+    it('differenceFound$ should return differencesFound as Observable', () => {
+        const differenceFoundSubject = new Subject<number>();
+        service['differencesFound'] = differenceFoundSubject;
+        expect(service.differencesFound$).toEqual(differenceFoundSubject.asObservable());
+    });
+
+    it('message$ should return message as Observable', () => {
+        const mockMessageSubject = new Subject<ChatMessage>();
+        service['message'] = mockMessageSubject;
+        expect(service.message$).toEqual(mockMessageSubject.asObservable());
+    });
+
+    it('endMessage$ should return endMessage as Observable', () => {
+        const mockEndMessageSubject = new Subject<string>();
+        service['endMessage'] = mockEndMessageSubject;
+        expect(service.endMessage$).toEqual(mockEndMessageSubject.asObservable());
+    });
+
+    it('opponentDifferenceFound$ should return opponentDifferenceFound as Observable', () => {
+        const mockOpponentDifferenceFoundSubject = new Subject<number>();
+        service['opponentDifferencesFound'] = mockOpponentDifferenceFoundSubject;
+        expect(service.opponentDifferencesFound$).toEqual(mockOpponentDifferenceFoundSubject.asObservable());
+    });
+
+    it('players$ should return players as Observable', () => {
+        const mockPlayersSubject = new Subject<Players>();
+        service['players'] = mockPlayersSubject;
+        expect(service.players$).toEqual(mockPlayersSubject.asObservable());
+    });
+
+    it('cheatDifferences$ should return cheatDifferences as Observable', () => {
+        const mockCheatDifferencesSubject = new Subject<Coordinate[]>();
+        service['cheatDifferences'] = mockCheatDifferencesSubject;
+        expect(service.cheatDifferences$).toEqual(mockCheatDifferencesSubject.asObservable());
+    });
+
     it('should not emit game when game is falsy', () => {
         spyOn(service['currentGame'], 'next');
         service['currentGame'].subscribe();
@@ -152,6 +195,18 @@ describe('ClassicSystemService', () => {
         service.replaceDifference([]);
         expect(gameAreaService.showError).toHaveBeenCalled();
         expect(soundServiceSpy.playErrorSound).toHaveBeenCalled();
+    });
+
+    it('setIsLeftCanvas should set isLeftCanvas', () => {
+        expect(service['isLeftCanvas']).not.toBeTruthy();
+        service.setIsLeftCanvas(true);
+        expect(service['isLeftCanvas']).toBeTruthy();
+    });
+
+    it('disconnect should disconnect the socket', () => {
+        const disconnectSpy = spyOn(socketServiceMock, 'disconnect');
+        service.disconnect();
+        expect(disconnectSpy).toHaveBeenCalled();
     });
 
     it('replaceDifference should modify coordinate if coordinate length is greater than 0', () => {
