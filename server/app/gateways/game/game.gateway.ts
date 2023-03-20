@@ -40,16 +40,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameEvents.StartGameByRoomId)
-    startGame(@ConnectedSocket() socket: Socket, @MessageBody() roomId: string) {
+    startGame(@ConnectedSocket() socket: Socket, @MessageBody('roomId') roomId: string, @MessageBody('playerName') playerName: string) {
         const room = this.classicModeService.getRoomByRoomId(roomId);
         if (!room) return;
         socket.join(roomId);
-        if (room.player1 && !room.player2?.playerId) {
+        if (room.player1.name === playerName) {
             room.player1.playerId = socket.id;
-            if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
-                room.player2.playerId = socket.id;
-            }
-        } else {
+        } else if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
             room.player2.playerId = socket.id;
         }
         this.classicModeService.saveRoom(room);
@@ -142,6 +139,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     sendMessage(@ConnectedSocket() socket: Socket, @MessageBody() data: ChatMessage) {
         const roomId = this.classicModeService.getRoomIdFromSocket(socket);
         socket.broadcast.to(roomId).emit(MessageEvents.LocalMessage, data);
+    }
+    @SubscribeMessage(GameEvents.DeleteGameCard)
+    gameCardDeleted(@MessageBody() gameId: string) {
+        this.server.emit(GameEvents.GameCardDeleted, gameId);
     }
 
     afterInit() {
