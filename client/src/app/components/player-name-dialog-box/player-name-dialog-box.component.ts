@@ -10,7 +10,7 @@ import { filter, firstValueFrom } from 'rxjs';
     templateUrl: './player-name-dialog-box.component.html',
     styleUrls: ['./player-name-dialog-box.component.scss'],
 })
-export class PlayerNameDialogBoxComponent {
+export class PlayerNameDialogBoxComponent implements OnInit {
     playerNameForm: FormGroup;
 
     constructor(
@@ -30,6 +30,10 @@ export class PlayerNameDialogBoxComponent {
                 updateOn: 'blur',
             }),
         });
+    }
+
+    ngOnInit(): void {
+        this.handelCreateUndoCreation(this.data.gameId);
     }
 
     submitForm() {
