@@ -40,20 +40,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameEvents.StartGameByRoomId)
-    startGame(@ConnectedSocket() socket: Socket, @MessageBody() roomId: string) {
+    startGame(@ConnectedSocket() socket: Socket, @MessageBody('roomId') roomId: string, @MessageBody('playerName') playerName: string) {
         const room = this.classicModeService.getRoomByRoomId(roomId);
         if (!room) return;
         socket.join(roomId);
-        if (room.player1 && !room.player2?.playerId) {
+        if (room.player1.name === playerName) {
             room.player1.playerId = socket.id;
-            if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
-                room.player2.playerId = socket.id;
-            }
-        } else {
+        } else if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
             room.player2.playerId = socket.id;
         }
         this.classicModeService.saveRoom(room);
-        this.server.to(roomId).emit(GameEvents.GameStarted, {
+        this.server.to(roomId)?.emit(GameEvents.GameStarted, {
             clientGame: room.clientGame,
             players: { player1: room.player1, player2: room.player2 },
             cheatDifferences: room.originalDifferences.flat(),
