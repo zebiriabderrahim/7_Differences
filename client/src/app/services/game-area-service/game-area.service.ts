@@ -25,10 +25,16 @@ export class GameAreaService {
     private modifiedContext: CanvasRenderingContext2D;
     private originalContextFrontLayer: CanvasRenderingContext2D;
     private modifiedContextFrontLayer: CanvasRenderingContext2D;
-    private mousePosition: Coordinate = { x: 0, y: 0 };
-    private clickDisabled: boolean = false;
-    private isCheatMode: boolean = false;
+    private mousePosition: Coordinate;
+    private clickDisabled: boolean;
+    private isCheatMode: boolean;
     private cheatModeInterval: number | undefined;
+
+    constructor() {
+        this.mousePosition = { x: 0, y: 0 };
+        this.clickDisabled = false;
+        this.isCheatMode = false;
+    }
 
     @HostListener('keydown', ['$event'])
     setAllData(): void {
