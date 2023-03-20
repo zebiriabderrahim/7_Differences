@@ -7,7 +7,7 @@ import {
     ONE_SECOND,
     RED_FLASH_TIME,
     X_CENTERING_DISTANCE,
-    YELLOW_FLASH_TIME
+    YELLOW_FLASH_TIME,
 } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { GREEN_PIXEL, N_PIXEL_ATTRIBUTE, RED_PIXEL, YELLOW_PIXEL } from '@app/constants/pixels';
