@@ -333,7 +333,7 @@ export class ClassicModeService {
             this.deleteJoinedPlayerById(socket.id, server);
         }
     }
-    private generateRoomId(): string {
+    generateRoomId(): string {
         const KEY_SIZE = 36;
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let id = '';
