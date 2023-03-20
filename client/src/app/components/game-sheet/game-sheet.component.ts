@@ -2,11 +2,11 @@
 /* eslint-disable no-underscore-dangle */
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { JoinedPlayerDialogComponent } from '@app/components/joined-player-dialog/joined-player-dialog.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { WaitingForPlayerToJoinComponent } from '@app/components/waiting-player-to-join/waiting-player-to-join.component';
-import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameCard } from '@common/game-interfaces';
@@ -19,7 +19,9 @@ import { filter, Subscription, take } from 'rxjs';
 })
 export class GameSheetComponent implements OnDestroy, OnInit {
     @Input() game: GameCard;
+    url: SafeResourceUrl;
     private isAvailable: boolean;
+    private player: string;
     private roomIdSubscription: Subscription;
     private roomAvailabilitySubscription: Subscription;
 
@@ -30,9 +32,10 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         public router: Router,
         private readonly roomManagerService: RoomManagerService,
         private readonly communicationService: CommunicationService,
-        private readonly classicSystemService: ClassicSystemService,
+        private sanitizer: DomSanitizer,
     ) {}
     ngOnInit(): void {
+        this.url = this.sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + this.game.thumbnail);
         this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
         this.roomAvailabilitySubscription = this.roomManagerService.oneVsOneRoomsAvailabilityByRoomId$
             .pipe(filter((data) => data.gameId === this.game._id))
@@ -54,6 +57,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
             .afterClosed()
             .pipe(filter((playerName) => !!playerName))
             .subscribe((playerName) => {
+                this.player = playerName;
                 this.roomManagerService.createSoloRoom(this.game._id, playerName);
             });
     }
@@ -61,7 +65,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     playSolo(): void {
         this.createSoloRoom();
         this.roomIdSubscription = this.roomManagerService.roomId$.pipe(filter((roomId) => !!roomId)).subscribe((roomId) => {
-            this.router.navigate(['/game', roomId]);
+            this.router.navigate(['/game', roomId, this.player]);
         });
     }
 
@@ -113,7 +117,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     }
 
     deleteGameCard() {
-        this.classicSystemService.gameCardDeleted(this.game._id);
+        this.roomManagerService.gameCardDeleted(this.game._id);
         this.communicationService.deleteGameById(this.game._id).subscribe(() => {
             this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
                 this.router.navigate(['/config']);

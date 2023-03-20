@@ -1,5 +1,10 @@
 import { Coordinate } from '@common/coordinate';
 
+export interface Players {
+    player1: Player;
+    player2?: Player;
+}
+
 export interface ClientSideGame {
     id: string;
     name: string;
@@ -107,11 +112,11 @@ export enum GameEvents {
     RoomSoloCreated = 'RoomSoloCreated',
     AbandonGame = 'AbandonGame',
     JoinOneVsOneGame = 'JoinOneVsOneGame',
-    Disconnect = 'Disconnect',
-    DeleteGameCard = 'GameCardDeleted',
     GetGameCards = 'GetGameCards',
-    GameCardDeleted = "GameCardDeleted",
-    UndoCreation = "UndoCreation"
+    UndoCreation = 'UndoCreation',
+    Disconnect = 'Disconnect',
+    DeleteGameCard = 'DeleteGameCard',
+    GameCardDeleted = 'GameCardDeleted',
 }
 
 export enum GameModes {
@@ -139,3 +144,4 @@ export enum GameCardActions {
     Create = 'create',
     Join = 'join',
 }
+export { Coordinate };

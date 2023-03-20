@@ -42,10 +42,10 @@ describe('ClassicModeService', () => {
         },
     ];
 
-    const fakeDiff: Differences = {
-        currentDifference: [{ x: 0, y: 0 } as Coordinate],
-        differencesFound: 1,
-    };
+    // const fakeDiff: Differences = {
+    //     currentDifference: [{ x: 0, y: 0 } as Coordinate],
+    //     differencesFound: 1,
+    // };
     const fakeRoom: ClassicPlayRoom = {
         roomId: 'fakeRoomId',
         originalDifferences: [[{ x: 0, y: 0 } as Coordinate]],
