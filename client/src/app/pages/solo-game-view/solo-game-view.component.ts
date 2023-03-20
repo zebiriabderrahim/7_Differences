@@ -2,13 +2,13 @@ import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, ViewChil
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dialog/solo-game-view-dialog.component';
-import { INPUT_TAG_NAME } from '@app/constants/constants';
+import { DEFAULT_PLAYERS, INPUT_TAG_NAME } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { Coordinate } from '@common/coordinate';
-import { ChatMessage, ClientSideGame, MessageTag, Player } from '@common/game-interfaces';
+import { ChatMessage, ClientSideGame, MessageTag, Players } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -27,10 +27,7 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     timer: number = 0;
     messages: ChatMessage[] = [];
     player: string = '';
-    players: { player1: Player; player2: Player } = {
-        player1: { name: '', diffData: { currentDifference: [], differencesFound: 0 } },
-        player2: { name: '', diffData: { currentDifference: [], differencesFound: 0 } },
-    };
+    players: Players = DEFAULT_PLAYERS;
     readonly canvasSize = { width: IMG_WIDTH, height: IMG_HEIGHT };
     private cheatDifferences: Coordinate[];
     private timerSub: Subscription;
@@ -70,10 +67,9 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         });
         this.classicService.players$.subscribe((players) => {
             this.players = players;
-            if (players && players.player1.playerId === this.classicService.getSocketId()) {
+            if (players.player1.playerId === this.classicService.getSocketId()) {
                 this.player = players.player1.name;
-            }
-            if (players && players.player2?.playerId === this.classicService.getSocketId()) {
+            } else if (players.player2 && players.player2.playerId === this.classicService.getSocketId()) {
                 this.player = players.player2.name;
             }
         });
@@ -139,18 +135,10 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.matDialog.open(SoloGameViewDialogComponent, { data: { action: 'endGame', message: endingMessage }, disableClose: true });
     }
 
-    mouseClickOnOriginal(event: MouseEvent) {
+    mouseClickOnCanvas(event: MouseEvent, isLeft: boolean) {
         if (this.gameAreaService.detectLeftClick(event)) {
             this.gameAreaService.setAllData();
-            this.classicService.setIsLeftCanvas(true);
-            this.classicService.requestVerification(this.gameAreaService.getMousePosition());
-        }
-    }
-
-    mouseClickOnModified(event: MouseEvent) {
-        if (this.gameAreaService.detectLeftClick(event)) {
-            this.gameAreaService.setAllData();
-            this.classicService.setIsLeftCanvas(false);
+            this.classicService.setIsLeftCanvas(isLeft);
             this.classicService.requestVerification(this.gameAreaService.getMousePosition());
         }
     }
