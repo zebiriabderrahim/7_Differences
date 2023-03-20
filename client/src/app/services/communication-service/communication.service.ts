@@ -10,9 +10,11 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root',
 })
 export class CommunicationService {
-    private readonly gameUrl: string = environment.serverUrl + '/games';
+    private readonly gameUrl: string;
 
-    constructor(private readonly http: HttpClient) {}
+    constructor(private readonly http: HttpClient) {
+        this.gameUrl = environment.serverUrl + '/games';
+    }
 
     loadGameCarrousel(index: number): Observable<CarouselPaginator> {
         return this.http
