@@ -165,16 +165,6 @@ export class ClassicModeService {
         }
     }
 
-    generateRoomId(): string {
-        const KEY_SIZE = 36;
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let id = '';
-        for (let i = 0; i < KEY_SIZE; i++) {
-            id += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        return id;
-    }
-
     getRoomByRoomId(roomId: string): ClassicPlayRoom {
         if (this.rooms.has(roomId)) {
             return this.rooms.get(roomId);
@@ -342,5 +332,14 @@ export class ClassicModeService {
         } else {
             this.deleteJoinedPlayerById(socket.id, server);
         }
+    }
+    generateRoomId(): string {
+        const KEY_SIZE = 36;
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let id = '';
+        for (let i = 0; i < KEY_SIZE; i++) {
+            id += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return id;
     }
 }

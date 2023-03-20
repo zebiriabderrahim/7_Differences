@@ -117,6 +117,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     }
 
     deleteGameCard() {
+        this.roomManagerService.gameCardDeleted(this.game._id);
         this.communicationService.deleteGameById(this.game._id).subscribe(() => {
             this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
                 this.router.navigate(['/config']);
