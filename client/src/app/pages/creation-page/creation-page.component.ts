@@ -19,7 +19,7 @@ import { ImageService } from '@app/services/image-service/image.service';
 export class CreationPageComponent implements AfterViewInit {
     @ViewChild('combinedCanvas') combinedCanvas: ElementRef;
     readonly canvasSizes: CanvasMeasurements;
-    readonly configRoute = '/config';
+    readonly configRoute: string;
     canvasPosition: typeof CanvasPosition;
     readonly radiusSizes: number[];
     radius: number;
@@ -37,6 +37,7 @@ export class CreationPageComponent implements AfterViewInit {
         this.radius = DEFAULT_RADIUS;
         this.canvasPosition = CanvasPosition;
         this.canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
+        this.configRoute = '/config';
     }
 
     @HostListener('window:keydown', ['$event'])
