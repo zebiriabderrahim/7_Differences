@@ -43,9 +43,9 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
     constructor(
-        private gameAreaService: GameAreaService,
-        private classicService: ClassicSystemService,
-        private imageService: ImageService,
+        private readonly gameAreaService: GameAreaService,
+        private readonly classicService: ClassicSystemService,
+        private readonly imageService: ImageService,
         private readonly matDialog: MatDialog,
         private route: ActivatedRoute,
     ) {
