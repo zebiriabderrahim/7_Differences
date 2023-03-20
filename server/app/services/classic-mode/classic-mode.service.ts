@@ -88,6 +88,7 @@ export class ClassicModeService {
     verifyCoords(socket: io.Socket, coords: Coordinate, server: io.Server): void {
         const roomId = this.getRoomIdFromSocket(socket);
         const room = this.rooms.get(roomId);
+        if (!room) return;
         const { originalDifferences } = room;
         const { diffData } = room.player1.playerId === socket.id ? room.player1 : room.player2;
         const playerName = room.player1.playerId === socket.id ? room.player1.name : room.player2.name;
