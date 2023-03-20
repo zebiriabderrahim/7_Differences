@@ -6,7 +6,6 @@ import {
     ConnectedSocket,
     MessageBody,
     OnGatewayConnection,
-    OnGatewayDisconnect,
     OnGatewayInit,
     SubscribeMessage,
     WebSocketGateway,
@@ -23,7 +22,7 @@ import { DELAY_BEFORE_EMITTING_TIME } from './game.gateway.constants';
     }),
 )
 @Injectable()
-export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
+export class GameGateway implements OnGatewayConnection, OnGatewayInit {
     @WebSocketServer() private server: Server;
 
     constructor(private readonly logger: Logger, private readonly classicModeService: ClassicModeService) {}
@@ -151,10 +150,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         this.logger.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
     }
 
-    handleDisconnect(@ConnectedSocket() socket: Socket) {
-        this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
-        this.classicModeService.handleSocketDisconnect(socket, this.server);
-    }
+    // handleDisconnect(@ConnectedSocket() socket: Socket) {
+    //     this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
+    //     this.classicModeService.handleSocketDisconnect(socket, this.server);
+    // }
 
     updateTimers() {
         for (const roomId of this.classicModeService['rooms'].keys()) {
