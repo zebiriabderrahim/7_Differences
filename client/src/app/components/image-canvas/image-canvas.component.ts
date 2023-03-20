@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } 
 import { LEFT_BUTTON } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasPosition } from '@app/enum/canvas-position';
+import { CanvasMeasurements } from '@app/interfaces/game-interfaces';
 import { DrawService } from '@app/services/draw-service/draw.service';
 import { ForegroundService } from '@app/services/foreground-service/foreground.service';
 import { ImageService } from '@app/services/image-service/image.service';
@@ -16,7 +17,7 @@ export class ImageCanvasComponent implements AfterViewInit {
     @ViewChild('backgroundCanvas') backgroundCanvas: ElementRef;
     @ViewChild('foregroundCanvas') foregroundCanvas: ElementRef;
     @ViewChild('frontCanvas') frontCanvas: ElementRef;
-    readonly canvasSizes;
+    readonly canvasSizes: CanvasMeasurements;
 
     constructor(
         private readonly imageService: ImageService,
