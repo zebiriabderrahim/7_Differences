@@ -65,13 +65,13 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
             .pipe(filter((acceptedPlayer) => acceptedPlayer?.playerName === this.data.player && acceptedPlayer.gameId === this.data.gameId))
             .subscribe((acceptedPlayer) => {
                 this.dialogRef.close();
-                this.navigateToGame(acceptedPlayer.roomId);
+                this.navigateToGame(acceptedPlayer.roomId, acceptedPlayer.playerName);
             });
     }
 
-    navigateToGame(roomId: string) {
+    navigateToGame(roomId: string, playerName: string) {
         this.dialogRef.afterClosed().subscribe(() => {
-            this.router.navigate(['/game', roomId]);
+            this.router.navigate(['/game', roomId, playerName]);
         });
     }
 
