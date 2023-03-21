@@ -17,7 +17,6 @@ describe('SelectionPageComponent', () => {
     let component: SelectionPageComponent;
     let fixture: ComponentFixture<SelectionPageComponent>;
     let roomManagerService: jasmine.SpyObj<RoomManagerService>;
-    // let gameCarousel: jasmine.SpyObj<CarouselPaginator>;
     let deletedGameIdMock: BehaviorSubject<string>;
 
     beforeEach(async () => {

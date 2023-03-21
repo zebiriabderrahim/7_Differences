@@ -15,10 +15,12 @@ describe('JoinedPlayerDialogComponent', () => {
     let joinedPlayerNamesMock: BehaviorSubject<WaitingPlayerNameList>;
     let acceptPlayerNamesMock: BehaviorSubject<AcceptedPlayer>;
     let dialogRefSpy: jasmine.SpyObj<MatDialogRef<JoinedPlayerDialogComponent>>;
+    let deletedGameIdMock: BehaviorSubject<string>;
     let routerSpy: jasmine.SpyObj<Router>;
     const playerNameStub = 'playerNameTest';
 
     beforeEach(async () => {
+        deletedGameIdMock = new BehaviorSubject<string>('idMock');
         joinedPlayerNamesMock = new BehaviorSubject<WaitingPlayerNameList>({
             gameId: 'test-game-id',
             playerNamesList: ['Alice', 'Bob', 'Charlie'],
@@ -34,6 +36,7 @@ describe('JoinedPlayerDialogComponent', () => {
         roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['cancelJoining'], {
             joinedPlayerNamesByGameId$: joinedPlayerNamesMock,
             acceptedPlayerByRoom$: acceptPlayerNamesMock,
+            deletedGameId$: deletedGameIdMock,
         });
         await TestBed.configureTestingModule({
             declarations: [JoinedPlayerDialogComponent],
