@@ -28,6 +28,9 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.getJoinedPlayerNamesByGameId();
+        this.roomManagerService.deletedGameId$.pipe(filter((gameId) => gameId === this.data.gameId)).subscribe(() => {
+            this.countDownBeforeClosing();
+        });
     }
 
     getJoinedPlayerNamesByGameId() {
@@ -45,18 +48,7 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
 
     handleRefusedPlayer(playerNames: string[]) {
         if (!playerNames.includes(this.data.player)) {
-            this.countdown = TEN_SECONDS;
-            const countdown$ = interval(ONE_SECOND).pipe(takeWhile(() => this.countdown > 0));
-            const countdownObserver = {
-                next: () => {
-                    this.countdown--;
-                    this.refusedMessage = `Vous avez été refusé. Vous serez redirigé dans ${this.countdown} secondes`;
-                },
-                complete: () => {
-                    this.dialogRef.close();
-                },
-            };
-            this.countdownSubscription = countdown$.subscribe(countdownObserver);
+            this.countDownBeforeClosing();
         }
     }
 
@@ -67,6 +59,21 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
                 this.dialogRef.close();
                 this.navigateToGame(acceptedPlayer.roomId, acceptedPlayer.playerName);
             });
+    }
+
+    countDownBeforeClosing() {
+        this.countdown = TEN_SECONDS;
+        const countdown$ = interval(ONE_SECOND).pipe(takeWhile(() => this.countdown > 0));
+        const countdownObserver = {
+            next: () => {
+                this.countdown--;
+                this.refusedMessage = `Vous avez été refusé. Vous serez redirigé dans ${this.countdown} secondes`;
+            },
+            complete: () => {
+                this.dialogRef.close();
+            },
+        };
+        this.countdownSubscription = countdown$.subscribe(countdownObserver);
     }
 
     navigateToGame(roomId: string, playerName: string) {
