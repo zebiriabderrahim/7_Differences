@@ -6,6 +6,7 @@ import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { Coordinate } from '@common/coordinate';
+import { KEY_SIZE, CHARACTERS } from '@common/constants';
 import {
     ChatMessage,
     ClassicPlayRoom,
@@ -334,11 +335,9 @@ export class ClassicModeService {
         }
     }
     private generateRoomId(): string {
-        const KEY_SIZE = 36;
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let id = '';
         for (let i = 0; i < KEY_SIZE; i++) {
-            id += characters.charAt(Math.floor(Math.random() * characters.length));
+            id += CHARACTERS.charAt(Math.floor(Math.random() * CHARACTERS.length));
         }
         return id;
     }
