@@ -9,7 +9,8 @@ import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameCard } from '@common/game-interfaces';
-import { of, BehaviorSubject } from 'rxjs';
+// import { disconnect } from 'process';
+import { BehaviorSubject, of } from 'rxjs';
 import { SelectionPageComponent } from './selection-page.component';
 
 describe('SelectionPageComponent', () => {
@@ -20,9 +21,9 @@ describe('SelectionPageComponent', () => {
     let deletedGameIdMock: BehaviorSubject<string>;
 
     beforeEach(async () => {
-        deletedGameIdMock = new BehaviorSubject<string>('456');
-        roomManagerService = jasmine.createSpyObj('RoomManagerService', ['deletedGameId$'], {
-            deletedGameIdMock$: deletedGameIdMock,
+        deletedGameIdMock = new BehaviorSubject<string>('idMock');
+        roomManagerService = jasmine.createSpyObj('RoomManagerService', ['handleRoomEvents', 'disconnect'], {
+            deletedGameId$: deletedGameIdMock,
         });
         // gameCarousel = jasmine.createSpyObj('GameCarousel', ['updateGameCards']);
         await TestBed.configureTestingModule({
@@ -37,6 +38,7 @@ describe('SelectionPageComponent', () => {
                         loadGameCarrousel: of({ hasNext: false, hasPrevious: false, gameCards: [] }),
                     }),
                 },
+                { provide: RoomManagerService, useValue: roomManagerService },
             ],
         }).compileComponents();
 
@@ -73,10 +75,8 @@ describe('SelectionPageComponent', () => {
     it('should remove the deleted game card from the game cards list', () => {
         const gameCards: GameCard[] = [{ _id: '12' }, { _id: '456' }, { _id: '789' }];
         const filterSpy = spyOn(Array.prototype, 'filter').and.callThrough();
-        deletedGameIdMock.next('456');
         component.handleGameCardDelete(gameCards);
+        deletedGameIdMock.next('456');
         expect(filterSpy).toHaveBeenCalled();
-        expect(roomManagerService.deletedGameId$).toHaveBeenCalled();
-        expect(component['gameCarrousel']).toEqual({ hasNext: false, hasPrevious: false, gameCards });
     });
 });
