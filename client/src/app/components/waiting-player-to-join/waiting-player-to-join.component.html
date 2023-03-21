@@ -1,6 +1,7 @@
 <div mat-dialog-actions class="infos-container" >
-    <h1> En attente d’un deuxième joueur....</h1>
-    <div *ngIf="playerNames">
+    <h1 *ngIf="refusedMessage"> {{refusedMessage}}</h1>
+    <h1 *ngIf="!refusedMessage"> En attente d’un deuxième joueur....</h1>
+    <div *ngIf="playerNames && !refusedMessage ">
         <h2> Joueur(s) en attente : </h2>
         <div *ngFor="let playerName of playerNames;let i = index">
             <h1>Joueur: {{ playerName }}</h1>

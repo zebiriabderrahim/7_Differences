@@ -146,6 +146,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage(GameEvents.DeleteGameCard)
     gameCardDeleted(@MessageBody() gameId: string) {
         this.server.emit(GameEvents.GameCardDeleted, gameId);
+        this.server.emit(GameEvents.UndoCreation, gameId);
     }
 
     afterInit() {
