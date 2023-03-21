@@ -162,10 +162,10 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.timerSub?.unsubscribe();
         this.differenceSub?.unsubscribe();
         this.routeParamSub?.unsubscribe();
-        this.messageSub.unsubscribe();
-        this.endGameSub.unsubscribe();
+        this.messageSub?.unsubscribe();
+        this.endGameSub?.unsubscribe();
         this.opponentDifferenceSub?.unsubscribe();
-        this.cheatDifferencesSub.unsubscribe();
+        this.cheatDifferencesSub?.unsubscribe();
         this.classicService.disconnect();
     }
 }
