@@ -33,7 +33,7 @@ export class PlayerNameDialogBoxComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.handelCreateUndoCreation(this.data.gameId);
+        this.handleCreateUndoCreation(this.data.gameId);
     }
 
     submitForm() {
@@ -42,7 +42,7 @@ export class PlayerNameDialogBoxComponent implements OnInit {
         }
     }
 
-    handelCreateUndoCreation(gameId: string) {
+    handleCreateUndoCreation(gameId: string) {
         this.roomManagerService.gameIdOfRoomToBeDeleted$.pipe(filter((id) => id === gameId)).subscribe(() => {
             this.dialogRef.close();
         });
