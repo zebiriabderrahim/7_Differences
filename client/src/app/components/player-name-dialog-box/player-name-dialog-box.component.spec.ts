@@ -12,11 +12,14 @@ describe('PlayerNameDialogBoxComponent', () => {
     let fixture: ComponentFixture<PlayerNameDialogBoxComponent>;
     let dialogRef: MatDialogRef<PlayerNameDialogBoxComponent, unknown>;
     let roomManagerServiceSpy: jasmine.SpyObj<RoomManagerService>;
+    let gameIdOfRoomToBeDeletedMock: BehaviorSubject<string>;
 
     beforeEach(async () => {
         const mockIsNameTaken = new BehaviorSubject({ gameId: '1', isNameAvailable: false });
+        gameIdOfRoomToBeDeletedMock = new BehaviorSubject<string>('12');
         roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['isPlayerNameIsAlreadyTaken', 'isNameTaken$'], {
             isNameTaken$: mockIsNameTaken,
+            gameIdOfRoomToBeDeleted$: gameIdOfRoomToBeDeletedMock,
         });
         await TestBed.configureTestingModule({
             imports: [ReactiveFormsModule],
@@ -70,9 +73,17 @@ describe('PlayerNameDialogBoxComponent', () => {
 
         expect(result).toEqual({ nameTaken: true });
     });
+
     it('ngOnInit should call handelCreateUndoCreation', () => {
         const handelCreateUndoCreationSpy = spyOn(component, 'handleCreateUndoCreation').and.callFake(() => {});
         component.ngOnInit();
         expect(handelCreateUndoCreationSpy).toHaveBeenCalled();
+    });
+
+    it('handleCreateUndoCreation should close the dialog when the gameId matches the id of the room to be deleted', () => {
+        const gameId = '12';
+        gameIdOfRoomToBeDeletedMock.next(gameId);
+        component.handleCreateUndoCreation(gameId);
+        expect(dialogRef.close).toHaveBeenCalled();
     });
 });
