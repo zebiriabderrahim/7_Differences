@@ -37,24 +37,6 @@ describe('GameGateway', () => {
         },
     };
 
-    // const fakeRoom2: ClassicPlayRoom = {
-    //     roomId: 'fakeRoomId',
-    //     originalDifferences: [{}] as Coordinate[][],
-    //     clientGame: {
-    //         id: 'fakeGameId',
-    //         name: 'fakeGameName',
-    //         mode: GameModes.ClassicOneVsOne,
-    //     } as ClientSideGame,
-    //     timer: 0,
-    //     endMessage: '',
-    //     player1: undefined,
-    //     player2: {
-    //         playerId: 'fakePlayerId2',
-    //         name: 'fakePlayerName',
-    //         diffData: {} as Differences,
-    //     },
-    // };
-
     const fakeData = { gameId: 'fakeRoomId', playerName: 'fakePlayerName' };
 
     beforeEach(async () => {
@@ -112,6 +94,7 @@ describe('GameGateway', () => {
 
     it('startGame() should call startGame and start Classic solo', () => {
         fakeRoom.player2 = undefined;
+        fakeRoom.player1.name = 'fakePlayerName';
         const flatSpy = jest.spyOn(Array.prototype, 'flat').mockImplementation(() => {
             return [];
         });
@@ -123,29 +106,11 @@ describe('GameGateway', () => {
                 expect(flatSpy).toHaveBeenCalled();
             },
         } as BroadcastOperator<unknown, unknown>);
-        gateway.startGame(socket, 'fakeRoomId', 'fakePlayerId1');
+        gateway.startGame(socket, 'fakeRoomId', 'fakePlayerName');
         expect(classicService.getRoomByRoomId.calledOnce).toBeTruthy();
         expect(classicService.saveRoom).toBeTruthy();
         expect(joinSpy).toHaveBeenCalled();
     });
-    // it('startGame() should attribute socket id to player2 id', () => {
-    //     const flatSpy = jest.spyOn(Array.prototype, 'flat').mockImplementation(() => {
-    //         return [];
-    //     });
-    //     const joinSpy = jest.spyOn(socket, 'join');
-    //     classicService.getRoomByRoomId.returns(fakeRoom2);
-    //     server.to.returns({
-    //         emit: (event: string) => {
-    //             expect(event).toEqual(GameEvents.GameStarted);
-    //             expect(flatSpy).toHaveBeenCalled();
-    //         },
-    //     } as BroadcastOperator<unknown, unknown>);
-    //     fakeRoom.player2 = {} as Player;
-    //     gateway.startGame(socket, 'fakeRoomId', 'fakePlayerId2');
-    //     expect(classicService.getRoomByRoomId.calledOnce).toBeTruthy();
-    //     expect(classicService.saveRoom).toBeTruthy();
-    //     expect(joinSpy).toHaveBeenCalled();
-    // });
 
     it('startGame() should attribute socket id to player1 id', () => {
         fakeRoom.clientGame.mode = GameModes.ClassicOneVsOne;
