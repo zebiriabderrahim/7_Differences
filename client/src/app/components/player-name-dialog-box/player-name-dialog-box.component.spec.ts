@@ -1,3 +1,5 @@
+// to spyOn handelCreateUndoCreationSpy and do nothing
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -67,5 +69,10 @@ describe('PlayerNameDialogBoxComponent', () => {
         const result = await component.validatePlayerName(control);
 
         expect(result).toEqual({ nameTaken: true });
+    });
+    it('ngOnInit should call handelCreateUndoCreation', () => {
+        const handelCreateUndoCreationSpy = spyOn(component, 'handelCreateUndoCreation').and.callFake(() => {});
+        component.ngOnInit();
+        expect(handelCreateUndoCreationSpy).toHaveBeenCalled();
     });
 });
