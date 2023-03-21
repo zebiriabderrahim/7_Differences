@@ -33,7 +33,6 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.getJoinedPlayerNamesByGameId();
         this.roomManagerService.deletedGameId$.pipe(filter((gameId) => gameId === this.data.gameId)).subscribe(() => {
-            console.log('deleted game id');
             this.countDownBeforeClosing();
         });
     }
