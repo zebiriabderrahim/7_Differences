@@ -17,11 +17,11 @@ export interface ClientSideGame {
 
 export interface GameCard {
     _id: string;
-    name?: string;
-    difficultyLevel?: boolean;
-    soloTopTime?: PlayerTime[];
-    oneVsOneTopTime?: PlayerTime[];
-    thumbnail?: string;
+    name: string;
+    difficultyLevel: boolean;
+    soloTopTime: PlayerTime[];
+    oneVsOneTopTime: PlayerTime[];
+    thumbnail: string;
 }
 
 export interface CarouselPaginator {
