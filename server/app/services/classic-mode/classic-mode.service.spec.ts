@@ -1,6 +1,9 @@
+// for -1 index test
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable max-lines */
+// for any test
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// for id test
 /* eslint-disable no-underscore-dangle */
 import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
