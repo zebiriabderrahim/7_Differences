@@ -120,6 +120,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             playerName: acceptedPlayerName,
         };
         this.server.emit(GameEvents.PlayerAccepted, acceptedPlayerInRoom);
+        this.gameCardDeleted(data.gameId);
     }
 
     @SubscribeMessage(GameEvents.CheckIfPlayerNameIsAvailable)
