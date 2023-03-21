@@ -12,5 +12,5 @@ export const DEFAULT_BEST_TIMES: PlayerTime[] = [
     { name: "the scream", time: 250 },
 ];
 
-const KEY_SIZE = 36;
-const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+export const KEY_SIZE = 36;
+export const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
