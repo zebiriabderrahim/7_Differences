@@ -7,14 +7,24 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { NavBarComponent } from '@app/components/nav-bar/nav-bar.component';
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
-import { of } from 'rxjs';
+import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
+import { GameCard } from '@common/game-interfaces';
+import { of, BehaviorSubject } from 'rxjs';
 import { SelectionPageComponent } from './selection-page.component';
 
 describe('SelectionPageComponent', () => {
     let component: SelectionPageComponent;
     let fixture: ComponentFixture<SelectionPageComponent>;
+    let roomManagerService: jasmine.SpyObj<RoomManagerService>;
+    // let gameCarousel: jasmine.SpyObj<CarouselPaginator>;
+    let deletedGameIdMock: BehaviorSubject<string>;
 
     beforeEach(async () => {
+        deletedGameIdMock = new BehaviorSubject<string>('456');
+        roomManagerService = jasmine.createSpyObj('RoomManagerService', ['deletedGameId$'], {
+            deletedGameIdMock$: deletedGameIdMock,
+        });
+        // gameCarousel = jasmine.createSpyObj('GameCarousel', ['updateGameCards']);
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule.withRoutes(routes), MatGridListModule, FormsModule, MatIconModule],
             declarations: [SelectionPageComponent, NavBarComponent],
@@ -58,5 +68,15 @@ describe('SelectionPageComponent', () => {
         component.previousCarrousel();
         expect(component.gameCarrousel).toEqual({ hasNext: false, hasPrevious: true, gameCards: [] });
         expect(component['index']).toEqual(0);
+    });
+
+    it('should remove the deleted game card from the game cards list', () => {
+        const gameCards: GameCard[] = [{ _id: '12' }, { _id: '456' }, { _id: '789' }];
+        const filterSpy = spyOn(Array.prototype, 'filter').and.callThrough();
+        deletedGameIdMock.next('456');
+        component.handleGameCardDelete(gameCards);
+        expect(filterSpy).toHaveBeenCalled();
+        expect(roomManagerService.deletedGameId$).toHaveBeenCalled();
+        expect(component['gameCarrousel']).toEqual({ hasNext: false, hasPrevious: false, gameCards });
     });
 });
