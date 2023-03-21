@@ -9,11 +9,11 @@ import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameCard } from '@common/game-interfaces';
-// import { disconnect } from 'process';
 import { BehaviorSubject, of } from 'rxjs';
 import { SelectionPageComponent } from './selection-page.component';
 
 describe('SelectionPageComponent', () => {
+    let mockGameCard: GameCard;
     let component: SelectionPageComponent;
     let fixture: ComponentFixture<SelectionPageComponent>;
     let roomManagerService: jasmine.SpyObj<RoomManagerService>;
@@ -22,10 +22,10 @@ describe('SelectionPageComponent', () => {
 
     beforeEach(async () => {
         deletedGameIdMock = new BehaviorSubject<string>('idMock');
+        mockGameCard = { _id: '123', name: 'mockName', difficultyLevel: true, soloTopTime: [], oneVsOneTopTime: [], thumbnail: '' };
         roomManagerService = jasmine.createSpyObj('RoomManagerService', ['handleRoomEvents', 'disconnect'], {
             deletedGameId$: deletedGameIdMock,
         });
-        // gameCarousel = jasmine.createSpyObj('GameCarousel', ['updateGameCards']);
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule.withRoutes(routes), MatGridListModule, FormsModule, MatIconModule],
             declarations: [SelectionPageComponent, NavBarComponent],
@@ -73,7 +73,7 @@ describe('SelectionPageComponent', () => {
     });
 
     it('should remove the deleted game card from the game cards list', () => {
-        const gameCards: GameCard[] = [{ _id: '12' }, { _id: '456' }, { _id: '789' }];
+        const gameCards: GameCard[] = [mockGameCard, mockGameCard, mockGameCard];
         const filterSpy = spyOn(Array.prototype, 'filter').and.callThrough();
         component.handleGameCardDelete(gameCards);
         deletedGameIdMock.next('456');
