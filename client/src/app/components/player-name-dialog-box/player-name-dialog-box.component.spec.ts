@@ -71,7 +71,7 @@ describe('PlayerNameDialogBoxComponent', () => {
         expect(result).toEqual({ nameTaken: true });
     });
     it('ngOnInit should call handelCreateUndoCreation', () => {
-        const handelCreateUndoCreationSpy = spyOn(component, 'handelCreateUndoCreation').and.callFake(() => {});
+        const handelCreateUndoCreationSpy = spyOn(component, 'handleCreateUndoCreation').and.callFake(() => {});
         component.ngOnInit();
         expect(handelCreateUndoCreationSpy).toHaveBeenCalled();
     });
