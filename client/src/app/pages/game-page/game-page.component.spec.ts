@@ -249,6 +249,9 @@ describe('GamePageComponent', () => {
         component['differenceSub'] = undefined as unknown as Subscription;
         component['routeParamSub'] = undefined as unknown as Subscription;
         component['opponentDifferenceSub'] = undefined as unknown as Subscription;
+        component['messageSub'] = undefined as unknown as Subscription;
+        component['endGameSub'] = undefined as unknown as Subscription;
+        component['cheatDifferencesSub'] = undefined as unknown as Subscription;
         const resetCheatModeSpy = spyOn(gameAreaService, 'resetCheatMode');
         component.ngOnDestroy();
         expect(resetCheatModeSpy).toHaveBeenCalled();

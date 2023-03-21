@@ -52,7 +52,7 @@ export class RoomManagerService implements OnDestroy {
         return this.gameIdOfRoomToBeDeleted.asObservable();
     }
 
-    get isGameCardDeleted$() {
+    get deletedGameId$() {
         return this.deletedGameId.asObservable();
     }
 

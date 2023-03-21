@@ -16,14 +16,17 @@ describe('WaitingPlayerToJoinComponent', () => {
     let dialogRefSpy: jasmine.SpyObj<MatDialogRef<WaitingForPlayerToJoinComponent>>;
     let router: jasmine.SpyObj<Router>;
     let joinedPlayerNamesMock: BehaviorSubject<WaitingPlayerNameList>;
+    let deletedGameIdMock: BehaviorSubject<string>;
 
     beforeEach(async () => {
+        deletedGameIdMock = new BehaviorSubject<string>('idMock');
         joinedPlayerNamesMock = new BehaviorSubject<WaitingPlayerNameList>({
             gameId: 'test-game-id',
             playerNamesList: ['Alice', 'Bob'],
         });
         roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['refusePlayer', 'acceptPlayer', 'deleteCreatedOneVsOneRoom'], {
             joinedPlayerNamesByGameId$: joinedPlayerNamesMock,
+            deletedGameId$: deletedGameIdMock,
         });
         clientSocketServiceSpy = jasmine.createSpyObj('ClientSocketService', ['send', 'disconnect']);
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);

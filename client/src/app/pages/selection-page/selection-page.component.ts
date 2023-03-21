@@ -44,7 +44,7 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
     }
 
     handleGameCardDelete(gameCards: GameCard[]) {
-        this.roomManagerService.isGameCardDeleted$.subscribe((gameId) => {
+        this.roomManagerService.deletedGameId$.subscribe((gameId) => {
             this.gameCarrousel.gameCards = gameCards.filter((gameCard) => gameCard._id !== gameId);
         });
     }
