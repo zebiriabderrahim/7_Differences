@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { TEN_SECONDS } from '@app/constants/constants';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { WaitingPlayerNameList } from '@common/game-interfaces';
@@ -50,6 +51,7 @@ describe('WaitingPlayerToJoinComponent', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
+        jasmine.clock().uninstall();
     });
 
     it('should create', () => {
@@ -64,6 +66,34 @@ describe('WaitingPlayerToJoinComponent', () => {
 
         expect(component['playerNamesSubscription']).toBeDefined();
         expect(component.playerNames).toEqual(['Alice', 'Bob', 'Charlie']);
+    });
+
+    it('should call countDownBeforeClosing onInit', () => {
+        const countDownBeforeClosingSpy = spyOn(component, 'countDownBeforeClosing');
+        component.ngOnInit();
+        deletedGameIdMock.next('test-game-id');
+        expect(countDownBeforeClosingSpy).toHaveBeenCalled();
+    });
+
+    it('countDownBeforeClosing should set countdown', () => {
+        component['countdown'] = TEN_SECONDS;
+        component.ngOnInit();
+        component.countDownBeforeClosing();
+        deletedGameIdMock.next('test-game-id');
+        jasmine.clock().install();
+        jasmine.clock().tick(TEN_SECONDS);
+        component.countDownBeforeClosing();
+    });
+
+    it('countDownBeforeClosing should set countdown', () => {
+        component['countdown'] = TEN_SECONDS;
+        component.ngOnInit();
+        component.countDownBeforeClosing();
+        deletedGameIdMock.next('test-game-id');
+        jasmine.clock().install();
+        jasmine.clock().tick(TEN_SECONDS);
+        component.countDownBeforeClosing();
+        jasmine.clock().tick(TEN_SECONDS);
     });
 
     it('refusePlayer should refuse the player using the roomManagerService', () => {

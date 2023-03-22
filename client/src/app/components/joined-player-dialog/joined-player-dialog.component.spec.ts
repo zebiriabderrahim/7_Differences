@@ -115,6 +115,16 @@ describe('JoinedPlayerDialogComponent', () => {
         expect(component.navigateToGame).not.toHaveBeenCalled();
     }));
 
+    it('ngOnInit should call countDownBeforeClosing', fakeAsync(() => {
+        const countDownBeforeClosingSpy = spyOn(component, 'countDownBeforeClosing');
+
+        component.ngOnInit();
+        deletedGameIdMock.next('test-game-id');
+        tick();
+
+        expect(countDownBeforeClosingSpy).toHaveBeenCalled();
+    }));
+
     it('NavigateTOGame should navigate to the room-id', () => {
         fixture.detectChanges();
         component.navigateToGame('test-room-id', playerNameStub);
