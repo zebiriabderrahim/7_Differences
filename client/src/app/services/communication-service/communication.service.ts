@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CarouselPaginator, Game, GameConfigConst, GameDetails } from '@app/interfaces/game-interfaces';
+import { Game, GameDetails } from '@app/interfaces/game-interfaces';
+import { CarouselPaginator, GameConfigConst } from '@common/game-interfaces';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -9,9 +10,11 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root',
 })
 export class CommunicationService {
-    private readonly gameUrl: string = environment.serverUrl + '/games';
+    private readonly gameUrl: string;
 
-    constructor(private readonly http: HttpClient) {}
+    constructor(private readonly http: HttpClient) {
+        this.gameUrl = environment.serverUrl + '/games';
+    }
 
     loadGameCarrousel(index: number): Observable<CarouselPaginator> {
         return this.http
@@ -29,6 +32,14 @@ export class CommunicationService {
 
     loadConfigConstants(): Observable<GameConfigConst> {
         return this.http.get<GameConfigConst>(`${this.gameUrl}/constants`).pipe(catchError(this.handleError<GameConfigConst>('loadConfigConstants')));
+    }
+
+    deleteGameById(id: string): Observable<void> {
+        return this.http.delete<void>(`${this.gameUrl}/${id}`).pipe(catchError(this.handleError<void>('deleteGameById')));
+    }
+
+    verifyIfGameExists(name: string): Observable<boolean> {
+        return this.http.get<boolean>(`${this.gameUrl}/?name=${name}`).pipe(catchError(this.handleError<boolean>('verifyIfGameExists')));
     }
 
     private handleError<T>(_request: string, result?: T): (error: Error) => Observable<T> {

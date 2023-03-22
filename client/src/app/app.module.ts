@@ -8,6 +8,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -20,13 +21,18 @@ import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { CreationPageComponent } from '@app/pages/creation-page/creation-page.component';
+import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
-import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
-import { SoloGameViewComponent } from '@app/pages/solo-game-view/solo-game-view.component';
+import { CanvasMiddleButtonsComponent } from './components/canvas-middle-buttons/canvas-middle-buttons.component';
+import { CanvasTopButtonsComponent } from './components/canvas-top-buttons/canvas-top-buttons.component';
 import { CanvasUnderButtonsComponent } from './components/canvas-under-buttons/canvas-under-buttons.component';
+import { ChatBoxComponent } from './components/chat-box/chat-box.component';
+import { GamePageDialogComponent } from './components/game-page-dialog/game-page-dialog.component';
 import { ImageCanvasComponent } from './components/image-canvas/image-canvas.component';
-import { SoloGameViewDialogComponent } from './components/solo-game-view-dialog/solo-game-view-dialog.component';
+import { JoinedPlayerDialogComponent } from './components/joined-player-dialog/joined-player-dialog.component';
+import { NavBarComponent } from './components/nav-bar/nav-bar.component';
+import { WaitingForPlayerToJoinComponent } from './components/waiting-player-to-join/waiting-player-to-join.component';
 import { ConfigPageComponent } from './pages/config-page/config-page.component';
 /**
  * Main module that is used in main.ts.
@@ -39,9 +45,8 @@ import { ConfigPageComponent } from './pages/config-page/config-page.component';
         AppComponent,
         CreationPageComponent,
         MainPageComponent,
-        MaterialPageComponent,
         SelectionPageComponent,
-        SoloGameViewComponent,
+        GamePageComponent,
         GameSheetComponent,
         PlayerNameDialogBoxComponent,
         GameInfosComponent,
@@ -49,7 +54,13 @@ import { ConfigPageComponent } from './pages/config-page/config-page.component';
         ConfigPageComponent,
         CreationGameDialogComponent,
         CanvasUnderButtonsComponent,
-        SoloGameViewDialogComponent,
+        GamePageDialogComponent,
+        WaitingForPlayerToJoinComponent,
+        CanvasTopButtonsComponent,
+        JoinedPlayerDialogComponent,
+        NavBarComponent,
+        ChatBoxComponent,
+        CanvasMiddleButtonsComponent,
     ],
     imports: [
         AppMaterialModule,
@@ -68,6 +79,7 @@ import { ConfigPageComponent } from './pages/config-page/config-page.component';
         RouterModule,
         MatGridListModule,
         MatExpansionModule,
+        MatSelectModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

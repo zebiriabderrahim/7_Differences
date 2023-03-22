@@ -1,30 +1,28 @@
 <div class="users-section">
-    <button mat-raised-button [routerLink]="configRoute">Retourner à la page de Configuration</button>
+    <div id="canvas-top-buttons">
+        <app-canvas-top-buttons></app-canvas-top-buttons>
+    </div>
     <div id="canvas-zone">
+        <canvas id="combined-canvas" [height]="canvasSizes.height" [width]="canvasSizes.width" #combinedCanvas></canvas>
         <app-image-canvas [position]="canvasPosition.Left"></app-image-canvas>
+        <app-canvas-middle-buttons id="middle-buttons"></app-canvas-middle-buttons>
         <app-image-canvas [position]="canvasPosition.Right"></app-image-canvas>
     </div>
 
     <p>L'image doit être de type <strong>bitmap 640 x 280 24 bits</strong></p>
-    <app-canvas-under-buttons [position]="canvasPosition.Both"></app-canvas-under-buttons>
+    <app-canvas-under-buttons [canvasPositionType]="canvasPosition.Both"></app-canvas-under-buttons>
 
     <div id="radio-buttons">
         <div>
             <p>Choisissez le rayon d'élargissement :</p>
-            <mat-radio-group color="primary" aria-label="Select an option" [(ngModel)]="radius">
-                <mat-radio-button *ngFor="let radius of radiusSizes" [value]="radius">{{ radius }}</mat-radio-button>
+            <mat-radio-group ngDefaultControl aria-label="Select an option" [(ngModel)]="radius">
+                <mat-radio-button color="primary" *ngFor="let radius of radiusSizes" [value]="radius">{{ radius
+                    }}</mat-radio-button>
             </mat-radio-group>
         </div>
     </div>
-    <button mat-raised-button name="validateButton" color="basic" matTooltip="Vous devez avoir téléversé deux images"
-        (click)="validateDifferences()">
+    <button mat-raised-button name="validateButton" color="primary" (click)="validateDifferences()">
         Valider les différences
     </button>
+    <button mat-raised-button [routerLink]="configRoute">Retourner à la page de Configuration</button>
 </div>
-
-<ng-template #imageNotSetDialog>
-    <button mat-button mat-dialog-close>Fermer</button>
-    <div mat-dialog-content>
-        <h1 mat-dialog-title>Veuillez mettre deux images</h1>
-    </div>
-</ng-template>

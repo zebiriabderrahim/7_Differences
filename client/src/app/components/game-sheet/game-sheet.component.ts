@@ -1,28 +1,132 @@
-import { Component, Input } from '@angular/core';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+// Id comes from database to allow _id
+/* eslint-disable no-underscore-dangle */
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { JoinedPlayerDialogComponent } from '@app/components/joined-player-dialog/joined-player-dialog.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
-import { GameCard } from '@app/interfaces/game-interfaces';
-import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
+import { WaitingForPlayerToJoinComponent } from '@app/components/waiting-player-to-join/waiting-player-to-join.component';
+import { CommunicationService } from '@app/services/communication-service/communication.service';
+import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
+import { GameCard } from '@common/game-interfaces';
+import { filter, Subscription, take } from 'rxjs';
 
 @Component({
     selector: 'app-game-sheet',
     templateUrl: './game-sheet.component.html',
     styleUrls: ['./game-sheet.component.scss'],
 })
-export class GameSheetComponent {
+export class GameSheetComponent implements OnDestroy, OnInit {
     @Input() game: GameCard;
-    constructor(public dialog: MatDialog, public router: Router, private classicSystemService: ClassicSystemService) {}
+    url: SafeResourceUrl;
+    private isAvailable: boolean;
+    private player: string;
+    private roomIdSubscription: Subscription;
+    private roomAvailabilitySubscription: Subscription;
+
+    // Services are needed for the dialog and dialog needs to talk to the parent component
+    // eslint-disable-next-line max-params
+    constructor(
+        private readonly dialog: MatDialog,
+        public router: Router,
+        private readonly roomManagerService: RoomManagerService,
+        private readonly communicationService: CommunicationService,
+        private sanitizer: DomSanitizer,
+    ) {}
+    ngOnInit(): void {
+        this.url = this.sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + this.game.thumbnail);
+        this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
+        this.roomAvailabilitySubscription = this.roomManagerService.oneVsOneRoomsAvailabilityByRoomId$
+            .pipe(filter((data) => data.gameId === this.game._id))
+            .subscribe((data) => {
+                this.isAvailable = data.isAvailableToJoin;
+            });
+    }
 
     openDialog() {
-        const dialogConfig = new MatDialogConfig();
-        dialogConfig.data = { disableClose: true };
-        const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent, dialogConfig);
-        dialogRef.afterClosed().subscribe((playerName) => {
-            if (playerName) {
-                this.classicSystemService['playerName'].next(playerName);
-                this.classicSystemService['id'].next(this.game.id);
-            }
+        const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent, {
+            data: { gameId: this.game._id },
+            disableClose: true,
         });
+        return dialogRef;
+    }
+
+    createSoloRoom(): void {
+        this.openDialog()
+            .afterClosed()
+            .pipe(filter((playerName) => !!playerName))
+            .subscribe((playerName) => {
+                this.player = playerName;
+                this.roomManagerService.createSoloRoom(this.game._id, playerName);
+            });
+    }
+
+    playSolo(): void {
+        this.createSoloRoom();
+        this.roomIdSubscription = this.roomManagerService.roomId$.pipe(filter((roomId) => !!roomId)).subscribe((roomId) => {
+            this.router.navigate(['/game', roomId, this.player]);
+        });
+    }
+
+    createOneVsOne(): void {
+        this.roomManagerService.updateRoomOneVsOneAvailability(this.game._id);
+        this.openDialog()
+            .afterClosed()
+            .subscribe((playerName: string) => {
+                if (playerName) {
+                    this.roomManagerService.createOneVsOneRoom(this.game._id);
+                    this.openWaitingDialog(playerName);
+                } else {
+                    this.roomManagerService.deleteCreatedOneVsOneRoom(this.game._id);
+                }
+            });
+        this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
+    }
+
+    joinOneVsOne(): void {
+        this.openDialog()
+            .afterClosed()
+            .subscribe((player2Name: string) => {
+                if (player2Name) {
+                    this.roomManagerService.updateWaitingPlayerNameList(this.game._id, player2Name);
+                    this.dialog.open(JoinedPlayerDialogComponent, {
+                        data: { gameId: this.game._id, player: player2Name },
+                        disableClose: true,
+                    });
+                }
+            });
+    }
+
+    openWaitingDialog(playerName: string): void {
+        this.roomIdSubscription = this.roomManagerService.roomId$
+            .pipe(
+                filter((roomId) => !!roomId),
+                take(1),
+            )
+            .subscribe((roomId) => {
+                this.dialog.open(WaitingForPlayerToJoinComponent, {
+                    data: { roomId, player: playerName, gameId: this.game._id },
+                    disableClose: true,
+                });
+            });
+    }
+
+    isAvailableToJoin(): boolean {
+        return this.isAvailable;
+    }
+
+    deleteGameCard() {
+        this.roomManagerService.gameCardDeleted(this.game._id);
+        this.communicationService.deleteGameById(this.game._id).subscribe(() => {
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+                this.router.navigate(['/config']);
+            });
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.roomIdSubscription?.unsubscribe();
+        this.roomAvailabilitySubscription?.unsubscribe();
     }
 }

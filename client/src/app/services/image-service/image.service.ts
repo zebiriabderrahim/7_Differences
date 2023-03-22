@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
+import { BACKGROUND_COLOR } from '@app/constants/drawing';
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { BLACK_PIXEL, N_PIXEL_ATTRIBUTE, WHITE_PIXEL } from '@app/constants/pixels';
 import { CanvasPosition } from '@app/enum/canvas-position';
-import { Coordinate } from '@app/interfaces/coordinate';
+import { ForegroundCanvasElements } from '@app/interfaces/foreground-canvas-elements';
 import { ImageSources } from '@app/interfaces/image-sources';
 import { GamePixels, Pixel } from '@app/interfaces/pixel';
+import { ForegroundService } from '@app/services/foreground-service/foreground.service';
+import { Coordinate } from '@common/coordinate';
 
 @Injectable({
     providedIn: 'root',
@@ -12,88 +15,99 @@ import { GamePixels, Pixel } from '@app/interfaces/pixel';
 export class ImageService {
     private leftBackgroundContext: CanvasRenderingContext2D;
     private rightBackgroundContext: CanvasRenderingContext2D;
-    private leftBackground: string;
-    private rightBackground: string;
+    private combinedContext: CanvasRenderingContext2D;
+    private leftImage: string;
+    private rightImage: string;
 
-    constructor() {
-        this.leftBackground = '';
-        this.rightBackground = '';
-    }
+    constructor(private readonly foregroundService: ForegroundService) {}
 
-    areImagesSet(): boolean {
-        return this.leftBackground !== '' && this.rightBackground !== '';
+    loadImage(context: CanvasRenderingContext2D, path: string) {
+        const image = new Image();
+        image.onload = async () => {
+            context.drawImage(await createImageBitmap(image), 0, 0);
+        };
+        image.src = path;
     }
 
     resetBackground(canvasPosition: CanvasPosition) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
-                this.resetLeftBackground();
+                this.resetBackgroundContext(this.leftBackgroundContext);
                 break;
             case CanvasPosition.Right:
-                this.resetRightBackground();
+                this.resetBackgroundContext(this.rightBackgroundContext);
                 break;
             case CanvasPosition.Both:
-                this.resetBothBackgrounds();
+                this.resetBackgroundContext(this.leftBackgroundContext);
+                this.resetBackgroundContext(this.rightBackgroundContext);
                 break;
         }
-    }
-
-    resetLeftBackground() {
-        this.leftBackground = '';
-        this.leftBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.leftBackgroundContext.drawImage(new Image(), 0, 0);
-    }
-
-    resetRightBackground() {
-        this.rightBackground = '';
-        this.rightBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.rightBackgroundContext.drawImage(new Image(), 0, 0);
-    }
-
-    resetBothBackgrounds() {
-        this.resetLeftBackground();
-        this.resetRightBackground();
     }
 
     setBackground(canvasPosition: CanvasPosition, image: ImageBitmap) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
-                this.setLeftBackground(image);
+                this.setBackgroundImage(image, this.leftBackgroundContext);
                 break;
             case CanvasPosition.Right:
-                this.setRightBackground(image);
+                this.setBackgroundImage(image, this.rightBackgroundContext);
                 break;
             case CanvasPosition.Both:
-                this.setLeftBackground(image);
-                this.setRightBackground(image);
+                this.setBackgroundImage(image, this.leftBackgroundContext);
+                this.setBackgroundImage(image, this.rightBackgroundContext);
                 break;
         }
     }
 
-    setLeftBackground(imageToDraw: ImageBitmap) {
-        this.leftBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.leftBackgroundContext.drawImage(imageToDraw, 0, 0);
-        this.leftBackground = this.leftBackgroundContext.canvas.toDataURL();
-    }
-
-    setRightBackground(imageToDraw: ImageBitmap) {
-        this.rightBackgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.rightBackgroundContext.drawImage(imageToDraw, 0, 0);
-        this.rightBackground = this.rightBackgroundContext.canvas.toDataURL();
+    setCombinedContext(context: CanvasRenderingContext2D) {
+        this.combinedContext = context;
     }
 
     setBackgroundContext(canvasPosition: CanvasPosition, context: CanvasRenderingContext2D) {
         switch (canvasPosition) {
             case CanvasPosition.Left:
                 this.leftBackgroundContext = context;
+                this.resetBackgroundContext(this.leftBackgroundContext);
                 break;
             case CanvasPosition.Right:
                 this.rightBackgroundContext = context;
+                this.resetBackgroundContext(this.rightBackgroundContext);
                 break;
         }
     }
 
-    transformImageDataToPixelArray(imageData: Uint8ClampedArray): Pixel[] {
+    drawDifferences(differenceContext: CanvasRenderingContext2D, differences: Coordinate[]): void {
+        const differencePixelArray = new Array(IMG_HEIGHT * IMG_WIDTH).fill(WHITE_PIXEL);
+        for (const difference of differences) {
+            differencePixelArray[difference.y * IMG_WIDTH + difference.x] = BLACK_PIXEL;
+        }
+        const differenceImageData = this.transformPixelArrayToImageData(differencePixelArray);
+        differenceContext.putImageData(new ImageData(differenceImageData, IMG_WIDTH, IMG_HEIGHT), 0, 0);
+    }
+
+    generateGamePixels(): GamePixels {
+        const foregroundCanvasElements: ForegroundCanvasElements = this.foregroundService.getForegroundCanvasElements();
+        return {
+            leftImage: this.generatePixels(foregroundCanvasElements.left, CanvasPosition.Left),
+            rightImage: this.generatePixels(foregroundCanvasElements.right, CanvasPosition.Right),
+        };
+    }
+
+    getImageSources(): ImageSources {
+        return { left: this.leftImage, right: this.rightImage };
+    }
+
+    private setBackgroundImage(imageToDraw: ImageBitmap, backgroundContext: CanvasRenderingContext2D) {
+        backgroundContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+        backgroundContext.drawImage(imageToDraw, 0, 0);
+    }
+
+    private resetBackgroundContext(backgroundContext: CanvasRenderingContext2D) {
+        backgroundContext.fillStyle = BACKGROUND_COLOR;
+        backgroundContext.fillRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    }
+
+    private transformImageDataToPixelArray(imageData: Uint8ClampedArray): Pixel[] {
         const pixelArray: Pixel[] = [];
         for (let i = 0; i < imageData.length; i += N_PIXEL_ATTRIBUTE) {
             const pixel: Pixel = {
@@ -107,7 +121,7 @@ export class ImageService {
         return pixelArray;
     }
 
-    transformPixelArrayToImageData(pixelArray: Pixel[]): Uint8ClampedArray {
+    private transformPixelArrayToImageData(pixelArray: Pixel[]): Uint8ClampedArray {
         const imageData = new Uint8ClampedArray(pixelArray.length * N_PIXEL_ATTRIBUTE);
         for (let i = 0; i < pixelArray.length; i++) {
             imageData[i * N_PIXEL_ATTRIBUTE] = pixelArray[i].red;
@@ -118,30 +132,28 @@ export class ImageService {
         return imageData;
     }
 
-    getLeftPixels(): Pixel[] {
-        const leftImageData = this.leftBackgroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data;
-        return this.transformImageDataToPixelArray(leftImageData);
+    private generatePixels(foregroundCanvas: HTMLCanvasElement, canvasPosition: CanvasPosition): Pixel[] {
+        const backgroundCanvas: HTMLCanvasElement =
+            canvasPosition === CanvasPosition.Left ? this.leftBackgroundContext.canvas : this.rightBackgroundContext.canvas;
+        this.combineCanvas(backgroundCanvas, foregroundCanvas);
+        this.setImage(canvasPosition, this.combinedContext.canvas.toDataURL());
+        const combinedCanvasData: Uint8ClampedArray = this.combinedContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data;
+        return this.transformImageDataToPixelArray(combinedCanvasData);
     }
 
-    getRightPixels(): Pixel[] {
-        const rightImageData = this.rightBackgroundContext.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT).data;
-        return this.transformImageDataToPixelArray(rightImageData);
-    }
-
-    getGamePixels(): GamePixels {
-        return { leftImage: this.getLeftPixels(), rightImage: this.getRightPixels() };
-    }
-
-    getImageSources(): ImageSources {
-        return { left: this.leftBackground, right: this.rightBackground };
-    }
-
-    drawDifferences(differenceContext: CanvasRenderingContext2D, differences: Coordinate[]): void {
-        const differencePixelArray = new Array(IMG_HEIGHT * IMG_WIDTH).fill(WHITE_PIXEL);
-        for (const difference of differences) {
-            differencePixelArray[difference.y * IMG_WIDTH + difference.x] = BLACK_PIXEL;
+    private setImage(canvasPosition: CanvasPosition, image: string) {
+        switch (canvasPosition) {
+            case CanvasPosition.Left:
+                this.leftImage = image;
+                break;
+            case CanvasPosition.Right:
+                this.rightImage = image;
+                break;
         }
-        const differenceImageData = this.transformPixelArrayToImageData(differencePixelArray);
-        differenceContext.putImageData(new ImageData(differenceImageData, IMG_WIDTH, IMG_HEIGHT), 0, 0);
+    }
+
+    private combineCanvas(firstCanvas: HTMLCanvasElement, secondCanvas: HTMLCanvasElement): void {
+        this.combinedContext.drawImage(firstCanvas, 0, 0);
+        this.combinedContext.drawImage(secondCanvas, 0, 0);
     }
 }

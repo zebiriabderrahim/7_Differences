@@ -12,15 +12,15 @@ export class Game {
 
     @ApiProperty()
     @Prop({ required: true })
-    original: string;
+    originalImage: string;
 
     @ApiProperty()
     @Prop({ required: true })
-    modified: string;
+    modifiedImage: string;
 
     @ApiProperty()
     @Prop({ required: true })
-    differencesCount: number;
+    nDifference: number;
 
     @ApiProperty()
     @Prop({ required: true })
