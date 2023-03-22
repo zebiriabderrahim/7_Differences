@@ -1,6 +1,7 @@
 import { Component, ElementRef, Input, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CanvasPosition } from '@app/enum/canvas-position';
+import { ForegroundService } from '@app/services/foreground-service/foreground.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ValidationService } from '@app/services/validation-service/validation.service';
 
@@ -10,41 +11,42 @@ import { ValidationService } from '@app/services/validation-service/validation.s
     styleUrls: ['./canvas-under-buttons.component.scss'],
 })
 export class CanvasUnderButtonsComponent {
-    @Input() position: CanvasPosition;
-    @ViewChild('uploadEl') uploadElRef: ElementRef;
+    @Input() canvasPositionType: CanvasPosition;
+    @ViewChild('uploadInput') uploadInput: ElementRef;
     @ViewChild('invalidImageDialog', { static: true })
     private readonly invalidImageDialog: TemplateRef<HTMLElement>;
-    readonly canvasPosition: typeof CanvasPosition = CanvasPosition;
+    readonly canvasPosition: typeof CanvasPosition;
 
+    // Services are needed for the dialog and dialog needs to talk to the parent component
+    // eslint-disable-next-line max-params
     constructor(
         private readonly imageService: ImageService,
+        private readonly foregroundService: ForegroundService,
         private readonly validationService: ValidationService,
         private readonly matDialog: MatDialog,
-    ) {}
+    ) {
+        this.canvasPosition = CanvasPosition;
+    }
 
     async onSelectFile(event: Event): Promise<void> {
         const target = event.target as HTMLInputElement;
         if (target.files && target.files[0]) {
             const file = target.files[0];
-            if (!this.validationService.isImageTypeValid(file)) {
-                this.matDialog.open(this.invalidImageDialog);
+            if (await this.validationService.isImageValid(file)) {
+                const image: ImageBitmap = await createImageBitmap(file);
+                this.imageService.setBackground(this.canvasPositionType, image);
+                this.uploadInput.nativeElement.value = '';
             } else {
-                await this.setImageIfValid(file);
+                this.matDialog.open(this.invalidImageDialog);
             }
         }
     }
 
-    async setImageIfValid(file: File): Promise<void> {
-        const image = await createImageBitmap(file);
-        if (this.validationService.isImageSizeValid(image) && this.validationService.isImageFormatValid(file)) {
-            this.imageService.setBackground(this.position, image);
-        } else {
-            this.matDialog.open(this.invalidImageDialog);
-        }
+    resetBackground(): void {
+        this.imageService.resetBackground(this.canvasPositionType);
     }
 
-    resetBackground(): void {
-        this.uploadElRef.nativeElement.value = '';
-        this.imageService.resetBackground(this.position);
+    resetForeground(): void {
+        this.foregroundService.resetForeground(this.canvasPositionType);
     }
 }

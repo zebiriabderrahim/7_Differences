@@ -1,0 +1,24 @@
+<div id="buttons">
+    <button mat-raised-button (click)="duplicateRightForeground()"
+    matTooltip="Dupliquer l'avant-plan de droite à gauche">
+        <mat-icon>arrow_backward</mat-icon>
+    </button>
+    <button mat-raised-button (click)="swapForegrounds()"
+    matTooltip="Permuter les deux avant-plans">
+        <mat-icon>swap_horiz</mat-icon>
+    </button>
+    <button mat-raised-button (click)="duplicateLeftForeground()"
+    matTooltip="Dupliquer l'avant-plan de gauche à droite">
+        <mat-icon>arrow_forward</mat-icon>
+    </button>
+    <div id="undo-redo-buttons">
+        <button mat-raised-button (click)="undoCanvasOperation()"
+        matTooltip="Annuler la dernière action posée">
+            <mat-icon>undo</mat-icon>
+        </button>
+        <button mat-raised-button (click)="redoCanvasOperation()" 
+        matTooltip="Refaire la dernière action annulée">
+            <mat-icon>redo</mat-icon>
+        </button>
+    </div>
+</div>

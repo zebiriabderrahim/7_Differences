@@ -1,7 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { CarouselPaginator, Game, GameConfigConst, GameDetails } from '@app/interfaces/game-interfaces';
-
+import { Game, GameDetails } from '@app/interfaces/game-interfaces';
+import { CarouselPaginator, GameConfigConst } from '@common/game-interfaces';
 import { CommunicationService } from './communication.service';
 
 describe('CommunicationService', () => {
@@ -40,7 +40,7 @@ describe('CommunicationService', () => {
             hasPrevious: false,
             gameCards: [
                 {
-                    id: '',
+                    _id: '',
                     name: '',
                     difficultyLevel: true,
                     soloTopTime: [],
@@ -120,5 +120,46 @@ describe('CommunicationService', () => {
         handleErrorFn({} as Error).subscribe((result) => {
             expect(result).toBeUndefined();
         });
+    });
+
+    it('should delete game with specific id when deleteGameById is called', () => {
+        const gameId = '123';
+
+        serviceComponent.deleteGameById(gameId).subscribe(() => {
+            expect().nothing();
+        });
+
+        const req = httpMock.expectOne(`${serviceComponent['gameUrl']}/${gameId}`);
+        expect(req.request.method).toBe('DELETE');
+
+        req.flush(null);
+    });
+
+    it('should return true if game exists', () => {
+        const gameName = 'test-game';
+        const expectedResponse = true;
+
+        serviceComponent.verifyIfGameExists(gameName).subscribe((res) => {
+            expect(res).toBe(expectedResponse);
+        });
+
+        const req = httpMock.expectOne(`${serviceComponent['gameUrl']}/?name=${gameName}`);
+        expect(req.request.method).toBe('GET');
+
+        req.flush(expectedResponse);
+    });
+
+    it('should return false if game does not exist', () => {
+        const gameName = 'test-game';
+        const expectedResponse = false;
+
+        serviceComponent.verifyIfGameExists(gameName).subscribe((res) => {
+            expect(res).toBe(expectedResponse);
+        });
+
+        const req = httpMock.expectOne(`${serviceComponent['gameUrl']}/?name=${gameName}`);
+        expect(req.request.method).toBe('GET');
+
+        req.flush(expectedResponse);
     });
 });

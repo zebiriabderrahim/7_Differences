@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/creation-page';
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { DifferenceService } from './difference.service';
 
 describe('DifferenceService', () => {
@@ -20,11 +20,11 @@ describe('DifferenceService', () => {
         service['differencePackages'] = [[difference]];
         service['visitedCoordinates'] = [[true]];
         service['differenceMatrix'] = [[true]];
-        service.resetAttributes();
+        service['resetAttributes']();
         expect(service['differences']).toEqual([]);
         expect(service['differencePackages']).toEqual([]);
-        expect(service['visitedCoordinates']).toEqual(service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT));
-        expect(service['differenceMatrix']).toEqual(service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT));
+        expect(service['visitedCoordinates']).toEqual(service['createFalseMatrix'](IMG_WIDTH, IMG_HEIGHT));
+        expect(service['differenceMatrix']).toEqual(service['createFalseMatrix'](IMG_WIDTH, IMG_HEIGHT));
     });
 
     it('getDifferences should return the differences', () => {
@@ -45,32 +45,32 @@ describe('DifferenceService', () => {
             [false, false],
             [false, false],
         ];
-        expect(service.createFalseMatrix(matrix.length, matrix[0].length)).toEqual(matrix);
+        expect(service['createFalseMatrix'](matrix.length, matrix[0].length)).toEqual(matrix);
     });
 
     it('isCoordinateValid should return true if the coordinate is valid', () => {
         const coordinate = { x: 300, y: 200 };
-        expect(service.isCoordinateValid(coordinate)).toBeTruthy();
+        expect(service['isCoordinateValid'](coordinate)).toBeTruthy();
     });
 
     it('isCoordinateValid should return false if the x coordinate is negative', () => {
         const coordinate = { x: -100, y: 200 };
-        expect(service.isCoordinateValid(coordinate)).toBeFalsy();
+        expect(service['isCoordinateValid'](coordinate)).toBeFalsy();
     });
 
     it('isCoordinateValid should return false if the x coordinate is greater than or equal to Image width', () => {
         const coordinate = { x: IMG_WIDTH + 2, y: 200 };
-        expect(service.isCoordinateValid(coordinate)).toBeFalsy();
+        expect(service['isCoordinateValid'](coordinate)).toBeFalsy();
     });
 
     it('isCoordinateValid should return false if the y coordinate is negative', () => {
         const coordinate = { x: 300, y: -100 };
-        expect(service.isCoordinateValid(coordinate)).toBeFalsy();
+        expect(service['isCoordinateValid'](coordinate)).toBeFalsy();
     });
 
     it('isCoordinateValid should return false if the y coordinate is greater than or equal to image height', () => {
         const coordinate = { x: 300, y: IMG_HEIGHT + 2 };
-        expect(service.isCoordinateValid(coordinate)).toBeFalsy();
+        expect(service['isCoordinateValid'](coordinate)).toBeFalsy();
     });
 
     it('findAdjacentCoords should return the correct list of adjacent coordinates', () => {
@@ -85,7 +85,7 @@ describe('DifferenceService', () => {
             { x: coord.x + 1, y: coord.y },
             { x: coord.x + 1, y: coord.y + 1 },
         ];
-        expect(service.findAdjacentCoords(coord)).toEqual(expectedAdjacentCoords);
+        expect(service['findAdjacentCoords'](coord)).toEqual(expectedAdjacentCoords);
     });
 
     it('generateDifferencesPackages should return differences grouped by proximity', () => {
@@ -96,7 +96,7 @@ describe('DifferenceService', () => {
             { x: 0, y: 40 },
         ];
 
-        service['differenceMatrix'] = service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        service['differenceMatrix'] = service['createFalseMatrix'](IMG_WIDTH, IMG_HEIGHT);
         service['differenceMatrix'][69][0] = true;
         service['differenceMatrix'][70][0] = true;
         service['differenceMatrix'][0][39] = true;
@@ -117,18 +117,18 @@ describe('DifferenceService', () => {
 
     it('breadthFirstSearch should return only the difference if it has no surrounding differences', () => {
         const difference = { x: 100, y: 100 };
-        expect(service.breadthFirstSearch(difference)).toEqual([difference]);
+        expect(service['breadthFirstSearch'](difference)).toEqual([difference]);
     });
 
     it('breadthFirstSearch should return difference and it connected differences', () => {
         const difference = { x: 100, y: 100 };
         const connectedDifferences = [difference, { x: 100, y: 101 }, { x: 100, y: 102 }, { x: 101, y: 103 }];
-        service['differenceMatrix'] = service.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        service['differenceMatrix'] = service['createFalseMatrix'](IMG_WIDTH, IMG_HEIGHT);
         service['differenceMatrix'][difference.x][difference.y] = true;
         connectedDifferences.forEach((connectedDifference) => {
             service['differenceMatrix'][connectedDifference.x][connectedDifference.y] = true;
         });
-        expect(service.breadthFirstSearch(difference)).toEqual(connectedDifferences);
+        expect(service['breadthFirstSearch'](difference)).toEqual(connectedDifferences);
     });
 
     it('generateDifferences should return differences of pixels', () => {
@@ -165,7 +165,7 @@ describe('DifferenceService', () => {
             { x: 301, y: 400 },
         ];
         const radius = 1;
-        expect(service.enlargeDifferences(differences, radius)).toEqual(enlargedDifferences);
+        expect(service['enlargeDifferences'](differences, radius)).toEqual(enlargedDifferences);
     });
 
     it('enlargeDifferences should not change differences if radius is zero', () => {
@@ -174,19 +174,19 @@ describe('DifferenceService', () => {
             { x: 300, y: 400 },
         ];
         const radius = 0;
-        expect(service.enlargeDifferences(differencesArray, radius)).toEqual(differencesArray);
+        expect(service['enlargeDifferences'](differencesArray, radius)).toEqual(differencesArray);
     });
 
     it('arePixelsDifferent should return true if the two pixels have different values', () => {
         const pixel1 = { red: 100, green: 200, blue: 150, alpha: 0 };
         const pixel2 = { red: 50, green: 100, blue: 200, alpha: 1 };
-        expect(service.arePixelsDifferent(pixel1, pixel2)).toBeTruthy();
+        expect(service['arePixelsDifferent'](pixel1, pixel2)).toBeTruthy();
     });
 
     it('arePixelsDifferent should return false if the two pixels have the same values', () => {
         const pixel1 = { red: 100, green: 200, blue: 150, alpha: 0 };
         const pixel2 = { red: 100, green: 200, blue: 150, alpha: 1 };
-        expect(service.arePixelsDifferent(pixel1, pixel2)).toBeFalsy();
+        expect(service['arePixelsDifferent'](pixel1, pixel2)).toBeFalsy();
     });
 
     it('isNumberOfDifferencesValid should return true if the number of differences is between 3 and 9 inclusive', () => {
