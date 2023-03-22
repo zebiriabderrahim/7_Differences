@@ -297,11 +297,11 @@ export class ClassicModeService {
         const playerNames = this.joinedPlayerNamesByGameId.get(gameId);
         const playerIndex = playerNames.findIndex((player) => player.playerId === playerId);
         if (playerIndex === -1) return;
-        const [, ...newPlayerNames] = playerNames.splice(playerIndex);
-        this.joinedPlayerNamesByGameId.set(gameId, newPlayerNames);
+        playerNames.splice(playerIndex, 1);
+        this.joinedPlayerNamesByGameId.set(gameId, playerNames);
         const waitingPlayerNameList: WaitingPlayerNameList = {
             gameId,
-            playerNamesList: newPlayerNames.map(({ name }) => name),
+            playerNamesList: playerNames.map(({ name }) => name),
         };
         server.emit(GameEvents.UpdateWaitingPlayerNameList, waitingPlayerNameList);
     }
