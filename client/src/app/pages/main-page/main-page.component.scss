@@ -43,7 +43,7 @@ header {
     position: relative;
     align-items: center;
     color: rgb(0, 0, 0);
-    background: linear-gradient(90deg, rgba(98, 98, 98, 1) 0%, rgba(150, 150, 150, 1) 47%, rgba(208, 208, 208, 1) 100%);
+    background: linear-gradient(90deg, rgba(125, 175, 156, 1) 0%, rgba(135, 185, 166, 1) 47%, rgba(145, 195, 176, 1) 100%);
 }
 
 .waves {
@@ -76,23 +76,6 @@ header {
     animation: spin 4s linear infinite;
 }
 
-@-moz-keyframes spin {
-    100% {
-        -moz-transform: rotate(360deg);
-    }
-}
-@-webkit-keyframes spin {
-    100% {
-        -webkit-transform: rotate(360deg);
-    }
-}
-@keyframes spin {
-    100% {
-        -webkit-transform: rotate(360deg);
-        transform: rotate(360deg);
-    }
-}
-
 section {
     align-items: center;
     background-color: white;
@@ -110,7 +93,7 @@ section {
 }
 
 button:hover {
-    background-color: #1778f2;
+    background-color: #5cbf99;
     color: white;
 }
 
