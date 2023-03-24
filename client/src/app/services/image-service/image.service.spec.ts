@@ -263,7 +263,7 @@ describe('ImageService', () => {
     it('loadImage should properly load an image', () => {
         const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d') as CanvasRenderingContext2D;
-        service.loadImage(context, 'assets/RatCoon.png');
+        service.loadImage(context, 'assets/raton.png');
         setTimeout(() => {
             timerCallback();
             // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- needed for test
