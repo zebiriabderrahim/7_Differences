@@ -44,8 +44,7 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
         this.configConstants.countdownTime = this.configForm.controls['countdownTime'].value;
         this.configConstants.penaltyTime = this.configForm.controls['penaltyTime'].value;
         this.configConstants.bonusTime = this.configForm.controls['bonusTime'].value;
-        this.configForm.reset();
-        this.configForm.markAsUntouched();
+        this.configForm.reset({ countdownTime: 30, penaltyTime: 5, bonusTime: 5 });
     }
 
     ngOnDestroy() {
