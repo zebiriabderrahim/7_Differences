@@ -30,30 +30,30 @@ export class HintService {
     private getHintQuadrant(differencesCoordinates: Coordinate[], quadrant: Quadrant): Quadrant {
         const subQuadrants: Quadrant[] = this.getSubQuadrants(quadrant);
         // TODO: fix duplicate halfzies
-        const halfWidth = (quadrant.topCorner.x - quadrant.bottomCorner.x) / 2;
-        const halfHeight = (quadrant.topCorner.y - quadrant.bottomCorner.y) / 2;
+        // const halfWidth = (quadrant.topCorner.x - quadrant.bottomCorner.x) / 2;
+        // const halfHeight = (quadrant.topCorner.y - quadrant.bottomCorner.y) / 2;
         const quadrants: QuadrantPosition[] = [];
-        for (let coord of differencesCoordinates) {
-            coord = { x: coord.x, y: quadrant.topCorner.y - coord.y };
-            if (coord.x > halfWidth) {
-                if (!quadrants.includes(QuadrantPosition.First) && coord.y > halfHeight) {
-                    console.log('first');
-                    console.log(coord);
-                    quadrants.push(QuadrantPosition.First);
-                } else if (!quadrants.includes(QuadrantPosition.Fourth) && coord.y > quadrant.bottomCorner.y) {
+        for (const coord of differencesCoordinates) {
+            // coord = { x: coord.x, y: quadrant.topCorner.y - coord.y };
+            if (coord.x > subQuadrants[QuadrantPosition.First].bottomCorner.x) {
+                if (!quadrants.includes(QuadrantPosition.Fourth) && coord.y > subQuadrants[QuadrantPosition.Fourth].bottomCorner.y) {
                     console.log('forth');
                     console.log(coord);
                     quadrants.push(QuadrantPosition.Fourth);
-                }
-            } else if (coord.x > quadrant.bottomCorner.x) {
-                if (!quadrants.includes(QuadrantPosition.Second) && coord.y > halfHeight) {
-                    console.log('second');
+                } else if (!quadrants.includes(QuadrantPosition.First) && coord.y > subQuadrants[QuadrantPosition.First].bottomCorner.y) {
+                    console.log('first');
                     console.log(coord);
-                    quadrants.push(QuadrantPosition.Second);
-                } else if (!quadrants.includes(QuadrantPosition.Third) && coord.y > quadrant.bottomCorner.y) {
+                    quadrants.push(QuadrantPosition.First);
+                }
+            } else if (coord.x > subQuadrants[QuadrantPosition.Second].bottomCorner.x) {
+                if (!quadrants.includes(QuadrantPosition.Third) && coord.y > subQuadrants[QuadrantPosition.Third].bottomCorner.x) {
                     console.log('third');
                     console.log(coord);
                     quadrants.push(QuadrantPosition.Third);
+                } else if (!quadrants.includes(QuadrantPosition.Second) && coord.y > subQuadrants[QuadrantPosition.Second].bottomCorner.x) {
+                    console.log('second');
+                    console.log(coord);
+                    quadrants.push(QuadrantPosition.Second);
                 }
             }
         }
@@ -90,6 +90,15 @@ export class HintService {
             }
         }
         return hintSquare;
+    }
+
+    private isPointInQuadrant(point: Coordinate, quadrant: Quadrant): boolean {
+        return (
+            point.x >= quadrant.bottomCorner.x &&
+            point.x <= quadrant.topCorner.x &&
+            point.y >= quadrant.bottomCorner.y &&
+            point.y <= quadrant.topCorner.y
+        );
     }
 
     private getSubQuadrants(quadrant: Quadrant): Quadrant[] {
