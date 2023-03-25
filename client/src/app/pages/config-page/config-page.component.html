@@ -11,22 +11,20 @@
             </mat-grid-tile>
             <mat-grid-tile
                 ><div class="game-constants">
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title> Constantes de jeu </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <ul>
-                            <p>
-                                Temps initial du compte à rebours : <strong>{{ configConstants.countdownTime }} secondes</strong>
-                            </p>
-                            <p>
-                                Temps de pénalité pour l’utilisation d’un indice : <strong>{{ configConstants.penaltyTime }} secondes</strong>
-                            </p>
-                            <p>
-                                Temps gagné avec la découverte d’une différence : <strong>{{ configConstants.bonusTime }} secondes</strong>
-                            </p>
-                        </ul>
-                    </mat-expansion-panel>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Temps initial du compte à rebours</mat-label>
+                        <input matInput [(ngModel)]="configConstants.countdownTime" [formControl]="form" required>
+                      </mat-form-field>
+                      <mat-form-field appearance="fill">
+                        <mat-label>Temps de pénalité pour l’utilisation d’un indice</mat-label>
+                        <input matInput [(ngModel)]="configConstants.penaltyTime" [formControl]="form" required> 
+                      </mat-form-field>
+                      <mat-form-field appearance="fill">
+                        <mat-label>Temps gagné avec la découverte d’une différence</mat-label>
+                        <input matInput [(ngModel)]="configConstants.bonusTime" [formControl]="form" required>
+                    </mat-form-field>
+                    <mat-error *ngIf="form.invalid">{{getErrorMessage()}}</mat-error>
+                    <button mat-raised-button type="submit">Enregistrer la configuration</button>
                 </div>
             </mat-grid-tile>
         </mat-grid-list>

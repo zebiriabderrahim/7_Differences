@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { GameConfigConst } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
@@ -9,13 +10,14 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./config-page.component.scss'],
 })
 export class ConfigPageComponent implements OnInit, OnDestroy {
+    form = new FormControl('', [Validators.required]);
     readonly createRoute: string;
     readonly homeRoute: string;
     configConstants: GameConfigConst;
     private communicationSubscription: Subscription;
 
     constructor(private readonly communicationService: CommunicationService) {
-        this.configConstants = { countdownTime: 0, penaltyTime: 0, bonusTime: 0 };
+        this.configConstants = { countdownTime: 0, penaltyTime: 5, bonusTime: 5 };
         this.homeRoute = '/home';
         this.createRoute = '/create';
     }
@@ -27,6 +29,19 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
             this.configConstants.bonusTime = res.bonusTime;
         });
     }
+
+    getErrorMessage() {
+        if (this.form.hasError('required')) {
+            return 'Il manque une valeur requise pour la configuration';
+        }
+        return;
+    }
+
+    // onSubmit() {
+    //     console.log('countdownTime:', this.configConstants.countdownTime);
+    //     console.log('penaltyTime:', this.configConstants.penaltyTime);
+    //     console.log('bonusTime:', this.configConstants.bonusTime);
+    // }
 
     ngOnDestroy() {
         this.communicationSubscription.unsubscribe();
