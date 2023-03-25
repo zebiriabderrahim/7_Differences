@@ -33,7 +33,7 @@
                             La valeur du bonus doit être comprise entre 0 et 10.
                           </mat-error> 
                         </mat-form-field>
-                        <button mat-raised-button type="submit">Enregistrer la configuration</button>
+                        <button mat-raised-button type="submit" [disabled]="configForm.invalid">Enregistrer la configuration</button>
                     </form>
                 </div>
             </mat-grid-tile>
