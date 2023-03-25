@@ -7,6 +7,7 @@ import { CANVAS_MEASUREMENTS } from '@app/constants/image';
 import { CanvasMeasurements } from '@app/interfaces/game-interfaces';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { Coordinate } from '@common/coordinate';
 import { ChatMessage, ClientSideGame, MessageTag, Players } from '@common/game-interfaces';
@@ -46,6 +47,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         private readonly gameAreaService: GameAreaService,
         private readonly classicService: ClassicSystemService,
         private readonly imageService: ImageService,
+        private readonly hintService: HintService,
         private readonly matDialog: MatDialog,
         private route: ActivatedRoute,
     ) {
@@ -62,8 +64,12 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     @HostListener('window:keydown', ['$event'])
     keyboardEvent(event: KeyboardEvent) {
         const eventHTMLElement = event.target as HTMLElement;
-        if (event.key === 't' && eventHTMLElement.tagName !== INPUT_TAG_NAME) {
-            this.gameAreaService.toggleCheatMode(this.cheatDifferences);
+        if (eventHTMLElement.tagName !== INPUT_TAG_NAME) {
+            if (event.key === 't') {
+                this.gameAreaService.toggleCheatMode(this.cheatDifferences);
+            } else if (event.key === 'i') {
+                this.hintService.requestHint();
+            }
         }
     }
 
