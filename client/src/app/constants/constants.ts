@@ -27,3 +27,5 @@ export const DEFAULT_PLAYERS = {
     player1: { name: '', diffData: { currentDifference: [], differencesFound: 0 } },
     player2: { name: '', diffData: { currentDifference: [], differencesFound: 0 } },
 };
+
+export const DEFAULT_N_HINTS = 3;
