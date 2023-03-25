@@ -31,7 +31,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     player: string;
     players: Players;
     readonly canvasSize: CanvasMeasurements;
-    private cheatDifferences: Coordinate[];
+    // private cheatDifferences: Coordinate[];
     private timerSub: Subscription;
     private gameSub: Subscription;
     private differenceSub: Subscription;
@@ -59,6 +59,10 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.player = '';
         this.players = DEFAULT_PLAYERS;
         this.canvasSize = CANVAS_MEASUREMENTS;
+    }
+
+    get cheatDifferences(): Coordinate[] {
+        return this.classicService.cheatDifferences;
     }
 
     @HostListener('window:keydown', ['$event'])
@@ -133,9 +137,9 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.opponentDifferenceSub = this.classicService.opponentDifferencesFound$.subscribe((opponentDifferencesFound) => {
             this.opponentDifferencesFound = opponentDifferencesFound;
         });
-        this.cheatDifferencesSub = this.classicService.cheatDifferences$.subscribe((cheatDifferences) => {
-            this.cheatDifferences = cheatDifferences;
-        });
+        // this.cheatDifferencesSub = this.classicService.cheatDifferences$.subscribe((cheatDifferences) => {
+        //     this.cheatDifferences = cheatDifferences;
+        // });
     }
 
     showAbandonDialog(): void {
