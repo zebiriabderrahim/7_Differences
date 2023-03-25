@@ -25,6 +25,11 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
             penaltyTime: ['', [Validators.required, Validators.min(0), Validators.max(10)]],
             bonusTime: ['', [Validators.required, Validators.min(0), Validators.max(10)]],
         });
+        this.configForm.patchValue({
+            countdownTime: this.configConstants.countdownTime,
+            penaltyTime: this.configConstants.penaltyTime,
+            bonusTime: this.configConstants.bonusTime,
+        });
     }
 
     ngOnInit() {
@@ -40,6 +45,7 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
         this.configConstants.penaltyTime = this.configForm.controls['penaltyTime'].value;
         this.configConstants.bonusTime = this.configForm.controls['bonusTime'].value;
         this.configForm.reset();
+        this.configForm.markAsUntouched();
     }
 
     ngOnDestroy() {
