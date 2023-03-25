@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./config-page.component.scss'],
 })
 export class ConfigPageComponent implements OnInit, OnDestroy {
-    constantsForm: FormGroup;
+    configForm: FormGroup;
     readonly createRoute: string;
     readonly homeRoute: string;
     configConstants: GameConfigConst;
@@ -20,7 +20,7 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
         this.configConstants = { countdownTime: 0, penaltyTime: 5, bonusTime: 5 };
         this.homeRoute = '/home';
         this.createRoute = '/create';
-        this.constantsForm = this.formBuilder.group({
+        this.configForm = this.formBuilder.group({
             countdownTime: ['', Validators.required],
             penaltyTime: ['', Validators.required],
             bonusTime: ['', Validators.required],
@@ -36,9 +36,10 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
     }
 
     onSubmit() {
-        this.configConstants.countdownTime = this.constantsForm.controls['countdownTime'].value;
-        this.configConstants.penaltyTime = this.constantsForm.controls['penaltyTime'].value;
-        this.configConstants.bonusTime = this.constantsForm.controls['bonusTime'].value;
+        this.configConstants.countdownTime = this.configForm.controls['countdownTime'].value;
+        this.configConstants.penaltyTime = this.configForm.controls['penaltyTime'].value;
+        this.configConstants.bonusTime = this.configForm.controls['bonusTime'].value;
+        this.configForm.reset();
     }
 
     ngOnDestroy() {

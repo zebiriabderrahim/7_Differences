@@ -11,7 +11,7 @@
             </mat-grid-tile>
             <mat-grid-tile
                 ><div class="game-constants">
-                    <form [formGroup]="constantsForm" (ngSubmit)="onSubmit()">
+                    <form [formGroup]="configForm" (ngSubmit)="onSubmit()">
                         <mat-form-field appearance="fill">
                           <mat-label>Temps initial du compte à rebours</mat-label>
                           <input matInput type="number" formControlName="countdownTime" required>
