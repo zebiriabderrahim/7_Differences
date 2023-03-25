@@ -11,20 +11,21 @@
             </mat-grid-tile>
             <mat-grid-tile
                 ><div class="game-constants">
-                    <mat-form-field appearance="fill">
-                        <mat-label>Temps initial du compte à rebours</mat-label>
-                        <input matInput [(ngModel)]="configConstants.countdownTime" [formControl]="form" required>
-                      </mat-form-field>
-                      <mat-form-field appearance="fill">
-                        <mat-label>Temps de pénalité pour l’utilisation d’un indice</mat-label>
-                        <input matInput [(ngModel)]="configConstants.penaltyTime" [formControl]="form" required> 
-                      </mat-form-field>
-                      <mat-form-field appearance="fill">
-                        <mat-label>Temps gagné avec la découverte d’une différence</mat-label>
-                        <input matInput [(ngModel)]="configConstants.bonusTime" [formControl]="form" required>
-                    </mat-form-field>
-                    <mat-error *ngIf="form.invalid">{{getErrorMessage()}}</mat-error>
-                    <button mat-raised-button type="submit">Enregistrer la configuration</button>
+                    <form [formGroup]="constantsForm" (ngSubmit)="onSubmit()">
+                        <mat-form-field appearance="fill">
+                          <mat-label>Temps initial du compte à rebours</mat-label>
+                          <input matInput type="number" formControlName="countdownTime" required>
+                        </mat-form-field>
+                        <mat-form-field appearance="fill">
+                          <mat-label>Temps de pénalité pour l’utilisation d’un indice</mat-label>
+                          <input matInput type="number" formControlName="penaltyTime" required> 
+                        </mat-form-field>
+                        <mat-form-field appearance="fill">
+                          <mat-label>Temps gagné avec la découverte d’une différence</mat-label>
+                          <input matInput type="number" formControlName="bonusTime" required>
+                        </mat-form-field>
+                        <button mat-raised-button type="submit">Enregistrer la configuration</button>
+                    </form>
                 </div>
             </mat-grid-tile>
         </mat-grid-list>
