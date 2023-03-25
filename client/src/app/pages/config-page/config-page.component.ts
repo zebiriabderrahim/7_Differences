@@ -17,13 +17,13 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
     private communicationSubscription: Subscription;
 
     constructor(private readonly communicationService: CommunicationService, private formBuilder: FormBuilder) {
-        this.configConstants = { countdownTime: 0, penaltyTime: 5, bonusTime: 5 };
+        this.configConstants = { countdownTime: 30, penaltyTime: 5, bonusTime: 5 };
         this.homeRoute = '/home';
         this.createRoute = '/create';
         this.configForm = this.formBuilder.group({
-            countdownTime: ['', Validators.required],
-            penaltyTime: ['', Validators.required],
-            bonusTime: ['', Validators.required],
+            countdownTime: ['', Validators.required, Validators.min(0), Validators.max(60)],
+            penaltyTime: ['', Validators.required, Validators.min(0), Validators.max(10)],
+            bonusTime: ['', Validators.required, Validators.min(0), Validators.max(10)],
         });
     }
 
