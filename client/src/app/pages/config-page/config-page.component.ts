@@ -21,9 +21,9 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
         this.homeRoute = '/home';
         this.createRoute = '/create';
         this.configForm = this.formBuilder.group({
-            countdownTime: ['', Validators.required, Validators.min(0), Validators.max(60)],
-            penaltyTime: ['', Validators.required, Validators.min(0), Validators.max(10)],
-            bonusTime: ['', Validators.required, Validators.min(0), Validators.max(10)],
+            countdownTime: ['', [Validators.required, Validators.min(0), Validators.max(60)]],
+            penaltyTime: ['', [Validators.required, Validators.min(0), Validators.max(10)]],
+            bonusTime: ['', [Validators.required, Validators.min(0), Validators.max(10)]],
         });
     }
 
