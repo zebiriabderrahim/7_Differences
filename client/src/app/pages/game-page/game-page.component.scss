@@ -1,8 +1,12 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+#game-page {
+  background-color: (#67A28B);
+  height: 1490px;
+}
 
 .canvas-container{
     position: relative;
@@ -46,17 +50,19 @@ canvas {
 img {
     width: 100%;
   }
+
   .infomations-header{
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: #7DAF9C;
     justify-content: center;
-    background-color: rgba(99, 84, 209, 0.148);
     color: black;
-    height: 10  ;
-    border-radius: 5px;
+    height: 10;
+    border-radius: 15px;
     padding: 10px;
-    margin: 20px;
+    margin: 0 20px 20px 20px;
+    border: solid (#67A28B);
 }
 .infomations-header h1{
     font-size: 30px;
