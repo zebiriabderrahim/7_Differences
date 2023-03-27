@@ -22,7 +22,7 @@ describe('SelectionPageComponent', () => {
     beforeEach(async () => {
         deletedGameIdMock = new BehaviorSubject<string>('idMock');
         // mockGameCard = { _id: '123', name: 'mockName', difficultyLevel: true, soloTopTime: [], oneVsOneTopTime: [], thumbnail: '' };
-        roomManagerService = jasmine.createSpyObj('RoomManagerService', ['handleRoomEvents', 'disconnect'], {
+        roomManagerService = jasmine.createSpyObj('RoomManagerService', ['handleRoomEvents', 'connect', 'disconnect'], {
             deletedGameId$: deletedGameIdMock,
         });
         await TestBed.configureTestingModule({
