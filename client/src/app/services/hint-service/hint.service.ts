@@ -56,16 +56,22 @@ export class HintService {
     }
 
     private generateAdjustedHintSquare(difference: Coordinate[]): Coordinate[] {
-        const adjustedQuadrant = {
-            bottomCorner: difference[0],
-            topCorner: difference[0],
-        };
+        let minX = difference[0].x;
+        let minY = difference[0].y;
+        let maxX = difference[0].x;
+        let maxY = difference[0].y;
+
         for (const coord of difference) {
-            adjustedQuadrant.bottomCorner.x = Math.min(adjustedQuadrant.bottomCorner.x, coord.x);
-            adjustedQuadrant.bottomCorner.y = Math.min(adjustedQuadrant.bottomCorner.y, coord.y);
-            adjustedQuadrant.topCorner.x = Math.max(adjustedQuadrant.topCorner.x, coord.x);
-            adjustedQuadrant.topCorner.y = Math.max(adjustedQuadrant.topCorner.y, coord.y);
+            minX = Math.min(minX, coord.x);
+            minY = Math.min(minY, coord.y);
+            maxX = Math.max(maxX, coord.x);
+            maxY = Math.max(maxY, coord.y);
         }
+
+        const adjustedQuadrant = {
+            bottomCorner: { x: minX, y: minY },
+            topCorner: { x: maxX, y: maxY },
+        };
         return this.generateHintSquare(adjustedQuadrant);
     }
 
