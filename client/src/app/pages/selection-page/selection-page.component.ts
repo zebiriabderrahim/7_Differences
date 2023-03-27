@@ -2,9 +2,11 @@
 /* eslint-disable no-underscore-dangle */
 import { AfterViewInit, Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { CarouselPaginator, GameCard } from '@common/game-interfaces';
+import { CarouselPaginator } from '@common/game-interfaces';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-selection-page',
@@ -17,59 +19,61 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
     readonly selectionRoute: string;
     readonly configRoute: string;
     private index: number;
+    private reloadSubscription: Subscription;
+    // Services are needed for the page and page needs to dialog component
+    // eslint-disable-next-line max-params
     constructor(
         private readonly communicationService: CommunicationService,
         public router: Router,
         private readonly roomManagerService: RoomManagerService,
+        private readonly clientSocket: ClientSocketService,
     ) {
         this.gameCarrousel = { hasNext: false, hasPrevious: false, gameCards: [] };
         this.homeRoute = '/home';
         this.selectionRoute = '/selection';
         this.configRoute = '/config';
         this.index = 0;
+        this.clientSocket.connect();
         this.roomManagerService.handleRoomEvents();
     }
 
     ngAfterViewInit(): void {
         this.loadGameCarrousel();
+        this.handleGameCardsUpdate();
     }
 
     loadGameCarrousel() {
         this.communicationService.loadGameCarrousel(this.index).subscribe((gameCarrousel) => {
             if (gameCarrousel) {
                 this.gameCarrousel = gameCarrousel;
-                this.handleGameCardDelete(this.gameCarrousel.gameCards);
             }
-        });
-    }
-
-    handleGameCardDelete(gameCards: GameCard[]) {
-        this.roomManagerService.deletedGameId$.subscribe((gameId) => {
-            this.gameCarrousel.gameCards = gameCards.filter((gameCard) => gameCard._id !== gameId);
         });
     }
 
     nextCarrousel() {
         if (this.gameCarrousel.hasNext) {
-            this.communicationService.loadGameCarrousel(++this.index).subscribe((gameCarrousel) => {
-                if (gameCarrousel) {
-                    this.gameCarrousel = gameCarrousel;
-                }
-            });
+            ++this.index;
+            this.loadGameCarrousel();
         }
     }
 
     previousCarrousel() {
         if (this.gameCarrousel.hasPrevious) {
-            this.communicationService.loadGameCarrousel(--this.index).subscribe((gameCarrousel) => {
-                if (gameCarrousel) {
-                    this.gameCarrousel = gameCarrousel;
-                }
-            });
+            --this.index;
+            this.loadGameCarrousel();
         }
     }
 
+    handleGameCardsUpdate() {
+        this.roomManagerService.isGameCardsNeedToBeReloaded$.subscribe((isGameCardsNeedToBeReloaded) => {
+            if (isGameCardsNeedToBeReloaded) {
+                this.index = 0;
+                this.loadGameCarrousel();
+            }
+        });
+    }
+
     ngOnDestroy(): void {
-        this.roomManagerService.disconnect();
+        this.reloadSubscription?.unsubscribe();
     }
 }
