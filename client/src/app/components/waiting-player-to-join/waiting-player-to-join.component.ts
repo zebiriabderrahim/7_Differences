@@ -18,6 +18,7 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
     actions: typeof GameCardActions;
     private playerNamesSubscription?: Subscription;
     private countdownSubscription: Subscription;
+    private deletedGameIdSubscription: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
@@ -31,17 +32,16 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         this.actions = GameCardActions;
     }
     ngOnInit(): void {
-        this.getJoinedPlayerNamesByGameId();
-        this.roomManagerService.deletedGameId$.pipe(filter((gameId) => gameId === this.data.gameId)).subscribe(() => {
-            this.countDownBeforeClosing();
-        });
+        this.roomManagerService.getJoinedPlayerNames(this.data.gameId);
+        this.loadPlayerNamesList();
+        this.handleGameCardDelete();
     }
 
-    getJoinedPlayerNamesByGameId(): void {
+    loadPlayerNamesList(): void {
         this.playerNamesSubscription = this.roomManagerService.joinedPlayerNamesByGameId$
-            .pipe(filter((data) => data.gameId === this.data.gameId && !!data.playerNamesList))
-            .subscribe((data) => {
-                this.playerNames = data.playerNamesList;
+            .pipe(filter((playerNamesList) => !!playerNamesList))
+            .subscribe((playerNamesList) => {
+                this.playerNames = playerNamesList;
             });
     }
 
@@ -50,22 +50,12 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
     }
 
     acceptPlayer(playerName: string) {
-        this.playerNames.forEach((player) => {
-            if (player !== playerName) {
-                this.refusePlayer(player);
-            }
-        });
-        this.roomManagerService.acceptPlayer(this.data.gameId, this.data.roomId, this.data.player);
-        this.dialogRef.afterClosed().subscribe(() => {
-            this.router.navigate(['/game', this.data.roomId, this.data.player]);
-        });
+        this.roomManagerService.acceptPlayer(this.data.gameId, this.data.roomId, playerName);
+        this.router.navigate(['/game']);
     }
 
     undoCreateOneVsOneRoom() {
-        this.roomManagerService.deleteCreatedOneVsOneRoom(this.data.gameId);
-        this.playerNames.forEach((player) => {
-            this.refusePlayer(player);
-        });
+        this.roomManagerService.deleteCreatedOneVsOneRoom(this.data.roomId);
     }
 
     countDownBeforeClosing() {
@@ -74,7 +64,7 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         const countdownObserver = {
             next: () => {
                 this.countdown--;
-                this.refusedMessage = `La fiche de jeu a été supprimée. Vous serez redirigé dans ${this.countdown} secondes`;
+                this.refusedMessage = `La fiche de jeu a été supprimée . Vous serez redirigé dans ${this.countdown} secondes`;
             },
             complete: () => {
                 this.dialogRef.close();
@@ -83,8 +73,17 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         this.countdownSubscription = countdown$.subscribe(countdownObserver);
     }
 
+    handleGameCardDelete() {
+        this.deletedGameIdSubscription = this.roomManagerService.deletedGameId$
+            .pipe(filter((gameId) => gameId === this.data.gameId))
+            .subscribe(() => {
+                this.countDownBeforeClosing();
+            });
+    }
+
     ngOnDestroy(): void {
         this.playerNamesSubscription?.unsubscribe();
         this.countdownSubscription?.unsubscribe();
+        this.deletedGameIdSubscription?.unsubscribe();
     }
 }

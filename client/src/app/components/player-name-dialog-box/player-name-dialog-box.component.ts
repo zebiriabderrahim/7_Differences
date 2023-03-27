@@ -1,17 +1,18 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { AsyncValidatorFn, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MAX_NAME_LENGTH, MIN_NAME_LENGTH } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { filter, firstValueFrom } from 'rxjs';
+import { filter, firstValueFrom, Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-player-name-dialog-box',
     templateUrl: './player-name-dialog-box.component.html',
     styleUrls: ['./player-name-dialog-box.component.scss'],
 })
-export class PlayerNameDialogBoxComponent implements OnInit {
+export class PlayerNameDialogBoxComponent implements OnInit, OnDestroy {
     playerNameForm: FormGroup;
+    private roomAvailabilitySubscription: Subscription;
 
     constructor(
         private dialogRef: MatDialogRef<PlayerNameDialogBoxComponent>,
@@ -31,6 +32,9 @@ export class PlayerNameDialogBoxComponent implements OnInit {
             }),
         });
     }
+    ngOnDestroy(): void {
+        this.roomAvailabilitySubscription?.unsubscribe();
+    }
 
     ngOnInit(): void {
         this.handleCreateUndoCreation(this.data.gameId);
@@ -43,9 +47,11 @@ export class PlayerNameDialogBoxComponent implements OnInit {
     }
 
     handleCreateUndoCreation(gameId: string) {
-        this.roomManagerService.gameIdOfRoomToBeDeleted$.pipe(filter((id) => id === gameId)).subscribe(() => {
-            this.dialogRef.close();
-        });
+        this.roomAvailabilitySubscription = this.roomManagerService.oneVsOneRoomsAvailabilityByRoomId$
+            .pipe(filter((roomAvailability) => roomAvailability.gameId === gameId && !roomAvailability.isAvailableToJoin))
+            .subscribe(() => {
+                this.dialogRef.close();
+            });
     }
 
     async validatePlayerName(control: FormControl): Promise<{ [key: string]: unknown } | null> {
