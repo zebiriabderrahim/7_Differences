@@ -14,13 +14,25 @@ export class HintService {
         this.nAvailableHints = DEFAULT_N_HINTS;
     }
 
+    get differences(): Coordinate[][] {
+        return this.classicSystem.differences;
+    }
+
     requestHint() {
-        if (this.nAvailableHints > 0) {
-            let hintQuadrant = this.getHintQuadrant(this.classicSystem.cheatDifferences, INITIAL_QUADRANT);
-            if (this.nAvailableHints === DEFAULT_N_HINTS - 1) {
-                hintQuadrant = this.getHintQuadrant(this.classicSystem.cheatDifferences, hintQuadrant);
+        if (this.nAvailableHints > 0 && this.differences.length > 0) {
+            let hintSquare: Coordinate[] = [];
+            const differenceIndex: number = this.differences.length > 1 ? this.generateRandomNumber(0, this.differences.length - 1) : 0;
+            const difference: Coordinate[] = this.differences[differenceIndex];
+            if (this.nAvailableHints === 1) {
+                hintSquare = this.generateAdjustedHintSquare(difference);
+            } else {
+                let hintQuadrant = this.getHintQuadrant(difference, INITIAL_QUADRANT);
+                if (this.nAvailableHints === DEFAULT_N_HINTS - 1) {
+                    hintQuadrant = this.getHintQuadrant(difference, hintQuadrant);
+                }
+                hintSquare = this.generateHintSquare(hintQuadrant);
             }
-            this.gameAreaService.flashCorrectPixels(this.generateHintSquare(hintQuadrant));
+            this.gameAreaService.flashCorrectPixels(hintSquare);
             this.nAvailableHints--;
         }
     }
@@ -45,6 +57,26 @@ export class HintService {
 
     private generateRandomNumber(min: number, max: number) {
         return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    private generateAdjustedHintSquare(difference: Coordinate[]): Coordinate[] {
+        const adjustedQuadrant = {
+            bottomCorner: difference[0],
+            topCorner: difference[0],
+        };
+        for (const coord of difference) {
+            if (coord.x < adjustedQuadrant.bottomCorner.x) {
+                adjustedQuadrant.bottomCorner.x = coord.x;
+            } else if (coord.x > adjustedQuadrant.topCorner.x) {
+                adjustedQuadrant.topCorner.x = coord.x;
+            }
+            if (coord.y < adjustedQuadrant.bottomCorner.y) {
+                adjustedQuadrant.bottomCorner.y = coord.y;
+            } else if (coord.y > adjustedQuadrant.topCorner.y) {
+                adjustedQuadrant.topCorner.y = coord.y;
+            }
+        }
+        return this.generateHintSquare(adjustedQuadrant);
     }
 
     private generateHintSquare(quadrant: Quadrant): Coordinate[] {

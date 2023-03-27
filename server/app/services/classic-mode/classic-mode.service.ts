@@ -5,8 +5,8 @@
 import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
+import { CHARACTERS, KEY_SIZE } from '@common/constants';
 import { Coordinate } from '@common/coordinate';
-import { KEY_SIZE, CHARACTERS } from '@common/constants';
 import {
     ChatMessage,
     ClassicPlayRoom,
@@ -116,9 +116,7 @@ export class ClassicModeService {
             currentDifference: diffData.currentDifference,
             differencesFound: diffData.differencesFound,
         };
-        server
-            .to(room.roomId)
-            .emit(GameEvents.RemoveDiff, { differencesData, playerId: socket.id, cheatDifferences: room.originalDifferences.flat() });
+        server.to(room.roomId).emit(GameEvents.RemoveDiff, { differencesData, playerId: socket.id, cheatDifferences: room.originalDifferences });
     }
 
     buildClientGameVersion(game: Game): ClientSideGame {
