@@ -35,6 +35,7 @@ describe('SelectionPageComponent', () => {
                     provide: CommunicationService,
                     useValue: jasmine.createSpyObj('CommunicationService', {
                         loadGameCarrousel: of({ hasNext: false, hasPrevious: false, gameCards: [] }),
+                        handleGameCardsUpdate: of({ hasNext: false, hasPrevious: false, gameCards: [] }),
                     }),
                 },
                 { provide: RoomManagerService, useValue: roomManagerService },
