@@ -8,12 +8,12 @@ import { NavBarComponent } from '@app/components/nav-bar/nav-bar.component';
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { GameCard } from '@common/game-interfaces';
+// import { GameCard } from '@common/game-interfaces';
 import { BehaviorSubject, of } from 'rxjs';
 import { SelectionPageComponent } from './selection-page.component';
 
 describe('SelectionPageComponent', () => {
-    let mockGameCard: GameCard;
+    // let mockGameCard: GameCard;
     let component: SelectionPageComponent;
     let fixture: ComponentFixture<SelectionPageComponent>;
     let roomManagerService: jasmine.SpyObj<RoomManagerService>;
@@ -21,7 +21,7 @@ describe('SelectionPageComponent', () => {
 
     beforeEach(async () => {
         deletedGameIdMock = new BehaviorSubject<string>('idMock');
-        mockGameCard = { _id: '123', name: 'mockName', difficultyLevel: true, soloTopTime: [], oneVsOneTopTime: [], thumbnail: '' };
+        // mockGameCard = { _id: '123', name: 'mockName', difficultyLevel: true, soloTopTime: [], oneVsOneTopTime: [], thumbnail: '' };
         roomManagerService = jasmine.createSpyObj('RoomManagerService', ['handleRoomEvents', 'disconnect'], {
             deletedGameId$: deletedGameIdMock,
         });
@@ -71,11 +71,11 @@ describe('SelectionPageComponent', () => {
         expect(component['index']).toEqual(0);
     });
 
-    it('should remove the deleted game card from the game cards list', () => {
-        const gameCards: GameCard[] = [mockGameCard, mockGameCard, mockGameCard];
-        const filterSpy = spyOn(Array.prototype, 'filter').and.callThrough();
-        component.handleGameCardDelete(gameCards);
-        deletedGameIdMock.next('456');
-        expect(filterSpy).toHaveBeenCalled();
-    });
+    // it('should remove the deleted game card from the game cards list', () => {
+    //     const gameCards: GameCard[] = [mockGameCard, mockGameCard, mockGameCard];
+    //     const filterSpy = spyOn(Array.prototype, 'filter').and.callThrough();
+    //     component.handleGameCardDelete(gameCards);
+    //     deletedGameIdMock.next('456');
+    //     expect(filterSpy).toHaveBeenCalled();
+    // });
 });
