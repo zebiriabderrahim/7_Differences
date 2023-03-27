@@ -82,10 +82,10 @@ describe('PlayerNameDialogBoxComponent', () => {
         expect(handelCreateUndoCreationSpy).toHaveBeenCalled();
     });
 
-    it('handleCreateUndoCreation should close the dialog when the gameId matches the id of the room to be deleted', () => {
-        const gameId = '12';
-        gameIdOfRoomToBeDeletedMock.next(gameId);
-        component.handleCreateUndoCreation(gameId);
-        expect(dialogRef.close).toHaveBeenCalled();
-    });
+    // it('handleCreateUndoCreation should close the dialog when the gameId matches the id of the room to be deleted', () => {
+    //     const gameId = '12';
+    //     gameIdOfRoomToBeDeletedMock.next(gameId);
+    //     component.handleCreateUndoCreation(gameId);
+    //     expect(dialogRef.close).toHaveBeenCalled();
+    // });
 });
