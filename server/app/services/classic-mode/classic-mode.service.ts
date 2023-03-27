@@ -7,6 +7,7 @@ import { GameService } from '@app/services/game/game.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
 import { Coordinate } from '@common/coordinate';
+import { KEY_SIZE, CHARACTERS } from '@common/constants';
 import {
     ChatMessage,
     ClassicPlayRoom,
@@ -159,6 +160,7 @@ export class ClassicModeService {
         const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
         if (room && room.clientGame.differencesCount === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicSolo) {
             room.endMessage = `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo!`;
+    
             server.to(roomId).emit(GameEvents.EndGame, room.endMessage);
             this.rooms.delete(roomId);
         } else if (
@@ -253,11 +255,9 @@ export class ClassicModeService {
         }
     }
     private generateRoomId(): string {
-        const KEY_SIZE = 36;
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let id = '';
         for (let i = 0; i < KEY_SIZE; i++) {
-            id += characters.charAt(Math.floor(Math.random() * characters.length));
+            id += CHARACTERS.charAt(Math.floor(Math.random() * CHARACTERS.length));
         }
         return id;
     }

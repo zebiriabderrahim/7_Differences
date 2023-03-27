@@ -13,7 +13,7 @@ export class MainPageComponent {
     readonly teamNumber: string;
     readonly teammateNameList: string[];
     constructor() {
-        this.gameTitle = 'Rat-Coon Game';
+        this.gameTitle = '7 Différences';
         this.gameRoute = '/game';
         this.selectionRoute = '/selection';
         this.configRoute = '/config';
