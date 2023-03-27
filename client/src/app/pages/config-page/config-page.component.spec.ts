@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,7 +18,15 @@ describe('ConfigPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule, MatGridListModule, MatExpansionModule, BrowserAnimationsModule, HttpClientTestingModule, MatIconModule],
+            imports: [
+                RouterTestingModule,
+                MatGridListModule,
+                MatExpansionModule,
+                BrowserAnimationsModule,
+                HttpClientTestingModule,
+                MatIconModule,
+                ReactiveFormsModule,
+            ],
             declarations: [ConfigPageComponent, SelectionPageComponent, NavBarComponent],
             providers: [CommunicationService],
         }).compileComponents();
