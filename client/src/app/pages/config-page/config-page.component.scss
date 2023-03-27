@@ -20,9 +20,21 @@
     text-align: center;
 }
 
-.game-constants {
-    margin-left: 100%;
-    margin-right: 100%;
+.mat-form-field {
+    display: block;
+    margin-bottom: 10px; /* Espacement entre les champs */
+}
+  
+.mat-label {
+    font-size: 0.2rem; /* Taille de police pour les labels */
+}
+
+.mat-hint {
+    font-size: 0.5rem; /* Taille de police pour les hints */
+}
+
+.mat-error {
+    font-size: 0.5rem; /* Taille de police pour les erreurs */
 }
 
 .upper-list-game {
