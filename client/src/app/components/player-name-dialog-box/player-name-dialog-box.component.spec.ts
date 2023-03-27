@@ -20,6 +20,8 @@ describe('PlayerNameDialogBoxComponent', () => {
         roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['isPlayerNameIsAlreadyTaken', 'isNameTaken$'], {
             isNameTaken$: mockIsNameTaken,
             gameIdOfRoomToBeDeleted$: gameIdOfRoomToBeDeletedMock,
+            oneVsOneRoomsAvailabilityByRoomId$: new BehaviorSubject({ gameId: '1', isAvailableToJoin: true }),
+            deletedGameId$: new BehaviorSubject<string>('12'),
         });
         await TestBed.configureTestingModule({
             imports: [ReactiveFormsModule],

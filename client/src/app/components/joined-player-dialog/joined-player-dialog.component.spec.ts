@@ -33,7 +33,7 @@ describe('JoinedPlayerDialogComponent', () => {
         routerSpy = jasmine.createSpyObj('RouterTestingModule', ['navigate']);
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['close', 'afterClosed']);
         dialogRefSpy.afterClosed.and.returnValue(of('dialog closed'));
-        roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['cancelJoining'], {
+        roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['cancelJoining', 'getSocketId'], {
             joinedPlayerNamesByGameId$: joinedPlayerNamesMock,
             acceptedPlayerByRoom$: acceptPlayerNamesMock,
             deletedGameId$: deletedGameIdMock,
@@ -83,6 +83,7 @@ describe('JoinedPlayerDialogComponent', () => {
 
     it('should start countdown and show message if player is not in playerNames', fakeAsync(() => {
         component['data'] = { gameId: 'Charlie', player: 'testPlayer' };
+        roomManagerServiceSpy.getSocketId.and.returnValue('Charlie');
         // const playerNames = ['Alice', 'Charlie'];
         component.handleRefusedPlayer();
         expect(component.countdown).toBe(TEN_SECONDS);
