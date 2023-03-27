@@ -21,20 +21,20 @@
 }
 
 .mat-form-field {
-    display: block;
-    margin-bottom: 10px; /* Espacement entre les champs */
+    padding-left: 10px;
+    margin-bottom: 25px; /* Espacement entre les champs */
 }
   
 .mat-label {
-    font-size: 0.2rem; /* Taille de police pour les labels */
+    font-size: 0.7rem; /* Taille de police pour les labels */
 }
 
 .mat-hint {
-    font-size: 0.5rem; /* Taille de police pour les hints */
+    font-size: 0.7rem; /* Taille de police pour les hints */
 }
 
 .mat-error {
-    font-size: 0.5rem; /* Taille de police pour les erreurs */
+    font-size: 0.7rem; /* Taille de police pour les erreurs */
 }
 
 .upper-list-game {
