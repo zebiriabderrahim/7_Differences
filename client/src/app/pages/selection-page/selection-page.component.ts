@@ -2,7 +2,6 @@
 /* eslint-disable no-underscore-dangle */
 import { AfterViewInit, Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { CarouselPaginator } from '@common/game-interfaces';
@@ -20,20 +19,17 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
     readonly configRoute: string;
     private index: number;
     private reloadSubscription: Subscription;
-    // Services are needed for the page and page needs to dialog component
-    // eslint-disable-next-line max-params
     constructor(
         private readonly communicationService: CommunicationService,
         public router: Router,
         private readonly roomManagerService: RoomManagerService,
-        private readonly clientSocket: ClientSocketService,
     ) {
         this.gameCarrousel = { hasNext: false, hasPrevious: false, gameCards: [] };
         this.homeRoute = '/home';
         this.selectionRoute = '/selection';
         this.configRoute = '/config';
         this.index = 0;
-        this.clientSocket.connect();
+        this.roomManagerService.connect();
         this.roomManagerService.handleRoomEvents();
     }
 
@@ -65,7 +61,7 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
     }
 
     handleGameCardsUpdate() {
-        this.roomManagerService.isGameCardsNeedToBeReloaded$.subscribe((isGameCardsNeedToBeReloaded) => {
+        this.reloadSubscription = this.roomManagerService.isReloadNeeded$.subscribe((isGameCardsNeedToBeReloaded) => {
             if (isGameCardsNeedToBeReloaded) {
                 this.index = 0;
                 this.loadGameCarrousel();
@@ -74,6 +70,7 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.reloadSubscription?.unsubscribe();
         this.reloadSubscription?.unsubscribe();
     }
 }
