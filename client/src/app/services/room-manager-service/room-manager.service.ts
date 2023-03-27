@@ -1,11 +1,12 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
-import { AcceptedPlayer, GameEvents, PlayerNameAvailability, RoomAvailability, WaitingPlayerNameList } from '@common/game-interfaces';
+import { AcceptedPlayer, GameEvents, GameHistory, PlayerNameAvailability, RoomAvailability, WaitingPlayerNameList } from '@common/game-interfaces';
 import { BehaviorSubject, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class RoomManagerService implements OnDestroy {
+    gameHistory: GameHistory[];
     private joinedPlayerNames: Subject<WaitingPlayerNameList>;
     private isPlayerNameTaken: Subject<PlayerNameAvailability>;
     private oneVsOneRoomsAvailabilityByGameId: Subject<RoomAvailability>;
@@ -26,6 +27,392 @@ export class RoomManagerService implements OnDestroy {
         this.oneVsOneRoomsAvailabilityByGameId = new Subject<RoomAvailability>();
         this.gameIdOfRoomToBeDeleted = new Subject<string>();
         this.deletedGameId = new Subject<string>();
+        this.gameHistory = [
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+            {
+                date: '2023-09-01',
+                startingHour: '00:00',
+                duration: '00:00',
+                gameMode: 'classic',
+                player1: {
+                    name: 'yomama',
+                    isWinner: true,
+                    isQuitter: false,
+                },
+                player2: {
+                    name: 'bloop',
+                    isWinner: false,
+                    isQuitter: true,
+                },
+            },
+        ];
     }
 
     get joinedPlayerNamesByGameId$() {
