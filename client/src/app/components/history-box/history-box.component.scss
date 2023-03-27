@@ -1,23 +1,16 @@
-#chat-box {
+#history-box {
     display: flex;
     position: relative;
-    width: auto;
+    width: 400px;
     height: 550px;
     background: #e6eaea;
   }
-  #chat-box .content {
+  #history-box .content {
     width: 100%;
     height: 100%;
     overflow: hidden;
     position: relative;
     
-  }
-  #chat-box .content .messages::-webkit-scrollbar {
-    width: 8px;
-    background: transparent;
-  }
-  #chat-box .content .messages::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.3);
   }
   
   .playersInfo {
@@ -29,7 +22,7 @@
     }
   }
 
-  #chat-box .content .messages {
+  #history-box .content {
     height: 100%;
     overflow-y: auto;
 }

@@ -38,11 +38,6 @@ export class RoomManagerService implements OnDestroy {
                     isWinner: true,
                     isQuitter: false,
                 },
-                player2: {
-                    name: 'bloop',
-                    isWinner: false,
-                    isQuitter: true,
-                },
             },
             {
                 date: '2023-09-01',
