@@ -1,6 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DEFAULT_BONUS_VALUE, DEFAULT_COUNTDOWN_VALUE, DEFAULT_PENALTY_VALUE, MAX_TIME, MIN_TIME } from '@app/constants/constants';
+import {
+    DEFAULT_BONUS_VALUE,
+    DEFAULT_COUNTDOWN_VALUE,
+    DEFAULT_PENALTY_VALUE,
+    MAX_BONUS_TIME,
+    MAX_COUNTDOWN_TIME,
+    MAX_PENALTY_TIME,
+    MIN_TIME,
+} from '@app/constants/constants';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { GameConfigConst } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
@@ -22,9 +30,9 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
         this.homeRoute = '/home';
         this.createRoute = '/create';
         this.configForm = this.formBuilder.group({
-            countdownTime: ['', [Validators.required, Validators.min(MIN_TIME), Validators.max(MAX_TIME)]],
-            penaltyTime: ['', [Validators.required, Validators.min(MIN_TIME), Validators.max(MAX_TIME)]],
-            bonusTime: ['', [Validators.required, Validators.min(MIN_TIME), Validators.max(MAX_TIME)]],
+            countdownTime: ['', [Validators.required, Validators.min(MIN_TIME), Validators.max(MAX_COUNTDOWN_TIME)]],
+            penaltyTime: ['', [Validators.required, Validators.min(MIN_TIME), Validators.max(MAX_PENALTY_TIME)]],
+            bonusTime: ['', [Validators.required, Validators.min(MIN_TIME), Validators.max(MAX_BONUS_TIME)]],
         });
         this.configForm.patchValue({
             countdownTime: this.configConstants.countdownTime,
