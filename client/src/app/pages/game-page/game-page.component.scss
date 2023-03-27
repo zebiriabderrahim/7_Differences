@@ -3,47 +3,57 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+.justified {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+}
+
 #game-page {
   background-color: (#67A28B);
-  height: 1490px;
+  width: 100%;
+  height: 100%;
 }
 
 .canvas-container{
-    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: relative;
+    height: 100%;
+    flex-direction: row;
 }
 
 .game-canvas {
     position: relative;
-    margin: 20px;
+    margin: 30px;
     height: 480px;
     width: 640px;
     display: inline-block;
 }
 
 canvas {
-    border: 3px solid black;
+    position: absolute;
+    border: 5px solid black;
+    border-radius: 15px;
     left: 0;
     top: 0;
-    position: absolute;
 }
 
 #original {
-  z-index: 0;
+  z-index: 1;
 }
 
 #originalFG {
-  z-index: 1;
+  z-index: 2;
 }
 
 #modified {
-  z-index: 0;
+  z-index: 1;
 }
 #modifiedFG {
-  z-index: 1;
+  z-index: 2;
 }
 
 
@@ -76,7 +86,8 @@ img {
 }
 
 .importantButton{
-  width: 450px;
+  cursor: pointer;
+  width: 370px;
   height: 70px;
   padding: 0.5em 1.7em;
   margin: 0 0.1em 0.1em 0.5em;
@@ -111,12 +122,6 @@ img {
   opacity: .5;
 }
 
-app-chat-box {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-}
-
 .personIcon {
   width: 35px;
   height: 35px;
@@ -125,5 +130,7 @@ app-chat-box {
 app-chat-box{
   position: absolute;
   left: 35.75%;
+  bottom: 15%;
+  z-index: 0;
 }
 

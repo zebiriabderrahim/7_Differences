@@ -1,5 +1,5 @@
-<div id = "game-page">
-    <div *ngIf="game" class="information-header">
+<div id = "game-page" class = "justified">
+    <div *ngIf="game" class="information-header justified">
         <h1>{{ game.name }}</h1>
         <div class="game-feedback">
             <mat-icon class="personIcon">person</mat-icon>
@@ -19,7 +19,7 @@
         <app-game-infos [game]="game" [differencesCount]="game.differencesCount"></app-game-infos>
     </div>
     <div class="canvas-container">
-        <div class="game-canvas">
+        <div class="game-canvas justified">
             <canvas
                 id="originalFG"
                 [attr.height]="canvasSize.height"
@@ -52,8 +52,8 @@
             ></canvas>
         </div>
     </div>
-    <button class="importantButton" (click)="showAbandonDialog()">Abandonner la partie</button>
-    <div *ngIf="game">
-        <app-chat-box (add)="addRightSideMessage($event)" [messages]="messages" [gameMode]="game.mode"></app-chat-box>
-    </div>
+    <button class="importantButton justified" (click)="showAbandonDialog()">Abandonner la partie</button>
+</div>
+<div *ngIf="game">
+    <app-chat-box (add)="addRightSideMessage($event)" [messages]="messages" [gameMode]="game.mode"></app-chat-box>
 </div>
