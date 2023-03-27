@@ -10,6 +10,7 @@ import { CanvasMeasurements, GameDetails } from '@app/interfaces/game-interfaces
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { ForegroundService } from '@app/services/foreground-service/foreground.service';
 import { ImageService } from '@app/services/image-service/image.service';
+import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 
 @Component({
     selector: 'app-root',
@@ -32,6 +33,7 @@ export class CreationPageComponent implements AfterViewInit {
         private readonly matDialog: MatDialog,
         private readonly communicationService: CommunicationService,
         private readonly router: Router,
+        private readonly roomManagerService: RoomManagerService,
     ) {
         this.radiusSizes = RADIUS_SIZES;
         this.radius = DEFAULT_RADIUS;
@@ -78,9 +80,8 @@ export class CreationPageComponent implements AfterViewInit {
             .subscribe((game: GameDetails) => {
                 if (game) {
                     this.communicationService.postGame(game).subscribe(() => {
-                        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-                            this.router.navigate(['/config']);
-                        });
+                        this.router.navigate(['/config']);
+                        this.roomManagerService.gameCardCreated();
                     });
                 }
             });
