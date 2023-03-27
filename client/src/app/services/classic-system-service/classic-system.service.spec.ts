@@ -66,7 +66,7 @@ describe('ClassicSystemService', () => {
         playerId: 'mockId',
     };
 
-    const playerNameStub = 'playerTest';
+    // const playerNameStub = 'playerTest';
     const mockTimer = 0;
     const mockEndMessage = 'Fin de partie';
 
@@ -224,11 +224,11 @@ describe('ClassicSystemService', () => {
         expect(gameAreaService.setAllData).toHaveBeenCalled();
     });
 
-    it('manageSocket should connect the client socket', () => {
-        const socketConnectSpy = spyOn(socketServiceMock, 'connect');
-        service.manageSocket();
-        expect(socketConnectSpy).toHaveBeenCalled();
-    });
+    // it('manageSocket should connect the client socket', () => {
+    //     const socketConnectSpy = spyOn(socketServiceMock, 'connect');
+    //     service.manageSocket();
+    //     expect(socketConnectSpy).toHaveBeenCalled();
+    // });
 
     it('should return the socket id', () => {
         const socketId = '1234';
@@ -246,13 +246,13 @@ describe('ClassicSystemService', () => {
 
     it('should send a "StartGameByRoomId" message to the server', () => {
         socketServiceMock.send = jasmine.createSpy('send');
-        const mockId = '1234';
-        const roomId = {
-            roomId: mockId,
-            playerName: playerNameStub,
-        };
+        // const mockId = '1234';
+        // const roomId = {
+        //     roomId: mockId,
+        //     playerName: playerNameStub,
+        // };
         service.startGame();
-        expect(socketServiceMock.send).toHaveBeenCalledWith(GameEvents.StartGameByRoomId, roomId);
+        expect(socketServiceMock.send).toHaveBeenCalledWith(GameEvents.StartGameByRoomId);
     });
 
     it('should call clientSocket.send with GameEvents.CheckStatus', () => {

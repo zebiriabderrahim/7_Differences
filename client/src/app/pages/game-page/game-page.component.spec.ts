@@ -51,7 +51,7 @@ describe('GamePageComponent', () => {
     beforeEach(async () => {
         classicServiceSpy = jasmine.createSpyObj(
             'ClassicService',
-            ['sendMessage', 'requestVerification', 'manageSocket', 'disconnect', 'setIsLeftCanvas', 'getSocketId', 'startGameByRoomId'],
+            ['sendMessage', 'requestVerification', 'manageSocket', 'disconnect', 'setIsLeftCanvas', 'getSocketId', 'startGame'],
             {
                 currentGame$: clientSideGameSubjectTest,
                 timer$: timerSubjectTest,

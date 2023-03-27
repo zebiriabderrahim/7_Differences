@@ -32,7 +32,7 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         this.actions = GameCardActions;
     }
     ngOnInit(): void {
-        this.roomManagerService.getJoinedPlayerNames(this.data.gameId);
+        // this.roomManagerService.joinedPlayerNames(this.data.gameId);
         this.loadPlayerNamesList();
         this.handleGameCardDelete();
     }
