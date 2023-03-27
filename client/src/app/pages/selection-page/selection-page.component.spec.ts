@@ -24,6 +24,7 @@ describe('SelectionPageComponent', () => {
         // mockGameCard = { _id: '123', name: 'mockName', difficultyLevel: true, soloTopTime: [], oneVsOneTopTime: [], thumbnail: '' };
         roomManagerService = jasmine.createSpyObj('RoomManagerService', ['handleRoomEvents', 'connect', 'disconnect'], {
             deletedGameId$: deletedGameIdMock,
+            isReloadNeeded$: of(false),
         });
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule.withRoutes(routes), MatGridListModule, FormsModule, MatIconModule],
@@ -35,7 +36,6 @@ describe('SelectionPageComponent', () => {
                     provide: CommunicationService,
                     useValue: jasmine.createSpyObj('CommunicationService', {
                         loadGameCarrousel: of({ hasNext: false, hasPrevious: false, gameCards: [] }),
-                        handleGameCardsUpdate: of({ hasNext: false, hasPrevious: false, gameCards: [] }),
                     }),
                 },
                 { provide: RoomManagerService, useValue: roomManagerService },

@@ -37,6 +37,7 @@ describe('JoinedPlayerDialogComponent', () => {
             joinedPlayerNamesByGameId$: joinedPlayerNamesMock,
             acceptedPlayerByRoom$: acceptPlayerNamesMock,
             deletedGameId$: deletedGameIdMock,
+            refusedPlayerId$: of('refusedPlayerId'),
         });
         await TestBed.configureTestingModule({
             declarations: [JoinedPlayerDialogComponent],
