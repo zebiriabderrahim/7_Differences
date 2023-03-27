@@ -40,6 +40,7 @@ describe('GameSheetComponent', () => {
             ],
             {
                 roomId$: roomIdSpy,
+                createdRoomId$: new BehaviorSubject('0'),
                 oneVsOneRoomsAvailabilityByRoomId$: new BehaviorSubject({
                     gameId: '0',
                     isAvailableToJoin: true,
