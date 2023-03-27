@@ -74,7 +74,7 @@ describe('GameGateway', () => {
                 expect(event).toEqual(GameEvents.RoomSoloCreated);
             },
         } as BroadcastOperator<unknown, unknown>);
-        await gateway.createSoloGame(socket, 'X', '0');
+        await gateway.createSoloRoom(socket, 'X', '0');
         expect(classicService.createRoom.called).toBeTruthy();
         expect(server.to.called).toBeTruthy();
         expect(classicService.saveRoom).toBeTruthy();
@@ -99,7 +99,7 @@ describe('GameGateway', () => {
             return [];
         });
         const joinSpy = jest.spyOn(socket, 'join');
-        classicService.getRoomByRoomId.returns(fakeRoom);
+        classicService.getRoomById.returns(fakeRoom);
         server.to.returns({
             emit: (event: string) => {
                 expect(event).toEqual(GameEvents.GameStarted);
@@ -107,7 +107,7 @@ describe('GameGateway', () => {
             },
         } as BroadcastOperator<unknown, unknown>);
         gateway.startGame(socket, 'fakeRoomId', 'fakePlayerName');
-        expect(classicService.getRoomByRoomId.calledOnce).toBeTruthy();
+        expect(classicService.getRoomById.calledOnce).toBeTruthy();
         expect(classicService.saveRoom).toBeTruthy();
         expect(joinSpy).toHaveBeenCalled();
     });
@@ -119,7 +119,7 @@ describe('GameGateway', () => {
             return [];
         });
         const joinSpy = jest.spyOn(socket, 'join');
-        classicService.getRoomByRoomId.returns(fakeRoom);
+        classicService.getRoomById.returns(fakeRoom);
         server.to.returns({
             emit: (event: string) => {
                 expect(event).toEqual(GameEvents.GameStarted);
@@ -128,7 +128,7 @@ describe('GameGateway', () => {
         } as BroadcastOperator<unknown, unknown>);
         fakeRoom.player2 = {} as Player;
         gateway.startGame(socket, 'fakeRoomId', 'fakePlayerId2');
-        expect(classicService.getRoomByRoomId.calledOnce).toBeTruthy();
+        expect(classicService.getRoomById.calledOnce).toBeTruthy();
         expect(classicService.saveRoom).toBeTruthy();
         expect(joinSpy).toHaveBeenCalled();
     });
@@ -143,7 +143,7 @@ describe('GameGateway', () => {
             },
         } as BroadcastOperator<unknown, unknown>);
         gateway.startGame(socket, 'fakeRoomId', 'fakePlayerId2');
-        expect(classicService.getRoomByRoomId.calledOnce).toBeFalsy();
+        expect(classicService.getRoomById.calledOnce).toBeFalsy();
     });
 
     it('validateCoords() should call verifyCoords', () => {
@@ -274,10 +274,10 @@ describe('GameGateway', () => {
 
     it('updateTimers should call getRoomByRoomId an updateTimer', () => {
         fakeRoom.clientGame.mode = GameModes.ClassicSolo;
-        classicService.getRoomByRoomId.returns(fakeRoom);
+        classicService.getRoomById.returns(fakeRoom);
         classicService['rooms'] = [fakeRoom] as unknown as Map<string, ClassicPlayRoom>;
         gateway.updateTimers();
-        expect(classicService.getRoomByRoomId).toBeTruthy();
+        expect(classicService.getRoomById).toBeTruthy();
         expect(classicService.updateTimer).toBeTruthy();
     });
 });
