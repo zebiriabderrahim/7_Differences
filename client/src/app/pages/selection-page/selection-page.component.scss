@@ -50,7 +50,12 @@ h1 {
     flex: 1 40%;
 }
 
+.button {
+    z-index: 999;
+  }
+
 .buttonContainer {
+    position:relative;
     text-align: center;
     z-index: 1;
 }
