@@ -9,7 +9,7 @@ import { filter, Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class ClassicSystemService implements OnDestroy {
-    cheatDifferences: Coordinate[];
+    differences: Coordinate[][];
     private timer: Subject<number>;
     private differencesFound: Subject<number>;
     private opponentDifferencesFound: Subject<number>;
@@ -131,15 +131,17 @@ export class ClassicSystemService implements OnDestroy {
             this.currentGame.next(clientGame);
         });
 
-        this.clientSocket.on(GameEvents.GameStarted, (data: { clientGame: ClientSideGame; players: Players; cheatDifferences: Coordinate[] }) => {
+        this.clientSocket.on(GameEvents.GameStarted, (data: { clientGame: ClientSideGame; players: Players; cheatDifferences: Coordinate[][] }) => {
+            console.log('Game started');
+            console.log(data.cheatDifferences);
             this.currentGame.next(data.clientGame);
             // this.cheatDifferences.next(data.cheatDifferences);
-            this.cheatDifferences = data.cheatDifferences;
+            this.differences = data.cheatDifferences;
             if (data.players) {
                 this.players.next(data.players);
             }
         });
-        this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[] }) => {
+        this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
             if (data.playerId === this.getSocketId()) {
                 this.replaceDifference(data.differencesData.currentDifference);
                 this.differencesFound.next(data.differencesData.differencesFound);
@@ -148,8 +150,10 @@ export class ClassicSystemService implements OnDestroy {
                 this.replaceDifference(data.differencesData.currentDifference);
                 this.opponentDifferencesFound.next(data.differencesData.differencesFound);
             }
+            console.log('remove diff');
+            console.log(data.cheatDifferences);
             // this.cheatDifferences.next(data.cheatDifferences);
-            this.cheatDifferences = data.cheatDifferences;
+            this.differences = data.cheatDifferences;
         });
 
         this.clientSocket.on(GameEvents.TimerStarted, (timer: number) => {

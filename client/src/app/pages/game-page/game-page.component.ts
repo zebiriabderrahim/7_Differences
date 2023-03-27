@@ -61,8 +61,8 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.canvasSize = CANVAS_MEASUREMENTS;
     }
 
-    get cheatDifferences(): Coordinate[] {
-        return this.classicService.cheatDifferences;
+    get differences(): Coordinate[][] {
+        return this.classicService.differences;
     }
 
     @HostListener('window:keydown', ['$event'])
@@ -70,7 +70,8 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         const eventHTMLElement = event.target as HTMLElement;
         if (eventHTMLElement.tagName !== INPUT_TAG_NAME) {
             if (event.key === 't') {
-                this.gameAreaService.toggleCheatMode(this.cheatDifferences);
+                const differencesCoordinates = ([] as Coordinate[]).concat(...this.differences);
+                this.gameAreaService.toggleCheatMode(differencesCoordinates);
             } else if (event.key === 'i') {
                 this.hintService.requestHint();
             }
