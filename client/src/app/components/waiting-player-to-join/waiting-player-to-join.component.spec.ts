@@ -63,7 +63,7 @@ describe('WaitingPlayerToJoinComponent', () => {
         });
 
         expect(component['playerNamesSubscription']).toBeDefined();
-        expect(component.playerNames).toEqual(['Alice', 'Bob', 'Charlie']);
+        expect(component.playerNames).toEqual(joinedPlayerNamesMock.value.playerNamesList);
     });
 
     it('refusePlayer should refuse the player using the roomManagerService', () => {
