@@ -1,7 +1,7 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { TEN_SECONDS, ONE_SECOND } from '@app/constants/constants';
+import { ONE_SECOND, TEN_SECONDS } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameCardActions } from '@common/game-interfaces';
 import { filter, interval, Subscription, takeWhile } from 'rxjs';
@@ -35,6 +35,11 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         // this.roomManagerService.joinedPlayerNames(this.data.gameId);
         this.loadPlayerNamesList();
         this.handleGameCardDelete();
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    toArray(obj: any): any[] {
+        return Object.values(obj);
     }
 
     loadPlayerNamesList(): void {
