@@ -47,11 +47,11 @@ describe('RoomManagerService', () => {
     });
 
     it('roomId$ should return roomId asObservable', () => {
-        expect(service.roomId$).toEqual(service['roomId'].asObservable());
+        expect(service.createdRoomId$).toEqual(service['roomId'].asObservable());
     });
 
     it('deletedGameId$ should return deletedGameId asObservable', () => {
-        expect(service.deletedGameId$).toEqual(service['deletedGameId'].asObservable());
+        expect(service.isUpdated$).toEqual(service['deletedGameId'].asObservable());
     });
 
     it('oneVsOneRoomsAvailabilityByRoomId$ should return oneVsOneRoomsAvailabilityByGameId asObservable', () => {
@@ -59,7 +59,7 @@ describe('RoomManagerService', () => {
     });
 
     it('acceptedPlayerByRoom$ should return acceptedPlayerByRoom asObservable', () => {
-        expect(service.acceptedPlayerByRoom$).toEqual(service['acceptedPlayerByRoom'].asObservable());
+        expect(service.createdRoomId$).toEqual(service['acceptedPlayerByRoom'].asObservable());
     });
 
     it('createSoloRoom should call clientSocket.send with CreateSoloGame and gameId and playerName', () => {
