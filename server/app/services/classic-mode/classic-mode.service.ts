@@ -161,7 +161,6 @@ export class ClassicModeService {
             room.endMessage = `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo!`;
             server.to(roomId).emit(GameEvents.EndGame, room.endMessage);
             this.rooms.delete(roomId);
-            this.playersListManagerService.deleteJoinedPlayersByGameId(room.clientGame.id);
         } else if (
             room &&
             Math.ceil(room.clientGame.differencesCount / 2) === player.diffData.differencesFound &&
@@ -169,8 +168,8 @@ export class ClassicModeService {
         ) {
             room.endMessage = `${player.name} remporte la partie avec ${player.diffData.differencesFound} différences trouvées!`;
             server.to(roomId).emit(GameEvents.EndGame, room.endMessage);
-            this.rooms.delete(roomId);
             this.playersListManagerService.deleteJoinedPlayersByGameId(room.clientGame.id);
+            this.rooms.delete(roomId);
         }
     }
 
@@ -233,8 +232,7 @@ export class ClassicModeService {
             room.endMessage = "L'adversaire a abandonné la partie!";
             const localMessage: ChatMessage = this.messageManager.getQuitMessage(player.name);
             server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
-            this.deleteCreatedRoom(roomId, server);
-            this.deleteOneVsOneRoomAvailability(room.clientGame.id, server);
+            this.rooms.delete(roomId);
             server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
         }
     }
@@ -244,8 +242,8 @@ export class ClassicModeService {
         const room = this.getRoomById(roomId);
         const joinable = this.roomAvailability.get(room?.clientGame.id)?.isAvailableToJoin;
         if (room && !room.player2 && joinable && room.clientGame.mode === GameModes.ClassicOneVsOne) {
-            this.deleteCreatedRoom(roomId, server);
             this.playersListManagerService.cancelAllJoining(room.clientGame.id, server);
+            this.rooms.delete(roomId);
         } else if (room && room.timer !== 0 && !joinable) {
             this.abandonGame(socket, server);
         } else {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameEvents, playerData, PlayerNameAvailability, RoomAvailability } from '@common/game-interfaces';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
@@ -9,21 +9,21 @@ export class RoomManagerService {
     private joinedPlayerNames: Subject<string[]>;
     private isPlayerNameTaken: Subject<PlayerNameAvailability>;
     private oneVsOneRoomsAvailabilityByGameId: Subject<RoomAvailability>;
-    private isPlayerAccepted: BehaviorSubject<boolean>;
+    private isPlayerAccepted: Subject<boolean>;
     private refusedPlayerId: Subject<string>;
     private createdRoomId: Subject<string>;
     private deletedGameId: Subject<string>;
-    private isReloadNeeded: BehaviorSubject<boolean>;
+    private isReloadNeeded: Subject<boolean>;
 
     constructor(private readonly clientSocket: ClientSocketService) {
         this.isPlayerNameTaken = new Subject<PlayerNameAvailability>();
         this.createdRoomId = new Subject<string>();
-        this.isPlayerAccepted = new BehaviorSubject<boolean>(false);
+        this.isPlayerAccepted = new Subject<boolean>();
         this.joinedPlayerNames = new Subject<string[]>();
         this.oneVsOneRoomsAvailabilityByGameId = new Subject<RoomAvailability>();
         this.deletedGameId = new Subject<string>();
         this.refusedPlayerId = new Subject<string>();
-        this.isReloadNeeded = new BehaviorSubject<boolean>(false);
+        this.isReloadNeeded = new Subject<boolean>();
     }
 
     get joinedPlayerNamesByGameId$() {
