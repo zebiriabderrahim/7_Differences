@@ -127,7 +127,7 @@ describe('RoomManagerService', () => {
     it('cancelJoining should call clientSocket.send with CancelJoining and roomId and playerName', () => {
         const sendSpy = spyOn(socketServiceMock, 'send');
         service.cancelJoining(mockGameId);
-        expect(sendSpy).toHaveBeenCalledWith(GameEvents.CancelJoining, { roomId: mockGameId, playerName: mockPlayerName });
+        expect(sendSpy).toHaveBeenCalledWith(GameEvents.CancelJoining, mockGameId);
     });
 
     it('disconnect should call clientSocket.disconnect', () => {
