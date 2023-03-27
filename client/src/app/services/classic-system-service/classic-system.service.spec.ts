@@ -251,7 +251,7 @@ describe('ClassicSystemService', () => {
             roomId: mockId,
             playerName: playerNameStub,
         };
-        service.startGameByRoomId(mockId, playerNameStub);
+        service.startGame(mockId, playerNameStub);
         expect(socketServiceMock.send).toHaveBeenCalledWith(GameEvents.StartGameByRoomId, roomId);
     });
 
