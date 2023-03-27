@@ -21,6 +21,12 @@ export const CHEAT_MODE_WAIT_TIME = 250;
 export const MAX_NAME_LENGTH = 10;
 export const MIN_NAME_LENGTH = 3;
 
+export const MAX_TIME = 60;
+export const MIN_TIME = 0;
+export const DEFAULT_COUNTDOWN_VALUE = 30;
+export const DEFAULT_PENALTY_VALUE = 5;
+export const DEFAULT_BONUS_VALUE = 5;
+
 export const INPUT_TAG_NAME = 'INPUT';
 
 export const DEFAULT_PLAYERS = {
