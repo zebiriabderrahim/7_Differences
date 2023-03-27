@@ -1,9 +1,11 @@
 #history-box {
     display: flex;
+    flex-direction: column;
     position: relative;
     width: 400px;
     height: 550px;
     background: #e6eaea;
+    
   }
   #history-box .content {
     width: 100%;
