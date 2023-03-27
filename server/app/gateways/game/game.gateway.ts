@@ -81,16 +81,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameEvents.UpdateWaitingPlayerNameList)
-    updateWaitingPlayerNameList(@ConnectedSocket() socket: Socket, @MessageBody() data: { gameId: string; playerName: string }) {
-        this.playersListManagerService.updateWaitingPlayerNameList(data.gameId, data.playerName, socket);
-        const hostId = this.classicModeService.getHostIdByGameId(data.gameId);
-        this.playersListManagerService.getWaitingPlayerNameList(hostId, data.gameId, this.server);
+    updateWaitingPlayerNameList(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
+        this.playersListManagerService.updateWaitingPlayerNameList(playerPayLoad, socket);
+        const hostId = this.classicModeService.getHostIdByGameId(playerPayLoad.gameId);
+        this.playersListManagerService.getWaitingPlayerNameList(hostId, playerPayLoad.gameId, this.server);
     }
 
     @SubscribeMessage(GameEvents.RefusePlayer)
-    refusePlayer(@ConnectedSocket() socket: Socket, @MessageBody() data: { gameId: string; playerName: string }) {
-        this.playersListManagerService.refusePlayer(data.playerName, data.gameId, this.server);
-        this.playersListManagerService.getWaitingPlayerNameList(socket.id, data.gameId, this.server);
+    refusePlayer(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
+        this.playersListManagerService.refusePlayer(playerPayLoad, this.server);
+        this.playersListManagerService.getWaitingPlayerNameList(socket.id, playerPayLoad.gameId, this.server);
     }
 
     @SubscribeMessage(GameEvents.AcceptPlayer)
@@ -102,8 +102,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameEvents.CheckIfPlayerNameIsAvailable)
-    checkIfPlayerNameIsAvailable(@MessageBody() data: { gameId: string; playerName: string }) {
-        this.playersListManagerService.checkIfPlayerNameIsAvailable(data.gameId, data.playerName, this.server);
+    checkIfPlayerNameIsAvailable(@MessageBody() playerPayLoad: playerData) {
+        this.playersListManagerService.checkIfPlayerNameIsAvailable(playerPayLoad, this.server);
     }
 
     @SubscribeMessage(GameEvents.CancelJoining)
