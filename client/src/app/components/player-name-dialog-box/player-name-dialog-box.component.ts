@@ -54,6 +54,7 @@ export class PlayerNameDialogBoxComponent implements OnInit, OnDestroy {
                 this.dialogRef.close();
             });
     }
+
     handleGameCardDelete() {
         this.roomManagerService.deletedGameId$.subscribe((gameId) => {
             if (gameId === this.data.gameId) {

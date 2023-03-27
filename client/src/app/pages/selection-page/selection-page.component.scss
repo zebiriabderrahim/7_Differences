@@ -2,13 +2,13 @@
     font-family: 'Roboto', sans-serif;
 }
 .selectionComponent {
-    background-color: rgb(170, 170, 170);
+    background-color: (#67A28B);
 }
 
 .header {
     display: flex;
     flex-direction: row;
-    background-color: rgb(213, 213, 213);
+    background-color: (#67A28B);
     justify-content: center;
     padding: 10px;
 }
@@ -76,7 +76,7 @@ h1 {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-    background-color: rgb(60, 60, 60);
+    background-color: #7DAF9C;
 }
 
 .section {
@@ -93,7 +93,7 @@ h1 {
     margin: 0 auto;
     border-style: double;
     border-width: 5px;
-    border-color: darkslategrey;
+    border-color: rgb(0, 0, 0);
 }
 
 .footer {
