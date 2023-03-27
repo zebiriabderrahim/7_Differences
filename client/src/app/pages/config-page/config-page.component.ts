@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { DEFAULT_BONUS_VALUE, DEFAULT_COUNTDOWN_VALUE, DEFAULT_PENALTY_VALUE, MAX_TIME, MIN_TIME } from '@app/constants/constants';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { GameConfigConst } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
@@ -17,13 +18,13 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
     private communicationSubscription: Subscription;
 
     constructor(private readonly communicationService: CommunicationService, private formBuilder: FormBuilder) {
-        this.configConstants = { countdownTime: 30, penaltyTime: 5, bonusTime: 5 };
+        this.configConstants = { countdownTime: DEFAULT_COUNTDOWN_VALUE, penaltyTime: DEFAULT_PENALTY_VALUE, bonusTime: DEFAULT_BONUS_VALUE };
         this.homeRoute = '/home';
         this.createRoute = '/create';
         this.configForm = this.formBuilder.group({
-            countdownTime: ['', [Validators.required, Validators.min(0), Validators.max(60)]],
-            penaltyTime: ['', [Validators.required, Validators.min(0), Validators.max(10)]],
-            bonusTime: ['', [Validators.required, Validators.min(0), Validators.max(10)]],
+            countdownTime: ['', [Validators.required, Validators.min(MIN_TIME), Validators.max(MAX_TIME)]],
+            penaltyTime: ['', [Validators.required, Validators.min(MIN_TIME), Validators.max(MAX_TIME)]],
+            bonusTime: ['', [Validators.required, Validators.min(MIN_TIME), Validators.max(MAX_TIME)]],
         });
         this.configForm.patchValue({
             countdownTime: this.configConstants.countdownTime,
@@ -44,7 +45,7 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
         this.configConstants.countdownTime = this.configForm.controls['countdownTime'].value;
         this.configConstants.penaltyTime = this.configForm.controls['penaltyTime'].value;
         this.configConstants.bonusTime = this.configForm.controls['bonusTime'].value;
-        this.configForm.reset({ countdownTime: 30, penaltyTime: 5, bonusTime: 5 });
+        this.configForm.reset({ countdownTime: DEFAULT_COUNTDOWN_VALUE, penaltyTime: DEFAULT_PENALTY_VALUE, bonusTime: DEFAULT_BONUS_VALUE });
     }
 
     ngOnDestroy() {
