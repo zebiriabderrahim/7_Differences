@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { Differences, GameEvents, Player, PlayerNameAvailability } from '@common/game-interfaces';
+import { Differences, GameEvents, Player, playerData, PlayerNameAvailability } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
 
@@ -11,12 +11,12 @@ export class PlayersListManagerService {
         this.joinedPlayersByGameId = new Map<string, Player[]>();
     }
 
-    updateWaitingPlayerNameList(gameId: string, playerName: string, socket: io.Socket): void {
-        const playerNames = this.joinedPlayersByGameId.get(gameId) ?? [];
+    updateWaitingPlayerNameList(playerPayLoad: playerData, socket: io.Socket): void {
+        const playerNames = this.joinedPlayersByGameId.get(playerPayLoad.gameId) ?? [];
         const diffData = { currentDifference: [], differencesFound: 0 } as Differences;
-        const playerGuest = { name: playerName, diffData, playerId: socket.id } as Player;
+        const playerGuest = { name: playerPayLoad.playerName, diffData, playerId: socket.id } as Player;
         playerNames.push(playerGuest);
-        this.joinedPlayersByGameId.set(gameId, playerNames);
+        this.joinedPlayersByGameId.set(playerPayLoad.gameId, playerNames);
     }
 
     getWaitingPlayerNameList(hostId: string, gameId: string, server: io.Server): void {
@@ -24,8 +24,8 @@ export class PlayersListManagerService {
         server.to(hostId).emit(GameEvents.WaitingPlayerNameListUpdated, playerNamesList);
     }
 
-    refusePlayer(playerName: string, gameId: string, server: io.Server): void {
-        this.cancelJoiningByPlayerName(playerName, gameId, server);
+    refusePlayer(playerPayLoad: playerData, server: io.Server): void {
+        this.cancelJoiningByPlayerName(playerPayLoad.playerName, playerPayLoad.gameId, server);
     }
 
     getAcceptPlayer(gameId: string, playerName: string, server: io.Server): Player {
@@ -39,10 +39,10 @@ export class PlayersListManagerService {
         return acceptedPlayer;
     }
 
-    checkIfPlayerNameIsAvailable(gameId: string, playerNames: string, server: io.Server): void {
-        const joinedPlayerNames = this.joinedPlayersByGameId.get(gameId);
-        const playerNameAvailability = { gameId, isNameAvailable: true } as PlayerNameAvailability;
-        playerNameAvailability.isNameAvailable = !joinedPlayerNames?.some((player) => player.name === playerNames);
+    checkIfPlayerNameIsAvailable(playerPayLoad: playerData, server: io.Server): void {
+        const joinedPlayerNames = this.joinedPlayersByGameId.get(playerPayLoad.gameId);
+        const playerNameAvailability = { gameId: playerPayLoad.gameId, isNameAvailable: true } as PlayerNameAvailability;
+        playerNameAvailability.isNameAvailable = !joinedPlayerNames?.some((player) => player.name === playerPayLoad.playerName);
         server.emit(GameEvents.PlayerNameTaken, playerNameAvailability);
     }
 
