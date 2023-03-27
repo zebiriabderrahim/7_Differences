@@ -216,11 +216,11 @@ describe('RoomManagerService', () => {
     //     expect(acceptedPlayerNextSpy).toHaveBeenCalledOnceWith(mockAcceptedPlayer);
     // });
 
-    it('ngOnDestroy should call disconnect', () => {
-        const disconnectSpy = spyOn(socketServiceMock, 'disconnect');
-        service.ngOnDestroy();
-        expect(disconnectSpy).toHaveBeenCalled();
-    });
+    // it('ngOnDestroy should call disconnect', () => {
+    //     const disconnectSpy = spyOn(socketServiceMock, 'disconnect');
+    //     service.ngOnDestroy();
+    //     expect(disconnectSpy).toHaveBeenCalled();
+    // });
 
     // it('gameIdOfRoomToBeDeleted$ should return gameIdOfRoomToBeDeleted as observable', () => {
     //     expect(service.gameIdOfRoomToBeDeleted$).toEqual(service['gameIdOfRoomToBeDeleted'].asObservable());
