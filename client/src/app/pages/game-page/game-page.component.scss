@@ -1,7 +1,5 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+.container {
+  position: relative;
 }
 
 .justified {
@@ -12,7 +10,7 @@
 }
 
 #game-page {
-  background-color: (#67A28B);
+  background-color: #67A28B;
   width: 100%;
   height: 100%;
 }
@@ -21,8 +19,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
     height: 100%;
     flex-direction: row;
+    top: 0;
+    z-index: 1;
 }
 
 .game-canvas {
@@ -39,6 +40,10 @@ canvas {
     border-radius: 15px;
     left: 0;
     top: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 640px;
+    max-height: 480px;
 }
 
 #original {
@@ -72,7 +77,8 @@ img {
     border-radius: 15px;
     padding: 10px;
     margin: 0 20px 20px 20px;
-    border: solid (#67A28B);
+    border: solid #67A28B;
+    z-index: 1;
 }
 .information-header h1{
     font-size: 30px;
@@ -102,6 +108,7 @@ img {
   border-radius: 2em;
   box-sizing: border-box;
   text-decoration: none;
+  z-index: 1;
 }
 .button:hover{
   background-color: black;
@@ -109,7 +116,7 @@ img {
 }
 .importantButton:hover{
   background-color: black;
-  color:red;
+  transform: scale(1.05);
 }
 
 .hintIcon{
@@ -131,6 +138,16 @@ app-chat-box{
   position: absolute;
   left: 35.75%;
   bottom: 15%;
+  z-index: 1;
+}
+
+#background {
+  position: absolute;
+  top: 0;
+  left: 0;
   z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 

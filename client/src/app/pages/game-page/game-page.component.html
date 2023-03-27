@@ -19,7 +19,7 @@
         <app-game-infos [game]="game" [differencesCount]="game.differencesCount"></app-game-infos>
     </div>
     <div class="canvas-container">
-        <div class="game-canvas justified">
+        <div class="game-canvas">
             <canvas
                 id="originalFG"
                 [attr.height]="canvasSize.height"
@@ -54,6 +54,7 @@
     </div>
     <button class="importantButton justified" (click)="showAbandonDialog()">Abandonner la partie</button>
 </div>
+<img id = "background" src = "./assets/BackgroundImage.jpg" />
 <div *ngIf="game">
     <app-chat-box (add)="addRightSideMessage($event)" [messages]="messages" [gameMode]="game.mode"></app-chat-box>
 </div>
