@@ -1,11 +1,11 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameEvents, playerData, PlayerNameAvailability, RoomAvailability } from '@common/game-interfaces';
 import { BehaviorSubject, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
-export class RoomManagerService implements OnDestroy {
+export class RoomManagerService {
     private joinedPlayerNames: Subject<string[]>;
     private isPlayerNameTaken: Subject<PlayerNameAvailability>;
     private oneVsOneRoomsAvailabilityByGameId: Subject<RoomAvailability>;
@@ -13,7 +13,7 @@ export class RoomManagerService implements OnDestroy {
     private refusedPlayerId: Subject<string>;
     private createdRoomId: Subject<string>;
     private deletedGameId: Subject<string>;
-    private isGameCardsNeedToBeReloaded: BehaviorSubject<boolean>;
+    private isReloadNeeded: BehaviorSubject<boolean>;
 
     constructor(private readonly clientSocket: ClientSocketService) {
         this.isPlayerNameTaken = new Subject<PlayerNameAvailability>();
@@ -23,7 +23,7 @@ export class RoomManagerService implements OnDestroy {
         this.oneVsOneRoomsAvailabilityByGameId = new Subject<RoomAvailability>();
         this.deletedGameId = new Subject<string>();
         this.refusedPlayerId = new Subject<string>();
-        this.isGameCardsNeedToBeReloaded = new BehaviorSubject<boolean>(false);
+        this.isReloadNeeded = new BehaviorSubject<boolean>(false);
     }
 
     get joinedPlayerNamesByGameId$() {
@@ -54,8 +54,8 @@ export class RoomManagerService implements OnDestroy {
         return this.refusedPlayerId.asObservable();
     }
 
-    get isGameCardsNeedToBeReloaded$() {
-        return this.isGameCardsNeedToBeReloaded.asObservable();
+    get isReloadNeeded$() {
+        return this.isReloadNeeded.asObservable();
     }
 
     createSoloRoom(gameId: string, playerName: string) {
@@ -115,6 +115,10 @@ export class RoomManagerService implements OnDestroy {
         this.clientSocket.send(GameEvents.DeleteGameCard, gameId);
     }
 
+    connect(): void {
+        this.clientSocket.connect();
+    }
+
     getSocketId(): string {
         return this.clientSocket.socket.id;
     }
@@ -161,11 +165,7 @@ export class RoomManagerService implements OnDestroy {
         });
 
         this.clientSocket.on(GameEvents.RequestGameCardsUpdate, () => {
-            this.isGameCardsNeedToBeReloaded.next(true);
+            this.isReloadNeeded.next(true);
         });
-    }
-
-    ngOnDestroy(): void {
-        this.disconnect();
     }
 }
