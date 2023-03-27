@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DEFAULT_N_HINTS, HINT_SQUARE_PADDING, INITIAL_QUADRANT } from '@app/constants/hint';
+import { DEFAULT_N_HINTS, HINT_SQUARE_PADDING, INITIAL_QUADRANT, QUADRANT_POSITIONS } from '@app/constants/hint';
 import { QuadrantPosition } from '@app/enum/quadrant-position';
 import { Quadrant } from '@app/interfaces/quadrant';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
@@ -41,14 +41,10 @@ export class HintService {
         const subQuadrants: Quadrant[] = this.getSubQuadrants(quadrant);
         const quadrants: QuadrantPosition[] = [];
         for (const coord of differencesCoordinates) {
-            if (!quadrants.includes(QuadrantPosition.First) && this.isPointInQuadrant(coord, subQuadrants[QuadrantPosition.First])) {
-                quadrants.push(QuadrantPosition.First);
-            } else if (!quadrants.includes(QuadrantPosition.Second) && this.isPointInQuadrant(coord, subQuadrants[QuadrantPosition.Second])) {
-                quadrants.push(QuadrantPosition.Second);
-            } else if (!quadrants.includes(QuadrantPosition.Third) && this.isPointInQuadrant(coord, subQuadrants[QuadrantPosition.Third])) {
-                quadrants.push(QuadrantPosition.Third);
-            } else if (!quadrants.includes(QuadrantPosition.Fourth) && this.isPointInQuadrant(coord, subQuadrants[QuadrantPosition.Fourth])) {
-                quadrants.push(QuadrantPosition.Fourth);
+            for (const quadrantPosition of QUADRANT_POSITIONS) {
+                if (!quadrants.includes(quadrantPosition) && this.isPointInQuadrant(coord, subQuadrants[quadrantPosition])) {
+                    quadrants.push(quadrantPosition);
+                }
             }
         }
         const quadrantNumber: number = quadrants.length > 1 ? this.generateRandomNumber(0, quadrants.length - 1) : 0;
@@ -65,16 +61,10 @@ export class HintService {
             topCorner: difference[0],
         };
         for (const coord of difference) {
-            if (coord.x < adjustedQuadrant.bottomCorner.x) {
-                adjustedQuadrant.bottomCorner.x = coord.x;
-            } else if (coord.x > adjustedQuadrant.topCorner.x) {
-                adjustedQuadrant.topCorner.x = coord.x;
-            }
-            if (coord.y < adjustedQuadrant.bottomCorner.y) {
-                adjustedQuadrant.bottomCorner.y = coord.y;
-            } else if (coord.y > adjustedQuadrant.topCorner.y) {
-                adjustedQuadrant.topCorner.y = coord.y;
-            }
+            adjustedQuadrant.bottomCorner.x = Math.min(adjustedQuadrant.bottomCorner.x, coord.x);
+            adjustedQuadrant.bottomCorner.y = Math.min(adjustedQuadrant.bottomCorner.y, coord.y);
+            adjustedQuadrant.topCorner.x = Math.max(adjustedQuadrant.topCorner.x, coord.x);
+            adjustedQuadrant.topCorner.y = Math.max(adjustedQuadrant.topCorner.y, coord.y);
         }
         return this.generateHintSquare(adjustedQuadrant);
     }
