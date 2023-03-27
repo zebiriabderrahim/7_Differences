@@ -15,8 +15,8 @@
         <button mat-raised-button *ngIf="gameCarrousel.hasPrevious" mat-raised-button class="previous_button" (click)="previousCarrousel()"><< Précedent</button>
         <button mat-raised-button *ngIf="gameCarrousel.hasNext" mat-raised-button class="next_button" (click)="nextCarrousel()">Suivant >></button>
     </div>
+    <img id = "selection" src = "./assets/SelectionBackground.jpg"/>
 </div>
-<img id = "selection" src = "./assets/SelectionBackground.jpg"/>
 <div *ngIf="router.url === '/selection'" class="footerPreview">
     <div class="section">
         <h2 class="sectionOne button" >Créer ton propre jeu</h2>
