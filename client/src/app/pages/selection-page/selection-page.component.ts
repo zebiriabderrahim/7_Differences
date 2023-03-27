@@ -71,6 +71,5 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.reloadSubscription?.unsubscribe();
-        this.reloadSubscription?.unsubscribe();
     }
 }

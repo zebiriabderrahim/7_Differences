@@ -38,6 +38,7 @@ export class PlayerNameDialogBoxComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.handleCreateUndoCreation(this.data.gameId);
+        this.handleGameCardDelete();
     }
 
     submitForm() {
@@ -52,6 +53,13 @@ export class PlayerNameDialogBoxComponent implements OnInit, OnDestroy {
             .subscribe(() => {
                 this.dialogRef.close();
             });
+    }
+    handleGameCardDelete() {
+        this.roomManagerService.deletedGameId$.subscribe((gameId) => {
+            if (gameId === this.data.gameId) {
+                this.dialogRef.close();
+            }
+        });
     }
 
     async validatePlayerName(control: FormControl): Promise<{ [key: string]: unknown } | null> {
