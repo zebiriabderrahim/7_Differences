@@ -7,6 +7,7 @@
 /* eslint-disable no-underscore-dangle */
 import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
+import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { Coordinate } from '@common/coordinate';
 import { ClassicPlayRoom, ClientSideGame, Differences, GameEvents, GameModes, MessageEvents, Player } from '@common/game-interfaces';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -14,7 +15,6 @@ import * as fs from 'fs';
 import { createStubInstance, SinonStubbedInstance, stub } from 'sinon';
 import { BroadcastOperator, Server, Socket } from 'socket.io';
 import { ClassicModeService } from './classic-mode.service';
-import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 
 describe('ClassicModeService', () => {
     let service: ClassicModeService;
@@ -263,12 +263,12 @@ describe('ClassicModeService', () => {
 
     it('getRoomByRoomId() should return the room', () => {
         service['rooms'].set(fakeRoom.roomId, fakeRoom);
-        const result = service.getRoomByRoomId(fakeRoom.roomId);
+        const result = service.getRoomById(fakeRoom.roomId);
         expect(result).toEqual(fakeRoom);
     });
 
     it('getRoomByRoomId() should return undefined', () => {
-        const result = service.getRoomByRoomId(fakeRoom.roomId);
+        const result = service.getRoomById(fakeRoom.roomId);
         expect(result).toBeUndefined();
     });
 
