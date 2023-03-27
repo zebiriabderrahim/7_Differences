@@ -275,7 +275,7 @@ describe('GamePageComponent', () => {
         const mockId = '1';
         component.ngAfterViewInit();
         paramsSubjectTest.next({ roomId: mockId });
-        expect(classicServiceSpy.startGameByRoomId).toHaveBeenCalled();
+        expect(classicServiceSpy.startGame).toHaveBeenCalled();
         expect(routeSpy.params).toEqual(paramsSubjectTest);
     });
 });
