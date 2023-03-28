@@ -11,7 +11,7 @@ import {
 } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { GREEN_PIXEL, N_PIXEL_ATTRIBUTE, RED_PIXEL, YELLOW_PIXEL } from '@app/constants/pixels';
-import { ReplayAction } from '@app/enum/replay-actions';
+import { ReplayActions } from '@app/enum/replay-actions';
 import { Coordinate } from '@common/coordinate';
 import { ReplayService } from '@app/services/replay-service/replay.service';
 
@@ -81,7 +81,7 @@ export class GameAreaService {
     flashCorrectPixels(differenceCoord: Coordinate[]): void {
         const imageDataIndexes = this.convert2DCoordToPixelIndex(differenceCoord);
         this.flashPixels(imageDataIndexes);
-        this.replayService.addReplayData(ReplayAction.ClicDiffFound, Date.now());
+        this.replayService.addReplayData(ReplayActions.ClickFound, Date.now());
     }
 
     flashPixels(imageDataIndexes: number[]): void {
