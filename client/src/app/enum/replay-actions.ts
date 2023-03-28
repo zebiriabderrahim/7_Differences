@@ -1,4 +1,5 @@
 export enum ReplayAction {
+    GameStart = 'GameStart',
     ClicDiffFound = 'ClicDiffFound',
     ClicError = 'ClicError',
     CaptureMessage = 'CaptureMessage',
