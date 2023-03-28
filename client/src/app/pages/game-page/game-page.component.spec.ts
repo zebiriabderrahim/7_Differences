@@ -51,7 +51,7 @@ describe('GamePageComponent', () => {
     beforeEach(async () => {
         classicServiceSpy = jasmine.createSpyObj(
             'ClassicService',
-            ['sendMessage', 'requestVerification', 'manageSocket', 'disconnect', 'setIsLeftCanvas', 'getSocketId', 'startGameByRoomId'],
+            ['sendMessage', 'requestVerification', 'manageSocket', 'disconnect', 'setIsLeftCanvas', 'getSocketId', 'startGame'],
             {
                 currentGame$: clientSideGameSubjectTest,
                 timer$: timerSubjectTest,
@@ -275,7 +275,7 @@ describe('GamePageComponent', () => {
         const mockId = '1';
         component.ngAfterViewInit();
         paramsSubjectTest.next({ roomId: mockId });
-        expect(classicServiceSpy.startGameByRoomId).toHaveBeenCalled();
+        expect(classicServiceSpy.startGame).toHaveBeenCalled();
         expect(routeSpy.params).toEqual(paramsSubjectTest);
     });
 });
