@@ -70,6 +70,7 @@ export interface Differences {
 export interface RoomAvailability {
     gameId: string;
     isAvailableToJoin: boolean;
+    hostId: string;
 }
 
 export interface PlayerNameAvailability {

@@ -59,20 +59,20 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameEvents.UpdateRoomOneVsOneAvailability)
-    updateRoomOneVsOneAvailability(@MessageBody() gameId: string) {
-        this.classicModeService.updateRoomOneVsOneAvailability(gameId, this.server);
+    updateRoomOneVsOneAvailability(@ConnectedSocket() socket: Socket, @MessageBody() gameId: string) {
+        this.classicModeService.updateRoomOneVsOneAvailability(socket.id, gameId, this.server);
     }
 
     @SubscribeMessage(GameEvents.CheckRoomOneVsOneAvailability)
-    checkRoomOneVsOneAvailability(@MessageBody() gameId: string) {
-        this.classicModeService.checkRoomOneVsOneAvailability(gameId, this.server);
+    checkRoomOneVsOneAvailability(@ConnectedSocket() socket: Socket, @MessageBody() gameId: string) {
+        this.classicModeService.checkRoomOneVsOneAvailability(socket.id, gameId, this.server);
     }
 
     @SubscribeMessage(GameEvents.DeleteCreatedOneVsOneRoom)
-    deleteCreatedOneVsOneRoom(@MessageBody() roomId: string) {
+    deleteCreatedOneVsOneRoom(@ConnectedSocket() socket: Socket, @MessageBody() roomId: string) {
         const gameId = this.classicModeService.getRoomById(roomId)?.clientGame.id;
         this.playersListManagerService.cancelAllJoining(gameId, this.server);
-        this.classicModeService.deleteCreatedRoom(roomId, this.server);
+        this.classicModeService.deleteCreatedRoom(socket.id, roomId, this.server);
     }
 
     @SubscribeMessage(GameEvents.GetJoinedPlayerNames)
@@ -94,10 +94,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameEvents.AcceptPlayer)
-    acceptPlayer(@MessageBody() data: { gameId: string; roomId: string; playerName: string }) {
+    acceptPlayer(@ConnectedSocket() socket: Socket, @MessageBody() data: { gameId: string; roomId: string; playerName: string }) {
         const acceptedPlayer = this.playersListManagerService.getAcceptPlayer(data.gameId, data.playerName, this.server);
         this.classicModeService.acceptPlayer(acceptedPlayer, data.roomId, this.server);
-        this.classicModeService.updateRoomOneVsOneAvailability(data.gameId, this.server);
+        this.classicModeService.updateRoomOneVsOneAvailability(socket.id, data.gameId, this.server);
         this.playersListManagerService.deleteJoinedPlayersByGameId(data.gameId);
     }
 
