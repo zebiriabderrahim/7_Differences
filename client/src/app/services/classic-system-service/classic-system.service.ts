@@ -1,6 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import { ReplayAction } from '@app/enum/replay-actions';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { ReplayService } from '@app/services/replay-service/replay.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
 import { ChatMessage, ClientSideGame, Differences, GameEvents, MessageEvents, MessageTag, Players } from '@common/game-interfaces';
@@ -19,10 +21,12 @@ export class ClassicSystemService implements OnDestroy {
     private players: Subject<Players>;
     private cheatDifferences: Subject<Coordinate[]>;
 
+    // eslint-disable-next-line max-params
     constructor(
         private readonly clientSocket: ClientSocketService,
         private readonly gameAreaService: GameAreaService,
         private readonly soundService: SoundService,
+        private readonly replayService: ReplayService,
     ) {
         this.currentGame = new Subject<ClientSideGame>();
         this.differencesFound = new Subject<number>();
@@ -126,6 +130,7 @@ export class ClassicSystemService implements OnDestroy {
             if (data.players) {
                 this.players.next(data.players);
             }
+            this.replayService.addReplayData(ReplayAction.GameStart, Date.now());
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[] }) => {
             if (data.playerId === this.getSocketId()) {
