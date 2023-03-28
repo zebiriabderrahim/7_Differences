@@ -36,8 +36,8 @@ export class ReplayService {
             if (this.currentReplayIndex < this.replayEvents.length) {
                 startTime = Date.now();
                 remainingTime = getNextInterval();
+                callback();
                 timeoutId = setTimeout(() => {
-                    callback();
                     start();
                 }, remainingTime);
             } else {
@@ -108,12 +108,6 @@ export class ReplayService {
     getNextInterval(): number {
         const nextActionIndex = this.currentReplayIndex + 1;
         if (nextActionIndex < this.replayEvents.length) {
-            // TODO: Remove console.log
-            const milliseconds = this.replayEvents[nextActionIndex].timestamp - this.replayEvents[this.currentReplayIndex].timestamp;
-            const seconds = Math.floor(milliseconds / 1000);
-            const remainingMilliseconds = milliseconds % 1000;
-            console.log(`${seconds}.${remainingMilliseconds} s`);
-            // TODO: Remove console.log
             return this.replayEvents[nextActionIndex].timestamp - this.replayEvents[this.currentReplayIndex].timestamp;
         }
         return REPLAY_LIMITER;
