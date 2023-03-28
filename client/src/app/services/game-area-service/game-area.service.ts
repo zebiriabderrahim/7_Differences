@@ -11,7 +11,9 @@ import {
 } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { GREEN_PIXEL, N_PIXEL_ATTRIBUTE, RED_PIXEL, YELLOW_PIXEL } from '@app/constants/pixels';
+import { ReplayAction } from '@app/enum/replay-actions';
 import { Coordinate } from '@common/coordinate';
+import { ReplayService } from '@app/services/replay-service/replay.service';
 
 @Injectable({
     providedIn: 'root',
@@ -30,7 +32,7 @@ export class GameAreaService {
     private isCheatMode: boolean;
     private cheatModeInterval: number | undefined;
 
-    constructor() {
+    constructor(private readonly replayService: ReplayService) {
         this.mousePosition = { x: 0, y: 0 };
         this.clickDisabled = false;
         this.isCheatMode = false;
@@ -79,6 +81,7 @@ export class GameAreaService {
     flashCorrectPixels(differenceCoord: Coordinate[]): void {
         const imageDataIndexes = this.convert2DCoordToPixelIndex(differenceCoord);
         this.flashPixels(imageDataIndexes);
+        this.replayService.addReplayData(ReplayAction.ClicDiffFound, Date.now());
     }
 
     flashPixels(imageDataIndexes: number[]): void {

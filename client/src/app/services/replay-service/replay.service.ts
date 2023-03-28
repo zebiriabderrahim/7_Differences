@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { ReplayAction } from '@app/enum/replay-actions';
 import { ReplayData } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
-import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 
 @Injectable({
     providedIn: 'root',
@@ -11,14 +10,16 @@ export class ReplayService {
     private replayInterval: ReplayInterval;
     private replayActions: ReplayData[] = [];
     private currentReplayIndex: number = 0;
-    constructor(private readonly gameAreaService: GameAreaService) {
+    constructor(/* private readonly gameAreaService: GameAreaService*/) {
         this.replayInterval = this.createReplayInterval(
             () => this.replaySwitcher(this.replayActions[this.currentReplayIndex]),
             () => this.getNextInterval(),
         );
     }
 
-
+    addReplayData(action: ReplayAction, timestamp: number) {
+        this.replayActions.push({ action, timestamp } as ReplayData);
+    }
 
     createReplayInterval(callback: () => void, getNextInterval: () => number): ReplayInterval {
         let timeoutId: ReturnType<typeof setTimeout> | null = null;
