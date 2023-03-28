@@ -18,6 +18,10 @@ export class GamePageDialogComponent {
         this.classicSystem.abandonGame();
     }
 
+    leaveGame(): void {
+        this.replayService.resetReplay();
+    }
+
     replay() {
         this.replayService.startReplay();
     }
