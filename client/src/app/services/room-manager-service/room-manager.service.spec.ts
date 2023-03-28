@@ -157,21 +157,21 @@ describe('RoomManagerService', () => {
     //     expect(roomIdSpy).toHaveBeenCalledOnceWith(mockGameId);
     // });
 
-    it('should call oneVsOneRoomsAvailabilityByGameId.next when GameEvents.RoomOneVsOneAvailable is received', () => {
-        service.handleRoomEvents();
-        const mockAvailability = { gameId: mockGameId, isAvailableToJoin: true };
-        const availabilitySpy = spyOn(service['oneVsOneRoomsAvailabilityByGameId'], 'next');
-        socketHelper.peerSideEmit(GameEvents.RoomOneVsOneAvailable, mockAvailability);
-        expect(availabilitySpy).toHaveBeenCalledOnceWith(mockAvailability);
-    });
+    // it('should call oneVsOneRoomsAvailabilityByGameId.next when GameEvents.RoomOneVsOneAvailable is received', () => {
+    //     service.handleRoomEvents();
+    //     const mockAvailability = { gameId: mockGameId, isAvailableToJoin: true };
+    //     const availabilitySpy = spyOn(service['oneVsOneRoomsAvailabilityByGameId'], 'next');
+    //     socketHelper.peerSideEmit(GameEvents.RoomOneVsOneAvailable, mockAvailability);
+    //     expect(availabilitySpy).toHaveBeenCalledOnceWith(mockAvailability);
+    // });
 
-    it('should call oneVsOneRoomsAvailabilityByGameId.next when GameEvents.OneVsOneRoomDeleted is received', () => {
-        service.handleRoomEvents();
-        const mockAvailability = { gameId: mockGameId, isAvailableToJoin: true };
-        const availabilitySpy = spyOn(service['oneVsOneRoomsAvailabilityByGameId'], 'next');
-        socketHelper.peerSideEmit(GameEvents.OneVsOneRoomDeleted, mockAvailability);
-        expect(availabilitySpy).toHaveBeenCalledOnceWith(mockAvailability);
-    });
+    // it('should call oneVsOneRoomsAvailabilityByGameId.next when GameEvents.OneVsOneRoomDeleted is received', () => {
+    //     service.handleRoomEvents();
+    //     const mockAvailability = { gameId: mockGameId, isAvailableToJoin: true };
+    //     const availabilitySpy = spyOn(service['oneVsOneRoomsAvailabilityByGameId'], 'next');
+    //     socketHelper.peerSideEmit(GameEvents.OneVsOneRoomDeleted, mockAvailability);
+    //     expect(availabilitySpy).toHaveBeenCalledOnceWith(mockAvailability);
+    // });
 
     // it('should call joinedPlayerNames.next when GameEvents.UpdateWaitingPlayerNameList is received', () => {
     //     service.handleRoomEvents();

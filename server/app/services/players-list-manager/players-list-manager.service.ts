@@ -82,15 +82,12 @@ export class PlayersListManagerService {
         );
     }
 
-    deleteJoinedPlayerByPlayerId(playerId: string): string {
-        const gameId = this.getGameIdByPlayerId(playerId);
-        if (!gameId) return;
-        const playerNames = this.joinedPlayersByGameId.get(gameId);
+    deleteJoinedPlayerByPlayerId(playerId: string, gameId: string) {
+        const playerNames = this.joinedPlayersByGameId?.get(gameId);
         const playerIndex = playerNames.findIndex((player) => player.playerId === playerId);
         if (playerIndex === -1) return;
         playerNames.splice(playerIndex, 1);
         this.joinedPlayersByGameId.set(gameId, playerNames);
-        return gameId;
     }
 
     deleteJoinedPlayersByGameId(gameId: string): void {
