@@ -11,6 +11,7 @@ import { GameListsManagerService } from './services/game-lists-manager/game-list
 import { GameService } from './services/game/game.service';
 import { HistoryService } from './services/history/history.service';
 import { MessageManagerService } from './services/message-manager/message-manager.service';
+import { PlayersListManagerService } from './services/players-list-manager/players-list-manager.service';
 
 @Module({
     imports: [
@@ -38,6 +39,7 @@ import { MessageManagerService } from './services/message-manager/message-manage
         GameListsManagerService,
         MessageManagerService,
         HistoryService,
+        PlayersListManagerService,
     ],
 })
 export class AppModule {}

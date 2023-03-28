@@ -16,6 +16,8 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
     private playerNamesSubscription: Subscription;
     private countdownSubscription: Subscription;
     private acceptedPlayerSubscription: Subscription;
+    private deletedGameIdSubscription: Subscription;
+    private roomAvailabilitySubscription: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
@@ -27,47 +29,37 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        this.getJoinedPlayerNamesByGameId();
-        this.roomManagerService.deletedGameId$.pipe(filter((gameId) => gameId === this.data.gameId)).subscribe(() => {
-            this.countDownBeforeClosing();
-        });
-    }
-
-    getJoinedPlayerNamesByGameId() {
-        this.playerNamesSubscription = this.roomManagerService.joinedPlayerNamesByGameId$
-            .pipe(filter((data) => data.gameId === this.data.gameId && !!data.playerNamesList))
-            .subscribe((data) => {
-                this.handleRefusedPlayer(data.playerNamesList);
-                this.handleAcceptedPlayer();
-            });
+        this.handleRefusedPlayer();
+        this.handleAcceptedPlayer();
+        this.handleGameCardDelete();
     }
 
     cancelJoining() {
-        this.roomManagerService.cancelJoining(this.data.gameId, this.data.player);
+        this.roomManagerService.cancelJoining(this.data.gameId);
     }
 
-    handleRefusedPlayer(playerNames: string[]) {
-        if (!playerNames.includes(this.data.player)) {
-            this.countDownBeforeClosing();
-        }
+    handleRefusedPlayer() {
+        this.roomManagerService.refusedPlayerId$.pipe(filter((playerId) => playerId === this.roomManagerService.getSocketId())).subscribe(() => {
+            this.countDownBeforeClosing('Vous avez été refusé');
+        });
     }
 
     handleAcceptedPlayer() {
-        this.acceptedPlayerSubscription = this.roomManagerService.acceptedPlayerByRoom$
-            .pipe(filter((acceptedPlayer) => acceptedPlayer?.playerName === this.data.player && acceptedPlayer.gameId === this.data.gameId))
-            .subscribe((acceptedPlayer) => {
+        this.acceptedPlayerSubscription = this.roomManagerService.roomId$.subscribe((roomId) => {
+            if (roomId) {
                 this.dialogRef.close();
-                this.navigateToGame(acceptedPlayer.roomId, acceptedPlayer.playerName);
-            });
+                this.router.navigate(['/game']);
+            }
+        });
     }
 
-    countDownBeforeClosing() {
+    countDownBeforeClosing(message: string) {
         this.countdown = TEN_SECONDS;
         const countdown$ = interval(ONE_SECOND).pipe(takeWhile(() => this.countdown > 0));
         const countdownObserver = {
             next: () => {
                 this.countdown--;
-                this.refusedMessage = `Vous avez été refusé. Vous serez redirigé dans ${this.countdown} secondes`;
+                this.refusedMessage = `${message}. Vous serez redirigé dans ${this.countdown} secondes`;
             },
             complete: () => {
                 this.dialogRef.close();
@@ -76,9 +68,9 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
         this.countdownSubscription = countdown$.subscribe(countdownObserver);
     }
 
-    navigateToGame(roomId: string, playerName: string) {
-        this.dialogRef.afterClosed().subscribe(() => {
-            this.router.navigate(['/game', roomId, playerName]);
+    handleGameCardDelete() {
+        this.deletedGameIdSubscription = this.roomManagerService.deletedGameId$.subscribe(() => {
+            this.countDownBeforeClosing('La fiche de jeu a été supprimée');
         });
     }
 
@@ -86,5 +78,7 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
         this.playerNamesSubscription?.unsubscribe();
         this.countdownSubscription?.unsubscribe();
         this.acceptedPlayerSubscription?.unsubscribe();
+        this.deletedGameIdSubscription?.unsubscribe();
+        this.roomAvailabilitySubscription?.unsubscribe();
     }
 }
