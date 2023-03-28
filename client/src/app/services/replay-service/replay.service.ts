@@ -18,6 +18,8 @@ export class ReplayService {
         );
     }
 
+
+
     createReplayInterval(callback: () => void, getNextInterval: () => number): ReplayInterval {
         let timeoutId: ReturnType<typeof setTimeout> | null = null;
         let remainingTime: number;
@@ -59,22 +61,27 @@ export class ReplayService {
     replaySwitcher(replayData: ReplayData) {
         switch (replayData.action) {
             case ReplayAction.ClicDiffFound:
-                // this.gameAreaService.clickDiffFound(action.timestamp);
+                console.log('ClicDiffFound');
                 break;
             case ReplayAction.ClicError:
                 // this.gameAreaService.clickError(action.timestamp);
+                console.log('ClicError');
                 break;
             case ReplayAction.CaptureMessage:
                 // this.gameAreaService.captureMessage(action.timestamp);
+                console.log('CaptureMessage');
                 break;
             case ReplayAction.ActivateCheat:
                 // this.gameAreaService.activateCheat(action.timestamp);
+                console.log('ActivateCheat');
                 break;
             case ReplayAction.DeactivateCheat:
                 // this.gameAreaService.deactivateCheat(action.timestamp);
+                console.log('DeactivateCheat');
                 break;
             case ReplayAction.UseHint:
                 // this.gameAreaService.useHint(action.timestamp);
+                console.log('UseHint');
                 break;
             default:
                 break;
