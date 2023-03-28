@@ -6,3 +6,8 @@ export enum Action {
     DeactivateCheat = 'DeactivateCheat',
     UseHint = 'UseHint',
 }
+
+export interface ReplayAction {
+    action: Action;
+    timestamp: number;
+}
