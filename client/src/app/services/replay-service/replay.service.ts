@@ -5,7 +5,10 @@ import { ReplayInterval } from '@app/interfaces/replay-interval';
     providedIn: 'root',
 })
 export class ReplayService {
-    constructor() {}
+    private replayInterval: ReplayInterval | null = null;
+    constructor() {
+        this.replayInterval = this.createReplayInterval(this.startReplay, 1000);
+    }
 
     createReplayInterval(callback: () => void, interval: number): ReplayInterval {
         let timeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -44,5 +47,9 @@ export class ReplayService {
         };
 
         return { start, pause, resume, cancel };
+    }
+
+    startReplay() {
+        console.log('startReplay');
     }
 }
