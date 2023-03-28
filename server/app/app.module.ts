@@ -1,14 +1,15 @@
 import { Logger, Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { GameService } from './services/game/game.service';
+import { MongooseModule } from '@nestjs/mongoose';
 import { GameController } from './controllers/game/game.controller';
-import { DatabaseService } from './services/database/database.service';
 import { GameGateway } from './gateways/game/game.gateway';
-import { ClassicModeService } from './services/classic-mode/classic-mode.service';
-import { GameListsManagerService } from './services/game-lists-manager/game-lists-manager.service';
 import { Game, gameSchema } from './model/database/game';
 import { GameCard, gameCardSchema } from './model/database/game-card';
+import { ClassicModeService } from './services/classic-mode/classic-mode.service';
+import { DatabaseService } from './services/database/database.service';
+import { GameListsManagerService } from './services/game-lists-manager/game-lists-manager.service';
+import { GameService } from './services/game/game.service';
+import { HistoryService } from './services/history/history.service';
 import { MessageManagerService } from './services/message-manager/message-manager.service';
 
 @Module({
@@ -27,6 +28,16 @@ import { MessageManagerService } from './services/message-manager/message-manage
         ]),
     ],
     controllers: [GameController],
-    providers: [Logger, GameService, DatabaseService, ConfigService, GameGateway, ClassicModeService, GameListsManagerService, MessageManagerService],
+    providers: [
+        Logger,
+        GameService,
+        DatabaseService,
+        ConfigService,
+        GameGateway,
+        ClassicModeService,
+        GameListsManagerService,
+        MessageManagerService,
+        HistoryService,
+    ],
 })
 export class AppModule {}
