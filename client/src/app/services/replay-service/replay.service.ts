@@ -8,17 +8,17 @@ import { ReplayInterval } from '@app/interfaces/replay-interval';
 })
 export class ReplayService {
     private replayInterval: ReplayInterval;
-    private replayActions: ReplayData[] = [];
+    private replayEvents: ReplayData[] = [];
     private currentReplayIndex: number = 0;
     constructor(/* private readonly gameAreaService: GameAreaService*/) {
         this.replayInterval = this.createReplayInterval(
-            () => this.replaySwitcher(this.replayActions[this.currentReplayIndex]),
+            () => this.replaySwitcher(this.replayEvents[this.currentReplayIndex]),
             () => this.getNextInterval(),
         );
     }
 
     addReplayData(action: ReplayAction, timestamp: number) {
-        this.replayActions.push({ action, timestamp } as ReplayData);
+        this.replayEvents.push({ action, timestamp } as ReplayData);
     }
 
     createReplayInterval(callback: () => void, getNextInterval: () => number): ReplayInterval {
@@ -27,12 +27,14 @@ export class ReplayService {
         let startTime: number;
 
         const start = () => {
-            startTime = Date.now();
-            remainingTime = getNextInterval();
-            timeoutId = setTimeout(() => {
-                callback();
-                start();
-            }, remainingTime);
+            if (this.currentReplayIndex < this.replayEvents.length) {
+                startTime = Date.now();
+                remainingTime = getNextInterval();
+                timeoutId = setTimeout(() => {
+                    callback();
+                    start();
+                }, remainingTime);
+            }
         };
 
         const pause = () => {
@@ -60,6 +62,8 @@ export class ReplayService {
     }
 
     replaySwitcher(replayData: ReplayData) {
+        console.log(this.currentReplayIndex);
+        console.log(this.replayEvents.length);
         switch (replayData.action) {
             case ReplayAction.ClicDiffFound:
                 console.log('ClicDiffFound');
@@ -87,14 +91,19 @@ export class ReplayService {
             default:
                 break;
         }
+        this.currentReplayIndex++;
+        if (this.currentReplayIndex === this.replayEvents.length) {
+            this.replayInterval.cancel();
+            console.log('replay finished');
+        }
     }
 
     getNextInterval(): number {
         const nextActionIndex = this.currentReplayIndex + 1;
-        if (nextActionIndex < this.replayActions.length) {
-            return this.replayActions[nextActionIndex].timestamp - this.replayActions[this.currentReplayIndex].timestamp;
+        if (nextActionIndex < this.replayEvents.length) {
+            return this.replayEvents[nextActionIndex].timestamp - this.replayEvents[this.currentReplayIndex].timestamp;
         }
-        return 0;
+        return 1;
     }
 
     startReplay() {
