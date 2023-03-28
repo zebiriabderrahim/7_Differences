@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { ReplayAction } from '@app/enum/replay-actions';
+import { ReplayActions } from '@app/enum/replay-actions';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { ReplayService } from '@app/services/replay-service/replay.service';
@@ -130,7 +130,7 @@ export class ClassicSystemService implements OnDestroy {
             if (data.players) {
                 this.players.next(data.players);
             }
-            this.replayService.addReplayData(ReplayAction.GameStart, Date.now());
+            this.replayService.addReplayData(ReplayActions.StartGame, Date.now());
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[] }) => {
             if (data.playerId === this.getSocketId()) {
