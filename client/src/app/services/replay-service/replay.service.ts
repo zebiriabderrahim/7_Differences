@@ -72,6 +72,10 @@ export class ReplayService {
     replaySwitcher(replayData: ReplayEvent) {
         // TODO: Remove console.log
         switch (replayData.action) {
+            case ReplayActions.StartGame:
+                // this.gameAreaService.startGame(replayData.timestamp);
+                console.log('StartGame');
+                break;
             case ReplayActions.ClickFound:
                 console.log('ClickFound');
                 break;
