@@ -1,7 +1,7 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { TEN_SECONDS, ONE_SECOND } from '@app/constants/constants';
+import { ONE_SECOND, TEN_SECONDS } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameCardActions } from '@common/game-interfaces';
 import { filter, interval, Subscription, takeWhile } from 'rxjs';
@@ -18,6 +18,7 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
     actions: typeof GameCardActions;
     private playerNamesSubscription?: Subscription;
     private countdownSubscription: Subscription;
+    private deletedGameIdSubscription: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
@@ -31,17 +32,21 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         this.actions = GameCardActions;
     }
     ngOnInit(): void {
-        this.getJoinedPlayerNamesByGameId();
-        this.roomManagerService.deletedGameId$.pipe(filter((gameId) => gameId === this.data.gameId)).subscribe(() => {
-            this.countDownBeforeClosing();
-        });
+        // this.roomManagerService.joinedPlayerNames(this.data.gameId);
+        this.loadPlayerNamesList();
+        this.handleGameCardDelete();
     }
 
-    getJoinedPlayerNamesByGameId(): void {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    toArray(obj: any): any[] {
+        return Object.values(obj);
+    }
+
+    loadPlayerNamesList(): void {
         this.playerNamesSubscription = this.roomManagerService.joinedPlayerNamesByGameId$
-            .pipe(filter((data) => data.gameId === this.data.gameId && !!data.playerNamesList))
-            .subscribe((data) => {
-                this.playerNames = data.playerNamesList;
+            .pipe(filter((playerNamesList) => !!playerNamesList))
+            .subscribe((playerNamesList) => {
+                this.playerNames = playerNamesList;
             });
     }
 
@@ -50,22 +55,12 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
     }
 
     acceptPlayer(playerName: string) {
-        this.playerNames.forEach((player) => {
-            if (player !== playerName) {
-                this.refusePlayer(player);
-            }
-        });
-        this.roomManagerService.acceptPlayer(this.data.gameId, this.data.roomId, this.data.player);
-        this.dialogRef.afterClosed().subscribe(() => {
-            this.router.navigate(['/game', this.data.roomId, this.data.player]);
-        });
+        this.roomManagerService.acceptPlayer(this.data.gameId, this.data.roomId, playerName);
+        this.router.navigate(['/game']);
     }
 
     undoCreateOneVsOneRoom() {
-        this.roomManagerService.deleteCreatedOneVsOneRoom(this.data.gameId);
-        this.playerNames.forEach((player) => {
-            this.refusePlayer(player);
-        });
+        this.roomManagerService.deleteCreatedOneVsOneRoom(this.data.roomId);
     }
 
     countDownBeforeClosing() {
@@ -74,7 +69,7 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         const countdownObserver = {
             next: () => {
                 this.countdown--;
-                this.refusedMessage = `La fiche de jeu a été supprimée. Vous serez redirigé dans ${this.countdown} secondes`;
+                this.refusedMessage = `La fiche de jeu a été supprimée . Vous serez redirigé dans ${this.countdown} secondes`;
             },
             complete: () => {
                 this.dialogRef.close();
@@ -83,8 +78,17 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         this.countdownSubscription = countdown$.subscribe(countdownObserver);
     }
 
+    handleGameCardDelete() {
+        this.deletedGameIdSubscription = this.roomManagerService.deletedGameId$
+            .pipe(filter((gameId) => gameId === this.data.gameId))
+            .subscribe(() => {
+                this.countDownBeforeClosing();
+            });
+    }
+
     ngOnDestroy(): void {
         this.playerNamesSubscription?.unsubscribe();
         this.countdownSubscription?.unsubscribe();
+        this.deletedGameIdSubscription?.unsubscribe();
     }
 }

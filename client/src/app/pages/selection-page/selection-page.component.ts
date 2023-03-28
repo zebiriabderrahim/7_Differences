@@ -4,7 +4,8 @@ import { AfterViewInit, Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { CarouselPaginator, GameCard } from '@common/game-interfaces';
+import { CarouselPaginator } from '@common/game-interfaces';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-selection-page',
@@ -17,6 +18,7 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
     readonly selectionRoute: string;
     readonly configRoute: string;
     private index: number;
+    private reloadSubscription: Subscription;
     constructor(
         private readonly communicationService: CommunicationService,
         public router: Router,
@@ -27,49 +29,47 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
         this.selectionRoute = '/selection';
         this.configRoute = '/config';
         this.index = 0;
+        this.roomManagerService.connect();
         this.roomManagerService.handleRoomEvents();
     }
 
     ngAfterViewInit(): void {
         this.loadGameCarrousel();
+        this.handleGameCardsUpdate();
     }
 
     loadGameCarrousel() {
         this.communicationService.loadGameCarrousel(this.index).subscribe((gameCarrousel) => {
             if (gameCarrousel) {
                 this.gameCarrousel = gameCarrousel;
-                this.handleGameCardDelete(this.gameCarrousel.gameCards);
             }
-        });
-    }
-
-    handleGameCardDelete(gameCards: GameCard[]) {
-        this.roomManagerService.deletedGameId$.subscribe((gameId) => {
-            this.gameCarrousel.gameCards = gameCards.filter((gameCard) => gameCard._id !== gameId);
         });
     }
 
     nextCarrousel() {
         if (this.gameCarrousel.hasNext) {
-            this.communicationService.loadGameCarrousel(++this.index).subscribe((gameCarrousel) => {
-                if (gameCarrousel) {
-                    this.gameCarrousel = gameCarrousel;
-                }
-            });
+            ++this.index;
+            this.loadGameCarrousel();
         }
     }
 
     previousCarrousel() {
         if (this.gameCarrousel.hasPrevious) {
-            this.communicationService.loadGameCarrousel(--this.index).subscribe((gameCarrousel) => {
-                if (gameCarrousel) {
-                    this.gameCarrousel = gameCarrousel;
-                }
-            });
+            --this.index;
+            this.loadGameCarrousel();
         }
     }
 
+    handleGameCardsUpdate() {
+        this.reloadSubscription = this.roomManagerService.isReloadNeeded$.subscribe((isGameCardsNeedToBeReloaded) => {
+            if (isGameCardsNeedToBeReloaded) {
+                this.index = 0;
+                this.loadGameCarrousel();
+            }
+        });
+    }
+
     ngOnDestroy(): void {
-        this.roomManagerService.disconnect();
+        this.reloadSubscription?.unsubscribe();
     }
 }
