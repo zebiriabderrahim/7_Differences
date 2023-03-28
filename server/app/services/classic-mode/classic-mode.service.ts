@@ -156,7 +156,7 @@ export class ClassicModeService {
         this.roomAvailability.delete(gameId);
     }
 
-    endGame(socket: io.Socket, server: io.Server): void {
+    async endGame(socket: io.Socket, server: io.Server): Promise<void> {
         const roomId = this.getRoomIdFromSocket(socket);
         const room = this.getRoomById(roomId);
         if (!room) return;
@@ -164,6 +164,7 @@ export class ClassicModeService {
         if (room && room.clientGame.differencesCount === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicSolo) {
             room.endMessage = `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo!`;
             server.to(roomId).emit(GameEvents.EndGame, room.endMessage);
+            await this.playersListManagerService.updateTopBestTime(room, player.name);
             this.rooms.delete(roomId);
         } else if (
             room &&
@@ -172,6 +173,7 @@ export class ClassicModeService {
         ) {
             room.endMessage = `${player.name} remporte la partie avec ${player.diffData.differencesFound} différences trouvées!`;
             server.to(roomId).emit(GameEvents.EndGame, room.endMessage);
+            await this.playersListManagerService.updateTopBestTime(room, player.name);
             this.playersListManagerService.deleteJoinedPlayersByGameId(room.clientGame.id);
             this.rooms.delete(roomId);
         }
@@ -202,7 +204,10 @@ export class ClassicModeService {
     }
 
     getHostIdByGameId(gameId: string): string {
-        return this.roomAvailability.get(gameId)?.hostId;
+        const roomTarget = Array.from(this.rooms.values()).find(
+            (room) => room.clientGame.id === gameId && room.clientGame.mode === GameModes.ClassicOneVsOne && room.timer === 0,
+        );
+        return roomTarget?.player1.playerId;
     }
 
     saveRoom(room: ClassicPlayRoom): void {
