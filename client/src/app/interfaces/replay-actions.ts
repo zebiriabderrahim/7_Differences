@@ -1,6 +1,6 @@
-import { Action } from '@app/enum/replay-actions';
+import { ReplayAction } from '@app/enum/replay-actions';
 
-export interface ReplayAction {
-    action: Action;
+export interface ReplayActionData {
+    action: ReplayAction;
     timestamp: number;
 }

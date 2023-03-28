@@ -1,4 +1,4 @@
-export enum Action {
+export enum ReplayAction {
     ClicDiffFound = 'ClicDiffFound',
     ClicError = 'ClicError',
     CaptureMessage = 'CaptureMessage',
