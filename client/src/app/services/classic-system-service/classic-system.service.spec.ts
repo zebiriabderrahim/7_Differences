@@ -14,6 +14,7 @@ import { Coordinate } from '@common/coordinate';
 import { ChatMessage, Differences, GameEvents, MessageEvents, MessageTag, Players } from '@common/game-interfaces';
 import { Subject } from 'rxjs';
 import { Socket } from 'socket.io-client';
+import { ReplayService } from '../replay-service/replay.service';
 import { ClassicSystemService } from './classic-system.service';
 
 class SocketClientServiceMock extends ClientSocketService {
@@ -103,7 +104,12 @@ describe('ClassicSystemService', () => {
 
     beforeEach(() => {
         service = TestBed.inject(ClassicSystemService);
-        service = new ClassicSystemService(socketServiceMock, TestBed.inject(GameAreaService), TestBed.inject(SoundService));
+        service = new ClassicSystemService(
+            socketServiceMock,
+            TestBed.inject(GameAreaService),
+            TestBed.inject(SoundService),
+            TestBed.inject(ReplayService),
+        );
         gameAreaService = TestBed.inject(GameAreaService);
         service['currentGame'].next(mockClientSideGame);
     });
