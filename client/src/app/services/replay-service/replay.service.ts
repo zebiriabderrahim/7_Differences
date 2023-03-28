@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { REPLAY_LIMITER } from '@app/constants/replay';
-import { ReplayAction } from '@app/enum/replay-actions';
+import { ReplayActions } from '@app/enum/replay-actions';
 import { ReplayEvent } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
 
@@ -23,7 +23,7 @@ export class ReplayService {
         this.currentReplayIndex = 0;
     }
 
-    addReplayData(action: ReplayAction, timestamp: number) {
+    addReplayData(action: ReplayActions, timestamp: number) {
         this.replayEvents.push({ action, timestamp } as ReplayEvent);
     }
 
@@ -72,26 +72,26 @@ export class ReplayService {
     replaySwitcher(replayData: ReplayEvent) {
         // TODO: Remove console.log
         switch (replayData.action) {
-            case ReplayAction.ClicDiffFound:
-                console.log('ClicDiffFound');
+            case ReplayActions.ClickFound:
+                console.log('ClickFound');
                 break;
-            case ReplayAction.ClicError:
+            case ReplayActions.ClickError:
                 // this.gameAreaService.clickError(action.timestamp);
-                console.log('ClicError');
+                console.log('ClickError');
                 break;
-            case ReplayAction.CaptureMessage:
+            case ReplayActions.CaptureMessage:
                 // this.gameAreaService.captureMessage(action.timestamp);
                 console.log('CaptureMessage');
                 break;
-            case ReplayAction.ActivateCheat:
+            case ReplayActions.ActivateCheat:
                 // this.gameAreaService.activateCheat(action.timestamp);
                 console.log('ActivateCheat');
                 break;
-            case ReplayAction.DeactivateCheat:
+            case ReplayActions.DeactivateCheat:
                 // this.gameAreaService.deactivateCheat(action.timestamp);
                 console.log('DeactivateCheat');
                 break;
-            case ReplayAction.UseHint:
+            case ReplayActions.UseHint:
                 // this.gameAreaService.useHint(action.timestamp);
                 console.log('UseHint');
                 break;
