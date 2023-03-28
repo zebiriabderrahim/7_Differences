@@ -62,8 +62,7 @@ export class ReplayService {
     }
 
     replaySwitcher(replayData: ReplayData) {
-        console.log(this.currentReplayIndex);
-        console.log(this.replayEvents.length);
+      // TODO: Remove console.log
         switch (replayData.action) {
             case ReplayAction.ClicDiffFound:
                 console.log('ClicDiffFound');
@@ -93,14 +92,19 @@ export class ReplayService {
         }
         this.currentReplayIndex++;
         if (this.currentReplayIndex === this.replayEvents.length) {
-            this.replayInterval.cancel();
-            console.log('replay finished');
+            this.cancelReplay();
         }
     }
 
     getNextInterval(): number {
         const nextActionIndex = this.currentReplayIndex + 1;
         if (nextActionIndex < this.replayEvents.length) {
+            // TODO: Remove console.log
+            const milliseconds = this.replayEvents[nextActionIndex].timestamp - this.replayEvents[this.currentReplayIndex].timestamp;
+            const seconds = Math.floor(milliseconds / 1000);
+            const remainingMilliseconds = milliseconds % 1000;
+            console.log(`${seconds}.${remainingMilliseconds} s`);
+            // TODO: Remove console.log
             return this.replayEvents[nextActionIndex].timestamp - this.replayEvents[this.currentReplayIndex].timestamp;
         }
         return 1;
@@ -119,5 +123,10 @@ export class ReplayService {
     resumeReplay() {
         console.log('resumeReplay');
         this.replayInterval.resume();
+    }
+
+    cancelReplay() {
+        console.log('cancelReplay');
+        this.replayInterval.cancel();
     }
 }
