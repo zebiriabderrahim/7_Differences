@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
+import { ReplayActionData } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ReplayService {
-    private replayInterval: ReplayInterval | null = null;
+    private replayInterval: ReplayInterval;
+    private replayActions: ReplayActionData[] = [];
     constructor() {
         this.replayInterval = this.createReplayInterval(this.startReplay, 1000);
     }
@@ -51,5 +53,18 @@ export class ReplayService {
 
     startReplay() {
         console.log('startReplay');
+        this.replayInterval.start();
     }
+
+    pauseReplay() {
+        console.log('pauseReplay');
+        this.replayInterval.pause();
+    }
+
+    resumeReplay() {
+        console.log('resumeReplay');
+        this.replayInterval.resume();
+    }
+
+    
 }
