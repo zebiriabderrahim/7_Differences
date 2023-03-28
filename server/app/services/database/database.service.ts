@@ -1,11 +1,15 @@
+// Services are needed for the dialog and dialog needs to talk to the parent component
+/* eslint-disable max-params */
 // Id comes from database to allow _id
 /* eslint-disable no-underscore-dangle */
 import { Game, GameDocument } from '@app/model/database/game';
 import { GameCard, GameCardDocument } from '@app/model/database/game-card';
+import { GameConstants, GameConstantsDocument } from '@app/model/database/game-config-constants';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
+import { GameConstantsDto } from '@app/model/dto/game/game-constants.dto';
 import { GameListsManagerService } from '@app/services/game-lists-manager/game-lists-manager.service';
 import { DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
-import { CarouselPaginator, GameConfigConst, GameModes, PlayerTime } from '@common/game-interfaces';
+import { CarouselPaginator, GameModes, PlayerTime } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as fs from 'fs';
@@ -13,7 +17,7 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class DatabaseService {
-    private defaultConstants: GameConfigConst = {
+    private defaultConstants: GameConstants = {
         countdownTime: DEFAULT_COUNTDOWN_VALUE,
         penaltyTime: DEFAULT_HINT_PENALTY,
         bonusTime: DEFAULT_BONUS_TIME,
@@ -21,8 +25,11 @@ export class DatabaseService {
     constructor(
         @InjectModel(Game.name) private readonly gameModel: Model<GameDocument>,
         @InjectModel(GameCard.name) private readonly gameCardModel: Model<GameCardDocument>,
+        @InjectModel(GameConstants.name) private readonly gameConstantsModel: Model<GameConstantsDocument>,
         private readonly gameListManager: GameListsManagerService,
-    ) {}
+    ) {
+        this.populateGameConstants();
+    }
 
     async getGamesCarrousel(): Promise<CarouselPaginator[]> {
         if (this.gameListManager['carouselGames'].length === 0) {
@@ -43,8 +50,8 @@ export class DatabaseService {
         return await this.gameModel.findById(id, '-__v').exec();
     }
 
-    getConfigConstants(): GameConfigConst {
-        return this.defaultConstants;
+    async getGameConstants(): Promise<GameConstants> {
+        return await this.gameConstantsModel.findOne().select('-__v -_id').exec();
     }
 
     async verifyIfGameExists(gameName: string): Promise<boolean> {
@@ -115,5 +122,23 @@ export class DatabaseService {
     async rebuildGameCarousel(): Promise<void> {
         const gameCardsList: GameCard[] = await this.gameCardModel.find().exec();
         this.gameListManager.buildGameCarousel(gameCardsList);
+    }
+
+    async populateGameConstants(): Promise<void> {
+        try {
+            if (!(await this.gameConstantsModel.exists({}))) {
+                await this.gameConstantsModel.create(this.defaultConstants);
+            }
+        } catch (error) {
+            return Promise.reject(`Failed to populate game constants --> ${error}`);
+        }
+    }
+
+    async updateGameConstants(gameConstantsDto: GameConstantsDto) {
+        try {
+            await this.gameConstantsModel.findOneAndUpdate({}, gameConstantsDto).exec();
+        } catch (error) {
+            return Promise.reject(`Failed to update config constants --> ${error}`);
+        }
     }
 }
