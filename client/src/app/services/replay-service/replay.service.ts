@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ReplayAction } from '@app/enum/replay-actions';
-import { ReplayData } from '@app/interfaces/replay-actions';
+import { ReplayEvent } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
 
 @Injectable({
@@ -8,7 +8,7 @@ import { ReplayInterval } from '@app/interfaces/replay-interval';
 })
 export class ReplayService {
     private replayInterval: ReplayInterval;
-    private replayEvents: ReplayData[] = [];
+    private replayEvents: ReplayEvent[] = [];
     private currentReplayIndex: number = 0;
     constructor(/* private readonly gameAreaService: GameAreaService*/) {
         this.replayInterval = this.createReplayInterval(
@@ -18,7 +18,7 @@ export class ReplayService {
     }
 
     addReplayData(action: ReplayAction, timestamp: number) {
-        this.replayEvents.push({ action, timestamp } as ReplayData);
+        this.replayEvents.push({ action, timestamp } as ReplayEvent);
     }
 
     createReplayInterval(callback: () => void, getNextInterval: () => number): ReplayInterval {
@@ -34,6 +34,8 @@ export class ReplayService {
                     callback();
                     start();
                 }, remainingTime);
+            } else {
+                this.cancelReplay();
             }
         };
 
@@ -61,8 +63,8 @@ export class ReplayService {
         return { start, pause, resume, cancel };
     }
 
-    replaySwitcher(replayData: ReplayData) {
-      // TODO: Remove console.log
+    replaySwitcher(replayData: ReplayEvent) {
+        // TODO: Remove console.log
         switch (replayData.action) {
             case ReplayAction.ClicDiffFound:
                 console.log('ClicDiffFound');
@@ -91,9 +93,6 @@ export class ReplayService {
                 break;
         }
         this.currentReplayIndex++;
-        if (this.currentReplayIndex === this.replayEvents.length) {
-            this.cancelReplay();
-        }
     }
 
     getNextInterval(): number {
@@ -128,5 +127,6 @@ export class ReplayService {
     cancelReplay() {
         console.log('cancelReplay');
         this.replayInterval.cancel();
+        this.currentReplayIndex = 0;
     }
 }
