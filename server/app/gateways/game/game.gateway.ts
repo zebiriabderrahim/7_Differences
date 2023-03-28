@@ -1,4 +1,5 @@
 import { ClassicModeService } from '@app/services/classic-mode/classic-mode.service';
+import { HistoryService } from '@app/services/history/history.service';
 import { Coordinate } from '@common/coordinate';
 import { AcceptedPlayer, ChatMessage, GameEvents, GameModes, MessageEvents, WaitingPlayerNameList } from '@common/game-interfaces';
 import { Injectable, Logger } from '@nestjs/common';
@@ -26,7 +27,11 @@ import { DELAY_BEFORE_EMITTING_TIME } from './game.gateway.constants';
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
     @WebSocketServer() private server: Server;
 
-    constructor(private readonly logger: Logger, private readonly classicModeService: ClassicModeService) {}
+    constructor(
+        private readonly logger: Logger,
+        private readonly classicModeService: ClassicModeService,
+        private readonly historyService: HistoryService,
+    ) {}
 
     @SubscribeMessage(GameEvents.CreateSoloGame)
     async createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('playerName') playerName: string, @MessageBody('gameId') gameId: string) {
@@ -50,6 +55,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
             room.player2.playerId = socket.id;
         }
         this.classicModeService.saveRoom(room);
+        console.log('before create entry');
+        this.historyService.createEntry(room);
         this.server.to(roomId).emit(GameEvents.GameStarted, {
             clientGame: room.clientGame,
             players: { player1: room.player1, player2: room.player2 },

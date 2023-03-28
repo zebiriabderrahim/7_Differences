@@ -6,9 +6,10 @@ export interface Players {
 }
 
 export interface GameHistory {
+    id?: string,
     date: string,
     startingHour: string,
-    duration: string,
+    duration: number,
     gameMode: string,
     player1: PlayerInfo,
     player2?: PlayerInfo,
@@ -98,7 +99,10 @@ export interface WaitingPlayerNameList {
     playerNamesList: string[];
 }
 
-
+export enum HistoryEvents {
+    EntryAdded = 'entryAdded',
+    EntriesCleared = 'entriesCleared',
+}
 
 
 export enum GameEvents {

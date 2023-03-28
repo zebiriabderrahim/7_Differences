@@ -5,8 +5,8 @@
 import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
+import { CHARACTERS, KEY_SIZE } from '@common/constants';
 import { Coordinate } from '@common/coordinate';
-import { KEY_SIZE, CHARACTERS } from '@common/constants';
 import {
     ChatMessage,
     ClassicPlayRoom,
@@ -14,6 +14,7 @@ import {
     Differences,
     GameEvents,
     GameModes,
+    HistoryEvents,
     MessageEvents,
     Player,
     PlayerNameAvailability,
@@ -23,6 +24,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as io from 'socket.io';
+import { HistoryService } from '@app/services/history/history.service';
 
 @Injectable()
 export class ClassicModeService {
@@ -30,10 +32,18 @@ export class ClassicModeService {
     private joinedPlayerNamesByGameId: Map<string, Player[]>;
     private roomAvailability: Map<string, RoomAvailability>;
 
-    constructor(private readonly gameService: GameService, private readonly messageManager: MessageManagerService) {
+    constructor(
+        private readonly gameService: GameService,
+        private readonly messageManager: MessageManagerService,
+        private readonly historyService: HistoryService,
+    ) {
         this.rooms = new Map<string, ClassicPlayRoom>();
         this.joinedPlayerNamesByGameId = new Map<string, Player[]>();
         this.roomAvailability = new Map<string, RoomAvailability>();
+    }
+
+    get history() {
+        return this.historyService.history;
     }
 
     async createRoom(playerName: string, gameId: string): Promise<ClassicPlayRoom> {
@@ -154,15 +164,20 @@ export class ClassicModeService {
             server.to(roomId).emit(GameEvents.EndGame, room.endMessage);
             this.rooms.delete(roomId);
             this.joinedPlayerNamesByGameId.delete(room.clientGame.id);
+            this.historyService.closeEntry(room.clientGame.id);
+            server.emit(HistoryEvents.EntryAdded, this.history);
         } else if (
             room &&
             Math.ceil(room.clientGame.differencesCount / 2) === player.diffData.differencesFound &&
             room.clientGame.mode === GameModes.ClassicOneVsOne
         ) {
             room.endMessage = `${player.name} remporte la partie avec ${player.diffData.differencesFound} différences trouvées!`;
+            this.historyService.markPlayerAsWinner(room.clientGame.id, player.name);
             server.to(roomId).emit(GameEvents.EndGame, room.endMessage);
             this.rooms.delete(roomId);
             this.joinedPlayerNamesByGameId.delete(room.clientGame.id);
+            this.historyService.closeEntry(room.clientGame.id);
+            server.emit(HistoryEvents.EntryAdded, this.history);
         }
     }
 
@@ -314,6 +329,7 @@ export class ClassicModeService {
             const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
             room.endMessage = "L'adversaire a abandonné la partie!";
             const localMessage: ChatMessage = this.messageManager.getQuitMessage(player.name);
+            this.historyService.markPlayerAsQuitter(room.clientGame.id, player.name);
             server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
             this.deleteCreatedRoom(roomId, server);
             this.deleteOneVsOneRoomAvailability(room.clientGame.id, server);
