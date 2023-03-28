@@ -5,7 +5,7 @@ import { GameCard, GameCardDocument } from '@app/model/database/game-card';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameListsManagerService } from '@app/services/game-lists-manager/game-lists-manager.service';
 import { DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
-import { CarouselPaginator, GameConfigConst } from '@common/game-interfaces';
+import { CarouselPaginator, GameConfigConst, GameModes, PlayerTime } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as fs from 'fs';
@@ -31,7 +31,14 @@ export class DatabaseService {
         }
         return this.gameListManager.getCarouselGames();
     }
-
+    async getTopTimesGameById(gameId: string, gameMode: string): Promise<PlayerTime[]> {
+        const mode = gameMode === GameModes.ClassicSolo ? 'soloTopTime' : 'oneVsOneTopTime';
+        const topTimes = await this.gameCardModel
+            .findById(gameId)
+            .sort({ [mode]: -1 })
+            .exec();
+        return topTimes[mode];
+    }
     async getGameById(id: string): Promise<Game> {
         return await this.gameModel.findById(id, '-__v').exec();
     }
@@ -89,10 +96,24 @@ export class DatabaseService {
             await this.gameModel.findByIdAndDelete(id).exec();
             const gameName = (await this.gameCardModel.findByIdAndDelete(id).exec()).name;
             this.deleteGameAssetsByName(gameName);
-            const gameCardsList: GameCard[] = await this.gameCardModel.find().exec();
-            this.gameListManager.buildGameCarousel(gameCardsList);
+            await this.rebuildGameCarousel();
         } catch (error) {
             return Promise.reject(`Failed to delete game with id : ${id} --> ${error}`);
         }
+    }
+
+    async updateTopTimesGameById(id: string, gameMode: string, topTimes: PlayerTime[]): Promise<void> {
+        try {
+            const mode = gameMode === GameModes.ClassicSolo ? 'soloTopTime' : 'oneVsOneTopTime';
+            await this.gameCardModel.findByIdAndUpdate(id, { [mode]: topTimes }).exec();
+            await this.rebuildGameCarousel();
+        } catch (error) {
+            return Promise.reject(`Failed to update top times game with id : ${id} --> ${error}`);
+        }
+    }
+
+    async rebuildGameCarousel(): Promise<void> {
+        const gameCardsList: GameCard[] = await this.gameCardModel.find().exec();
+        this.gameListManager.buildGameCarousel(gameCardsList);
     }
 }

@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { Differences, GameEvents, Player, playerData, PlayerNameAvailability } from '@common/game-interfaces';
+import { ClassicPlayRoom, Differences, GameEvents, Player, playerData, PlayerNameAvailability, PlayerTime } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
+import { GameService } from '@app/services/game/game.service';
 
 @Injectable()
 export class PlayersListManagerService {
     private joinedPlayersByGameId: Map<string, Player[]>;
 
-    constructor() {
+    constructor(private readonly gameService: GameService) {
         this.joinedPlayersByGameId = new Map<string, Player[]>();
     }
 
@@ -92,5 +93,16 @@ export class PlayersListManagerService {
 
     deleteJoinedPlayersByGameId(gameId: string): void {
         this.joinedPlayersByGameId.delete(gameId);
+    }
+
+    async updateTopBestTime(room: ClassicPlayRoom, playerName: string): Promise<void> {
+        const { clientGame, timer } = room;
+        const topTimes = await this.gameService.getTopTimesGameById(clientGame.id, clientGame.mode);
+        if (topTimes[2].time > timer) {
+            const newTopTime = { name: playerName, time: timer } as PlayerTime;
+            topTimes.splice(2, 1, newTopTime);
+            topTimes.sort((a, b) => a.time - b.time);
+            await this.gameService.updateTopTimesGameById(clientGame.id, clientGame.mode, topTimes);
+        }
     }
 }
