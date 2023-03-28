@@ -9,4 +9,6 @@
     <button mat-button *ngIf="data.action === 'abandon'" mat-dialog-close>Non</button>
     <button mat-button *ngIf="data.action === 'endGame'" mat-dialog-close routerLink="/home">Retourner à la vue initiale</button>
     <button mat-button *ngIf="data.action === 'endGame'" (click)="replay()">Voir Replay</button>
+    <button mat-button *ngIf="data.action === 'endGame' && !isReplayPaused" (click)="pause()">Pause</button>
+    <button mat-button *ngIf="data.action === 'endGame' && isReplayPaused" (click)="resume()">Resume</button>
 </div>

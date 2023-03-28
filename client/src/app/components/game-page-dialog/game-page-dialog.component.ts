@@ -8,6 +8,7 @@ import { ReplayService } from '@app/services/replay-service/replay.service';
     styleUrls: ['./game-page-dialog.component.scss'],
 })
 export class GamePageDialogComponent {
+    isReplayPaused: boolean = false;
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: { action: string; message: string },
         private readonly classicSystem: ClassicSystemService,
@@ -19,5 +20,15 @@ export class GamePageDialogComponent {
 
     replay() {
         this.replayService.startReplay();
+    }
+
+    pause() {
+        this.isReplayPaused = !this.isReplayPaused;
+        this.replayService.pauseReplay();
+    }
+
+    resume() {
+        this.isReplayPaused = !this.isReplayPaused;
+        this.replayService.resumeReplay();
     }
 }
