@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { REPLAY_LIMITER } from '@app/constants/replay';
 import { ReplayAction } from '@app/enum/replay-actions';
 import { ReplayEvent } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
@@ -111,7 +112,7 @@ export class ReplayService {
             // TODO: Remove console.log
             return this.replayEvents[nextActionIndex].timestamp - this.replayEvents[this.currentReplayIndex].timestamp;
         }
-        return 1;
+        return REPLAY_LIMITER;
     }
 
     startReplay() {
