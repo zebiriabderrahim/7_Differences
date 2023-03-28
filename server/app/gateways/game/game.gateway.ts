@@ -55,7 +55,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     @SubscribeMessage(GameEvents.CheckStatus)
     checkStatus(@ConnectedSocket() socket: Socket) {
-        this.classicModeService.endGame(socket, this.server);
+        this.classicModeService.checkStatus(socket, this.server);
     }
 
     @SubscribeMessage(GameEvents.UpdateRoomOneVsOneAvailability)
