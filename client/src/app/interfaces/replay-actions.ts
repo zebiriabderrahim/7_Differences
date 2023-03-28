@@ -1,11 +1,4 @@
-export enum Action {
-    ClicDiffFound = 'ClicDiffFound',
-    ClicError = 'ClicError',
-    CaptureMessage = 'CaptureMessage',
-    ActivateCheat = 'ActivateCheat',
-    DeactivateCheat = 'DeactivateCheat',
-    UseHint = 'UseHint',
-}
+import { Action } from '@app/enum/replay-actions';
 
 export interface ReplayAction {
     action: Action;
