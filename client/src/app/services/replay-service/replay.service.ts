@@ -17,6 +17,11 @@ export class ReplayService {
         );
     }
 
+    resetReplay() {
+        this.replayEvents = [];
+        this.currentReplayIndex = 0;
+    }
+
     addReplayData(action: ReplayAction, timestamp: number) {
         this.replayEvents.push({ action, timestamp } as ReplayEvent);
     }
