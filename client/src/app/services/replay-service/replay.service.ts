@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ReplayAction } from '@app/enum/replay-actions';
-import { ReplayActionData } from '@app/interfaces/replay-actions';
+import { ReplayData } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 
@@ -9,24 +9,25 @@ import { GameAreaService } from '@app/services/game-area-service/game-area.servi
 })
 export class ReplayService {
     private replayInterval: ReplayInterval;
-    private replayActions: ReplayActionData[] = [];
-    private currentInterval: number = 0;
+    private replayActions: ReplayData[] = [];
     private currentReplayIndex: number = 0;
-    private nextInterval: number = 0;
     constructor(private readonly gameAreaService: GameAreaService) {
-        this.replayInterval = this.createReplayInterval(() => this.replaySwitcher(this.replayActions[this.currentReplayIndex]), this.nextInterval);
+        this.replayInterval = this.createReplayInterval(
+            () => this.replaySwitcher(this.replayActions[this.currentReplayIndex]),
+            () => this.getNextInterval(),
+        );
     }
 
-    createReplayInterval(callback: () => void, interval: number): ReplayInterval {
+    createReplayInterval(callback: () => void, getNextInterval: () => number): ReplayInterval {
         let timeoutId: ReturnType<typeof setTimeout> | null = null;
-        let remainingTime = interval;
+        let remainingTime: number;
         let startTime: number;
 
         const start = () => {
             startTime = Date.now();
+            remainingTime = getNextInterval();
             timeoutId = setTimeout(() => {
                 callback();
-                remainingTime = interval;
                 start();
             }, remainingTime);
         };
@@ -49,15 +50,14 @@ export class ReplayService {
             if (timeoutId) {
                 clearTimeout(timeoutId);
                 timeoutId = null;
-                remainingTime = interval;
             }
         };
 
         return { start, pause, resume, cancel };
     }
 
-    replaySwitcher(action: ReplayActionData) {
-        switch (action.action) {
+    replaySwitcher(replayData: ReplayData) {
+        switch (replayData.action) {
             case ReplayAction.ClicDiffFound:
                 // this.gameAreaService.clickDiffFound(action.timestamp);
                 break;
@@ -79,7 +79,14 @@ export class ReplayService {
             default:
                 break;
         }
-        this.nextInterval = this.replayActions[++this.currentReplayIndex].timestamp - this.currentInterval;
+    }
+
+    getNextInterval(): number {
+        const nextActionIndex = this.currentReplayIndex + 1;
+        if (nextActionIndex < this.replayActions.length) {
+            return this.replayActions[nextActionIndex].timestamp - this.replayActions[this.currentReplayIndex].timestamp;
+        }
+        return 0;
     }
 
     startReplay() {
