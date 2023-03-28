@@ -21,6 +21,7 @@ export class ClassicSystemService implements OnDestroy {
     private players: Subject<Players>;
     private cheatDifferences: Subject<Coordinate[]>;
 
+    // eslint-disable-next-line max-params
     constructor(
         private readonly clientSocket: ClientSocketService,
         private readonly gameAreaService: GameAreaService,
