@@ -1,57 +1,60 @@
-<div *ngIf="game" class="infomations-header">
-    <h1>{{ game.name }}</h1>
-    <div class="game-feedback">
-        <mat-icon class="personIcon">person</mat-icon>
-        <h1>
-            {{ player }}
-            Différences trouvées : {{ differencesFound }}
-        </h1>
-        &nbsp;
-        <h1>Temps : {{ timer * 1000 | date: 'mm:ss' }}</h1>
-        &nbsp;
-        <mat-icon *ngIf="game.mode === 'Classic->OneVsOne'" class="personIcon">person</mat-icon>
-        <h1 *ngIf="game.mode === 'Classic->OneVsOne'">
-            {{ player === players.player1.name ? players.player2?.name : players.player1.name }} &nbsp; Différences trouvées :
-            {{ opponentDifferencesFound }}
-        </h1>
+<div id = "game-page" class = "justified">
+    <div *ngIf="game" class="information-header justified">
+        <h1>{{ game.name }}</h1>
+        <div class="game-feedback">
+            <mat-icon class="personIcon">person</mat-icon>
+            <h1>
+                {{ player }}
+                Différences trouvées : {{ differencesFound }}
+            </h1>
+            &nbsp;
+            <h1>Temps : {{ timer * 1000 | date: 'mm:ss' }}</h1>
+            &nbsp;
+            <mat-icon *ngIf="game.mode === 'Classic->OneVsOne'" class="personIcon">person</mat-icon>
+            <h1 *ngIf="game.mode === 'Classic->OneVsOne'">
+                {{ player === players.player1.name ? players.player2?.name : players.player1.name }} &nbsp; Différences trouvées :
+                {{ opponentDifferencesFound }}
+            </h1>
+        </div>
+        <app-game-infos [game]="game" [differencesCount]="game.differencesCount"></app-game-infos>
     </div>
-    <app-game-infos [game]="game" [differencesCount]="game.differencesCount"></app-game-infos>
+    <div class="canvas-container">
+        <div class="game-canvas">
+            <canvas
+                id="originalFG"
+                [attr.height]="canvasSize.height"
+                [attr.width]="canvasSize.width"
+                #originalCanvasFG
+                (click)="mouseClickOnCanvas($event,true)"
+            ></canvas>
+            <canvas
+                id="original"
+                [attr.height]="canvasSize.height"
+                [attr.width]="canvasSize.width"
+                #originalCanvas
+                (click)="mouseClickOnCanvas($event,true)"
+            ></canvas>
+        </div>
+        <div class="game-canvas">
+            <canvas
+                id="modifiedFG"
+                [attr.height]="canvasSize.height"
+                [attr.width]="canvasSize.width"
+                #modifiedCanvasFG
+                (click)="mouseClickOnCanvas($event,false)"
+            ></canvas>
+            <canvas
+                id="modified"
+                [attr.height]="canvasSize.height"
+                [attr.width]="canvasSize.width"
+                #modifiedCanvas
+                (click)="mouseClickOnCanvas($event,false)"
+            ></canvas>
+        </div>
+    </div>
+    <button class="importantButton justified" (click)="showAbandonDialog()">Abandonner la partie</button>
 </div>
-<div class="canvas-container">
-    <div class="game-canvas">
-        <canvas
-            id="originalFG"
-            [attr.height]="canvasSize.height"
-            [attr.width]="canvasSize.width"
-            #originalCanvasFG
-            (click)="mouseClickOnCanvas($event,true)"
-        ></canvas>
-        <canvas
-            id="original"
-            [attr.height]="canvasSize.height"
-            [attr.width]="canvasSize.width"
-            #originalCanvas
-            (click)="mouseClickOnCanvas($event,true)"
-        ></canvas>
-    </div>
-    <div class="game-canvas">
-        <canvas
-            id="modifiedFG"
-            [attr.height]="canvasSize.height"
-            [attr.width]="canvasSize.width"
-            #modifiedCanvasFG
-            (click)="mouseClickOnCanvas($event,false)"
-        ></canvas>
-        <canvas
-            id="modified"
-            [attr.height]="canvasSize.height"
-            [attr.width]="canvasSize.width"
-            #modifiedCanvas
-            (click)="mouseClickOnCanvas($event,false)"
-        ></canvas>
-    </div>
-</div>
-<button class="importantButton" (click)="showAbandonDialog()">Abandonner la partie</button>
+<img id = "background" src = "./assets/BackgroundImage.jpg" />
 <div *ngIf="game">
     <app-chat-box (add)="addRightSideMessage($event)" [messages]="messages" [gameMode]="game.mode"></app-chat-box>
 </div>
