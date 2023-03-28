@@ -36,7 +36,7 @@ export class HistoryService {
             };
         }
         console.log('create id');
-        console.log(room.roomId)
+        console.log(room.roomId);
         this.pendingGames.set(room.roomId, gameHistory);
     }
 
@@ -76,7 +76,10 @@ export class HistoryService {
     }
 
     getFormattedDate(date: Date): string {
-        return `${date.getFullYear()}-${date.getMonth()}-${date.getDay()}`;
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+
+        return `${date.getFullYear()}-${month}-${day}`;
     }
 
     getFormattedTime(date: Date): string {
