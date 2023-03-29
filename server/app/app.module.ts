@@ -11,6 +11,7 @@ import { Game, gameSchema } from './model/database/game';
 import { GameCard, gameCardSchema } from './model/database/game-card';
 import { MessageManagerService } from './services/message-manager/message-manager.service';
 import { PlayersListManagerService } from './services/players-list-manager/players-list-manager.service';
+import { GameConstants, gameConstantsSchema } from './model/database/game-config-constants';
 
 @Module({
     imports: [
@@ -25,6 +26,7 @@ import { PlayersListManagerService } from './services/players-list-manager/playe
         MongooseModule.forFeature([
             { name: Game.name, schema: gameSchema },
             { name: GameCard.name, schema: gameCardSchema },
+            { name: GameConstants.name, schema: gameConstantsSchema },
         ]),
     ],
     controllers: [GameController],
