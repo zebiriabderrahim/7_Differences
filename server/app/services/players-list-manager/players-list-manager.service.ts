@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { Differences, GameEvents, Player, playerData, PlayerNameAvailability } from '@common/game-interfaces';
+import { GameService } from '@app/services/game/game.service';
+import { MAX_TIMES_INDEX } from '@common/constants';
+import { ClassicPlayRoom, Differences, GameEvents, Player, playerData, PlayerNameAvailability, PlayerTime } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
 
@@ -7,7 +9,7 @@ import * as io from 'socket.io';
 export class PlayersListManagerService {
     private joinedPlayersByGameId: Map<string, Player[]>;
 
-    constructor() {
+    constructor(private readonly gameService: GameService) {
         this.joinedPlayersByGameId = new Map<string, Player[]>();
     }
 
@@ -92,5 +94,27 @@ export class PlayersListManagerService {
 
     deleteJoinedPlayersByGameId(gameId: string): void {
         this.joinedPlayersByGameId.delete(gameId);
+    }
+
+    async updateTopBestTime(room: ClassicPlayRoom, playerName: string, server: io.Server): Promise<void> {
+        const { clientGame, timer } = room;
+        const topTimes = await this.gameService.getTopTimesGameById(clientGame.id, clientGame.mode);
+        if (topTimes[MAX_TIMES_INDEX].time > timer) {
+            const newTopTime = { name: playerName, time: timer } as PlayerTime;
+            topTimes.splice(MAX_TIMES_INDEX, 1, newTopTime);
+            topTimes.sort((a, b) => a.time - b.time);
+            await this.gameService.updateTopTimesGameById(clientGame.id, clientGame.mode, topTimes);
+            server.emit(GameEvents.RequestGameCardsReload);
+        }
+    }
+
+    async resetTopTime(gameId: string, server: io.Server): Promise<void> {
+        await this.gameService.resetTopTimesGameById(gameId);
+        server.emit(GameEvents.RequestGameCardsReload);
+    }
+
+    async resetAllTopTime(server: io.Server): Promise<void> {
+        await this.gameService.resetAllTopTimes();
+        server.emit(GameEvents.RequestGameCardsReload);
     }
 }
