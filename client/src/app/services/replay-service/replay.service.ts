@@ -110,7 +110,6 @@ export class ReplayService {
     }
 
     startReplay() {
-        console.log('startReplay');
         this.replayInterval.start();
     }
 
