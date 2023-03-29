@@ -1,21 +1,21 @@
 .container {
-  position: relative;
+    position: relative;
 }
 
 .justified {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
 }
 
 #game-page {
-  background-color: #67A28B;
-  width: 100%;
-  height: 100%;
+    background-color: #67a28b;
+    width: 100%;
+    height: 100%;
 }
 
-.canvas-container{
+.canvas-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -47,107 +47,112 @@ canvas {
 }
 
 #original {
-  z-index: 1;
+    z-index: 1;
 }
 
 #originalFG {
-  z-index: 2;
+    z-index: 2;
 }
 
 #modified {
-  z-index: 1;
+    z-index: 1;
 }
 #modifiedFG {
-  z-index: 2;
+    z-index: 2;
 }
-
 
 img {
     width: 100%;
-  }
+}
 
-  .information-header{
+.information-header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #7DAF9C;
+    background-color: #7daf9c;
     justify-content: center;
     color: black;
     height: 10;
     border-radius: 15px;
     padding: 10px;
     margin: 0 20px 20px 20px;
-    border: solid #67A28B;
+    border: solid #67a28b;
     z-index: 1;
 }
-.information-header h1{
+.information-header h1 {
     font-size: 30px;
     font-weight: 700;
 }
-.game-feedback{
+.game-feedback {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 20px;
 }
 
-.importantButton{
-  cursor: pointer;
-  width: 370px;
-  height: 70px;
-  padding: 0.5em 1.7em;
-  margin: 0 0.1em 0.1em 0.5em;
-  font-family: "Roboto", sans-serif;
-  font-size: 2em;
-  font-weight: 500;
-  color: white;
-  text-align: center;
-  transition: all 0.2s;
-  background-color: black;
-  border: 0.16em solid rgba(255, 255, 255, 0);
-  border-radius: 2em;
-  box-sizing: border-box;
-  text-decoration: none;
-  z-index: 1;
+.importantButton {
+    cursor: pointer;
+    width: 370px;
+    height: 70px;
+    padding: 0.5em 1.7em;
+    margin: 0 0.1em 0.1em 0.5em;
+    font-family: 'Roboto', sans-serif;
+    font-size: 2em;
+    font-weight: 500;
+    color: white;
+    text-align: center;
+    transition: all 0.2s;
+    background-color: black;
+    border: 0.16em solid rgba(255, 255, 255, 0);
+    border-radius: 2em;
+    box-sizing: border-box;
+    text-decoration: none;
+    z-index: 1;
 }
-.button:hover{
-  background-color: black;
-  color:white;
+.button:hover {
+    background-color: black;
+    color: white;
 }
-.importantButton:hover{
-  background-color: black;
-  transform: scale(1.05);
+.importantButton:hover {
+    background-color: black;
+    transform: scale(1.05);
 }
 
-.hintIcon{
-  margin-top: 5px;
-  margin-left: 25px;
-  width: 30px;
-  height: 30px;
+.hintIcon {
+    margin-top: 5px;
+    margin-left: 25px;
+    width: 30px;
+    height: 30px;
 }
-.hintIcon:hover{
-  opacity: .5;
+.hintIcon:hover {
+    opacity: 0.5;
 }
 
 .personIcon {
-  width: 35px;
-  height: 35px;
+    width: 35px;
+    height: 35px;
 }
 
-app-chat-box{
-  position: absolute;
-  left: 35.75%;
-  bottom: 15%;
-  z-index: 1;
+app-chat-box {
+    position: absolute;
+    left: 35.75%;
+    bottom: 15%;
+    z-index: 1;
+}
+
+app-replay-buttons {
+    position: absolute;
+    left: 42%;
+    bottom: 5%;
+    z-index: 1;
 }
 
 #background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
-
