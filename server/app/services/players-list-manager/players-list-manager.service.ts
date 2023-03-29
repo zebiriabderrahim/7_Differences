@@ -104,17 +104,17 @@ export class PlayersListManagerService {
             topTimes.splice(MAX_TIMES_INDEX, 1, newTopTime);
             topTimes.sort((a, b) => a.time - b.time);
             await this.gameService.updateTopTimesGameById(clientGame.id, clientGame.mode, topTimes);
-            server.emit(GameEvents.RequestGameCardsReload);
+            server.emit(GameEvents.RequestReload);
         }
     }
 
     async resetTopTime(gameId: string, server: io.Server): Promise<void> {
         await this.gameService.resetTopTimesGameById(gameId);
-        server.emit(GameEvents.RequestGameCardsReload);
+        server.emit(GameEvents.RequestReload);
     }
 
     async resetAllTopTime(server: io.Server): Promise<void> {
         await this.gameService.resetAllTopTimes();
-        server.emit(GameEvents.RequestGameCardsReload);
+        server.emit(GameEvents.RequestReload);
     }
 }
