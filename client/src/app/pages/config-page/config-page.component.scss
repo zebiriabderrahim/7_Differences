@@ -20,20 +20,24 @@
     text-align: center;
 }
 
-.game-constants {
-    display: inline-block;
-    margin-left: 6%;
-    margin-right: 6%;
-    float: none;
+.mat-form-field {
+    display: block;
+    padding-top: 10px;
+    padding-left: 10px;
+    margin-bottom: 25px; 
+    width: 265px;
+}
+  
+.mat-label {
+    font-size: 0.7rem; 
 }
 
-.game-constants {
-    width: 80%;
+.mat-hint {
+    font-size: 0.7rem; 
 }
 
-.game-constants * * {
-    margin: 2% 2%;
-    font-size: 20px;
+.mat-error {
+    font-size: 0.7rem;
 }
 
 .upper-list-game {

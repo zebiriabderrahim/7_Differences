@@ -123,11 +123,12 @@ export enum GameEvents {
     GameCardDeleted = 'GameCardDeleted',
     DeleteGameCard = 'DeleteGameCard',
     GameCardCreated = 'GameCardCreated',
+    RequestReload = 'RequestGameCardsUpdate',
     WaitingPlayerNameListUpdated = 'WaitingPlayerNameListUpdated',
     GetJoinedPlayerNames = 'GetJoinedPlayerNames',
     ResetTopTime = 'ResetTopTime',
     ResetAllTopTimes = 'ResetAllTopTimes',
-    RequestReload = 'RequestReload',
+    GameConstantsUpdated = 'GameConstantsUpdated',
 }
 
 export enum GameModes {
