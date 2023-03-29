@@ -21,7 +21,6 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     @Input() game: GameCard;
     url: SafeResourceUrl;
     private isAvailable: boolean;
-    private player: string;
     private roomIdSubscription: Subscription;
     private roomAvailabilitySubscription: Subscription;
 
@@ -57,15 +56,14 @@ export class GameSheetComponent implements OnDestroy, OnInit {
             .afterClosed()
             .pipe(filter((playerName) => !!playerName))
             .subscribe((playerName) => {
-                this.player = playerName;
                 this.roomManagerService.createSoloRoom(this.game._id, playerName);
             });
     }
 
     playSolo(): void {
         this.createSoloRoom();
-        this.roomIdSubscription = this.roomManagerService.roomId$.pipe(filter((roomId) => !!roomId)).subscribe((roomId) => {
-            this.router.navigate(['/game', roomId, this.player]);
+        this.roomIdSubscription = this.roomManagerService.createdRoomId$.pipe(filter((roomId) => !!roomId)).subscribe(() => {
+            this.router.navigate(['/game']);
         });
     }
 
@@ -75,13 +73,12 @@ export class GameSheetComponent implements OnDestroy, OnInit {
             .afterClosed()
             .subscribe((playerName: string) => {
                 if (playerName) {
-                    this.roomManagerService.createOneVsOneRoom(this.game._id);
+                    this.roomManagerService.createOneVsOneRoom(this.game._id, playerName);
                     this.openWaitingDialog(playerName);
                 } else {
-                    this.roomManagerService.deleteCreatedOneVsOneRoom(this.game._id);
+                    this.roomManagerService.updateRoomOneVsOneAvailability(this.game._id);
                 }
             });
-        this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
     }
 
     joinOneVsOne(): void {
@@ -99,7 +96,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     }
 
     openWaitingDialog(playerName: string): void {
-        this.roomIdSubscription = this.roomManagerService.roomId$
+        this.roomIdSubscription = this.roomManagerService.createdRoomId$
             .pipe(
                 filter((roomId) => !!roomId),
                 take(1),
@@ -117,12 +114,14 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     }
 
     deleteGameCard() {
-        this.roomManagerService.gameCardDeleted(this.game._id);
         this.communicationService.deleteGameById(this.game._id).subscribe(() => {
-            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-                this.router.navigate(['/config']);
-            });
+            this.router.navigate(['/config']);
+            this.roomManagerService.gameCardDeleted(this.game._id);
         });
+    }
+
+    resetTopTime() {
+        this.roomManagerService.resetTopTime(this.game._id);
     }
 
     ngOnDestroy(): void {

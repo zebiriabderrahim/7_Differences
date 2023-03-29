@@ -57,6 +57,11 @@ export interface Player {
     diffData: Differences;
 }
 
+export interface playerData {
+    playerName: string;
+    gameId: string;
+}
+
 export interface Differences {
     currentDifference: Coordinate[];
     differencesFound: number;
@@ -65,6 +70,7 @@ export interface Differences {
 export interface RoomAvailability {
     gameId: string;
     isAvailableToJoin: boolean;
+    hostId: string;
 }
 
 export interface PlayerNameAvailability {
@@ -82,9 +88,6 @@ export interface WaitingPlayerNameList {
     gameId: string;
     playerNamesList: string[];
 }
-
-
-
 
 export enum GameEvents {
     ValidateCoords = 'validateCoords',
@@ -115,8 +118,15 @@ export enum GameEvents {
     GetGameCards = 'GetGameCards',
     UndoCreation = 'UndoCreation',
     Disconnect = 'Disconnect',
-    DeleteGameCard = 'DeleteGameCard',
+    PlayerRefused = 'PlayerRefused',
     GameCardDeleted = 'GameCardDeleted',
+    DeleteGameCard = 'DeleteGameCard',
+    GameCardCreated = 'GameCardCreated',
+    RequestGameCardsReload = 'RequestGameCardsUpdate',
+    WaitingPlayerNameListUpdated = 'WaitingPlayerNameListUpdated',
+    GetJoinedPlayerNames = 'GetJoinedPlayerNames',
+    ResetTopTime = "ResetTopTime",
+    ResetAllTopTimes = "ResetAllTopTimes"
 }
 
 export enum GameModes {
