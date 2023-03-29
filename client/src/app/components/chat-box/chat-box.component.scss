@@ -112,6 +112,7 @@
   display: inline-block;
   color: rgb(224, 19, 19);
   font-weight: bold;
+  overflow-wrap: break-word;
 }
 
 #chat-box .content .messages::-webkit-scrollbar {
