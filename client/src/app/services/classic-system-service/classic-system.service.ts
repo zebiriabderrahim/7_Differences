@@ -113,6 +113,7 @@ export class ClassicSystemService implements OnDestroy {
     sendMessage(textMessage: string): void {
         const newMessage = { tag: MessageTag.received, message: textMessage };
         this.clientSocket.send(MessageEvents.LocalMessage, newMessage);
+        this.replayService.addReplayData(ReplayActions.CaptureMessage, Date.now());
     }
 
     joinOneVsOneGame(gameId: string, playerName: string): void {
