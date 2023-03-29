@@ -9,12 +9,12 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { SocketTestHelper } from '@app/services/client-socket-service/client-socket.service.spec';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { ReplayService } from '@app/services/replay-service/replay.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
 import { ChatMessage, Differences, GameEvents, MessageEvents, MessageTag, Players } from '@common/game-interfaces';
 import { Subject } from 'rxjs';
 import { Socket } from 'socket.io-client';
-import { ReplayService } from '../replay-service/replay.service';
 import { ClassicSystemService } from './classic-system.service';
 
 class SocketClientServiceMock extends ClientSocketService {
