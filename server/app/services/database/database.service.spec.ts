@@ -89,7 +89,7 @@ describe('DatabaseService', () => {
             thumbnail: 'assets/test/modified.bmp',
         },
     ];
-    const DELAY_BEFORE_CLOSING_CONNECTION = 20;
+    const DELAY_BEFORE_CLOSING_CONNECTION = 30;
 
     beforeEach(async () => {
         mongoServer = await MongoMemoryServer.create();
