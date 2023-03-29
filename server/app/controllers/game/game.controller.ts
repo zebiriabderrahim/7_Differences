@@ -1,6 +1,7 @@
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
+import { GameConstantsDto } from '@app/model/dto/game/game-constants.dto';
 import { GameService } from '@app/services/game/game.service';
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Query, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
@@ -10,9 +11,9 @@ export class GameController {
     constructor(private readonly gameService: GameService) {}
 
     @Get('/constants')
-    getConfigConstants(@Res() response: Response) {
+    async getGameConstants(@Res() response: Response) {
         try {
-            const gameConfigConstants = this.gameService.getConfigConstants();
+            const gameConfigConstants = await this.gameService.getGameConstants();
             response.status(HttpStatus.OK).json(gameConfigConstants);
         } catch (error) {
             response.status(HttpStatus.NOT_FOUND).send(error.message);
@@ -59,6 +60,15 @@ export class GameController {
     async deleteGameById(@Param('id') id: string, @Res() response: Response) {
         try {
             await this.gameService.deleteGameById(id);
+            response.status(HttpStatus.OK).send();
+        } catch (error) {
+            response.status(HttpStatus.NO_CONTENT).send(error.message);
+        }
+    }
+    @Put('/constants')
+    async updateGameConstants(@Body() gameConstantsDto: GameConstantsDto, @Res() response: Response) {
+        try {
+            await this.gameService.updateGameConstants(gameConstantsDto);
             response.status(HttpStatus.OK).send();
         } catch (error) {
             response.status(HttpStatus.NO_CONTENT).send(error.message);

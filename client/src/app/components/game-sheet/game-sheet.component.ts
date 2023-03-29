@@ -120,6 +120,10 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         });
     }
 
+    resetTopTime() {
+        this.roomManagerService.resetTopTime(this.game._id);
+    }
+
     ngOnDestroy(): void {
         this.roomIdSubscription?.unsubscribe();
         this.roomAvailabilitySubscription?.unsubscribe();
