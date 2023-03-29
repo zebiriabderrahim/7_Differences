@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Injectable } from '@angular/core';
 import { REPLAY_LIMITER } from '@app/constants/replay';
 import { ReplayActions } from '@app/enum/replay-actions';
@@ -16,11 +17,6 @@ export class ReplayService {
             () => this.replaySwitcher(this.replayEvents[this.currentReplayIndex]),
             () => this.getNextInterval(),
         );
-    }
-
-    resetReplay() {
-        this.replayEvents = [];
-        this.currentReplayIndex = 0;
     }
 
     addReplayData(action: ReplayActions, timestamp: number) {
@@ -131,6 +127,11 @@ export class ReplayService {
     cancelReplay() {
         console.log('cancelReplay');
         this.replayInterval.cancel();
+        this.currentReplayIndex = 0;
+    }
+
+    resetReplay() {
+        this.replayEvents = [];
         this.currentReplayIndex = 0;
     }
 }

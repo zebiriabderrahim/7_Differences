@@ -12,8 +12,8 @@ import {
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { GREEN_PIXEL, N_PIXEL_ATTRIBUTE, RED_PIXEL, YELLOW_PIXEL } from '@app/constants/pixels';
 import { ReplayActions } from '@app/enum/replay-actions';
-import { Coordinate } from '@common/coordinate';
 import { ReplayService } from '@app/services/replay-service/replay.service';
+import { Coordinate } from '@common/coordinate';
 
 @Injectable({
     providedIn: 'root',
@@ -64,6 +64,7 @@ export class GameAreaService {
             frontContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
             this.clickDisabled = false;
         }, ONE_SECOND);
+        this.replayService.addReplayData(ReplayActions.ClickError, Date.now());
     }
 
     replaceDifference(differenceCoord: Coordinate[]): void {
