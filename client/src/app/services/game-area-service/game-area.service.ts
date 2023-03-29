@@ -11,8 +11,6 @@ import {
 } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { GREEN_PIXEL, N_PIXEL_ATTRIBUTE, RED_PIXEL, YELLOW_PIXEL } from '@app/constants/pixels';
-import { ReplayActions } from '@app/enum/replay-actions';
-import { ReplayService } from '@app/services/replay-service/replay.service';
 import { Coordinate } from '@common/coordinate';
 
 @Injectable({
@@ -32,7 +30,7 @@ export class GameAreaService {
     private isCheatMode: boolean;
     private cheatModeInterval: number | undefined;
 
-    constructor(private readonly replayService: ReplayService) {
+    constructor() {
         this.mousePosition = { x: 0, y: 0 };
         this.clickDisabled = false;
         this.isCheatMode = false;
@@ -64,7 +62,6 @@ export class GameAreaService {
             frontContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
             this.clickDisabled = false;
         }, ONE_SECOND);
-        this.replayService.addReplayData(ReplayActions.ClickError, Date.now());
     }
 
     replaceDifference(differenceCoord: Coordinate[]): void {
@@ -82,7 +79,6 @@ export class GameAreaService {
     flashCorrectPixels(differenceCoord: Coordinate[]): void {
         const imageDataIndexes = this.convert2DCoordToPixelIndex(differenceCoord);
         this.flashPixels(imageDataIndexes);
-        this.replayService.addReplayData(ReplayActions.ClickFound, Date.now());
     }
 
     flashPixels(imageDataIndexes: number[]): void {
@@ -126,11 +122,9 @@ export class GameAreaService {
                     this.clearFlashing();
                 }, RED_FLASH_TIME);
             }, CHEAT_MODE_WAIT_TIME) as unknown as number;
-            this.replayService.addReplayData(ReplayActions.ActivateCheat, Date.now());
         } else {
             clearInterval(this.cheatModeInterval);
             this.clearFlashing();
-            this.replayService.addReplayData(ReplayActions.DeactivateCheat, Date.now());
         }
         this.isCheatMode = !this.isCheatMode;
     }
