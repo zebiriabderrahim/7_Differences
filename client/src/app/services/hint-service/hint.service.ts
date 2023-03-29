@@ -77,24 +77,26 @@ export class HintService {
 
     private generateHintSquare(quadrant: Quadrant): Coordinate[] {
         const hintSquare: Coordinate[] = [];
-        for (let j = quadrant.bottomCorner.y; j < quadrant.topCorner.y; j++) {
-            for (let i = quadrant.bottomCorner.x; i < quadrant.bottomCorner.x + HINT_SQUARE_PADDING; i++) {
-                hintSquare.push({ x: i, y: j });
-            }
-            for (let i = quadrant.topCorner.x - HINT_SQUARE_PADDING; i < quadrant.topCorner.x; i++) {
-                hintSquare.push({ x: i, y: j });
+        const { topCorner, bottomCorner } = quadrant;
+
+        for (let i = bottomCorner.x - HINT_SQUARE_PADDING; i < topCorner.x + HINT_SQUARE_PADDING; i++) {
+            for (let j = bottomCorner.y - HINT_SQUARE_PADDING; j < topCorner.y + HINT_SQUARE_PADDING; j++) {
+                if (this.isCoordinateInHintSquare({ x: i, y: j }, quadrant)) {
+                    hintSquare.push({ x: i, y: j });
+                }
             }
         }
 
-        for (let i = quadrant.bottomCorner.x; i < quadrant.topCorner.x; i++) {
-            for (let j = quadrant.topCorner.y - HINT_SQUARE_PADDING; j < quadrant.topCorner.y; j++) {
-                hintSquare.push({ x: i, y: j });
-            }
-            for (let j = quadrant.bottomCorner.y; j < quadrant.bottomCorner.y + HINT_SQUARE_PADDING; j++) {
-                hintSquare.push({ x: i, y: j });
-            }
-        }
         return hintSquare;
+    }
+
+    private isCoordinateInHintSquare(coordinate: Coordinate, quadrant: Quadrant): boolean {
+        const { topCorner, bottomCorner } = quadrant;
+        const { x, y } = coordinate;
+        return (
+            (x >= bottomCorner.x && x < topCorner.x && (y === bottomCorner.y || y === topCorner.y - 1)) ||
+            (y >= bottomCorner.y && y < topCorner.y && (x === bottomCorner.x || x === topCorner.x - 1))
+        );
     }
 
     private isPointInQuadrant(point: Coordinate, quadrant: Quadrant): boolean {
@@ -109,24 +111,24 @@ export class HintService {
     private getSubQuadrants(quadrant: Quadrant): Quadrant[] {
         const halfWidth = (quadrant.topCorner.x - quadrant.bottomCorner.x) / 2;
         const halfHeight = (quadrant.topCorner.y - quadrant.bottomCorner.y) / 2;
-        const subQuadrants: Quadrant[] = [
-            {
-                bottomCorner: { x: quadrant.bottomCorner.x, y: quadrant.bottomCorner.y },
-                topCorner: { x: quadrant.bottomCorner.x + halfWidth, y: quadrant.bottomCorner.y + halfHeight },
-            },
-            {
-                bottomCorner: { x: quadrant.bottomCorner.x + halfWidth, y: quadrant.bottomCorner.y },
-                topCorner: { x: quadrant.topCorner.x, y: quadrant.bottomCorner.y + halfHeight },
-            },
-            {
-                bottomCorner: { x: quadrant.bottomCorner.x, y: quadrant.bottomCorner.y + halfHeight },
-                topCorner: { x: quadrant.bottomCorner.x + halfWidth, y: quadrant.topCorner.y },
-            },
-            {
-                bottomCorner: { x: quadrant.bottomCorner.x + halfWidth, y: quadrant.bottomCorner.y + halfHeight },
-                topCorner: { x: quadrant.topCorner.x, y: quadrant.topCorner.y },
-            },
-        ];
+        const middleCoordinate: Coordinate = { x: quadrant.bottomCorner.x + halfWidth, y: quadrant.bottomCorner.y + halfHeight };
+
+        const firstQuadrant: Quadrant = { bottomCorner: quadrant.bottomCorner, topCorner: middleCoordinate };
+        const secondQuadrant: Quadrant = {
+            bottomCorner: { x: middleCoordinate.x, y: quadrant.bottomCorner.y },
+            topCorner: { x: quadrant.topCorner.x, y: middleCoordinate.y },
+        };
+        const thirdQuadrant: Quadrant = {
+            bottomCorner: { x: quadrant.bottomCorner.x, y: middleCoordinate.y },
+            topCorner: { x: middleCoordinate.x, y: quadrant.topCorner.y },
+        };
+        const fourthQuadrant: Quadrant = { bottomCorner: middleCoordinate, topCorner: quadrant.topCorner };
+
+        const subQuadrants: Quadrant[] = [];
+        subQuadrants[QuadrantPosition.First] = firstQuadrant;
+        subQuadrants[QuadrantPosition.Second] = secondQuadrant;
+        subQuadrants[QuadrantPosition.Third] = thirdQuadrant;
+        subQuadrants[QuadrantPosition.Fourth] = fourthQuadrant;
         return subQuadrants;
     }
 }
