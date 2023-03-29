@@ -42,6 +42,10 @@ export class CommunicationService {
         return this.http.get<boolean>(`${this.gameUrl}/?name=${name}`).pipe(catchError(this.handleError<boolean>('verifyIfGameExists')));
     }
 
+    updateGameConstants(gameConstants: GameConfigConst): Observable<void> {
+        return this.http.put<void>(`${this.gameUrl}/constants`, gameConstants).pipe(catchError(this.handleError<void>('updateGameConstants')));
+    }
+
     private handleError<T>(_request: string, result?: T): (error: Error) => Observable<T> {
         return () => of(result as T);
     }
