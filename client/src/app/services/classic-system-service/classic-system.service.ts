@@ -154,6 +154,7 @@ export class ClassicSystemService implements OnDestroy {
 
         this.clientSocket.on(MessageEvents.LocalMessage, (receivedMessage: ChatMessage) => {
             this.message.next(receivedMessage);
+            this.replayService.addReplayData(ReplayActions.CaptureMessage, Date.now());
         });
     }
 
