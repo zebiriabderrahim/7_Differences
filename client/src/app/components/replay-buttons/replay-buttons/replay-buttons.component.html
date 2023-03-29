@@ -1,5 +1,9 @@
 <div>
+    <button mat-button *ngIf="!isReplayPaused" (click)="quit()">Quitter</button>
     <button mat-button *ngIf="!isReplayPaused" (click)="pause()">Pause</button>
     <button mat-button *ngIf="isReplayPaused" (click)="resume()">Resume</button>
+    <button mat-button *ngIf="!isReplayPaused" (click)="speedX1()">x1</button>
+    <button mat-button *ngIf="!isReplayPaused" (click)="speedX2()">x2</button>
+    <button mat-button *ngIf="!isReplayPaused" (click)="speedX4()">x4</button>
 </div>
 

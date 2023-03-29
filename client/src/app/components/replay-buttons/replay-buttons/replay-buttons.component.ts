@@ -17,4 +17,20 @@ export class ReplayButtonsComponent {
     resume() {
         this.replayService.resumeReplay();
     }
+
+    quit() {
+        this.replayService.resetReplay();
+    }
+
+    speedX1() {
+        // this.replayService.upSpeedX1();
+    }
+
+    speedX2() {
+        // this.replayService.upSpeedX2();
+    }
+
+    speedX4() {
+        // this.replayService.upSpeedX4();
+    }
 }
