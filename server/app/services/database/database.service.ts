@@ -8,7 +8,7 @@ import { GameConstants, GameConstantsDocument } from '@app/model/database/game-c
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameConstantsDto } from '@app/model/dto/game/game-constants.dto';
 import { GameListsManagerService } from '@app/services/game-lists-manager/game-lists-manager.service';
-import { DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
+import { DEFAULT_BEST_TIMES, DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
 import { CarouselPaginator, GameModes, PlayerTime } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -28,7 +28,7 @@ export class DatabaseService {
         @InjectModel(GameConstants.name) private readonly gameConstantsModel: Model<GameConstantsDocument>,
         private readonly gameListManager: GameListsManagerService,
     ) {
-        this.populateGameConstants();
+        this.populateDbWithGameConstants();
     }
 
     async getGamesCarrousel(): Promise<CarouselPaginator[]> {
@@ -124,7 +124,7 @@ export class DatabaseService {
         this.gameListManager.buildGameCarousel(gameCardsList);
     }
 
-    async populateGameConstants(): Promise<void> {
+    async populateDbWithGameConstants(): Promise<void> {
         try {
             if (!(await this.gameConstantsModel.exists({}))) {
                 await this.gameConstantsModel.create(this.defaultConstants);
@@ -134,11 +134,29 @@ export class DatabaseService {
         }
     }
 
-    async updateGameConstants(gameConstantsDto: GameConstantsDto) {
+    async updateGameConstants(gameConstantsDto: GameConstantsDto): Promise<void> {
         try {
-            await this.gameConstantsModel.findOneAndUpdate({}, gameConstantsDto).exec();
+            await this.gameConstantsModel.replaceOne({}, gameConstantsDto).exec();
         } catch (error) {
-            return Promise.reject(`Failed to update config constants --> ${error}`);
+            throw new Error(`Failed to update config constants --> ${error}`);
+        }
+    }
+
+    async resetTopTimesGameById(gameId: string) {
+        try {
+            await this.gameCardModel.findByIdAndUpdate(gameId, { soloTopTime: DEFAULT_BEST_TIMES, oneVsOneTopTime: DEFAULT_BEST_TIMES }).exec();
+            await this.rebuildGameCarousel();
+        } catch (error) {
+            return Promise.reject(`Failed to reset top times game with id : ${gameId} --> ${error}`);
+        }
+    }
+
+    async resetAllTopTimes() {
+        try {
+            await this.gameCardModel.updateMany({}, { soloTopTime: DEFAULT_BEST_TIMES, oneVsOneTopTime: DEFAULT_BEST_TIMES }).exec();
+            await this.rebuildGameCarousel();
+        } catch (error) {
+            return Promise.reject(`Failed to reset all top times --> ${error}`);
         }
     }
 }

@@ -6,8 +6,8 @@ import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
+import { CHARACTERS, KEY_SIZE } from '@common/constants';
 import { Coordinate } from '@common/coordinate';
-import { KEY_SIZE, CHARACTERS } from '@common/constants';
 import {
     ChatMessage,
     ClassicPlayRoom,
@@ -156,27 +156,29 @@ export class ClassicModeService {
         this.roomAvailability.delete(gameId);
     }
 
-    async endGame(socket: io.Socket, server: io.Server): Promise<void> {
+    async checkStatus(socket: io.Socket, server: io.Server): Promise<void> {
         const roomId = this.getRoomIdFromSocket(socket);
         const room = this.getRoomById(roomId);
         if (!room) return;
+        const halfDifferences = Math.ceil(room.clientGame.differencesCount / 2);
         const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
-        if (room && room.clientGame.differencesCount === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicSolo) {
-            room.endMessage = `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo!`;
-            server.to(roomId).emit(GameEvents.EndGame, room.endMessage);
-            await this.playersListManagerService.updateTopBestTime(room, player.name);
-            this.rooms.delete(roomId);
-        } else if (
-            room &&
-            Math.ceil(room.clientGame.differencesCount / 2) === player.diffData.differencesFound &&
-            room.clientGame.mode === GameModes.ClassicOneVsOne
-        ) {
-            room.endMessage = `${player.name} remporte la partie avec ${player.diffData.differencesFound} différences trouvées!`;
-            server.to(roomId).emit(GameEvents.EndGame, room.endMessage);
-            await this.playersListManagerService.updateTopBestTime(room, player.name);
-            this.playersListManagerService.deleteJoinedPlayersByGameId(room.clientGame.id);
-            this.rooms.delete(roomId);
+        if (!player) return;
+        if (room.clientGame.differencesCount === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicSolo) {
+            this.endGame(room, player, server);
+        } else if (halfDifferences === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicOneVsOne) {
+            this.endGame(room, player, server);
         }
+    }
+
+    async endGame(room: ClassicPlayRoom, player: Player, server: io.Server): Promise<void> {
+        room.endMessage =
+            room.clientGame.mode === GameModes.ClassicOneVsOne
+                ? `${player.name} remporte la partie avec ${player.diffData.differencesFound} différences trouvées!`
+                : `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo!`;
+        server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
+        await this.playersListManagerService.updateTopBestTime(room, player.name, server);
+        this.playersListManagerService.deleteJoinedPlayersByGameId(room.clientGame.id);
+        this.rooms.delete(room.roomId);
     }
 
     getRoomById(roomId: string): ClassicPlayRoom {

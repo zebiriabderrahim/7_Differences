@@ -118,13 +118,15 @@ export enum GameEvents {
     GetGameCards = 'GetGameCards',
     UndoCreation = 'UndoCreation',
     Disconnect = 'Disconnect',
-    PlayerRefused = "PlayerRefused",
-    GameCardDeleted = "GameCardDeleted",
-    DeleteGameCard = "DeleteGameCard",
-    GameCardCreated = "GameCardCreated",
-    RequestGameCardsUpdate = "RequestGameCardsUpdate",
-    WaitingPlayerNameListUpdated = "WaitingPlayerNameListUpdated",
-    GetJoinedPlayerNames = "GetJoinedPlayerNames"
+    PlayerRefused = 'PlayerRefused',
+    GameCardDeleted = 'GameCardDeleted',
+    DeleteGameCard = 'DeleteGameCard',
+    GameCardCreated = 'GameCardCreated',
+    RequestGameCardsReload = 'RequestGameCardsUpdate',
+    WaitingPlayerNameListUpdated = 'WaitingPlayerNameListUpdated',
+    GetJoinedPlayerNames = 'GetJoinedPlayerNames',
+    ResetTopTime = "ResetTopTime",
+    ResetAllTopTimes = "ResetAllTopTimes"
 }
 
 export enum GameModes {
