@@ -29,16 +29,16 @@ export class GameService {
         return await this.databaseService.verifyIfGameExists(gameName);
     }
 
-    async getGameById(id: string): Promise<Game> {
-        const game = this.databaseService.getGameById(id);
+    async getGameById(gameId: string): Promise<Game> {
+        const game = this.databaseService.getGameById(gameId);
         if (game) {
             return game;
         }
         throw new NotFoundException('No games found');
     }
 
-    async deleteGameById(id: string): Promise<void> {
-        await this.databaseService.deleteGameById(id);
+    async deleteGameById(gameId: string): Promise<void> {
+        await this.databaseService.deleteGameById(gameId);
     }
 
     async addGame(newGame: CreateGameDto): Promise<void> {
@@ -53,11 +53,19 @@ export class GameService {
         throw new NotFoundException('No games found');
     }
 
-    async updateTopTimesGameById(id: string, gameMode: string, topTimes: PlayerTime[]) {
-        await this.databaseService.updateTopTimesGameById(id, gameMode, topTimes);
+    async updateTopTimesGameById(gameId: string, gameMode: string, topTimes: PlayerTime[]) {
+        await this.databaseService.updateTopTimesGameById(gameId, gameMode, topTimes);
     }
 
     async updateGameConstants(gameConstantsDto: GameConstantsDto) {
         await this.databaseService.updateGameConstants(gameConstantsDto);
+    }
+
+    async resetTopTimesGameById(gameId: string) {
+        await this.databaseService.resetTopTimesGameById(gameId);
+    }
+
+    async resetAllTopTimes() {
+        await this.databaseService.resetAllTopTimes();
     }
 }

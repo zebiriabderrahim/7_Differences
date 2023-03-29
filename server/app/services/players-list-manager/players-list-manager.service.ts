@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
+import { GameService } from '@app/services/game/game.service';
 import { ClassicPlayRoom, Differences, GameEvents, Player, playerData, PlayerNameAvailability, PlayerTime } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
-import { GameService } from '@app/services/game/game.service';
 
 @Injectable()
 export class PlayersListManagerService {
@@ -95,7 +95,7 @@ export class PlayersListManagerService {
         this.joinedPlayersByGameId.delete(gameId);
     }
 
-    async updateTopBestTime(room: ClassicPlayRoom, playerName: string): Promise<void> {
+    async updateTopBestTime(room: ClassicPlayRoom, playerName: string, server: io.Server): Promise<void> {
         const { clientGame, timer } = room;
         const topTimes = await this.gameService.getTopTimesGameById(clientGame.id, clientGame.mode);
         if (topTimes[2].time > timer) {
@@ -103,6 +103,17 @@ export class PlayersListManagerService {
             topTimes.splice(2, 1, newTopTime);
             topTimes.sort((a, b) => a.time - b.time);
             await this.gameService.updateTopTimesGameById(clientGame.id, clientGame.mode, topTimes);
+            server.emit(GameEvents.RequestGameCardsReload);
         }
+    }
+
+    async resetTopTime(gameId: string, server: io.Server): Promise<void> {
+        await this.gameService.resetTopTimesGameById(gameId);
+        server.emit(GameEvents.RequestGameCardsReload);
+    }
+
+    async resetAllTopTime(server: io.Server): Promise<void> {
+        await this.gameService.resetAllTopTimes();
+        server.emit(GameEvents.RequestGameCardsReload);
     }
 }
