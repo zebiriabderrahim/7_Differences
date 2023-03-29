@@ -2,6 +2,15 @@
     display: none;
 }
 
+*:not(#creation) {
+    z-index: 1;
+}
+
+p {
+    color: black;
+    font-weight: bold;
+}
+
 .users-section {
     display: flex;
     flex-direction: column;
@@ -9,7 +18,6 @@
     justify-content: space;
     border-radius: 5px;
     padding: 20px;
-    margin: 20px;
 }
 
 #radio-buttons {
@@ -37,7 +45,7 @@
     margin-right: 13px;
 }
 
-.mat-radio-button~.mat-radio-button {
+.mat-radio-button ~ .mat-radio-button {
     margin-left: 13px;
 }
 
@@ -57,4 +65,14 @@
 
 #upload-btn {
     display: none;
+}
+
+#creation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }

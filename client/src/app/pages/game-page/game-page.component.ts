@@ -1,6 +1,5 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute } from '@angular/router';
 import { GamePageDialogComponent } from '@app/components/game-page-dialog/game-page-dialog.component';
 import { DEFAULT_PLAYERS, INPUT_TAG_NAME } from '@app/constants/constants';
 import { CANVAS_MEASUREMENTS } from '@app/constants/image';
@@ -49,7 +48,6 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         private readonly imageService: ImageService,
         private readonly hintService: HintService,
         private readonly matDialog: MatDialog,
-        private route: ActivatedRoute,
     ) {
         this.classicService.manageSocket();
         this.differencesFound = 0;
@@ -79,11 +77,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        this.routeParamSub = this.route.params.subscribe((params) => {
-            if (params['roomId']) {
-                this.classicService.startGameByRoomId(params['roomId'], params['playerName']);
-            }
-        });
+        this.classicService.startGame();
         this.classicService.players$.subscribe((players) => {
             this.players = players;
             if (players.player1.playerId === this.classicService.getSocketId()) {

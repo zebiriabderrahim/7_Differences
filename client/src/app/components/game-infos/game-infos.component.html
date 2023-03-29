@@ -1,10 +1,11 @@
 <div id="gameInfos">
     <p><strong>Niveau de difficulté :</strong> {{ game.isHard ? 'difficile' : 'facile' }}</p>
     <p><strong>Mode de jeu :</strong> {{ game.mode }}</p>
-    <p><strong>Nombre de pifférences présentes :</strong> {{ differencesCount }}</p>
+    <p><strong>Nombre de différences présentes :</strong> {{ differencesCount }}</p>
     <div>
         <p><strong>Pénalité d'utilisation d'indice : </strong> 30 secondes </p>
         <p><strong>Indices restants : </strong> {{ nHints }} </p>
         <button mat-raised-button color="white" (click)="requestHint()" [disabled]="nHints === 0">Indice</button>
     </div>
+    
 </div>
