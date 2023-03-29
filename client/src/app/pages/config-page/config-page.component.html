@@ -5,11 +5,16 @@
     <div class="under-game-list">
         <mat-grid-list cols="2" rowHeight="300px">
             <mat-grid-tile>
-                <div class="change-game">
-                    <button mat-raised-button [routerLink]="createRoute" class="create_button">Création de jeu</button>
+                <div class="button-container">
+                    <button class="create_button" mat-button [routerLink]="createRoute">
+                    </button>
+                    <img src="./assets/CreationPageButton.png">
+                    <div class="centered-create">Création de jeu</div>
                 </div>
-                <div class="change-game">
-                    <button mat-raised-button class="create_button" (click)="resetAllTopTimes()">Tout réinitialiser</button>
+                <div class="button-container">
+                    <button mat-raised-button class="reset_button" (click)="resetAllTopTimes()"></button>
+                    <img src="./assets/ResetButton.png">
+                    <div class="centered-reset">Tout réinitialiser</div>
                 </div>
             </mat-grid-tile>
             <mat-grid-tile
