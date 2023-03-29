@@ -1,0 +1,26 @@
+.replay-container {
+    background: #7DAF9C;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.replay-container {
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(to right, rgba(125, 175, 156, 100), rgba(255, 255, 255, 50));
+    background-size: 200% 200%;
+    animation: gradientLoop 20s ease infinite;
+  }
+  
+  @keyframes gradientLoop {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 75% 0%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  

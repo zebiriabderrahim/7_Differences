@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ReplayService } from '@app/services/replay-service/replay.service';
 
 @Component({
@@ -6,9 +6,14 @@ import { ReplayService } from '@app/services/replay-service/replay.service';
     templateUrl: './replay-buttons.component.html',
     styleUrls: ['./replay-buttons.component.scss'],
 })
-export class ReplayButtonsComponent {
+export class ReplayButtonsComponent implements OnInit {
     isReplayPaused = false;
+    selectedSpeed: string;
     constructor(private readonly replayService: ReplayService) {}
+
+    ngOnInit() {
+        this.selectedSpeed = 'x1';
+    }
 
     replay() {
         this.replayService.startReplay();
