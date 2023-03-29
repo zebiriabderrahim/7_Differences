@@ -1,8 +1,15 @@
+@import url('https://fonts.cdnfonts.com/css/troika-2');
 * {
     font-family: 'Roboto', sans-serif;
 }
+
+*:not(#selection){
+    z-index: 1;
+}
+
 .selectionComponent {
     background-color: (#67A28B);
+    z-index: 1;
 }
 
 .header {
@@ -11,12 +18,21 @@
     background-color: (#67A28B);
     justify-content: center;
     padding: 10px;
+    z-index: 1;
+    font-size: 30px;
 }
 
 h1 {
     margin: auto;
     padding-left: 500px;
     text-align: center;
+    font-family: 'Troika', sans-serif;
+    color: white;
+    font-size: 40px;
+}
+
+#nav-bar{
+    font-family: 'Troika', sans-serif;
 }
 
 .game-selection {
@@ -34,8 +50,14 @@ h1 {
     flex: 1 40%;
 }
 
+.button {
+    z-index: 999;
+  }
+
 .buttonContainer {
+    position:relative;
     text-align: center;
+    z-index: 1;
 }
 
 .previous_button {
@@ -45,6 +67,7 @@ h1 {
     margin: 10px;
     font-size: 20px;
     min-width: 150px;
+    z-index: 1;
 }
 
 .next_button {
@@ -54,12 +77,14 @@ h1 {
     margin: 10px;
     font-size: 20px;
     min-width: 150px;
+    z-index: 1;
 }
 
 .menu_button {
     font-size: 20px;
     width: 600px;
     height: 100px;
+    z-index: 1;
 }
 
 .track {
@@ -109,10 +134,12 @@ h1 {
     justify-content: center;
     align-items: center;
     gap: 0.2rem;
+    z-index: 1;
 }
 
 .buttonCreate {
     margin-top: 10px;
+    z-index: 1;
 }
 
 .buttonCreate a {
@@ -128,6 +155,7 @@ h1 {
     overflow: hidden;
     font-weight: 400px;
     transition: 0.5s;
+    z-index: 1;
 }
 
 .buttonCreate:hover a {
@@ -151,11 +179,21 @@ h1 {
     content: '';
     position: absolute;
     left: 50%;
-    transform: translatex(-50%);
+    transform: translateX(-50%);
     top: -5px;
     width: 30px;
     height: 10px;
     border-radius: 10px;
     transition: 0.5s;
     transition-delay: 0.5;
+}
+
+#selection{
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
