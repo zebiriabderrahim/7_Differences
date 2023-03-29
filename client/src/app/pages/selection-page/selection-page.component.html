@@ -12,8 +12,8 @@
         </ng-container>
     </mat-grid-list>
     <div class="buttonContainer">
-        <button mat-raised-button *ngIf="gameCarrousel.hasPrevious" mat-raised-button class="previous_button" (click)="previousCarrousel()"><< Précedent</button>
-        <button mat-raised-button *ngIf="gameCarrousel.hasNext" mat-raised-button class="next_button" (click)="nextCarrousel()">Suivant >></button>
+        <img id = "previous_button" alt="previousButton" *ngIf="gameCarrousel.hasPrevious" (click)="previousCarrousel()" src = "./assets/previous_button.png"/>
+        <img id = "next_button" alt="nextButton" *ngIf="gameCarrousel.hasNext" (click)="nextCarrousel()" src = "./assets/next_button.png"/>
     </div>
     <img id = "selection" src = "./assets/SelectionBackground.jpg"/>
 </div>
