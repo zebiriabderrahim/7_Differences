@@ -1,9 +1,11 @@
 <div>
-    <button mat-button *ngIf="!isReplayPaused" (click)="quit()">Quitter</button>
+    <button mat-button (click)="quit()">Quitter</button>
     <button mat-button *ngIf="!isReplayPaused" (click)="pause()">Pause</button>
     <button mat-button *ngIf="isReplayPaused" (click)="resume()">Resume</button>
-    <button mat-button *ngIf="!isReplayPaused" (click)="speedX1()">x1</button>
-    <button mat-button *ngIf="!isReplayPaused" (click)="speedX2()">x2</button>
-    <button mat-button *ngIf="!isReplayPaused" (click)="speedX4()">x4</button>
+    <mat-radio-group>
+        <mat-radio-button mat-button (click)="speedX1()">x1</mat-radio-button>
+        <mat-radio-button mat-button (click)="speedX2()">x2</mat-radio-button>
+        <mat-radio-button mat-button (click)="speedX4()">x4</mat-radio-button>
+    </mat-radio-group>
 </div>
 

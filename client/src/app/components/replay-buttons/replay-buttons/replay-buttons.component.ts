@@ -10,11 +10,17 @@ export class ReplayButtonsComponent {
     isReplayPaused = false;
     constructor(private readonly replayService: ReplayService) {}
 
+    replay() {
+        this.replayService.startReplay();
+    }
+
     pause() {
+        this.isReplayPaused = !this.isReplayPaused;
         this.replayService.pauseReplay();
     }
 
     resume() {
+        this.isReplayPaused = !this.isReplayPaused;
         this.replayService.resumeReplay();
     }
 
