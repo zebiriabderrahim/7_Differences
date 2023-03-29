@@ -71,8 +71,8 @@ export class ClassicSystemService implements OnDestroy {
     createSoloGame(gameId: string, playerName: string): void {
         this.clientSocket.send(GameEvents.CreateSoloGame, { gameId, playerName });
     }
-    startGameByRoomId(roomId: string, playerName: string): void {
-        this.clientSocket.send(GameEvents.StartGameByRoomId, { roomId, playerName });
+    startGame(): void {
+        this.clientSocket.send(GameEvents.StartGameByRoomId);
     }
 
     checkStatus(): void {
@@ -103,7 +103,6 @@ export class ClassicSystemService implements OnDestroy {
     }
 
     disconnect(): void {
-        this.clientSocket.send(GameEvents.Disconnect);
         this.clientSocket.disconnect();
     }
 
@@ -117,7 +116,6 @@ export class ClassicSystemService implements OnDestroy {
     }
 
     manageSocket(): void {
-        this.clientSocket.connect();
         this.clientSocket.on(GameEvents.CreateSoloGame, (clientGame: ClientSideGame) => {
             this.currentGame.next(clientGame);
         });
