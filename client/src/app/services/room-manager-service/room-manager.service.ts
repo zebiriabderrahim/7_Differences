@@ -115,6 +115,14 @@ export class RoomManagerService {
         this.clientSocket.send(GameEvents.DeleteGameCard, gameId);
     }
 
+    resetTopTime(gameId: string) {
+        this.clientSocket.send(GameEvents.ResetTopTime, gameId);
+    }
+
+    resetAllTopTimes() {
+        this.clientSocket.send(GameEvents.ResetAllTopTimes);
+    }
+
     connect(): void {
         this.clientSocket.connect();
     }
@@ -164,7 +172,7 @@ export class RoomManagerService {
             this.refusedPlayerId.next(playerId);
         });
 
-        this.clientSocket.on(GameEvents.RequestGameCardsUpdate, () => {
+        this.clientSocket.on(GameEvents.RequestGameCardsReload, () => {
             this.isReloadNeeded.next(true);
         });
     }
