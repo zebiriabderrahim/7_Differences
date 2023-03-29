@@ -7,7 +7,7 @@ import {
     MAX_BONUS_TIME,
     MAX_COUNTDOWN_TIME,
     MAX_PENALTY_TIME,
-    MIN_TIME,
+    MIN_TIME
 } from '@app/constants/constants';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
@@ -26,7 +26,11 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
     configConstants: GameConfigConst;
     private communicationSubscription: Subscription;
 
-    constructor(private readonly communicationService: CommunicationService, private formBuilder: FormBuilder) {
+    constructor(
+        private readonly communicationService: CommunicationService,
+        private readonly roomManagerService: RoomManagerService,
+        private formBuilder: FormBuilder,
+    ) {
         this.configConstants = { countdownTime: DEFAULT_COUNTDOWN_VALUE, penaltyTime: DEFAULT_PENALTY_VALUE, bonusTime: DEFAULT_BONUS_VALUE };
         this.homeRoute = '/home';
         this.createRoute = '/create';
