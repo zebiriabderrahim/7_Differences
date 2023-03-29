@@ -10,6 +10,7 @@ import {
     MIN_TIME,
 } from '@app/constants/constants';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
+import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameConfigConst } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
@@ -43,9 +44,7 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.communicationSubscription = this.communicationService.loadConfigConstants().subscribe((res) => {
-            this.configConstants.countdownTime = res.countdownTime;
-            this.configConstants.penaltyTime = res.penaltyTime;
-            this.configConstants.bonusTime = res.bonusTime;
+            this.configConstants = res;
         });
     }
 
@@ -54,6 +53,10 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
         this.configConstants.penaltyTime = this.configForm.controls['penaltyTime'].value;
         this.configConstants.bonusTime = this.configForm.controls['bonusTime'].value;
         this.configForm.reset({ countdownTime: DEFAULT_COUNTDOWN_VALUE, penaltyTime: DEFAULT_PENALTY_VALUE, bonusTime: DEFAULT_BONUS_VALUE });
+    }
+
+    resetAllTopTimes() {
+        this.roomManagerService.resetAllTopTimes();
     }
 
     ngOnDestroy() {
