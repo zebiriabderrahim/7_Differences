@@ -47,6 +47,7 @@ export interface ClassicPlayRoom {
     endMessage: string;
     timer: number;
     originalDifferences: Coordinate[][];
+    gameConstants: GameConfigConst;
     player2?: Player;
     player1?: Player;
 }
@@ -122,11 +123,11 @@ export enum GameEvents {
     GameCardDeleted = 'GameCardDeleted',
     DeleteGameCard = 'DeleteGameCard',
     GameCardCreated = 'GameCardCreated',
-    RequestGameCardsReload = 'RequestGameCardsUpdate',
     WaitingPlayerNameListUpdated = 'WaitingPlayerNameListUpdated',
     GetJoinedPlayerNames = 'GetJoinedPlayerNames',
-    ResetTopTime = "ResetTopTime",
-    ResetAllTopTimes = "ResetAllTopTimes"
+    ResetTopTime = 'ResetTopTime',
+    ResetAllTopTimes = 'ResetAllTopTimes',
+    RequestReload = 'RequestReload',
 }
 
 export enum GameModes {
@@ -148,6 +149,13 @@ export enum MessageTag {
 export interface ChatMessage {
     tag: MessageTag;
     message: string;
+}
+
+export interface NewRecord {
+    gameName: string;
+    playerName: string;
+    rank: number;
+    gameMode: string;
 }
 
 export enum GameCardActions {

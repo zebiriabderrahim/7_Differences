@@ -172,7 +172,7 @@ export class RoomManagerService {
             this.refusedPlayerId.next(playerId);
         });
 
-        this.clientSocket.on(GameEvents.RequestGameCardsReload, () => {
+        this.clientSocket.on(GameEvents.RequestReload, () => {
             this.isReloadNeeded.next(true);
         });
     }

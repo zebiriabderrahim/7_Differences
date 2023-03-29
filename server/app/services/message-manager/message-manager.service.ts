@@ -1,4 +1,4 @@
-import { ChatMessage, GameModes, MessageTag } from '@common/game-interfaces';
+import { ChatMessage, GameModes, MessageTag, NewRecord } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -46,6 +46,17 @@ export class MessageManagerService {
         const localMessage: ChatMessage = {
             tag: MessageTag.common,
             message: this.getFormatTime() + ` - ${playerName} a abandonné la partie`,
+        };
+        return localMessage;
+    }
+
+    getNewRecordMessage(newRecord: NewRecord): ChatMessage {
+        const localMessage: ChatMessage = {
+            tag: MessageTag.common,
+            message:
+                this.getFormatTime() +
+                `– ${newRecord.playerName} obtient la ${newRecord.rank} e` +
+                `place dans les meilleurs temps du jeu ${newRecord.gameName} \n en ${newRecord.gameMode}`,
         };
         return localMessage;
     }

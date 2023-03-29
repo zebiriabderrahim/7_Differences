@@ -1,15 +1,26 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { GameService } from '@app/services/game/game.service';
 import { MAX_TIMES_INDEX } from '@common/constants';
-import { ClassicPlayRoom, Differences, GameEvents, Player, playerData, PlayerNameAvailability, PlayerTime } from '@common/game-interfaces';
+import {
+    ClassicPlayRoom,
+    Differences,
+    GameEvents,
+    MessageEvents,
+    NewRecord,
+    Player,
+    playerData,
+    PlayerNameAvailability,
+    PlayerTime,
+} from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
+import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 
 @Injectable()
 export class PlayersListManagerService {
     private joinedPlayersByGameId: Map<string, Player[]>;
 
-    constructor(private readonly gameService: GameService) {
+    constructor(private readonly gameService: GameService, private readonly messageManagerService: MessageManagerService) {
         this.joinedPlayersByGameId = new Map<string, Player[]>();
     }
 
@@ -96,25 +107,38 @@ export class PlayersListManagerService {
         this.joinedPlayersByGameId.delete(gameId);
     }
 
-    async updateTopBestTime(room: ClassicPlayRoom, playerName: string, server: io.Server): Promise<void> {
+    async updateTopBestTime(room: ClassicPlayRoom, playerName: string, server: io.Server): Promise<number> {
         const { clientGame, timer } = room;
         const topTimes = await this.gameService.getTopTimesGameById(clientGame.id, clientGame.mode);
         if (topTimes[MAX_TIMES_INDEX].time > timer) {
-            const newTopTime = { name: playerName, time: timer } as PlayerTime;
-            topTimes.splice(MAX_TIMES_INDEX, 1, newTopTime);
-            topTimes.sort((a, b) => a.time - b.time);
+            const topTimeIndex = this.insertNewTopTime(playerName, timer, topTimes);
             await this.gameService.updateTopTimesGameById(clientGame.id, clientGame.mode, topTimes);
-            server.emit(GameEvents.RequestGameCardsReload);
+            server.emit(GameEvents.RequestReload);
+            const newRecord = { playerName, rank: topTimeIndex, gameName: clientGame.name, gameMode: clientGame.mode } as NewRecord;
+            this.sendNewTopTimeMessage(newRecord, server);
+            return topTimeIndex;
         }
+    }
+
+    insertNewTopTime(playerName: string, timer: number, topTimes: PlayerTime[]): number {
+        const newTopTime = { name: playerName, time: timer } as PlayerTime;
+        topTimes.splice(MAX_TIMES_INDEX, 1, newTopTime);
+        topTimes.sort((a, b) => a.time - b.time);
+        return topTimes.findIndex((topTime) => topTime.name === playerName) + 1;
+    }
+
+    sendNewTopTimeMessage(newRecord: NewRecord, server: io.Server): void {
+        const newRecordMessage = this.messageManagerService.getNewRecordMessage(newRecord);
+        server.emit(MessageEvents.LocalMessage, newRecordMessage);
     }
 
     async resetTopTime(gameId: string, server: io.Server): Promise<void> {
         await this.gameService.resetTopTimesGameById(gameId);
-        server.emit(GameEvents.RequestGameCardsReload);
+        server.emit(GameEvents.RequestReload);
     }
 
     async resetAllTopTime(server: io.Server): Promise<void> {
         await this.gameService.resetAllTopTimes();
-        server.emit(GameEvents.RequestGameCardsReload);
+        server.emit(GameEvents.RequestReload);
     }
 }

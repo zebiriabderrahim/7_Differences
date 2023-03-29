@@ -9,7 +9,6 @@ import { PlayersListManagerService } from '@app/services/players-list-manager/pl
 import { CHARACTERS, KEY_SIZE } from '@common/constants';
 import { Coordinate } from '@common/coordinate';
 import {
-    ChatMessage,
     ClassicPlayRoom,
     ClientSideGame,
     Differences,
@@ -40,6 +39,7 @@ export class ClassicModeService {
 
     async createRoom(playerName: string, gameId: string): Promise<ClassicPlayRoom> {
         const game = await this.gameService.getGameById(gameId);
+        const gameConstants = await this.gameService.getGameConstants();
         const diffData = { currentDifference: [], differencesFound: 0 } as Differences;
         const player = { name: playerName, diffData } as Player;
         const room: ClassicPlayRoom = {
@@ -49,6 +49,7 @@ export class ClassicModeService {
             endMessage: '',
             originalDifferences: structuredClone(JSON.parse(fs.readFileSync(`assets/${game.name}/differences.json`, 'utf-8'))),
             player1: player,
+            gameConstants,
         };
         return room;
     }
@@ -171,12 +172,13 @@ export class ClassicModeService {
     }
 
     async endGame(room: ClassicPlayRoom, player: Player, server: io.Server): Promise<void> {
+        const playerRank = await this.playersListManagerService.updateTopBestTime(room, player.name, server);
+        const playerRankMessage = playerRank ? `classé ${playerRank}!` : '';
         room.endMessage =
             room.clientGame.mode === GameModes.ClassicOneVsOne
-                ? `${player.name} remporte la partie avec ${player.diffData.differencesFound} différences trouvées!`
-                : `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo!`;
+                ? `${player.name} remporte la partie avec ${player.diffData.differencesFound} différences trouvées! ${playerRankMessage}`
+                : `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo ${playerRankMessage}!`;
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
-        await this.playersListManagerService.updateTopBestTime(room, player.name, server);
         this.playersListManagerService.deleteJoinedPlayersByGameId(room.clientGame.id);
         this.rooms.delete(room.roomId);
     }
@@ -245,7 +247,7 @@ export class ClassicModeService {
         if (room && room.clientGame.mode === GameModes.ClassicOneVsOne) {
             const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
             room.endMessage = "L'adversaire a abandonné la partie!";
-            const localMessage: ChatMessage = this.messageManager.getQuitMessage(player.name);
+            const localMessage = this.messageManager.getQuitMessage(player.name);
             server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
             this.rooms.delete(roomId);
             server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);

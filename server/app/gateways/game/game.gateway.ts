@@ -126,13 +126,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     @SubscribeMessage(GameEvents.DeleteGameCard)
     gameCardDeleted(@MessageBody() gameId: string) {
-        this.server.emit(GameEvents.RequestGameCardsReload);
+        this.server.emit(GameEvents.RequestReload);
         this.server.emit(GameEvents.GameCardDeleted, gameId);
     }
 
     @SubscribeMessage(GameEvents.GameCardCreated)
     gameCardCreated() {
-        this.server.emit(GameEvents.RequestGameCardsReload);
+        this.server.emit(GameEvents.RequestReload);
     }
 
     @SubscribeMessage(GameEvents.ResetTopTime)
