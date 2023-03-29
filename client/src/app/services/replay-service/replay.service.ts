@@ -2,8 +2,10 @@
 import { Injectable } from '@angular/core';
 import { REPLAY_LIMITER } from '@app/constants/replay';
 import { ReplayActions } from '@app/enum/replay-actions';
-import { ReplayEvent } from '@app/interfaces/replay-actions';
+import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
+import { ChatMessage, Coordinate } from '@common/game-interfaces';
+import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 
 @Injectable({
     providedIn: 'root',
@@ -12,15 +14,15 @@ export class ReplayService {
     private replayInterval: ReplayInterval;
     private replayEvents: ReplayEvent[] = [];
     private currentReplayIndex: number = 0;
-    constructor(/* private readonly gameAreaService: GameAreaService */) {
+    constructor(private readonly gameAreaService: GameAreaService) {
         this.replayInterval = this.createReplayInterval(
             () => this.replaySwitcher(this.replayEvents[this.currentReplayIndex]),
             () => this.getNextInterval(),
         );
     }
 
-    addReplayData(action: ReplayActions, timestamp: number) {
-        this.replayEvents.push({ action, timestamp } as ReplayEvent);
+    addReplayData(action: ReplayActions, timestamp: number, data?: Coordinate[] | ClickErrorData | ChatMessage) {
+        this.replayEvents.push({ action, timestamp, data } as ReplayEvent);
     }
 
     createReplayInterval(callback: () => void, getNextInterval: () => number): ReplayInterval {
@@ -80,7 +82,6 @@ export class ReplayService {
                 console.log('ClickFound');
                 break;
             case ReplayActions.ClickError:
-                // this.gameAreaService.clickError(action.timestamp);
                 console.log('ClickError');
                 break;
             case ReplayActions.CaptureMessage:
@@ -88,7 +89,7 @@ export class ReplayService {
                 console.log('CaptureMessage');
                 break;
             case ReplayActions.ActivateCheat:
-                // this.gameAreaService.toggleCheatMode(action.timestamp);
+                this.gameAreaService.toggleCheatMode(replayData.data as Coordinate[]);
                 console.log('ActivateCheat');
                 break;
             case ReplayActions.DeactivateCheat:
