@@ -126,9 +126,11 @@ export class GameAreaService {
                     this.clearFlashing();
                 }, RED_FLASH_TIME);
             }, CHEAT_MODE_WAIT_TIME) as unknown as number;
+            this.replayService.addReplayData(ReplayActions.ActivateCheat, Date.now());
         } else {
             clearInterval(this.cheatModeInterval);
             this.clearFlashing();
+            this.replayService.addReplayData(ReplayActions.DeactivateCheat, Date.now());
         }
         this.isCheatMode = !this.isCheatMode;
     }
