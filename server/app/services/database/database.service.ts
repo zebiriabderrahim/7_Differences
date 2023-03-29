@@ -138,7 +138,7 @@ export class DatabaseService {
         try {
             await this.gameConstantsModel.replaceOne({}, gameConstantsDto).exec();
         } catch (error) {
-            throw new Error(`Failed to update config constants --> ${error}`);
+            return Promise.reject(`Failed to update game constants --> ${error}`);
         }
     }
 
