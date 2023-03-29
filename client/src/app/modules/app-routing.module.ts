@@ -9,8 +9,7 @@ import { SelectionPageComponent } from '@app/pages/selection-page/selection-page
 export const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: MainPageComponent },
-    { path: 'game/:roomId', component: GamePageComponent },
-    { path: 'game/:roomId/:playerName', component: GamePageComponent },
+    { path: 'game', component: GamePageComponent },
     { path: 'create', component: CreationPageComponent },
     { path: 'selection', component: SelectionPageComponent },
     { path: 'config', component: ConfigPageComponent },

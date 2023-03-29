@@ -14,3 +14,5 @@ export const DEFAULT_BEST_TIMES: PlayerTime[] = [
 
 export const KEY_SIZE = 36;
 export const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+export const MAX_TIMES_INDEX = 2;
