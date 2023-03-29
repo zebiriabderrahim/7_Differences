@@ -54,6 +54,8 @@ export class HistoryService {
     }
 
     markPlayerAsWinner(roomId: string, playerName: string) {
+        console.log('marking player as winner');
+        console.log('room id');
         const gameHistory = this.pendingGames.get(roomId);
         if (!gameHistory) return;
         if (gameHistory.player1.name === playerName) {
@@ -78,8 +80,9 @@ export class HistoryService {
     getFormattedDate(date: Date): string {
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const day = date.getDate().toString().padStart(2, '0');
+        const year = date.getFullYear();
 
-        return `${date.getFullYear()}-${month}-${day}`;
+        return `${year}-${month}-${day}`;
     }
 
     getFormattedTime(date: Date): string {

@@ -182,7 +182,7 @@ export class ClassicModeService {
             room.clientGame.mode === GameModes.ClassicOneVsOne
         ) {
             room.endMessage = `${player.name} remporte la partie avec ${player.diffData.differencesFound} différences trouvées!`;
-            this.historyService.markPlayerAsWinner(room.clientGame.id, player.name);
+            this.historyService.markPlayerAsWinner(room.roomId, player.name);
             server.to(roomId).emit(GameEvents.EndGame, room.endMessage);
             this.playersListManagerService.deleteJoinedPlayersByGameId(room.clientGame.id);
             this.rooms.delete(roomId);
