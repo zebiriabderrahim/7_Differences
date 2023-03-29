@@ -123,6 +123,10 @@ export class RoomManagerService {
         this.clientSocket.send(GameEvents.ResetAllTopTimes);
     }
 
+    gameConstantsUpdated() {
+        this.clientSocket.send(GameEvents.GameConstantsUpdated);
+    }
+
     connect(): void {
         this.clientSocket.connect();
     }

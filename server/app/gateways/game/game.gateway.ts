@@ -145,6 +145,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         this.playersListManagerService.resetAllTopTime(this.server);
     }
 
+    @SubscribeMessage(GameEvents.GameConstantsUpdated)
+    gameConstantsUpdated() {
+        this.server.emit(GameEvents.RequestReload);
+    }
+
     afterInit() {
         setInterval(() => {
             this.updateTimers();
