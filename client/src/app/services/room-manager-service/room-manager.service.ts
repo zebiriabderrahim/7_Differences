@@ -123,6 +123,10 @@ export class RoomManagerService {
         this.clientSocket.send(GameEvents.ResetAllTopTimes);
     }
 
+    gameConstantsUpdated() {
+        this.clientSocket.send(GameEvents.GameConstantsUpdated);
+    }
+
     connect(): void {
         this.clientSocket.connect();
     }
@@ -172,7 +176,7 @@ export class RoomManagerService {
             this.refusedPlayerId.next(playerId);
         });
 
-        this.clientSocket.on(GameEvents.RequestGameCardsReload, () => {
+        this.clientSocket.on(GameEvents.RequestReload, () => {
             this.isReloadNeeded.next(true);
         });
     }
