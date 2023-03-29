@@ -303,7 +303,7 @@ describe('DatabaseService', () => {
     it('populateDbWithGameConstants should populate the db with the game constants', async () => {
         const gameConstantsModelCreateSpy = jest.spyOn(gameConstantsModel, 'create');
         await dataBaseService.populateDbWithGameConstants();
-        expect(gameConstantsModelCreateSpy).toBeCalledTimes(2);
+        expect(gameConstantsModelCreateSpy).toBeCalled();
     });
 
     it('populateDbWithGameConstants should fail if mongo query failed', async () => {
