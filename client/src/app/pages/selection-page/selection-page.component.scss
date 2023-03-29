@@ -1,6 +1,7 @@
 @import url('https://fonts.cdnfonts.com/css/troika-2');
 * {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Troika', sans-serif;
+    font-size: 20px;
 }
 
 *:not(#selection){
@@ -29,6 +30,11 @@ h1 {
     font-family: 'Troika', sans-serif;
     color: white;
     font-size: 40px;
+}
+
+h2 {
+    font-size: 40px;
+    font-family: 'Troika', sans-serif;
 }
 
 #nav-bar{
@@ -101,7 +107,6 @@ h1 {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-    background-color: #7DAF9C;
 }
 
 .section {
@@ -116,7 +121,7 @@ h1 {
     height: 150px;
     border-radius: 60%;
     margin: 0 auto;
-    border-style: double;
+    background-color: white;
     border-width: 5px;
     border-color: rgb(0, 0, 0);
 }
@@ -128,17 +133,18 @@ h1 {
     right: 0;
     padding: 2rem;
     background: rgb(23, 15, 46);
-    color: white;
     font-weight: 500;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 0.2rem;
     z-index: 1;
+    font-family: 'Troika', sans-serif;
+
 }
 
 .buttonCreate {
-    margin-top: 10px;
+    margin-top: 20px;
     z-index: 1;
 }
 
@@ -196,4 +202,10 @@ h1 {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+#wood {
+    left: 200px;
+    position: absolute;
+    width: 80%;
 }
