@@ -55,7 +55,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     @SubscribeMessage(GameEvents.CheckStatus)
     checkStatus(@ConnectedSocket() socket: Socket) {
-        this.classicModeService.endGame(socket, this.server);
+        this.classicModeService.checkStatus(socket, this.server);
     }
 
     @SubscribeMessage(GameEvents.UpdateRoomOneVsOneAvailability)
@@ -126,13 +126,28 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     @SubscribeMessage(GameEvents.DeleteGameCard)
     gameCardDeleted(@MessageBody() gameId: string) {
-        this.server.emit(GameEvents.RequestGameCardsUpdate);
+        this.server.emit(GameEvents.RequestReload);
         this.server.emit(GameEvents.GameCardDeleted, gameId);
     }
 
     @SubscribeMessage(GameEvents.GameCardCreated)
     gameCardCreated() {
-        this.server.emit(GameEvents.RequestGameCardsUpdate);
+        this.server.emit(GameEvents.RequestReload);
+    }
+
+    @SubscribeMessage(GameEvents.ResetTopTime)
+    resetTopTime(@MessageBody() gameId: string) {
+        this.playersListManagerService.resetTopTime(gameId, this.server);
+    }
+
+    @SubscribeMessage(GameEvents.ResetAllTopTimes)
+    resetAllTopTime() {
+        this.playersListManagerService.resetAllTopTime(this.server);
+    }
+
+    @SubscribeMessage(GameEvents.GameConstantsUpdated)
+    gameConstantsUpdated() {
+        this.server.emit(GameEvents.RequestReload);
     }
 
     afterInit() {
