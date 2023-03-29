@@ -28,11 +28,16 @@ export class ReplayService {
         let remainingTime: number;
         let startTime: number;
 
-        const start = () => {
+        const start = (delay?: number, fromResume: boolean = false) => {
             if (this.currentReplayIndex < this.replayEvents.length) {
                 startTime = Date.now();
-                remainingTime = getNextInterval();
-                callback();
+                const interval = delay === undefined ? getNextInterval() : delay;
+                remainingTime = interval;
+
+                if (!fromResume) {
+                    callback();
+                }
+
                 timeoutId = setTimeout(() => {
                     start();
                 }, remainingTime);
@@ -51,7 +56,7 @@ export class ReplayService {
 
         const resume = () => {
             if (timeoutId === null) {
-                start();
+                start(remainingTime, true);
             }
         };
 
