@@ -181,10 +181,12 @@ describe('DatabaseService', () => {
     });
     it('getGameConstants() should return the constants as expected', async () => {
         await gameConstantsModel.create(gameConfigConstTest);
+        const populateDbWithGameConstantsSpy = jest.spyOn(dataBaseService, 'populateDbWithGameConstants');
         const findOneId = jest.spyOn(gameConstantsModel, 'findOne');
         const gameConstants = await dataBaseService.getGameConstants();
         expect(JSON.stringify(gameConstants)).toEqual(JSON.stringify(gameConfigConstTest));
         expect(findOneId).toBeCalled();
+        expect(populateDbWithGameConstantsSpy).toBeCalled();
     });
 
     it('verifyIfGameExists() should return true if the game exists', async () => {

@@ -27,9 +27,7 @@ export class DatabaseService {
         @InjectModel(GameCard.name) private readonly gameCardModel: Model<GameCardDocument>,
         @InjectModel(GameConstants.name) private readonly gameConstantsModel: Model<GameConstantsDocument>,
         private readonly gameListManager: GameListsManagerService,
-    ) {
-        this.populateDbWithGameConstants();
-    }
+    ) {}
 
     async getGamesCarrousel(): Promise<CarouselPaginator[]> {
         if (this.gameListManager['carouselGames'].length === 0) {
@@ -51,6 +49,7 @@ export class DatabaseService {
     }
 
     async getGameConstants(): Promise<GameConstants> {
+        await this.populateDbWithGameConstants();
         return await this.gameConstantsModel.findOne().select('-__v -_id').exec();
     }
 
