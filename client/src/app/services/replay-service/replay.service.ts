@@ -12,7 +12,7 @@ export class ReplayService {
     private replayInterval: ReplayInterval;
     private replayEvents: ReplayEvent[] = [];
     private currentReplayIndex: number = 0;
-    constructor(/* private readonly gameAreaService: GameAreaService*/) {
+    constructor(/* private readonly gameAreaService: GameAreaService */) {
         this.replayInterval = this.createReplayInterval(
             () => this.replaySwitcher(this.replayEvents[this.currentReplayIndex]),
             () => this.getNextInterval(),
@@ -28,13 +28,12 @@ export class ReplayService {
         let remainingTime: number;
         let startTime: number;
 
-        const start = (delay?: number, fromResume: boolean = false) => {
+        const start = (delay?: number) => {
             if (this.currentReplayIndex < this.replayEvents.length) {
                 startTime = Date.now();
-                const interval = delay === undefined ? getNextInterval() : delay;
-                remainingTime = interval;
+                remainingTime = delay === undefined ? getNextInterval() : delay;
 
-                if (!fromResume) {
+                if (!delay) {
                     callback();
                 }
 
@@ -56,7 +55,7 @@ export class ReplayService {
 
         const resume = () => {
             if (timeoutId === null) {
-                start(remainingTime, true);
+                start(remainingTime);
             }
         };
 
@@ -89,11 +88,11 @@ export class ReplayService {
                 console.log('CaptureMessage');
                 break;
             case ReplayActions.ActivateCheat:
-                // this.gameAreaService.activateCheat(action.timestamp);
+                // this.gameAreaService.toggleCheatMode(action.timestamp);
                 console.log('ActivateCheat');
                 break;
             case ReplayActions.DeactivateCheat:
-                // this.gameAreaService.deactivateCheat(action.timestamp);
+                // this.gameAreaService.toggleCheatMode(action.timestamp);
                 console.log('DeactivateCheat');
                 break;
             case ReplayActions.UseHint:
