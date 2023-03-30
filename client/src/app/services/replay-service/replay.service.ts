@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { Injectable } from '@angular/core';
-import { REPLAY_LIMITER } from '@app/constants/replay';
+import { REPLAY_LIMITER, SPEED_X1, SPEED_X2, SPEED_X4 } from '@app/constants/replay';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
@@ -14,6 +14,7 @@ import { ChatMessage, Coordinate } from '@common/game-interfaces';
 })
 export class ReplayService {
     isReplaying: boolean = false;
+    private replaySpeed = SPEED_X1;
     private replayInterval: ReplayInterval;
     private replayEvents: ReplayEvent[] = [];
     private currentReplayIndex: number = 0;
@@ -117,7 +118,7 @@ export class ReplayService {
     getNextInterval(): number {
         const nextActionIndex = this.currentReplayIndex + 1;
         if (nextActionIndex < this.replayEvents.length) {
-            return this.replayEvents[nextActionIndex].timestamp - this.replayEvents[this.currentReplayIndex].timestamp;
+            return (this.replayEvents[nextActionIndex].timestamp - this.replayEvents[this.currentReplayIndex].timestamp) / this.replaySpeed;
         }
         return REPLAY_LIMITER;
     }
@@ -145,6 +146,21 @@ export class ReplayService {
         console.log('cancelReplay');
         this.replayInterval.cancel();
         this.currentReplayIndex = 0;
+    }
+
+    upSpeedx1(): void {
+        console.log('upSpeedx1');
+        this.replaySpeed = SPEED_X1;
+    }
+
+    upSpeedx2(): void {
+        console.log('upSpeedx2');
+        this.replaySpeed = SPEED_X2;
+    }
+
+    upSpeedx4(): void {
+        console.log('upSpeedx4');
+        this.replaySpeed = SPEED_X4;
     }
 
     resetReplay(): void {
