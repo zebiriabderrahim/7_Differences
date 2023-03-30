@@ -1,7 +1,12 @@
 .replay-container {
     background: #7DAF9C;
-    border-radius: 10px;
+    border-radius: 15px;
     padding: 10px;
+}
+
+.replay-container * {
+  font-family: 'Troika', sans-serif;
+  font-size: 24px;
 }
 
 .replay-container {
