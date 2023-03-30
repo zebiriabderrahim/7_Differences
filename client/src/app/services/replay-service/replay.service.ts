@@ -77,13 +77,12 @@ export class ReplayService {
                 console.log('StartGame');
                 break;
             case ReplayActions.ClickFound:
-                console.log('ClickFound');
+                this.gameAreaService.flashCorrectPixels(replayData.data as Coordinate[]);
                 break;
             case ReplayActions.ClickError:
                 console.log('ClickError');
                 break;
             case ReplayActions.CaptureMessage:
-                console.log('CaptureMessage');
                 this.classicSystemService.setMessage(replayData.data as ChatMessage);
                 break;
             case ReplayActions.ActivateCheat:
