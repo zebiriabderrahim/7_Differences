@@ -52,7 +52,7 @@ export class MessageManagerService {
 
     getNewRecordMessage(newRecord: NewRecord): ChatMessage {
         const localMessage: ChatMessage = {
-            tag: MessageTag.common,
+            tag: MessageTag.global,
             message:
                 this.getFormatTime() +
                 `– ${newRecord.playerName} obtient la ${newRecord.rank} e` +
