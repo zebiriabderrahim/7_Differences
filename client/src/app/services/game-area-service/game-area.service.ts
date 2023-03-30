@@ -21,6 +21,7 @@ import { Subject } from 'rxjs';
 })
 export class GameAreaService {
     replayEventsSubject: Subject<ReplayEvent>;
+    mousePosition: Coordinate;
     private originalPixelData: ImageData;
     private modifiedPixelData: ImageData;
     private originalFrontPixelData: ImageData;
@@ -29,7 +30,6 @@ export class GameAreaService {
     private modifiedContext: CanvasRenderingContext2D;
     private originalContextFrontLayer: CanvasRenderingContext2D;
     private modifiedContextFrontLayer: CanvasRenderingContext2D;
-    private mousePosition: Coordinate;
     private clickDisabled: boolean;
     private isCheatMode: boolean;
     private cheatModeInterval: number | undefined;
@@ -57,12 +57,12 @@ export class GameAreaService {
         return event.button === LEFT_BUTTON && !this.clickDisabled ? (this.saveCoord(event), true) : false;
     }
 
-    showError(isMainCanvas: boolean): void {
+    showError(isMainCanvas: boolean, errorCoordinate: Coordinate): void {
         const frontContext: CanvasRenderingContext2D = isMainCanvas ? this.originalContextFrontLayer : this.modifiedContextFrontLayer;
         frontContext.fillStyle = 'red';
         this.clickDisabled = true;
         frontContext.font = 'bold 30px sheriff';
-        frontContext.fillText('ERREUR', this.mousePosition.x - X_CENTERING_DISTANCE, this.mousePosition.y);
+        frontContext.fillText('ERREUR', errorCoordinate.x - X_CENTERING_DISTANCE, errorCoordinate.y);
         setTimeout(() => {
             frontContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
             this.clickDisabled = false;
@@ -70,7 +70,7 @@ export class GameAreaService {
         this.replayEventsSubject.next({
             action: ReplayActions.ClickError,
             timestamp: Date.now(),
-            data: { isMainCanvas, x: this.mousePosition.x, y: this.mousePosition.y },
+            data: { isMainCanvas, pos: errorCoordinate },
         });
     }
 

@@ -4,8 +4,7 @@ import { ChatMessage } from '@common/game-interfaces';
 
 export interface ClickErrorData {
     isMainCanvas: boolean;
-    x: number;
-    y: number;
+    pos: Coordinate;
 }
 
 export interface ReplayEvent {
