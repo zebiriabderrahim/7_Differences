@@ -118,6 +118,11 @@ export class ClassicSystemService implements OnDestroy {
 
     sendMessage(textMessage: string): void {
         const newMessage = { tag: MessageTag.received, message: textMessage };
+        this.replayEventsSubject.next({
+            action: ReplayActions.CaptureMessage,
+            timestamp: Date.now(),
+            data: { tag: MessageTag.sent, message: textMessage } as ChatMessage,
+        });
         this.clientSocket.send(MessageEvents.LocalMessage, newMessage);
     }
 
@@ -136,10 +141,6 @@ export class ClassicSystemService implements OnDestroy {
             if (data.players) {
                 this.players.next(data.players);
             }
-            this.replayEventsSubject.next({
-                action: ReplayActions.StartGame,
-                timestamp: Date.now(),
-            });
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[] }) => {
             if (data.playerId === this.getSocketId()) {
