@@ -80,7 +80,7 @@ export class ReplayService {
         return { start, pause, resume, cancel };
     }
 
-    replaySwitcher(replayData: ReplayEvent) {
+    replaySwitcher(replayData: ReplayEvent): void {
         // TODO: Remove console.log
         switch (replayData.action) {
             case ReplayActions.StartGame:
@@ -122,7 +122,7 @@ export class ReplayService {
         return REPLAY_LIMITER;
     }
 
-    startReplay() {
+    startReplay(): void {
         this.isReplaying = true;
         this.replayInterval = this.createReplayInterval(
             () => this.replaySwitcher(this.replayEvents[this.currentReplayIndex]),
@@ -131,23 +131,23 @@ export class ReplayService {
         this.replayInterval.start();
     }
 
-    pauseReplay() {
+    pauseReplay(): void {
         console.log('pauseReplay');
         this.replayInterval.pause();
     }
 
-    resumeReplay() {
+    resumeReplay(): void {
         console.log('resumeReplay');
         this.replayInterval.resume();
     }
 
-    cancelReplay() {
+    cancelReplay(): void {
         console.log('cancelReplay');
         this.replayInterval.cancel();
         this.currentReplayIndex = 0;
     }
 
-    resetReplay() {
+    resetReplay(): void {
         this.replayEvents = [];
         this.currentReplayIndex = 0;
         this.isReplaying = false;

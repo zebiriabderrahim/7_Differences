@@ -6,12 +6,13 @@ import { GameAreaService } from '@app/services/game-area-service/game-area.servi
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
 import { ChatMessage, ClientSideGame, Differences, GameEvents, MessageEvents, MessageTag, Players } from '@common/game-interfaces';
-import { BehaviorSubject, filter, Subject } from 'rxjs';
+import { filter, Subject } from 'rxjs';
+
 @Injectable({
     providedIn: 'root',
 })
 export class ClassicSystemService implements OnDestroy {
-    replayEventsSubject: BehaviorSubject<ReplayEvent>;
+    replayEventsSubject: Subject<ReplayEvent>;
     private timer: Subject<number>;
     private differencesFound: Subject<number>;
     private opponentDifferencesFound: Subject<number>;
@@ -36,10 +37,7 @@ export class ClassicSystemService implements OnDestroy {
         this.endMessage = new Subject<string>();
         this.opponentDifferencesFound = new Subject<number>();
         this.cheatDifferences = new Subject<Coordinate[]>();
-        this.replayEventsSubject = new BehaviorSubject<ReplayEvent>({
-            action: ReplayActions.StartGame,
-            timestamp: Date.now(),
-        });
+        this.replayEventsSubject = new Subject<ReplayEvent>();
     }
 
     get currentGame$() {
@@ -138,6 +136,10 @@ export class ClassicSystemService implements OnDestroy {
             if (data.players) {
                 this.players.next(data.players);
             }
+            this.replayEventsSubject.next({
+                action: ReplayActions.StartGame,
+                timestamp: Date.now(),
+            });
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[] }) => {
             if (data.playerId === this.getSocketId()) {
