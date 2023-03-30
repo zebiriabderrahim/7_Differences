@@ -1,5 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfigDialogComponent } from '@app/components/config-dialog/config-dialog.component';
 import {
     DEFAULT_BONUS_VALUE,
     DEFAULT_COUNTDOWN_VALUE,
@@ -7,7 +9,7 @@ import {
     MAX_BONUS_TIME,
     MAX_COUNTDOWN_TIME,
     MAX_PENALTY_TIME,
-    MIN_TIME,
+    MIN_TIME
 } from '@app/constants/constants';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
@@ -31,6 +33,7 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
         private readonly communicationService: CommunicationService,
         private readonly roomManagerService: RoomManagerService,
         private formBuilder: FormBuilder,
+        private readonly matDialog: MatDialog,
     ) {
         this.configConstants = { countdownTime: DEFAULT_COUNTDOWN_VALUE, penaltyTime: DEFAULT_PENALTY_VALUE, bonusTime: DEFAULT_BONUS_VALUE };
         this.homeRoute = '/home';
@@ -87,6 +90,22 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
             penaltyTime: this.configConstants.penaltyTime,
             bonusTime: this.configConstants.bonusTime,
         });
+    }
+
+    openDialog() {
+        // const dialogConfig = new MatDialogConfig();
+        // dialogConfig.data = this.radius;
+        this.matDialog.open(ConfigDialogComponent, {
+            panelClass: 'background-image',
+        });
+        // .subscribe((game: GameDetails) => {
+        //     if (game) {
+        //         this.communicationService.postGame(game).subscribe(() => {
+        //             this.router.navigate(['/config']);
+        //             this.roomManagerService.gameCardCreated();
+        //         });
+        //     }
+        // });
     }
 
     ngOnDestroy() {

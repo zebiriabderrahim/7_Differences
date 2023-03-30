@@ -14,7 +14,7 @@
             </mat-grid-tile>
             <mat-grid-tile
                 ><div class="game-constants">
-                    <form [formGroup]="configForm" (ngSubmit)="onSubmit()">
+                    <!-- <form [formGroup]="configForm" (ngSubmit)="onSubmit()">
                         <mat-form-field appearance="outline">
                           <mat-label>Temps initial du compte à rebours</mat-label>
                           <input matInput type="number" formControlName="countdownTime" required>
@@ -40,8 +40,9 @@
                           </mat-error> 
                         </mat-form-field>
                         <button mat-raised-button type="submit" [disabled]="configForm.invalid">Enregistrer la configuration</button>
-                        <button mat-raised-button (click)="resetConfigForm()">réinitialiser</button>
-                    </form>
+                        <button mat-raised-button (click)="resetConfigForm()">Réinitialiser la configuration</button>
+                    </form> -->
+                    <button mat-raised-button (click)="openDialog()">Ouvrir la boîte de dialogue</button>
                 </div>
             </mat-grid-tile>
         </mat-grid-list>
