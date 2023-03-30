@@ -39,15 +39,15 @@ export class ReplayButtonsComponent implements OnInit, OnDestroy {
     }
 
     speedX1() {
-        // this.replayService.upSpeedX1();
+        this.replayService.upSpeedx1();
     }
 
     speedX2() {
-        // this.replayService.upSpeedX2();
+        this.replayService.upSpeedx2();
     }
 
     speedX4() {
-        // this.replayService.upSpeedX4();
+        this.replayService.upSpeedx4();
     }
 
     ngOnDestroy() {
