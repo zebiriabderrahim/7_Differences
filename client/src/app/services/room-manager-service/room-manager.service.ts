@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameEvents, playerData, PlayerNameAvailability, RoomAvailability } from '@common/game-interfaces';
 import { Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
-export class RoomManagerService {
+export class RoomManagerService implements OnDestroy {
     private joinedPlayerNames: Subject<string[]>;
     private isPlayerNameTaken: Subject<PlayerNameAvailability>;
     private oneVsOneRoomsAvailabilityByGameId: Subject<RoomAvailability>;
@@ -112,7 +112,11 @@ export class RoomManagerService {
     }
 
     gameCardDeleted(gameId: string) {
-        this.clientSocket.send(GameEvents.DeleteGameCard, gameId);
+        this.clientSocket.send(GameEvents.GameCardDeleted, gameId);
+    }
+
+    allGamesDeleted() {
+        this.clientSocket.send(GameEvents.AllGamesDeleted);
     }
 
     resetTopTime(gameId: string) {
@@ -137,6 +141,12 @@ export class RoomManagerService {
 
     disconnect(): void {
         this.clientSocket.disconnect();
+    }
+
+    reconnect(): void {
+        if (!this.clientSocket.isSocketAlive()) {
+            this.clientSocket.connect();
+        }
     }
 
     handleRoomEvents(): void {
@@ -168,7 +178,7 @@ export class RoomManagerService {
             this.isPlayerAccepted.next(isAccepted);
         });
 
-        this.clientSocket.on(GameEvents.GameCardDeleted, (gameId: string) => {
+        this.clientSocket.on(GameEvents.GameDeleted, (gameId: string) => {
             this.deletedGameId.next(gameId);
         });
 
@@ -179,5 +189,8 @@ export class RoomManagerService {
         this.clientSocket.on(GameEvents.RequestReload, () => {
             this.isReloadNeeded.next(true);
         });
+    }
+    ngOnDestroy(): void {
+        this.clientSocket.disconnect();
     }
 }

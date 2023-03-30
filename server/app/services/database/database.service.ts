@@ -108,6 +108,17 @@ export class DatabaseService {
         }
     }
 
+    async deleteAllGames() {
+        try {
+            const games = await this.gameModel.find().exec();
+            for (const game of games) {
+                await this.deleteGameById(game._id.toString());
+            }
+        } catch (error) {
+            return Promise.reject(`Failed to delete all games --> ${error}`);
+        }
+    }
+
     async updateTopTimesGameById(id: string, gameMode: string, topTimes: PlayerTime[]): Promise<void> {
         try {
             const mode = gameMode === GameModes.ClassicSolo ? 'soloTopTime' : 'oneVsOneTopTime';

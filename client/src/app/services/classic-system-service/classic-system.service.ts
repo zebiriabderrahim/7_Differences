@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
@@ -8,7 +8,7 @@ import { filter, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
-export class ClassicSystemService implements OnDestroy {
+export class ClassicSystemService {
     private timer: Subject<number>;
     private differencesFound: Subject<number>;
     private opponentDifferencesFound: Subject<number>;
@@ -122,6 +122,7 @@ export class ClassicSystemService implements OnDestroy {
 
         this.clientSocket.on(GameEvents.GameStarted, (data: { clientGame: ClientSideGame; players: Players; cheatDifferences: Coordinate[] }) => {
             this.currentGame.next(data.clientGame);
+            this.players.next(data.players);
             this.cheatDifferences.next(data.cheatDifferences);
             if (data.players) {
                 this.players.next(data.players);
@@ -150,9 +151,5 @@ export class ClassicSystemService implements OnDestroy {
         this.clientSocket.on(MessageEvents.LocalMessage, (receivedMessage: ChatMessage) => {
             this.message.next(receivedMessage);
         });
-    }
-
-    ngOnDestroy(): void {
-        this.clientSocket.disconnect();
     }
 }

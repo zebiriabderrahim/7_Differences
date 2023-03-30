@@ -41,6 +41,10 @@ export class GameService {
         await this.databaseService.deleteGameById(gameId);
     }
 
+    async deleteAllGames(): Promise<void> {
+        await this.databaseService.deleteAllGames();
+    }
+
     async addGame(newGame: CreateGameDto): Promise<void> {
         await this.databaseService.addGameInDb(newGame);
     }

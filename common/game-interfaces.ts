@@ -90,6 +90,7 @@ export interface WaitingPlayerNameList {
     playerNamesList: string[];
 }
 
+
 export enum GameEvents {
     ValidateCoords = 'validateCoords',
     CheckStatus = 'checkStatus',
@@ -121,7 +122,6 @@ export enum GameEvents {
     Disconnect = 'Disconnect',
     PlayerRefused = 'PlayerRefused',
     GameCardDeleted = 'GameCardDeleted',
-    DeleteGameCard = 'DeleteGameCard',
     GameCardCreated = 'GameCardCreated',
     RequestReload = 'RequestGameCardsUpdate',
     WaitingPlayerNameListUpdated = 'WaitingPlayerNameListUpdated',
@@ -129,6 +129,8 @@ export enum GameEvents {
     ResetTopTime = 'ResetTopTime',
     ResetAllTopTimes = 'ResetAllTopTimes',
     GameConstantsUpdated = 'GameConstantsUpdated',
+    AllGamesDeleted = 'AllGamesDeleted',
+    GameDeleted = "GameDeleted"
 }
 
 export enum GameModes {
@@ -145,6 +147,7 @@ export enum MessageTag {
     sent = 'sent',
     received = 'received',
     common = 'common',
+    global = 'global',
 }
 
 export interface ChatMessage {
