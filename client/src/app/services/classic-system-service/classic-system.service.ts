@@ -6,12 +6,12 @@ import { GameAreaService } from '@app/services/game-area-service/game-area.servi
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
 import { ChatMessage, ClientSideGame, Differences, GameEvents, MessageEvents, MessageTag, Players } from '@common/game-interfaces';
-import { filter, Subject } from 'rxjs';
+import { BehaviorSubject, filter, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class ClassicSystemService implements OnDestroy {
-    replayEventsSubject: Subject<ReplayEvent>;
+    replayEventsSubject: BehaviorSubject<ReplayEvent>;
     private timer: Subject<number>;
     private differencesFound: Subject<number>;
     private opponentDifferencesFound: Subject<number>;
@@ -36,7 +36,10 @@ export class ClassicSystemService implements OnDestroy {
         this.endMessage = new Subject<string>();
         this.opponentDifferencesFound = new Subject<number>();
         this.cheatDifferences = new Subject<Coordinate[]>();
-        this.replayEventsSubject = new Subject<ReplayEvent>();
+        this.replayEventsSubject = new BehaviorSubject<ReplayEvent>({
+            action: ReplayActions.StartGame,
+            timestamp: Date.now(),
+        });
     }
 
     get currentGame$() {
