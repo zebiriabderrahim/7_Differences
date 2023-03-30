@@ -13,10 +13,10 @@ import { ChatMessage, Coordinate } from '@common/game-interfaces';
     providedIn: 'root',
 })
 export class ReplayService {
+    isReplaying: boolean = false;
     private replayInterval: ReplayInterval;
     private replayEvents: ReplayEvent[] = [];
     private currentReplayIndex: number = 0;
-    private isReplaying: boolean = false;
     constructor(
         private readonly gameAreaService: GameAreaService,
         private readonly classicSystemService: ClassicSystemService,
