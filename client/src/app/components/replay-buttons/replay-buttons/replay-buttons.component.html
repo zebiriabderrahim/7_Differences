@@ -1,8 +1,8 @@
-<div *ngIf="isReplaying()" class="replay-container">
+<div class="replay-container">
     <button mat-button class="button" (click)="quit()" [routerLink]="'/home'" routerLinkActive="router-link-active" >Quitter</button>
-    <button mat-button *ngIf="!isReplaying" (click)="replay()"><mat-icon>replay</mat-icon></button>
-    <button mat-button *ngIf="!isReplayPaused && isReplaying" (click)="pause()"><mat-icon>pause_circle_filled</mat-icon></button>
-    <button mat-button *ngIf="isReplayPaused && isReplaying" (click)="resume()"><mat-icon>play_circle_filled</mat-icon></button>
+    <button mat-button *ngIf="!isReplaying()" (click)="replay()"><mat-icon>replay</mat-icon></button>
+    <button mat-button *ngIf="!isReplayPaused && isReplaying()" (click)="pause()"><mat-icon>pause_circle_filled</mat-icon></button>
+    <button mat-button *ngIf="isReplayPaused && isReplaying()" (click)="resume()"><mat-icon>play_circle_filled</mat-icon></button>
     <mat-radio-group [(ngModel)]="selectedSpeed">
         <mat-radio-button class="button" mat-button value="x1" (click)="speedX1()">x1</mat-radio-button>
         <mat-radio-button class="button" mat-button value="x2" (click)="speedX2()">x2</mat-radio-button>

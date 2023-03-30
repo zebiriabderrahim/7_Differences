@@ -75,6 +75,7 @@ export class ReplayService {
                 clearTimeout(timeoutId);
                 timeoutId = null;
             }
+            this.isReplaying = false;
         };
 
         return { start, pause, resume, cancel };
