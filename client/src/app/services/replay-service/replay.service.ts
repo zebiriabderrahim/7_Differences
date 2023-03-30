@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { REPLAY_LIMITER } from '@app/constants/replay';
 import { ReplayActions } from '@app/enum/replay-actions';
-import { ReplayEvent } from '@app/interfaces/replay-actions';
+import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
@@ -70,7 +70,6 @@ export class ReplayService {
                 clearTimeout(timeoutId);
                 timeoutId = null;
             }
-            this.isReplaying = false;
         };
 
         return { start, pause, resume, cancel };
@@ -86,6 +85,7 @@ export class ReplayService {
                 this.gameAreaService.flashCorrectPixels(replayData.data as Coordinate[]);
                 break;
             case ReplayActions.ClickError:
+                this.gameAreaService.showError((replayData.data as ClickErrorData).isMainCanvas as boolean);
                 console.log('ClickError');
                 break;
             case ReplayActions.CaptureMessage:
@@ -93,10 +93,9 @@ export class ReplayService {
                 break;
             case ReplayActions.ActivateCheat:
                 this.gameAreaService.toggleCheatMode(replayData.data as Coordinate[]);
-                console.log('ActivateCheat');
                 break;
             case ReplayActions.DeactivateCheat:
-                console.log('DeactivateCheat');
+                this.gameAreaService.toggleCheatMode(replayData.data as Coordinate[]);
                 break;
             case ReplayActions.UseHint:
                 console.log('UseHint');
