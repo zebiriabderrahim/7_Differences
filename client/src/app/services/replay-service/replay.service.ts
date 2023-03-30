@@ -2,10 +2,11 @@
 import { Injectable } from '@angular/core';
 import { REPLAY_LIMITER } from '@app/constants/replay';
 import { ReplayActions } from '@app/enum/replay-actions';
-import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
+import { ReplayEvent } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
-import { ChatMessage, Coordinate } from '@common/game-interfaces';
+import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { Coordinate } from '@common/game-interfaces';
 
 @Injectable({
     providedIn: 'root',
@@ -14,15 +15,13 @@ export class ReplayService {
     private replayInterval: ReplayInterval;
     private replayEvents: ReplayEvent[] = [];
     private currentReplayIndex: number = 0;
-    constructor(private readonly gameAreaService: GameAreaService) {
-        this.replayInterval = this.createReplayInterval(
-            () => this.replaySwitcher(this.replayEvents[this.currentReplayIndex]),
-            () => this.getNextInterval(),
-        );
-    }
-
-    addReplayData(action: ReplayActions, timestamp: number, data?: Coordinate[] | ClickErrorData | ChatMessage) {
-        this.replayEvents.push({ action, timestamp, data } as ReplayEvent);
+    constructor(private readonly gameAreaService: GameAreaService, private readonly classicSystemService: ClassicSystemService) {
+        this.gameAreaService.replayEventsSubject.asObservable().subscribe((replayEvent: ReplayEvent) => {
+            this.replayEvents.push(replayEvent);
+        });
+        this.classicSystemService.replayEventsSubject.asObservable().subscribe((replayEvent: ReplayEvent) => {
+            this.replayEvents.push(replayEvent);
+        });
     }
 
     createReplayInterval(callback: () => void, getNextInterval: () => number): ReplayInterval {
@@ -75,7 +74,6 @@ export class ReplayService {
         // TODO: Remove console.log
         switch (replayData.action) {
             case ReplayActions.StartGame:
-                // this.gameAreaService.startGame(replayData.timestamp);
                 console.log('StartGame');
                 break;
             case ReplayActions.ClickFound:
@@ -85,7 +83,6 @@ export class ReplayService {
                 console.log('ClickError');
                 break;
             case ReplayActions.CaptureMessage:
-                // this.gameAreaService.captureMessage(action.timestamp);
                 console.log('CaptureMessage');
                 break;
             case ReplayActions.ActivateCheat:
@@ -93,11 +90,9 @@ export class ReplayService {
                 console.log('ActivateCheat');
                 break;
             case ReplayActions.DeactivateCheat:
-                // this.gameAreaService.toggleCheatMode(action.timestamp);
                 console.log('DeactivateCheat');
                 break;
             case ReplayActions.UseHint:
-                // this.gameAreaService.useHint(action.timestamp);
                 console.log('UseHint');
                 break;
             default:
@@ -115,6 +110,10 @@ export class ReplayService {
     }
 
     startReplay() {
+        this.replayInterval = this.createReplayInterval(
+            () => this.replaySwitcher(this.replayEvents[this.currentReplayIndex]),
+            () => this.getNextInterval(),
+        );
         this.replayInterval.start();
     }
 
