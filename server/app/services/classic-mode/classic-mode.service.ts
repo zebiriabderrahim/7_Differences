@@ -173,10 +173,10 @@ export class ClassicModeService {
 
     async endGame(room: ClassicPlayRoom, player: Player, server: io.Server): Promise<void> {
         const playerRank = await this.playersListManagerService.updateTopBestTime(room, player.name, server);
-        const playerRankMessage = playerRank ? `classé ${playerRank}!` : '';
+        const playerRankMessage = playerRank ? `${player.name} classé ${playerRank}!` : '';
         room.endMessage =
             room.clientGame.mode === GameModes.ClassicOneVsOne
-                ? `${player.name} remporte la partie avec ${player.diffData.differencesFound} différences trouvées! ${playerRankMessage}`
+                ? ` remporte la partie avec ${player.diffData.differencesFound} différences trouvées! ${playerRankMessage}`
                 : `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo ${playerRankMessage}!`;
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
         this.playersListManagerService.deleteJoinedPlayersByGameId(room.clientGame.id);
