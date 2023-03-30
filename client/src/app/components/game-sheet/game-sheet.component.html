@@ -1,4 +1,5 @@
 <div *ngIf="game" class="gameSheet">
+    <img id = "background" src = "./assets/gameSheet.png"/>
     <h1 class="title">{{ game.name }}</h1>
     <div class="gameContainer">
         <img class="thumbnail" [src]="url" alt="track" />
@@ -9,7 +10,7 @@
                     <h3>Top Solo</h3>
                     <div class="topSolo" *ngFor="let player of game.soloTopTime; index as i">
                         <strong class="bestTime">&nbsp;{{ i + 1 }} </strong>
-                        &nbsp;<strong>{{ player.name }}</strong> {{ player.time }}
+                        &nbsp;<strong>{{ player.name }}</strong> {{ player.time }} &nbsp;
                     </div>
                 </div>
                 <div class="top three section">
@@ -29,3 +30,4 @@
         <button mat-raised-button *ngIf="router.url === '/config'" (click)="resetTopTime()">Réinitialiser</button>
     </div>
 </div>
+
