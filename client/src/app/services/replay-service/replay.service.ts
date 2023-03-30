@@ -15,12 +15,17 @@ export class ReplayService {
     private replayInterval: ReplayInterval;
     private replayEvents: ReplayEvent[] = [];
     private currentReplayIndex: number = 0;
+    private isReplaying: boolean = false;
     constructor(private readonly gameAreaService: GameAreaService, private readonly classicSystemService: ClassicSystemService) {
         this.gameAreaService.replayEventsSubject.asObservable().subscribe((replayEvent: ReplayEvent) => {
-            this.replayEvents.push(replayEvent);
+            if (!this.isReplaying) {
+                this.replayEvents.push(replayEvent);
+            }
         });
         this.classicSystemService.replayEventsSubject.asObservable().subscribe((replayEvent: ReplayEvent) => {
-            this.replayEvents.push(replayEvent);
+            if (!this.isReplaying) {
+                this.replayEvents.push(replayEvent);
+            }
         });
     }
 
@@ -65,6 +70,7 @@ export class ReplayService {
                 clearTimeout(timeoutId);
                 timeoutId = null;
             }
+            this.isReplaying = false;
         };
 
         return { start, pause, resume, cancel };
@@ -110,6 +116,7 @@ export class ReplayService {
     }
 
     startReplay() {
+        this.isReplaying = true;
         this.replayInterval = this.createReplayInterval(
             () => this.replaySwitcher(this.replayEvents[this.currentReplayIndex]),
             () => this.getNextInterval(),
@@ -136,5 +143,6 @@ export class ReplayService {
     resetReplay() {
         this.replayEvents = [];
         this.currentReplayIndex = 0;
+        this.isReplaying = false;
     }
 }
