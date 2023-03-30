@@ -6,7 +6,7 @@ import { ReplayEvent } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
-import { Coordinate } from '@common/game-interfaces';
+import { ChatMessage, Coordinate } from '@common/game-interfaces';
 
 @Injectable({
     providedIn: 'root',
@@ -84,6 +84,7 @@ export class ReplayService {
                 break;
             case ReplayActions.CaptureMessage:
                 console.log('CaptureMessage');
+                this.classicSystemService.setMessage(replayData.data as ChatMessage);
                 break;
             case ReplayActions.ActivateCheat:
                 this.gameAreaService.toggleCheatMode(replayData.data as Coordinate[]);

@@ -72,6 +72,10 @@ export class ClassicSystemService implements OnDestroy {
         return this.cheatDifferences.asObservable();
     }
 
+    setMessage(message: ChatMessage) {
+        this.message.next(message);
+    }
+
     getSocketId(): string {
         return this.clientSocket.socket.id;
     }
