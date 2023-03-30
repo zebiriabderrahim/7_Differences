@@ -138,10 +138,6 @@ export class ClassicSystemService implements OnDestroy {
             if (data.players) {
                 this.players.next(data.players);
             }
-            this.replayEventsSubject.next({
-                action: ReplayActions.StartGame,
-                timestamp: Date.now(),
-            });
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[] }) => {
             if (data.playerId === this.getSocketId()) {
