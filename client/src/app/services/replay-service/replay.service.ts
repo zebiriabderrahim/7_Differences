@@ -6,6 +6,7 @@ import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { SoundService } from '@app/services/sound-service/sound.service';
 import { ChatMessage, Coordinate } from '@common/game-interfaces';
 
 @Injectable({
@@ -16,7 +17,11 @@ export class ReplayService {
     private replayEvents: ReplayEvent[] = [];
     private currentReplayIndex: number = 0;
     private isReplaying: boolean = false;
-    constructor(private readonly gameAreaService: GameAreaService, private readonly classicSystemService: ClassicSystemService) {
+    constructor(
+        private readonly gameAreaService: GameAreaService,
+        private readonly classicSystemService: ClassicSystemService,
+        private readonly soundService: SoundService,
+    ) {
         this.gameAreaService.replayEventsSubject.asObservable().subscribe((replayEvent: ReplayEvent) => {
             if (!this.isReplaying) {
                 this.replayEvents.push(replayEvent);
@@ -82,9 +87,11 @@ export class ReplayService {
                 console.log('StartGame');
                 break;
             case ReplayActions.ClickFound:
+                this.soundService.playCorrectSound();
                 this.gameAreaService.flashCorrectPixels(replayData.data as Coordinate[]);
                 break;
             case ReplayActions.ClickError:
+                this.soundService.playErrorSound();
                 this.gameAreaService.showError((replayData.data as ClickErrorData).isMainCanvas as boolean);
                 console.log('ClickError');
                 break;
