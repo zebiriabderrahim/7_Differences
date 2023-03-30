@@ -1,8 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { ReplayActions } from '@app/enum/replay-actions';
+import { ReplayEvent } from '@app/interfaces/replay-actions';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
-import { ReplayService } from '@app/services/replay-service/replay.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
 import { ChatMessage, ClientSideGame, Differences, GameEvents, MessageEvents, MessageTag, Players } from '@common/game-interfaces';
@@ -11,6 +11,7 @@ import { filter, Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class ClassicSystemService implements OnDestroy {
+    replayEventsSubject: Subject<ReplayEvent>;
     private timer: Subject<number>;
     private differencesFound: Subject<number>;
     private opponentDifferencesFound: Subject<number>;
@@ -26,7 +27,6 @@ export class ClassicSystemService implements OnDestroy {
         private readonly clientSocket: ClientSocketService,
         private readonly gameAreaService: GameAreaService,
         private readonly soundService: SoundService,
-        private readonly replayService: ReplayService,
     ) {
         this.currentGame = new Subject<ClientSideGame>();
         this.differencesFound = new Subject<number>();
@@ -36,6 +36,7 @@ export class ClassicSystemService implements OnDestroy {
         this.endMessage = new Subject<string>();
         this.opponentDifferencesFound = new Subject<number>();
         this.cheatDifferences = new Subject<Coordinate[]>();
+        this.replayEventsSubject = new Subject<ReplayEvent>();
     }
 
     get currentGame$() {
@@ -130,7 +131,10 @@ export class ClassicSystemService implements OnDestroy {
             if (data.players) {
                 this.players.next(data.players);
             }
-            this.replayService.addReplayData(ReplayActions.StartGame, Date.now());
+            this.replayEventsSubject.next({
+                action: ReplayActions.StartGame,
+                timestamp: Date.now(),
+            });
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[] }) => {
             if (data.playerId === this.getSocketId()) {
@@ -154,6 +158,11 @@ export class ClassicSystemService implements OnDestroy {
 
         this.clientSocket.on(MessageEvents.LocalMessage, (receivedMessage: ChatMessage) => {
             this.message.next(receivedMessage);
+            this.replayEventsSubject.next({
+                action: ReplayActions.CaptureMessage,
+                timestamp: Date.now(),
+                data: receivedMessage,
+            });
         });
     }
 

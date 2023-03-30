@@ -11,12 +11,16 @@ import {
 } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { GREEN_PIXEL, N_PIXEL_ATTRIBUTE, RED_PIXEL, YELLOW_PIXEL } from '@app/constants/pixels';
+import { ReplayActions } from '@app/enum/replay-actions';
+import { ReplayEvent } from '@app/interfaces/replay-actions';
 import { Coordinate } from '@common/coordinate';
+import { Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class GameAreaService {
+    replayEventsSubject: Subject<ReplayEvent>;
     private originalPixelData: ImageData;
     private modifiedPixelData: ImageData;
     private originalFrontPixelData: ImageData;
@@ -34,6 +38,7 @@ export class GameAreaService {
         this.mousePosition = { x: 0, y: 0 };
         this.clickDisabled = false;
         this.isCheatMode = false;
+        this.replayEventsSubject = new Subject<ReplayEvent>();
     }
 
     @HostListener('keydown', ['$event'])
@@ -62,6 +67,11 @@ export class GameAreaService {
             frontContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
             this.clickDisabled = false;
         }, ONE_SECOND);
+        this.replayEventsSubject.next({
+            action: ReplayActions.ClickError,
+            timestamp: Date.now(),
+            data: { isMainCanvas, x: this.mousePosition.x, y: this.mousePosition.y },
+        });
     }
 
     replaceDifference(differenceCoord: Coordinate[]): void {
@@ -79,6 +89,11 @@ export class GameAreaService {
     flashCorrectPixels(differenceCoord: Coordinate[]): void {
         const imageDataIndexes = this.convert2DCoordToPixelIndex(differenceCoord);
         this.flashPixels(imageDataIndexes);
+        this.replayEventsSubject.next({
+            action: ReplayActions.ClickFound,
+            timestamp: Date.now(),
+            data: differenceCoord,
+        });
     }
 
     flashPixels(imageDataIndexes: number[]): void {
