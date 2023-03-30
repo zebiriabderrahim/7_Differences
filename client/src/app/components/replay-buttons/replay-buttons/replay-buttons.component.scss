@@ -1,12 +1,20 @@
 .replay-container {
-    background: #7DAF9C;
+    background: #7daf9c;
     border-radius: 15px;
-    padding: 10px;
+    padding: 10px 30px 10px;
+    width: 400px;
+    height: 35px;
 }
 
-.replay-container * {
-  font-family: 'Troika', sans-serif;
-  font-size: 24px;
+button {
+    font-family: 'Troika', sans-serif;
+    font-size: 24px;
+}
+
+mat-radio-button {
+    font-family: 'Troika', sans-serif;
+    font-size: 24px;
+    padding: 2%;
 }
 
 .replay-container {
@@ -15,17 +23,16 @@
     background: linear-gradient(to right, rgba(125, 175, 156, 100), rgba(255, 255, 255, 50));
     background-size: 200% 200%;
     animation: gradientLoop 20s ease infinite;
-  }
-  
-  @keyframes gradientLoop {
+}
+
+@keyframes gradientLoop {
     0% {
-      background-position: 0% 50%;
+        background-position: 0% 50%;
     }
     50% {
-      background-position: 75% 0%;
+        background-position: 75% 0%;
     }
     100% {
-      background-position: 0% 50%;
+        background-position: 0% 50%;
     }
-  }
-  
+}
