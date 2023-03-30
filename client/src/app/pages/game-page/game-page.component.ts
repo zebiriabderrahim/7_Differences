@@ -28,6 +28,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     messages: ChatMessage[];
     player: string;
     players: Players;
+    isReplayAvailable: boolean;
     readonly canvasSize: CanvasMeasurements;
     private cheatDifferences: Coordinate[];
     private timerSub: Subscription;
@@ -55,6 +56,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.player = '';
         this.players = DEFAULT_PLAYERS;
         this.canvasSize = CANVAS_MEASUREMENTS;
+        this.isReplayAvailable = false;
     }
 
     @HostListener('window:keydown', ['$event'])
@@ -135,6 +137,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
 
     showEndGameDialog(endingMessage: string): void {
         this.matDialog.open(GamePageDialogComponent, { data: { action: 'endGame', message: endingMessage }, disableClose: true });
+        this.isReplayAvailable = true;
     }
 
     mouseClickOnCanvas(event: MouseEvent, isLeft: boolean) {
