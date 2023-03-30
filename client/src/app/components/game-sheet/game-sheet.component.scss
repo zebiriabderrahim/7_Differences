@@ -5,8 +5,15 @@
     z-index: 1;
 }
 
+.gameSheet {
+    z-index: 1;
+    margin-bottom: 80px;
+}
 
 h1 {
+    font-family: 'Troika', sans-serif;
+    color: #ffffff;
+    letter-spacing: 5px;
     text-align: center;
     padding: 15px;
     font-size: 200%;
@@ -14,10 +21,29 @@ h1 {
     z-index: 1;
 }
 
+.difficulty {
+    font-family: 'Troika', sans-serif;
+    color: #000000;
+    z-index: 1;
+}
+
+h3 {
+    font-family: 'Troika', sans-serif;
+    letter-spacing: 1px;
+    text-align: center;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 5px;
+    font-size: 150%;
+    font-weight: 300;
+    z-index: 1;
+}
+
 .gameContainer {
     display: flex;
-    padding-top: 20px;
-    flex-direction: row;
+    padding-top: 90px;
+    flex-direction: column;
+    align-items: center;
     flex-wrap: nowrap;
     margin-left: 5px;
     margin-right: 5px;
@@ -40,7 +66,7 @@ h1 {
     display: flex;
     flex-direction: row;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     z-index: 1;
 }
 
@@ -53,9 +79,6 @@ h1 {
 .buttonSection {
     margin-left: 5px;
     margin-right: 5px;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    margin-bottom: 20px;
     text-align: center;
     z-index: 1;
 }
@@ -78,14 +101,15 @@ h1 {
 
 .section {
     text-align: left;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     z-index: 1;
 }
 
-#background {
+.background {
     position: absolute;
     top: 0;
-    left: 0;
+    left: 40px;
+    right: 0;
     z-index: 0;
     width: 100%;
     height: 100%;
