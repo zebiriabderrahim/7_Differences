@@ -229,7 +229,7 @@ describe('RoomManagerService', () => {
     it('gameCardDeleted should call clientSocket.send with DeleteGameCard and gameId', () => {
         const sendSpy = spyOn(socketServiceMock, 'send');
         service.gameCardDeleted(mockGameId);
-        expect(sendSpy).toHaveBeenCalledWith(GameEvents.DeleteGameCard, mockGameId);
+        expect(sendSpy).toHaveBeenCalledWith(GameEvents.gameCardDeleted, mockGameId);
     });
 
     // it('should call gameIdOfRoomToBeDeleted.next when GameEvents.UndoCreation is received', () => {
