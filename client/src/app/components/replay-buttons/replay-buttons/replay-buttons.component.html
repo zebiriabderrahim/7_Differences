@@ -1,5 +1,5 @@
-<div class="replay-container">
-    <button mat-button (click)="quit()">Quitter</button>
+<div *ngIf="isReplaying()" class="replay-container">
+    <button mat-button (click)="quit()" [routerLink]="'/home'" routerLinkActive="router-link-active" >Quitter</button>
     <button mat-button *ngIf="!isReplayPaused" (click)="pause()">Pause</button>
     <button mat-button *ngIf="isReplayPaused" (click)="resume()">Resume</button>
     <mat-radio-group [(ngModel)]="selectedSpeed">

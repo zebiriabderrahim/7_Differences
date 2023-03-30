@@ -33,6 +33,10 @@ export class ReplayButtonsComponent implements OnInit {
         this.replayService.resetReplay();
     }
 
+    isReplaying(): boolean {
+        return this.replayService.isReplaying;
+    }
+
     speedX1() {
         // this.replayService.upSpeedX1();
     }
