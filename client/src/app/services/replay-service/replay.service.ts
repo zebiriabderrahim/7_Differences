@@ -88,6 +88,7 @@ export class ReplayService {
                 break;
             case ReplayActions.ClickFound:
                 this.soundService.playCorrectSound();
+                this.gameAreaService.setAllData();
                 this.gameAreaService.flashCorrectPixels(replayData.data as Coordinate[]);
                 break;
             case ReplayActions.ClickError:
