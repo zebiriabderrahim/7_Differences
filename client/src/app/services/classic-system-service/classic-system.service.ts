@@ -96,7 +96,7 @@ export class ClassicSystemService implements OnDestroy {
     replaceDifference(differences: Coordinate[]): void {
         if (differences.length === 0) {
             this.soundService.playErrorSound();
-            this.gameAreaService.showError(this.isLeftCanvas);
+            this.gameAreaService.showError(this.isLeftCanvas, this.gameAreaService.mousePosition);
         } else {
             this.soundService.playCorrectSound();
             this.gameAreaService.setAllData();

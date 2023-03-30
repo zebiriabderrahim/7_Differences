@@ -95,7 +95,10 @@ export class ReplayService {
                 break;
             case ReplayActions.ClickError:
                 this.soundService.playErrorSound();
-                this.gameAreaService.showError((replayData.data as ClickErrorData).isMainCanvas as boolean);
+                this.gameAreaService.showError(
+                    (replayData.data as ClickErrorData).isMainCanvas as boolean,
+                    (replayData.data as ClickErrorData).pos as Coordinate,
+                );
                 break;
             case ReplayActions.CaptureMessage:
                 this.classicSystemService.setMessage(replayData.data as ChatMessage);
