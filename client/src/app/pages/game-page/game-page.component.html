@@ -1,5 +1,5 @@
 <div id = "game-page" class = "justified">
-    <div *ngIf="game" class="information-header justified">
+    <div *ngIf="game" class="game-infos information-header justified">
         <h1>{{ game.name }}</h1>
         <div class="game-feedback">
             <mat-icon class="personIcon">person</mat-icon>
@@ -16,7 +16,7 @@
                 {{ opponentDifferencesFound }}
             </h1>
         </div>
-        <app-game-infos [game]="game" [differencesCount]="game.differencesCount"></app-game-infos>
+        <app-game-infos class = "game-infos" [game]="game" [differencesCount]="game.differencesCount"></app-game-infos>
     </div>
     <div class="canvas-container">
         <div class="game-canvas">
@@ -52,7 +52,7 @@
             ></canvas>
         </div>
     </div>
-    <button class="importantButton justified" (click)="showAbandonDialog()">Abandonner la partie</button>
+    <button class="importantButton justified" (click)="showAbandonDialog()"> <span id = "abandon">Abandonner la partie</span></button>
 </div>
 <img id = "background" src = "./assets/BackgroundImage.jpg" />
 <div *ngIf="game">
