@@ -65,6 +65,7 @@ h2 {
 
 #previous_button:hover {
     cursor: pointer;
+    filter: drop-shadow(10px 10px 10px black);
 }
 
 #next_button {
@@ -78,6 +79,7 @@ h2 {
 
 #next_button:hover {
     cursor: pointer;
+    filter: drop-shadow(10px 10px 10px black);
 }
 
 .menu_button {
