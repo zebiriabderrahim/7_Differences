@@ -1,3 +1,5 @@
+@import url('https://fonts.cdnfonts.com/css/troika-2');
+
 .container {
   position: relative;
 }
@@ -70,19 +72,22 @@ img {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #7DAF9C;
+    background-color: none;
     justify-content: center;
-    color: black;
+    color: white;
     height: 10;
     border-radius: 15px;
     padding: 10px;
-    margin: 0 20px 20px 20px;
-    border: solid #67A28B;
+    margin: 0 20px 10px 20px;
+    border: solid none;
     z-index: 1;
 }
 .information-header h1{
-    font-size: 30px;
+    margin-top: 40px;
+    font-size: 40px;
     font-weight: 700;
+    font-family: 'Troika', sans-serif;
+    -webkit-text-stroke: 1px black;
 }
 .game-feedback{
     display: flex;
@@ -93,27 +98,32 @@ img {
 
 .importantButton{
   cursor: pointer;
+  position: relative;
   width: 370px;
-  height: 70px;
-  padding: 0.5em 1.7em;
-  margin: 0 0.1em 0.1em 0.5em;
-  font-family: "Roboto", sans-serif;
+  height: 150px;
+  font-family: 'Troika', sans-serif;
   font-size: 2em;
   font-weight: 500;
-  color: white;
+  color: rgba(239,97,81,255);
   text-align: center;
   transition: all 0.2s;
-  background-color: black;
-  border: 0.16em solid rgba(255, 255, 255, 0);
+  background-color: rgba(45,30,22,255);
+  border: none;
   border-radius: 2em;
   box-sizing: border-box;
   text-decoration: none;
   z-index: 1;
+  bottom: 10%;
+  left: 5%;
 }
-.button:hover{
-  background-color: black;
-  color:white;
+
+#abandon {
+  position: absolute;
+  z-index: 2;
+  left: 45px;
+  top: 35px;
 }
+
 .importantButton:hover{
   background-color: black;
   transform: scale(1.05);
@@ -150,4 +160,5 @@ app-chat-box{
   height: 100%;
   object-fit: cover;
 }
+
 
