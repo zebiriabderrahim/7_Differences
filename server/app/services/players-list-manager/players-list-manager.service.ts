@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { GameService } from '@app/services/game/game.service';
-import { MAX_TIMES_INDEX } from '@common/constants';
+import { MAX_TIMES_INDEX, NOT_FOUND } from '@common/constants';
 import {
     ClassicPlayRoom,
     Differences,
@@ -72,7 +72,7 @@ export class PlayersListManagerService {
         const playerNames = this.joinedPlayersByGameId.get(gameId);
         if (playerNames) {
             const index = playerNames.indexOf(playerNames.find((player) => player.playerId === playerId));
-            if (index !== -1) {
+            if (index !== NOT_FOUND) {
                 playerNames.splice(index, 1);
             }
             this.joinedPlayersByGameId.set(gameId, playerNames);
@@ -98,7 +98,7 @@ export class PlayersListManagerService {
     deleteJoinedPlayerByPlayerId(playerId: string, gameId: string) {
         const playerNames = this.joinedPlayersByGameId?.get(gameId);
         const playerIndex = playerNames.findIndex((player) => player.playerId === playerId);
-        if (playerIndex === -1) return;
+        if (playerIndex === NOT_FOUND) return;
         playerNames.splice(playerIndex, 1);
         this.joinedPlayersByGameId.set(gameId, playerNames);
     }
