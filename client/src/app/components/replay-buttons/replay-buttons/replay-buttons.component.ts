@@ -1,4 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ONE_SECOND } from '@app/constants/constants';
 import { ReplayService } from '@app/services/replay-service/replay.service';
 
 @Component({
@@ -8,6 +9,7 @@ import { ReplayService } from '@app/services/replay-service/replay.service';
 })
 export class ReplayButtonsComponent implements OnInit, OnDestroy {
     @Input() isReplayAvailable: boolean;
+    isReplayButtonDisabled = false;
     isReplayPaused = false;
     selectedSpeed: string;
     constructor(private readonly replayService: ReplayService) {}
@@ -19,6 +21,11 @@ export class ReplayButtonsComponent implements OnInit, OnDestroy {
     replay() {
         this.replayService.startReplay();
         this.replayService.restartTimer();
+        this.isReplayPaused = false;
+        this.isReplayButtonDisabled = true;
+        setTimeout(() => {
+            this.isReplayButtonDisabled = false;
+        }, ONE_SECOND);
     }
 
     pause() {
