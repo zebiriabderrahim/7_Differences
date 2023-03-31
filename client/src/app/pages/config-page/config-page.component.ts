@@ -100,7 +100,7 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
         });
     }
 
-    openDialog() {
+    openConfigDialog() {
         this.dialog.open(ConfigDialogComponent, new MatDialogConfig()).afterClosed();
     }
 
