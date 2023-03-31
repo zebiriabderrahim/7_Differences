@@ -162,6 +162,10 @@ export class ClassicSystemService implements OnDestroy {
 
         this.clientSocket.on(GameEvents.TimerStarted, (timer: number) => {
             this.timer.next(timer);
+            this.replayEventsSubject.next({
+                action: ReplayActions.TimerUpdate,
+                timestamp: Date.now(),
+            });
         });
 
         this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {
