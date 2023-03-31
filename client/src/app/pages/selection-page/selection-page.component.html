@@ -13,15 +13,15 @@
             </ng-container>
         </mat-grid-list>
         <div class="buttonContainer">
-            <img id = "previous_button" alt="previousButton" *ngIf="gameCarrousel.hasPrevious" (click)="previousCarrousel()" src = "./assets/previous_button.png"/>
-            <img id = "next_button" alt="nextButton" *ngIf="gameCarrousel.hasNext" (click)="nextCarrousel()" src = "./assets/next_button.png"/>
+            <img id = "previous_button" alt="previousButton" *ngIf="gameCarrousel.hasPrevious" (click)="previousCarrousel()" src = "./assets/icon/previous_button.png"/>
+            <img id = "next_button" alt="nextButton" *ngIf="gameCarrousel.hasNext" (click)="nextCarrousel()" src = "./assets/icon/next_button.png"/>
         </div>
     </div>
     <img id = "selection" src = "./assets/background/SelectionBackground.jpg"/>
 </div>
 <div *ngIf="router.url === '/selection'" class="footerPreview">
     <div class="section">
-        <img id = "wood" src = "./assets/WoodPlank.png"/>
+        <img id = "wood" src = "./assets/icon/WoodPlank.png"/>
         <h2 class="sectionOne button" >Créer ton propre jeu</h2>
         <p>Tu peux créer ton propre jeu des sept différences pour y jouer en solo ou en duo</p>
         <p> Ne perds pas de temps et fais ton premier jeu !</p>
