@@ -82,7 +82,7 @@ export class ClassicModeService {
         server.to(roomId).emit(GameEvents.GameStarted, {
             clientGame: room.clientGame,
             players: { player1: room.player1, player2: room.player2 },
-            cheatDifferences: room.originalDifferences.flat(),
+            cheatDifferences: room.originalDifferences,
         });
     }
 
