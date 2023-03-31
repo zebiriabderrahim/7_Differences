@@ -9,7 +9,8 @@ import { DEFAULT_PLAYERS } from '@app/constants/constants';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
-import { ChatMessage, ClientSideGame, Coordinate, MessageTag, Players } from '@common/game-interfaces';
+import { MessageTag } from '@common/enums';
+import { ChatMessage, ClientSideGame, Coordinate, Players } from '@common/game-interfaces';
 import { Subject, Subscription } from 'rxjs';
 
 describe('GamePageComponent', () => {

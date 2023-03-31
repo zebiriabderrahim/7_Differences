@@ -1,0 +1,86 @@
+@import url('https://fonts.cdnfonts.com/css/troika-2');
+
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+h2 {
+    top: 430px;
+    position: absolute;
+    z-index: 1;
+    font-family: 'Troika', sans-serif;
+    font-size: 40px;
+    animation: titleFadeIn 0.5s ease-in-out;
+}
+
+.button {
+    top: 500px;
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    font-family: 'Troika', sans-serif;
+    font-size: 80px;
+    margin: 0 20px 20px 20px;
+    width: 500px;
+    height: 500px;
+    text-transform: uppercase;
+    transition: 0.5s;
+    color: rgba(253, 250, 151, 255);
+    border: none;
+    border-radius: 40px;
+    border-color: #5cbf99;
+    background-color: #5cbf99;
+    animation: titleFadeIn 1.5s ease-in-out;
+    z-index: 1;
+}
+
+#solo {
+    position: absolute;
+    z-index: 2;
+    left: 165px;
+    top: 200px;
+}
+
+#coop {
+    position: absolute;
+    z-index: 2;
+    left: 30px;
+    top: 200px;
+}
+
+button:hover {
+    background-color: #5cbf99;
+    color: black;
+    transform: scale(1.05);
+}
+
+#nav-bar {
+    right: 0;
+    position: absolute;
+    font-family: 'Troika', sans-serif;
+    z-index: 1;
+    font-size: 30px;
+    margin-right: 20px;
+}

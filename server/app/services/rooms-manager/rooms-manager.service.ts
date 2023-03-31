@@ -2,28 +2,29 @@
 /* eslint-disable no-underscore-dangle */
 import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
+import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { CHARACTERS, KEY_SIZE, NOT_FOUND } from '@common/constants';
-import { ClassicPlayRoom, ClientSideGame, Coordinate, Differences, Player } from '@common/game-interfaces';
 import { GameEvents, GameModes, MessageEvents } from '@common/enums';
+import { ClientSideGame, Coordinate, Differences, GameRoom, Player } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as io from 'socket.io';
-import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 
 @Injectable()
 export class RoomsManagerService {
-    private rooms: Map<string, ClassicPlayRoom>;
+    private rooms: Map<string, GameRoom>;
 
     constructor(private readonly gameService: GameService, private readonly messageManager: MessageManagerService) {
-        this.rooms = new Map<string, ClassicPlayRoom>();
+        this.rooms = new Map<string, GameRoom>();
     }
 
-    async createRoom(playerName: string, gameId: string): Promise<ClassicPlayRoom> {
+    async createRoom(playerName: string, gameId: string): Promise<GameRoom> {
         const game = await this.gameService.getGameById(gameId);
+        if (!game) return;
         const gameConstants = await this.gameService.getGameConstants();
         const diffData = { currentDifference: [], differencesFound: 0 } as Differences;
         const player = { name: playerName, diffData } as Player;
-        const room: ClassicPlayRoom = {
+        const room: GameRoom = {
             roomId: this.generateRoomId(),
             clientGame: this.buildClientGameVersion(game),
             timer: 0,
@@ -35,7 +36,7 @@ export class RoomsManagerService {
         return room;
     }
 
-    getRoomById(roomId: string): ClassicPlayRoom {
+    getRoomById(roomId: string): GameRoom {
         if (this.rooms.has(roomId)) {
             return this.rooms.get(roomId);
         }
@@ -52,7 +53,7 @@ export class RoomsManagerService {
         });
     }
 
-    getOneVsOneRoomByGameId(gameId: string): ClassicPlayRoom {
+    getOneVsOneRoomByGameId(gameId: string): GameRoom {
         return Array.from(this.rooms.values()).find((room) => room.clientGame.id === gameId && room.clientGame.mode === GameModes.ClassicOneVsOne);
     }
 
@@ -69,7 +70,7 @@ export class RoomsManagerService {
         this.updateRoom(room);
     }
 
-    updateRoom(room: ClassicPlayRoom): void {
+    updateRoom(room: GameRoom): void {
         this.rooms.set(room.roomId, room);
     }
 
@@ -144,21 +145,31 @@ export class RoomsManagerService {
         }
     }
 
+    async changeGameOfRoom(roomId: string, gameId: string): Promise<void> {
+        const game = await this.gameService.getGameById(gameId);
+        if (!game) return;
+        const room = this.getRoomById(roomId);
+        if (!room) return;
+        room.clientGame = this.buildClientGameVersion(game);
+        room.originalDifferences = structuredClone(JSON.parse(fs.readFileSync(`assets/${game.name}/differences.json`, 'utf-8')));
+        this.updateRoom(room);
+    }
+
     private updateTimer(roomId: string, server: io.Server): void {
         const room = this.rooms.get(roomId);
         if (room) {
             room.timer++;
             this.rooms.set(room.roomId, room);
-            server.to(room.roomId).emit(GameEvents.TimerStarted, room.timer);
+            server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
         }
     }
 
     private countdown(roomId: string, server: io.Server): void {
         const room = this.rooms.get(roomId);
         if (room && room.timer > 0) {
-            room.gameConstants.countdownTime--;
+            room.timer--;
             this.rooms.set(room.roomId, room);
-            server.to(room.roomId).emit(GameEvents.TimerStarted, room.gameConstants.countdownTime);
+            server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
         }
     }
 

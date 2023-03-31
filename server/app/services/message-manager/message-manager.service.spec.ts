@@ -1,4 +1,4 @@
-import { GameModes } from '@common/game-interfaces';
+import { GameModes } from '@common/enums';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MessageManagerService } from './message-manager.service';
 

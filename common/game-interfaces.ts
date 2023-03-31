@@ -1,5 +1,5 @@
 import { Coordinate } from '@common/coordinate';
-import{ MessageTag  } from '@common/enums';
+import { MessageTag } from '@common/enums';
 
 export interface Players {
     player1: Player;
@@ -42,7 +42,7 @@ export interface PlayerTime {
     time: number;
 }
 
-export interface ClassicPlayRoom {
+export interface GameRoom {
     roomId: string;
     clientGame: ClientSideGame;
     endMessage: string;

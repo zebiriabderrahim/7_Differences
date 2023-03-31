@@ -8,7 +8,7 @@ import { ClassicSystemService } from '@app/services/classic-system-service/class
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { Coordinate } from '@common/coordinate';
-import { MessageTag } from '@common/enums';
+import { GameModes, MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, Players } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
@@ -39,6 +39,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     private endGameSub: Subscription;
     private opponentDifferenceSub: Subscription;
     private cheatDifferencesSub: Subscription;
+    private isFirstDifferencesFoundSub: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
@@ -125,18 +126,19 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.cheatDifferencesSub = this.classicService.cheatDifferences$.subscribe((cheatDifferences) => {
             this.cheatDifferences = cheatDifferences;
         });
+
+        this.isFirstDifferencesFoundSub = this.classicService.isFirstDifferencesFound$.subscribe((isFirstDifferencesFound) => {
+            if ((isFirstDifferencesFound && this.game.mode === GameModes.LimitedSolo) || GameModes.LimitedCoop) {
+                this.classicService.startNextGame();
+            }
+        });
     }
 
     showAbandonDialog(): void {
-        this.matDialog
-            .open(GamePageDialogComponent, {
-                data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ?' },
-                disableClose: true,
-            })
-            .afterClosed()
-            .subscribe(() => {
-                this.cleanUpLogic();
-            });
+        this.matDialog.open(GamePageDialogComponent, {
+            data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ?' },
+            disableClose: true,
+        });
     }
 
     showEndGameDialog(endingMessage: string): void {
@@ -166,6 +168,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.endGameSub?.unsubscribe();
         this.opponentDifferenceSub?.unsubscribe();
         this.cheatDifferencesSub?.unsubscribe();
+        this.isFirstDifferencesFoundSub?.unsubscribe();
         this.classicService.removeAllListeners();
     }
 

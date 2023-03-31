@@ -4,11 +4,11 @@
 /* eslint-disable no-underscore-dangle */
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
+import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { GameEvents, GameModes, MessageEvents, PlayerEvents, RoomEvents } from '@common/enums';
-import { ClassicPlayRoom, Player, playerData, RoomAvailability } from '@common/game-interfaces';
+import { GameRoom, Player, playerData, RoomAvailability } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
-import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 
 @Injectable()
 export class ClassicModeService {
@@ -71,7 +71,7 @@ export class ClassicModeService {
         }
     }
 
-    async endGame(room: ClassicPlayRoom, player: Player, server: io.Server): Promise<void> {
+    async endGame(room: GameRoom, player: Player, server: io.Server): Promise<void> {
         const playerRank = await this.playersListManagerService.updateTopBestTime(room, player.name, server);
         const playerRankMessage = playerRank ? `${player.name} classé ${playerRank}!` : '';
         room.endMessage =
