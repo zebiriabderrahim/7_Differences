@@ -1,7 +1,9 @@
 import { ClassicModeService } from '@app/services/classic-mode/classic-mode.service';
+import { LimitedModeService } from '@app/services/limited-mode/limited-mode.service';
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
+import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { Coordinate } from '@common/coordinate';
-import { ChatMessage, GameEvents, GameModes, MessageEvents, playerData } from '@common/game-interfaces';
+import { ChatMessage, GameEvents, MessageEvents, playerData } from '@common/game-interfaces';
 import { Injectable, Logger } from '@nestjs/common';
 import {
     ConnectedSocket,
@@ -31,11 +33,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         private readonly logger: Logger,
         private readonly classicModeService: ClassicModeService,
         private readonly playersListManagerService: PlayersListManagerService,
+        private readonly roomsManagerService: RoomsManagerService,
+        private readonly limitedModeService: LimitedModeService,
     ) {}
 
     @SubscribeMessage(GameEvents.StartGameByRoomId)
     startGame(@ConnectedSocket() socket: Socket) {
-        this.classicModeService.startGame(socket, this.server);
+        this.roomsManagerService.startGame(socket, this.server);
     }
 
     @SubscribeMessage(GameEvents.CreateSoloGame)
@@ -48,9 +52,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         await this.classicModeService.createOneVsOneRoom(socket, playerPayLoad, this.server);
     }
 
+    @SubscribeMessage(GameEvents.CreateSoloLimitedRoom)
+    async createSoloLimitedRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
+        await this.limitedModeService.createSoloLimitedRoom(socket, playerPayLoad, this.server);
+    }
+
+    @SubscribeMessage(GameEvents.CreateSoloLimitedRoom)
+    async createCoopLimitedRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
+        await this.limitedModeService.createOneVsOneLimitedRoom(socket, playerPayLoad, this.server);
+    }
+
     @SubscribeMessage(GameEvents.RemoveDiff)
     validateCoords(@ConnectedSocket() socket: Socket, @MessageBody() coords: Coordinate) {
-        this.classicModeService.verifyCoords(socket, coords, this.server);
+        this.roomsManagerService.verifyCoords(socket, coords, this.server);
     }
 
     @SubscribeMessage(GameEvents.CheckStatus)
@@ -70,7 +84,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     @SubscribeMessage(GameEvents.DeleteCreatedOneVsOneRoom)
     deleteCreatedOneVsOneRoom(@ConnectedSocket() socket: Socket, @MessageBody() roomId: string) {
-        const gameId = this.classicModeService.getRoomById(roomId)?.clientGame.id;
+        const gameId = this.roomsManagerService.getRoomById(roomId)?.clientGame.id;
         this.playersListManagerService.cancelAllJoining(gameId, this.server);
         this.classicModeService.deleteCreatedRoom(socket.id, roomId, this.server);
     }
@@ -83,7 +97,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage(GameEvents.UpdateWaitingPlayerNameList)
     updateWaitingPlayerNameList(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
         this.playersListManagerService.updateWaitingPlayerNameList(playerPayLoad, socket);
-        const hostId = this.classicModeService.getHostIdByGameId(playerPayLoad.gameId);
+        const hostId = this.roomsManagerService.getHostIdByGameId(playerPayLoad.gameId);
         this.playersListManagerService.getWaitingPlayerNameList(hostId, playerPayLoad.gameId, this.server);
     }
 
@@ -109,7 +123,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage(GameEvents.CancelJoining)
     cancelJoining(@ConnectedSocket() socket: Socket, @MessageBody() gameId: string) {
         this.playersListManagerService.cancelJoiningByPlayerId(socket.id, gameId);
-        const hostId = this.classicModeService.getHostIdByGameId(gameId);
+        const hostId = this.roomsManagerService.getHostIdByGameId(gameId);
         this.playersListManagerService.getWaitingPlayerNameList(hostId, gameId, this.server);
     }
 
@@ -120,7 +134,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     @SubscribeMessage(MessageEvents.LocalMessage)
     sendMessage(@ConnectedSocket() socket: Socket, @MessageBody() data: ChatMessage) {
-        const roomId = this.classicModeService.getRoomIdFromSocket(socket);
+        const roomId = this.roomsManagerService.getRoomIdFromSocket(socket);
         socket.broadcast.to(roomId).emit(MessageEvents.LocalMessage, data);
     }
 
@@ -157,7 +171,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     afterInit() {
         setInterval(() => {
-            this.updateTimers();
+            this.roomsManagerService.updateTimers(this.server);
         }, DELAY_BEFORE_EMITTING_TIME);
     }
 
@@ -168,13 +182,5 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     handleDisconnect(@ConnectedSocket() socket: Socket) {
         this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
         this.classicModeService.handleSocketDisconnect(socket, this.server);
-    }
-
-    updateTimers() {
-        for (const roomId of this.classicModeService['rooms'].keys()) {
-            const room = this.classicModeService.getRoomById(roomId);
-            if ((room.player2 && room.clientGame.mode === GameModes.ClassicOneVsOne) || room.clientGame.mode === GameModes.ClassicSolo)
-                this.classicModeService.updateTimer(roomId, this.server);
-        }
     }
 }
