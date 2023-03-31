@@ -122,7 +122,8 @@ export class GameAreaService {
         }, FLASH_WAIT_TIME);
     }
 
-    toggleCheatMode(startDifferences: Coordinate[]): void {
+    toggleCheatMode(startDifferences: Coordinate[], replaySpeed?: number): void {
+        const speed = replaySpeed ? replaySpeed : 1;
         const imageDataIndexes: number[] = this.convert2DCoordToPixelIndex(startDifferences);
         if (!this.isCheatMode) {
             this.cheatModeInterval = setInterval(() => {
@@ -135,8 +136,8 @@ export class GameAreaService {
 
                 setTimeout(() => {
                     this.clearFlashing();
-                }, RED_FLASH_TIME);
-            }, CHEAT_MODE_WAIT_TIME) as unknown as number;
+                }, RED_FLASH_TIME / speed);
+            }, CHEAT_MODE_WAIT_TIME / speed) as unknown as number;
             this.replayEventsSubject.next({
                 action: ReplayActions.ActivateCheat,
                 timestamp: Date.now(),
