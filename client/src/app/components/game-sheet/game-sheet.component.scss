@@ -2,11 +2,10 @@
     display: flex;
     flex-direction: column;
     text-align: center;
-    z-index: 1;
 }
 
 .gameSheet {
-    z-index: 1;
+    z-index: 2;
     padding-bottom: 65px;
 }
 
@@ -18,7 +17,7 @@ h1 {
     padding: 15px;
     font-size: 180%;
     font-weight: 600;
-    z-index: 1;
+    z-index: 2;
 }
 
 .difficulty {
@@ -29,7 +28,7 @@ h1 {
     font-family: 'Troika', sans-serif;
     font-size: 80%;
     color: #000000;
-    z-index: 1;
+    z-index: 2;
 }
 
 h3 {
@@ -41,7 +40,7 @@ h3 {
     padding-top: 5px;
     font-size: 120%;
     font-weight: 300;
-    z-index: 1;
+    z-index: 2;
 }
 
 .gameContainer {
@@ -49,7 +48,6 @@ h3 {
     flex-direction: column;
     align-items: center;
     flex-wrap: nowrap;
-    z-index: 1;
 }
 
 .thumbnail {
@@ -62,11 +60,11 @@ h3 {
     border-radius: 10px;
     max-width: 40%;
     max-height: 35%;
-    z-index: 1;
+    z-index: 2;
 }
 
 .gameInfo {
-    z-index: 1;
+    z-index: 2;
 }
 
 .ranking {
@@ -84,7 +82,7 @@ h3 {
     margin-left: 5px;
     margin-right: 5px;
     text-align: center;
-    z-index: 1;
+    z-index: 2;
 }
 
 .mat-raised-button {
@@ -94,18 +92,17 @@ h3 {
     margin-right: 20px;
     background-color: #1778f2;
     color: #ffffff;
-    z-index: 1;
+    z-index: 2;
 }
 
 .mat-raised-button:hover {
     background-color: #ffffff;
     color: #000000;
-    z-index: 1;
+    z-index: 2;
 }
 
 .section {
     text-align: left;
-    z-index: 1;
 }
 
 .background {
@@ -116,4 +113,31 @@ h3 {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.gold {
+    position: absolute;
+    width: 4%;
+    height: 4%;
+    left: 15%;
+    bottom: 37.5%;
+    z-index: 1;
+}
+
+.argent {
+    position: absolute;
+    width: 4%;
+    height: 4%;
+    left: 15%;
+    bottom: 32.5%;
+    z-index: 1;
+}
+
+.bronze {
+    position: absolute;
+    width: 4%;
+    height: 4%;
+    left: 15%;
+    bottom: 27.5%;
+    z-index: 1;
 }

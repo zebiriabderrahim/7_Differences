@@ -10,15 +10,24 @@
             <div class="ranking">
                 <div class="topThree section">
                     <h3>Top Solo</h3>
-                    <div class="topText" *ngFor="let player of game.soloTopTime; index as i">
-                        <strong class="bestTime">&nbsp;{{ i + 1 }} </strong>
-                        &nbsp;&nbsp;<strong>{{ player.name }}</strong> {{ player.time*1000|date:'mm:ss'}} &nbsp;&nbsp;
+                    <div class="topText Solo" *ngFor="let player of game.soloTopTime; index as i">
+                        <ng-container *ngIf="i === 0">
+                            <img class="gold" src="./assets/gold.png" />
+                        </ng-container>
+                        <ng-container *ngIf="i === 1">
+                            <img class="argent" src="./assets/argent.png" />
+                        </ng-container>
+                        <ng-container *ngIf="i === 2">
+                            <img class="bronze" src="./assets/bronze.png" />
+                        </ng-container>
+                        &nbsp;
+                        &nbsp;&nbsp;<strong>{{ player.name }}</strong>&nbsp;&nbsp; {{ player.time*1000|date:'mm:ss'}} &nbsp;&nbsp;
                     </div>
                 </div>
                 <div class="topThree section">
                     <h3>Top 1 Vs 1</h3>
-                    <div class="topText" *ngFor="let player of game.oneVsOneTopTime">
-                        <strong>{{ player.name }}</strong> {{ player.time*1000|date:'mm:ss'}}
+                    <div class="topText OneVsOne" *ngFor="let player of game.oneVsOneTopTime">
+                        <strong>{{ player.name }}</strong> &nbsp;&nbsp; {{ player.time*1000|date:'mm:ss'}}
                     </div>
                 </div>
             </div>
