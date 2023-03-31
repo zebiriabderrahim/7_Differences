@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
-import { playerData, PlayerNameAvailability, RoomAvailability } from '@common/game-interfaces';
 import { GameCardEvents, GameEvents, PlayerEvents, RoomEvents } from '@common/enums';
+import { playerData, PlayerNameAvailability, RoomAvailability } from '@common/game-interfaces';
 import { Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
@@ -62,7 +62,7 @@ export class RoomManagerService implements OnDestroy {
 
     createSoloRoom(gameId: string, playerName: string) {
         const playerPayLoad = { gameId, playerName } as playerData;
-        this.clientSocket.send(RoomEvents.CreateSoloGame, playerPayLoad);
+        this.clientSocket.send(RoomEvents.CreateClassicSoloRoom, playerPayLoad);
     }
 
     createOneVsOneRoom(gameId: string, playerName: string): void {
@@ -70,14 +70,14 @@ export class RoomManagerService implements OnDestroy {
         this.clientSocket.send(RoomEvents.CreateOneVsOneRoom, playerPayLoad);
     }
 
-    createSoloLimitedRoom(gameId: string, playerName: string): void {
-        const playerPayLoad = { gameId, playerName } as playerData;
-        this.clientSocket.send(RoomEvents.CreateSoloLimitedRoom, playerPayLoad);
+    createSoloLimitedRoom(playerName: string): void {
+        console.log('createSoloLimitedRoom', playerName);
+        this.clientSocket.send(RoomEvents.CreateSoloLimitedRoom, playerName);
     }
 
     createOneVsOneLimitedRoom(gameId: string, playerName: string): void {
         const playerPayLoad = { gameId, playerName } as playerData;
-        this.clientSocket.send(RoomEvents.CreateOneVsOneLimitedRoom, playerPayLoad);
+        this.clientSocket.send(RoomEvents.CreateCoopLimitedRoom, playerPayLoad);
     }
 
     updateRoomOneVsOneAvailability(gameId: string): void {
@@ -165,6 +165,10 @@ export class RoomManagerService implements OnDestroy {
         });
 
         this.clientSocket.on(RoomEvents.RoomOneVsOneCreated, (roomId: string) => {
+            this.createdRoomId.next(roomId);
+        });
+
+        this.clientSocket.on(RoomEvents.RoomLimitedCreated, (roomId: string) => {
             this.createdRoomId.next(roomId);
         });
 

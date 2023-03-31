@@ -4,7 +4,7 @@ import { PlayersListManagerService } from '@app/services/players-list-manager/pl
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { Coordinate } from '@common/coordinate';
 import { GameCardEvents, GameEvents, MessageEvents, PlayerEvents, RoomEvents } from '@common/enums';
-import { ChatMessage, Differences, Player, playerData } from '@common/game-interfaces';
+import { ChatMessage, playerData } from '@common/game-interfaces';
 import { Injectable, Logger } from '@nestjs/common';
 import {
     ConnectedSocket,
@@ -43,7 +43,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         this.roomsManagerService.startGame(socket, this.server);
     }
 
-    @SubscribeMessage(RoomEvents.CreateSoloGame)
+    @SubscribeMessage(RoomEvents.CreateClassicSoloRoom)
     async createSoloRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
         await this.classicModeService.createSoloRoom(socket, playerPayLoad, this.server);
     }
@@ -54,19 +54,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(RoomEvents.CreateSoloLimitedRoom)
-    async createSoloLimitedRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
-        await this.limitedModeService.createSoloLimitedRoom(socket, playerPayLoad, this.server);
+    async createSoloLimitedRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerName: string) {
+        await this.limitedModeService.createSoloLimitedRoom(socket, playerName, this.server);
     }
 
-    @SubscribeMessage(RoomEvents.CreateSoloLimitedRoom)
+    @SubscribeMessage(RoomEvents.CreateCoopLimitedRoom)
     async createCoopLimitedRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
         await this.limitedModeService.createOneVsOneLimitedRoom(socket, playerPayLoad, this.server);
     }
 
     @SubscribeMessage(GameEvents.StartNextGame)
     async startNextGame(@ConnectedSocket() socket: Socket) {
-        const players: Player[] = [{ playerId: socket.id, name: 'player1', diffData: {} as Differences }];
-        await this.limitedModeService.startNextGame(socket, players, this.server);
+        await this.limitedModeService.startNextGame(socket, this.server);
     }
 
     @SubscribeMessage(GameEvents.RemoveDiff)
@@ -149,6 +148,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     gameCardDeleted(@MessageBody() gameId: string) {
         this.server.emit(GameCardEvents.RequestReload);
         this.server.emit(GameCardEvents.GameDeleted, gameId);
+        this.limitedModeService.handleDeleteGame(gameId);
     }
 
     @SubscribeMessage(GameCardEvents.GameCardCreated)
@@ -164,6 +164,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage(GameCardEvents.AllGamesDeleted)
     allGamesDeleted() {
         this.server.emit(GameCardEvents.RequestReload);
+        this.limitedModeService.handleDeleteAllGame();
     }
 
     @SubscribeMessage(GameCardEvents.ResetAllTopTimes)

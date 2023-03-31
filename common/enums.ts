@@ -1,10 +1,10 @@
 export enum GameEvents {
-    ValidateCoords = 'validateCoords',
-    CheckStatus = 'checkStatus',
-    EndGame = 'endGame',
-    TimerStarted = 'timerStarted',
+    ValidateCoords = 'ValidateCoords',
+    CheckStatus = 'CheckStatus',
+    EndGame = 'EndGame',
+    TimerUpdate = 'TimerUpdate',
     RemoveDiff = 'removeDiff',
-    GameStarted = 'OneVsOneStarted',
+    GameStarted = 'GameStarted',
     AbandonGame = 'AbandonGame',
     WaitingPlayerNameListUpdated = 'WaitingPlayerNameListUpdated',
     StartGameByRoomId = 'CreateOneVsOneGame',
@@ -21,7 +21,6 @@ export enum PlayerEvents {
     PlayerNameTaken = 'PlayerNameTaken',
     UpdateWaitingPlayerNameList = 'UpdateWaitingPlayerNameList',
     CheckIfPlayerNameIsAvailable = 'CheckIfPlayerNameIsAvailable',
-
 }
 
 export enum GameCardEvents {
@@ -29,7 +28,7 @@ export enum GameCardEvents {
     ResetAllTopTimes = 'ResetAllTopTimes',
     GameCardDeleted = 'GameCardDeleted',
     GameCardCreated = 'GameCardCreated',
-    RequestReload = 'RequestGameCardsUpdate',
+    RequestReload = 'RequestReload',
     AllGamesDeleted = 'AllGamesDeleted',
     GameDeleted = 'GameDeleted',
     GameConstantsUpdated = 'GameConstantsUpdated',
@@ -37,18 +36,18 @@ export enum GameCardEvents {
 }
 
 export enum RoomEvents {
-    CreateSoloGame = 'createSoloGame',
+    CreateClassicSoloRoom = 'CreateClassicSoloRoom',
     RoomSoloCreated = 'RoomSoloCreated',
     RoomLimitedCreated = 'RoomLimitedCreated',
     CreateSoloLimitedRoom = 'CreateSoloLimitedRoom',
-    RoomOneVsOneCreated = 'roomOneVsOneCreated',
+    RoomOneVsOneCreated = 'RoomOneVsOneCreated',
     RoomOneVsOneAvailable = 'RoomOneVsOneAvailable',
     CreateOneVsOneRoom = 'CreateOneVsOneRoom',
-    CreateOneVsOneLimitedRoom = 'CreateOneVsOneLimitedRoom',
+    CreateCoopLimitedRoom = 'CreateCoopLimitedRoom',
     CheckRoomOneVsOneAvailability = 'CheckRoomOneVsOneAvailability',
     UpdateRoomOneVsOneAvailability = 'UpdateRoomOneVsOneAvailability',
     OneVsOneRoomDeleted = 'OneVsOneRoomDeleted',
-    UndoCreation = 'UndoCreation',
+    UndoRoomCreation = 'UndoRoomCreation',
     DeleteCreatedOneVsOneRoom = 'DeleteCreatedOneVsOneRoom',
     JoinOneVsOneRoom = 'JoinOneVsOneRoom',
 }
