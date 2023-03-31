@@ -1,5 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { ConfigDialogComponent } from '@app/components/config-dialog/config-dialog.component';
+import { DeleteResetConfirmationDialogComponent } from '@app/components/delete-reset-confirmation-dialog/delete-reset-confirmation-dialog.component';
 import {
     DEFAULT_BONUS_VALUE,
     DEFAULT_COUNTDOWN_VALUE,
@@ -34,6 +37,7 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
         private readonly communicationService: CommunicationService,
         private readonly roomManagerService: RoomManagerService,
         private formBuilder: FormBuilder,
+        private readonly dialog: MatDialog,
     ) {
         this.configConstants = { countdownTime: DEFAULT_COUNTDOWN_VALUE, penaltyTime: DEFAULT_PENALTY_VALUE, bonusTime: DEFAULT_BONUS_VALUE };
         this.homeRoute = '/home';
@@ -87,6 +91,17 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
             penaltyTime: this.configConstants.penaltyTime,
             bonusTime: this.configConstants.bonusTime,
         });
+    }
+
+    openConfirmationDialog(action: Actions) {
+        this.dialog.open(DeleteResetConfirmationDialogComponent, {
+            data: { actions: action },
+            disableClose: true,
+        });
+    }
+
+    openDialog() {
+        this.dialog.open(ConfigDialogComponent, new MatDialogConfig()).afterClosed();
     }
 
     ngOnDestroy() {
