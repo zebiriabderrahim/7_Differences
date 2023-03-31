@@ -106,6 +106,7 @@ export class ReplayService {
                 this.gameAreaService.setAllData();
                 break;
             case ReplayActions.ClickFound:
+                this.replayDifferenceFound.next(this.replayDifferenceFound.value + 1);
                 this.soundService.playCorrectSound();
                 this.gameAreaService.setAllData();
                 this.gameAreaService.replaceDifference(replayData.data as Coordinate[]);
