@@ -15,7 +15,6 @@ import { SelectionPageComponent } from '@app/pages/selection-page/selection-page
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { of } from 'rxjs';
 import { ConfigPageComponent } from './config-page.component';
-import { MatDialogModule } from '@angular/material/dialog';
 
 describe('ConfigPageComponent', () => {
     let component: ConfigPageComponent;
