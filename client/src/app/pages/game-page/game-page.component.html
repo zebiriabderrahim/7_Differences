@@ -54,7 +54,7 @@
     </div>
     <button class="importantButton justified" (click)="showAbandonDialog()"> <span id = "abandon">Abandonner la partie</span></button>
 </div>
-<img id = "background" src = "./assets/BackgroundImage.jpg" />
+<img id = "background" src = "./assets/background/BackgroundImage.jpg" />
 <div *ngIf="game">
     <app-chat-box (add)="addRightSideMessage($event)" [messages]="messages" [gameMode]="game.mode"></app-chat-box>
 </div>
