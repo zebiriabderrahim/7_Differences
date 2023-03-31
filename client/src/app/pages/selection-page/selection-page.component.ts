@@ -29,7 +29,6 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
         this.selectionRoute = '/selection';
         this.configRoute = '/config';
         this.index = 0;
-        this.roomManagerService.reconnect();
         this.roomManagerService.handleRoomEvents();
     }
 
@@ -71,5 +70,6 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.reloadSubscription?.unsubscribe();
+        this.roomManagerService.removeAllListeners();
     }
 }

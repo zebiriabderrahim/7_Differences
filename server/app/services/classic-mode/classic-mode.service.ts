@@ -67,6 +67,7 @@ export class ClassicModeService {
             socket.rooms.delete(roomId);
         } else if (halfDifferences === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicOneVsOne) {
             this.endGame(room, player, server);
+            socket.rooms.delete(roomId);
         }
     }
 
@@ -120,6 +121,7 @@ export class ClassicModeService {
             server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
             this.roomsManagerService.deleteRoom(roomId);
             server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
+            socket.rooms.delete(roomId);
         }
     }
 
