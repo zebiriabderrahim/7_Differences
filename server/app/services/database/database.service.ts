@@ -9,7 +9,8 @@ import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameConstantsDto } from '@app/model/dto/game/game-constants.dto';
 import { GameListsManagerService } from '@app/services/game-lists-manager/game-lists-manager.service';
 import { DEFAULT_BEST_TIMES, DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
-import { CarouselPaginator, GameModes, PlayerTime } from '@common/game-interfaces';
+import { CarouselPaginator, PlayerTime } from '@common/game-interfaces';
+import { GameModes } from '@common/enums';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as fs from 'fs';
@@ -108,6 +109,17 @@ export class DatabaseService {
         }
     }
 
+    async deleteAllGames() {
+        try {
+            const games = await this.gameModel.find().exec();
+            for (const game of games) {
+                await this.deleteGameById(game._id.toString());
+            }
+        } catch (error) {
+            return Promise.reject(`Failed to delete all games --> ${error}`);
+        }
+    }
+
     async updateTopTimesGameById(id: string, gameMode: string, topTimes: PlayerTime[]): Promise<void> {
         try {
             const mode = gameMode === GameModes.ClassicSolo ? 'soloTopTime' : 'oneVsOneTopTime';
@@ -156,6 +168,15 @@ export class DatabaseService {
             await this.rebuildGameCarousel();
         } catch (error) {
             return Promise.reject(`Failed to reset all top times --> ${error}`);
+        }
+    }
+
+    async getAllGameIds(): Promise<string[]> {
+        try {
+            const gameCardsIds = await this.gameCardModel.find().select('_id').exec();
+            return gameCardsIds.map((gameCard) => gameCard._id.toString());
+        } catch (error) {
+            return Promise.reject(`Failed to get all game ids --> ${error}`);
         }
     }
 }
