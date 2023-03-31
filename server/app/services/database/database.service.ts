@@ -169,4 +169,13 @@ export class DatabaseService {
             return Promise.reject(`Failed to reset all top times --> ${error}`);
         }
     }
+
+    async getAllGameIds(): Promise<string[]> {
+        try {
+            const gameCardsIds = await this.gameCardModel.find().select('_id').exec();
+            return gameCardsIds.map((gameCard) => gameCard._id.toString());
+        } catch (error) {
+            return Promise.reject(`Failed to get all game ids --> ${error}`);
+        }
+    }
 }
