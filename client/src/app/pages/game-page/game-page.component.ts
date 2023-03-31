@@ -8,7 +8,8 @@ import { ClassicSystemService } from '@app/services/classic-system-service/class
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { Coordinate } from '@common/coordinate';
-import { ChatMessage, ClientSideGame, MessageTag, Players } from '@common/game-interfaces';
+import { MessageTag } from '@common/enums';
+import { ChatMessage, ClientSideGame, Players } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -127,10 +128,15 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     }
 
     showAbandonDialog(): void {
-        this.matDialog.open(GamePageDialogComponent, {
-            data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ?' },
-            disableClose: true,
-        });
+        this.matDialog
+            .open(GamePageDialogComponent, {
+                data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ?' },
+                disableClose: true,
+            })
+            .afterClosed()
+            .subscribe(() => {
+                this.cleanUpLogic();
+            });
     }
 
     showEndGameDialog(endingMessage: string): void {
@@ -150,7 +156,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.classicService.sendMessage(text);
     }
 
-    ngOnDestroy(): void {
+    cleanUpLogic(): void {
         this.gameAreaService.resetCheatMode();
         this.gameSub?.unsubscribe();
         this.timerSub?.unsubscribe();
@@ -160,6 +166,10 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.endGameSub?.unsubscribe();
         this.opponentDifferenceSub?.unsubscribe();
         this.cheatDifferencesSub?.unsubscribe();
-        this.classicService.disconnect();
+        this.classicService.removeAllListeners();
+    }
+
+    ngOnDestroy(): void {
+        this.cleanUpLogic();
     }
 }

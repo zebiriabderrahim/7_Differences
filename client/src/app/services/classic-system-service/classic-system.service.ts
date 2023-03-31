@@ -3,7 +3,8 @@ import { ClientSocketService } from '@app/services/client-socket-service/client-
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
-import { ChatMessage, ClientSideGame, Differences, GameEvents, MessageEvents, MessageTag, Players } from '@common/game-interfaces';
+import { ChatMessage, ClientSideGame, Differences, Players } from '@common/game-interfaces';
+import { GameEvents, MessageEvents, MessageTag } from '@common/enums';
 import { filter, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
@@ -68,9 +69,6 @@ export class ClassicSystemService {
         return this.clientSocket.socket.id;
     }
 
-    createSoloGame(gameId: string, playerName: string): void {
-        this.clientSocket.send(GameEvents.CreateSoloGame, { gameId, playerName });
-    }
     startGame(): void {
         this.clientSocket.send(GameEvents.StartGameByRoomId);
     }
@@ -111,15 +109,11 @@ export class ClassicSystemService {
         this.clientSocket.send(MessageEvents.LocalMessage, newMessage);
     }
 
-    joinOneVsOneGame(gameId: string, playerName: string): void {
-        this.clientSocket.send(GameEvents.JoinOneVsOneGame, { gameId, playerName });
+    removeAllListeners() {
+        this.clientSocket.socket.off();
     }
 
     manageSocket(): void {
-        this.clientSocket.on(GameEvents.CreateSoloGame, (clientGame: ClientSideGame) => {
-            this.currentGame.next(clientGame);
-        });
-
         this.clientSocket.on(GameEvents.GameStarted, (data: { clientGame: ClientSideGame; players: Players; cheatDifferences: Coordinate[] }) => {
             this.currentGame.next(data.clientGame);
             this.players.next(data.players);
