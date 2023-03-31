@@ -1,3 +1,71 @@
-.mat-dialog-title {
+@import url('https://fonts.cdnfonts.com/css/troika-2');
+
+.dialog-wrapper {
+    position: relative;
+    margin-top: -50px; /* adjust this value to suit your needs */
+  }
+  
+  .dialog-image {
+    position: absolute;
+    top: 350px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    //opacity: 0.5;
+    width: 45%;
+    height: 45%;
+  }
+
+  #abandon {
+    position: absolute;
+    z-index: 2;
+    left: 32%;
+    font-family: 'Troika', sans-serif;
+    font-size: 30px;
     color: black;
-}
+  }
+  
+  .button-container {
+    position: relative;
+    width: 500px;
+    height: 150px;
+    margin-right: 40px;
+    z-index: 2;
+  }
+
+  .button-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s ease;
+  }
+
+  .button-container .centered-yes {
+    position: absolute;
+    font-size: 50px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 450px;
+    color: white;
+    font-family: 'Troika', sans-serif;
+  }
+
+  #yesButton {
+    position: absolute;
+    z-index: 2;
+  }
+
+  #noButton {
+    position: absolute;
+    z-index: 2;
+  }
+  
+  
+  
+  
+  
+  
