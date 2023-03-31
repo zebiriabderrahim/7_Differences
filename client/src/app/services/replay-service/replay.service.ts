@@ -165,6 +165,7 @@ export class ReplayService {
 
     startReplay(): void {
         this.isReplaying = true;
+        this.currentReplayIndex = 0;
         this.replayInterval = this.createReplayInterval(
             () => this.replaySwitcher(this.replayEvents[this.currentReplayIndex]),
             () => this.getNextInterval(),
