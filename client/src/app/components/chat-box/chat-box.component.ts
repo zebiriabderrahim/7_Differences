@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ChatMessage, GameModes } from '@common/game-interfaces';
+import { ChatMessage } from '@common/game-interfaces';
+import { GameModes } from '@common/enums';
 
 @Component({
     selector: 'app-chat-box',

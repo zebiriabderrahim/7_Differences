@@ -65,6 +65,17 @@ export class GameController {
             response.status(HttpStatus.NO_CONTENT).send(error.message);
         }
     }
+
+    @Delete()
+    async deleteAllGames(@Res() response: Response) {
+        try {
+            await this.gameService.deleteAllGames();
+            response.status(HttpStatus.OK).send();
+        } catch (error) {
+            response.status(HttpStatus.NO_CONTENT).send(error.message);
+        }
+    }
+
     @Put('/constants')
     async updateGameConstants(@Body() gameConstantsDto: GameConstantsDto, @Res() response: Response) {
         try {
