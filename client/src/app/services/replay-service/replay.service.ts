@@ -1,12 +1,13 @@
+/* eslint-disable max-params */
 /* eslint-disable no-console */
 import { Injectable } from '@angular/core';
-import { ONE_SECOND } from '@app/constants/constants';
 import { REPLAY_LIMITER, SPEED_X1, SPEED_X2, SPEED_X4 } from '@app/constants/replay';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { ImageService } from '@app/services/image-service/image.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { ChatMessage, Coordinate } from '@common/game-interfaces';
 import { BehaviorSubject } from 'rxjs';
@@ -26,6 +27,7 @@ export class ReplayService {
         private readonly gameAreaService: GameAreaService,
         private readonly classicSystemService: ClassicSystemService,
         private readonly soundService: SoundService,
+        private readonly imageService: ImageService,
     ) {
         this.gameAreaService.replayEventsSubject.asObservable().subscribe((replayEvent: ReplayEvent) => {
             if (!this.isReplaying) {
@@ -97,17 +99,16 @@ export class ReplayService {
     }
 
     replaySwitcher(replayData: ReplayEvent): void {
-        // TODO: Remove console.log
         switch (replayData.action) {
             case ReplayActions.StartGame:
-                console.log('StartGame');
-                console.log(replayData.data as string[]);
+                this.imageService.loadImage(this.gameAreaService.getOgContext(), (replayData.data as string[])[0]);
+                this.imageService.loadImage(this.gameAreaService.getMdContext(), (replayData.data as string[])[1]);
+                this.gameAreaService.setAllData();
                 break;
             case ReplayActions.ClickFound:
-                this.replayDifferenceFound.next(this.replayDifferenceFound.value + 1);
                 this.soundService.playCorrectSound();
                 this.gameAreaService.setAllData();
-                this.gameAreaService.flashCorrectPixels(replayData.data as Coordinate[]);
+                this.gameAreaService.replaceDifference(replayData.data as Coordinate[]);
                 break;
             case ReplayActions.ClickError:
                 this.soundService.playErrorSound();
@@ -124,6 +125,9 @@ export class ReplayService {
                 break;
             case ReplayActions.DeactivateCheat:
                 this.gameAreaService.toggleCheatMode(replayData.data as Coordinate[]);
+                break;
+            case ReplayActions.TimerUpdate:
+                this.replayTimer.next(this.replayTimer.value + 1);
                 break;
             case ReplayActions.UseHint:
                 console.log('UseHint');
@@ -185,12 +189,6 @@ export class ReplayService {
     restartTimer(): void {
         this.replayDifferenceFound.next(0);
         this.replayTimer.next(0);
-        const interval = setInterval(() => {
-            this.replayTimer.next(this.replayTimer.value + 1);
-            if (!this.isReplaying) {
-                clearInterval(interval);
-            }
-        }, ONE_SECOND / this.replaySpeed);
     }
 
     resetReplay(): void {

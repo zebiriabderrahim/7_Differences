@@ -6,5 +6,6 @@ export enum ReplayActions {
     ActivateCheat = 'ActivateCheat',
     DeactivateCheat = 'DeactivateCheat',
     UseHint = 'UseHint',
-    EndGame = 'StartGame',
+    TimerUpdate = 'TimerUpdate',
+    EndGame = 'EnGame',
 }
