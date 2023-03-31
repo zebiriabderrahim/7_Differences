@@ -1,4 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import { TEN_SECONDS } from '@app/constants/constants';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { ReplayEvent } from '@app/interfaces/replay-actions';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
@@ -146,14 +147,24 @@ export class ClassicSystemService implements OnDestroy {
                     timestamp: Date.now(),
                     data: [data.clientGame.original, data.clientGame.modified],
                 });
-            }, 10);
+            }, TEN_SECONDS);
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[] }) => {
             if (data.playerId === this.getSocketId()) {
+                this.replayEventsSubject.next({
+                    action: ReplayActions.DifferenceFoundUpdate,
+                    timestamp: Date.now(),
+                    data: data.differencesData.differencesFound,
+                });
                 this.replaceDifference(data.differencesData.currentDifference);
                 this.differencesFound.next(data.differencesData.differencesFound);
                 this.checkStatus();
             } else if (data.differencesData.currentDifference.length !== 0) {
+                this.replayEventsSubject.next({
+                    action: ReplayActions.OpponentDifferencesFoundUpdate,
+                    timestamp: Date.now(),
+                    data: data.differencesData.differencesFound,
+                });
                 this.replaceDifference(data.differencesData.currentDifference);
                 this.opponentDifferencesFound.next(data.differencesData.differencesFound);
             }

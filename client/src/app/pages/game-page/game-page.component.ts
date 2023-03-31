@@ -35,6 +35,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     private timerSub: Subscription;
     private replayTimerSub: Subscription;
     private replayDifferencesFoundSub: Subscription;
+    private replayOpponentDifferenceFoundSub: Subscription;
     private gameSub: Subscription;
     private differenceSub: Subscription;
     private routeParamSub: Subscription;
@@ -126,6 +127,13 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
                 this.differencesFound = replayDiffFound;
             }
         });
+
+        this.replayOpponentDifferenceFoundSub = this.replayService.replayOpponentDifferenceFound$.subscribe((replayDiffFound) => {
+            if (this.isReplayAvailable) {
+                this.opponentDifferencesFound = replayDiffFound;
+            }
+        });
+
         this.timerSub = this.classicService.timer$.subscribe((timer) => {
             this.timer = timer;
         });
@@ -185,6 +193,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.cheatDifferencesSub?.unsubscribe();
         this.replayTimerSub?.unsubscribe();
         this.replayDifferencesFoundSub?.unsubscribe();
+        this.replayOpponentDifferenceFoundSub?.unsubscribe();
         this.classicService.disconnect();
     }
 }

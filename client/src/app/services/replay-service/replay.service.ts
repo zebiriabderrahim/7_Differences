@@ -23,6 +23,7 @@ export class ReplayService {
     private currentReplayIndex: number = 0;
     private replayTimer: BehaviorSubject<number>;
     private replayDifferenceFound: BehaviorSubject<number>;
+    private replayOpponentDifferenceFound: BehaviorSubject<number>;
     constructor(
         private readonly gameAreaService: GameAreaService,
         private readonly classicSystemService: ClassicSystemService,
@@ -41,6 +42,7 @@ export class ReplayService {
         });
         this.replayTimer = new BehaviorSubject<number>(0);
         this.replayDifferenceFound = new BehaviorSubject<number>(0);
+        this.replayOpponentDifferenceFound = new BehaviorSubject<number>(0);
     }
 
     get replayTimer$() {
@@ -49,6 +51,10 @@ export class ReplayService {
 
     get replayDifferenceFound$() {
         return this.replayDifferenceFound.asObservable();
+    }
+
+    get replayOpponentDifferenceFound$() {
+        return this.replayOpponentDifferenceFound.asObservable();
     }
 
     createReplayInterval(callback: () => void, getNextInterval: () => number): ReplayInterval {
@@ -106,7 +112,6 @@ export class ReplayService {
                 this.gameAreaService.setAllData();
                 break;
             case ReplayActions.ClickFound:
-                this.replayDifferenceFound.next(this.replayDifferenceFound.value + 1);
                 this.soundService.playCorrectSound();
                 this.gameAreaService.setAllData();
                 this.gameAreaService.replaceDifference(replayData.data as Coordinate[]);
@@ -129,6 +134,12 @@ export class ReplayService {
                 break;
             case ReplayActions.TimerUpdate:
                 this.replayTimer.next(this.replayTimer.value + 1);
+                break;
+            case ReplayActions.DifferenceFoundUpdate:
+                this.replayDifferenceFound.next(replayData.data as number);
+                break;
+            case ReplayActions.OpponentDifferencesFoundUpdate:
+                this.replayOpponentDifferenceFound.next(replayData.data as number);
                 break;
             case ReplayActions.UseHint:
                 console.log('UseHint');
@@ -188,6 +199,7 @@ export class ReplayService {
     }
 
     restartTimer(): void {
+        this.replayOpponentDifferenceFound.next(0);
         this.replayDifferenceFound.next(0);
         this.replayTimer.next(0);
     }
