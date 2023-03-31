@@ -21,6 +21,7 @@ export class ReplayService {
     private replayEvents: ReplayEvent[] = [];
     private currentReplayIndex: number = 0;
     private replayTimer: BehaviorSubject<number>;
+    private replayDifferenceFound: BehaviorSubject<number>;
     constructor(
         private readonly gameAreaService: GameAreaService,
         private readonly classicSystemService: ClassicSystemService,
@@ -37,10 +38,15 @@ export class ReplayService {
             }
         });
         this.replayTimer = new BehaviorSubject<number>(0);
+        this.replayDifferenceFound = new BehaviorSubject<number>(0);
     }
 
     get replayTimer$() {
         return this.replayTimer.asObservable();
+    }
+
+    get replayDifferenceFound$() {
+        return this.replayDifferenceFound.asObservable();
     }
 
     createReplayInterval(callback: () => void, getNextInterval: () => number): ReplayInterval {
@@ -98,6 +104,7 @@ export class ReplayService {
                 console.log(replayData.data as string[]);
                 break;
             case ReplayActions.ClickFound:
+                this.replayDifferenceFound.next(this.replayDifferenceFound.value + 1);
                 this.soundService.playCorrectSound();
                 this.gameAreaService.setAllData();
                 this.gameAreaService.flashCorrectPixels(replayData.data as Coordinate[]);
@@ -176,6 +183,7 @@ export class ReplayService {
     }
 
     restartTimer(): void {
+        this.replayDifferenceFound.next(0);
         this.replayTimer.next(0);
         const interval = setInterval(() => {
             this.replayTimer.next(this.replayTimer.value + 1);
