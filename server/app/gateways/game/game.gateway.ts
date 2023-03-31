@@ -3,7 +3,8 @@ import { LimitedModeService } from '@app/services/limited-mode/limited-mode.serv
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { Coordinate } from '@common/coordinate';
-import { ChatMessage, GameEvents, MessageEvents, playerData } from '@common/game-interfaces';
+import { GameCardEvents, GameEvents, MessageEvents, PlayerEvents, RoomEvents } from '@common/enums';
+import { ChatMessage, Differences, Player, playerData } from '@common/game-interfaces';
 import { Injectable, Logger } from '@nestjs/common';
 import {
     ConnectedSocket,
@@ -42,24 +43,30 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         this.roomsManagerService.startGame(socket, this.server);
     }
 
-    @SubscribeMessage(GameEvents.CreateSoloGame)
+    @SubscribeMessage(RoomEvents.CreateSoloGame)
     async createSoloRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
         await this.classicModeService.createSoloRoom(socket, playerPayLoad, this.server);
     }
 
-    @SubscribeMessage(GameEvents.CreateOneVsOneRoom)
+    @SubscribeMessage(RoomEvents.CreateOneVsOneRoom)
     async createOneVsOneRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
         await this.classicModeService.createOneVsOneRoom(socket, playerPayLoad, this.server);
     }
 
-    @SubscribeMessage(GameEvents.CreateSoloLimitedRoom)
+    @SubscribeMessage(RoomEvents.CreateSoloLimitedRoom)
     async createSoloLimitedRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
         await this.limitedModeService.createSoloLimitedRoom(socket, playerPayLoad, this.server);
     }
 
-    @SubscribeMessage(GameEvents.CreateSoloLimitedRoom)
+    @SubscribeMessage(RoomEvents.CreateSoloLimitedRoom)
     async createCoopLimitedRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
         await this.limitedModeService.createOneVsOneLimitedRoom(socket, playerPayLoad, this.server);
+    }
+
+    @SubscribeMessage(GameEvents.StartNextGame)
+    async startNextGame(@ConnectedSocket() socket: Socket) {
+        const players: Player[] = [{ playerId: socket.id, name: 'player1', diffData: {} as Differences }];
+        await this.limitedModeService.startNextGame(socket, players, this.server);
     }
 
     @SubscribeMessage(GameEvents.RemoveDiff)
@@ -72,42 +79,42 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         this.classicModeService.checkStatus(socket, this.server);
     }
 
-    @SubscribeMessage(GameEvents.UpdateRoomOneVsOneAvailability)
+    @SubscribeMessage(RoomEvents.UpdateRoomOneVsOneAvailability)
     updateRoomOneVsOneAvailability(@ConnectedSocket() socket: Socket, @MessageBody() gameId: string) {
         this.classicModeService.updateRoomOneVsOneAvailability(socket.id, gameId, this.server);
     }
 
-    @SubscribeMessage(GameEvents.CheckRoomOneVsOneAvailability)
+    @SubscribeMessage(RoomEvents.CheckRoomOneVsOneAvailability)
     checkRoomOneVsOneAvailability(@ConnectedSocket() socket: Socket, @MessageBody() gameId: string) {
         this.classicModeService.checkRoomOneVsOneAvailability(socket.id, gameId, this.server);
     }
 
-    @SubscribeMessage(GameEvents.DeleteCreatedOneVsOneRoom)
+    @SubscribeMessage(RoomEvents.DeleteCreatedOneVsOneRoom)
     deleteCreatedOneVsOneRoom(@ConnectedSocket() socket: Socket, @MessageBody() roomId: string) {
         const gameId = this.roomsManagerService.getRoomById(roomId)?.clientGame.id;
         this.playersListManagerService.cancelAllJoining(gameId, this.server);
         this.classicModeService.deleteCreatedRoom(socket.id, roomId, this.server);
     }
 
-    @SubscribeMessage(GameEvents.GetJoinedPlayerNames)
+    @SubscribeMessage(PlayerEvents.GetJoinedPlayerNames)
     getJoinedPlayerNames(@ConnectedSocket() socket: Socket, @MessageBody() gameId: string) {
         this.playersListManagerService.getWaitingPlayerNameList(socket.id, gameId, this.server);
     }
 
-    @SubscribeMessage(GameEvents.UpdateWaitingPlayerNameList)
+    @SubscribeMessage(PlayerEvents.UpdateWaitingPlayerNameList)
     updateWaitingPlayerNameList(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
         this.playersListManagerService.updateWaitingPlayerNameList(playerPayLoad, socket);
         const hostId = this.roomsManagerService.getHostIdByGameId(playerPayLoad.gameId);
         this.playersListManagerService.getWaitingPlayerNameList(hostId, playerPayLoad.gameId, this.server);
     }
 
-    @SubscribeMessage(GameEvents.RefusePlayer)
+    @SubscribeMessage(PlayerEvents.RefusePlayer)
     refusePlayer(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
         this.playersListManagerService.refusePlayer(playerPayLoad, this.server);
         this.playersListManagerService.getWaitingPlayerNameList(socket.id, playerPayLoad.gameId, this.server);
     }
 
-    @SubscribeMessage(GameEvents.AcceptPlayer)
+    @SubscribeMessage(PlayerEvents.AcceptPlayer)
     acceptPlayer(@ConnectedSocket() socket: Socket, @MessageBody() data: { gameId: string; roomId: string; playerName: string }) {
         const acceptedPlayer = this.playersListManagerService.getAcceptPlayer(data.gameId, data.playerName, this.server);
         this.classicModeService.acceptPlayer(acceptedPlayer, data.roomId, this.server);
@@ -115,12 +122,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         this.playersListManagerService.deleteJoinedPlayersByGameId(data.gameId);
     }
 
-    @SubscribeMessage(GameEvents.CheckIfPlayerNameIsAvailable)
+    @SubscribeMessage(PlayerEvents.CheckIfPlayerNameIsAvailable)
     checkIfPlayerNameIsAvailable(@MessageBody() playerPayLoad: playerData) {
         this.playersListManagerService.checkIfPlayerNameIsAvailable(playerPayLoad, this.server);
     }
 
-    @SubscribeMessage(GameEvents.CancelJoining)
+    @SubscribeMessage(PlayerEvents.CancelJoining)
     cancelJoining(@ConnectedSocket() socket: Socket, @MessageBody() gameId: string) {
         this.playersListManagerService.cancelJoiningByPlayerId(socket.id, gameId);
         const hostId = this.roomsManagerService.getHostIdByGameId(gameId);
@@ -138,35 +145,35 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         socket.broadcast.to(roomId).emit(MessageEvents.LocalMessage, data);
     }
 
-    @SubscribeMessage(GameEvents.GameCardDeleted)
+    @SubscribeMessage(GameCardEvents.GameCardDeleted)
     gameCardDeleted(@MessageBody() gameId: string) {
-        this.server.emit(GameEvents.RequestReload);
-        this.server.emit(GameEvents.GameDeleted, gameId);
+        this.server.emit(GameCardEvents.RequestReload);
+        this.server.emit(GameCardEvents.GameDeleted, gameId);
     }
 
-    @SubscribeMessage(GameEvents.GameCardCreated)
+    @SubscribeMessage(GameCardEvents.GameCardCreated)
     gameCardCreated() {
-        this.server.emit(GameEvents.RequestReload);
+        this.server.emit(GameCardEvents.RequestReload);
     }
 
-    @SubscribeMessage(GameEvents.ResetTopTime)
+    @SubscribeMessage(GameCardEvents.ResetTopTime)
     resetTopTime(@MessageBody() gameId: string) {
         this.playersListManagerService.resetTopTime(gameId, this.server);
     }
 
-    @SubscribeMessage(GameEvents.AllGamesDeleted)
+    @SubscribeMessage(GameCardEvents.AllGamesDeleted)
     allGamesDeleted() {
-        this.server.emit(GameEvents.RequestReload);
+        this.server.emit(GameCardEvents.RequestReload);
     }
 
-    @SubscribeMessage(GameEvents.ResetAllTopTimes)
+    @SubscribeMessage(GameCardEvents.ResetAllTopTimes)
     resetAllTopTime() {
         this.playersListManagerService.resetAllTopTime(this.server);
     }
 
-    @SubscribeMessage(GameEvents.GameConstantsUpdated)
+    @SubscribeMessage(GameCardEvents.GameConstantsUpdated)
     gameConstantsUpdated() {
-        this.server.emit(GameEvents.RequestReload);
+        this.server.emit(GameCardEvents.RequestReload);
     }
 
     afterInit() {

@@ -1,17 +1,8 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { GameService } from '@app/services/game/game.service';
 import { MAX_TIMES_INDEX, NOT_FOUND } from '@common/constants';
-import {
-    ClassicPlayRoom,
-    Differences,
-    GameEvents,
-    MessageEvents,
-    NewRecord,
-    Player,
-    playerData,
-    PlayerNameAvailability,
-    PlayerTime,
-} from '@common/game-interfaces';
+import { ClassicPlayRoom, Differences, NewRecord, Player, playerData, PlayerNameAvailability, PlayerTime } from '@common/game-interfaces';
+import { GameCardEvents, GameEvents, MessageEvents, PlayerEvents, RoomEvents } from '@common/enums';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
@@ -56,15 +47,15 @@ export class PlayersListManagerService {
         const joinedPlayerNames = this.joinedPlayersByGameId.get(playerPayLoad.gameId);
         const playerNameAvailability = { gameId: playerPayLoad.gameId, isNameAvailable: true } as PlayerNameAvailability;
         playerNameAvailability.isNameAvailable = !joinedPlayerNames?.some((player) => player.name === playerPayLoad.playerName);
-        server.emit(GameEvents.PlayerNameTaken, playerNameAvailability);
+        server.emit(PlayerEvents.PlayerNameTaken, playerNameAvailability);
     }
 
     cancelJoiningByPlayerName(playerName: string, gameId: string, server: io.Server): void {
         const playerId = this.getPlayerIdByPlayerName(gameId, playerName);
         if (playerId) {
             this.cancelJoiningByPlayerId(playerId, gameId);
-            server.to(playerId).emit(GameEvents.PlayerRefused, playerId);
-            server.emit(GameEvents.UndoCreation, gameId);
+            server.to(playerId).emit(PlayerEvents.PlayerRefused, playerId);
+            server.emit(RoomEvents.UndoCreation, gameId);
         }
     }
 
@@ -113,7 +104,7 @@ export class PlayersListManagerService {
         if (topTimes[MAX_TIMES_INDEX].time > timer) {
             const topTimeIndex = this.insertNewTopTime(playerName, timer, topTimes);
             await this.gameService.updateTopTimesGameById(clientGame.id, clientGame.mode, topTimes);
-            server.emit(GameEvents.RequestReload);
+            server.emit(GameCardEvents.RequestReload);
             const newRecord = { playerName, rank: topTimeIndex, gameName: clientGame.name, gameMode: clientGame.mode } as NewRecord;
             this.sendNewTopTimeMessage(newRecord, server);
             return topTimeIndex;
@@ -134,11 +125,11 @@ export class PlayersListManagerService {
 
     async resetTopTime(gameId: string, server: io.Server): Promise<void> {
         await this.gameService.resetTopTimesGameById(gameId);
-        server.emit(GameEvents.RequestReload);
+        server.emit(GameCardEvents.RequestReload);
     }
 
     async resetAllTopTime(server: io.Server): Promise<void> {
         await this.gameService.resetAllTopTimes();
-        server.emit(GameEvents.RequestReload);
+        server.emit(GameCardEvents.RequestReload);
     }
 }

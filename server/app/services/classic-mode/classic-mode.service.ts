@@ -4,7 +4,8 @@
 /* eslint-disable no-underscore-dangle */
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
-import { ClassicPlayRoom, GameEvents, GameModes, MessageEvents, Player, playerData, RoomAvailability } from '@common/game-interfaces';
+import { GameEvents, GameModes, MessageEvents, PlayerEvents, RoomEvents } from '@common/enums';
+import { ClassicPlayRoom, Player, playerData, RoomAvailability } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
@@ -27,7 +28,7 @@ export class ClassicModeService {
             soloRoom.clientGame.mode = GameModes.ClassicSolo;
             soloRoom.player1.playerId = socket.id;
             this.roomsManagerService.updateRoom(soloRoom);
-            server.to(socket.id).emit(GameEvents.RoomSoloCreated, soloRoom.roomId);
+            server.to(socket.id).emit(RoomEvents.RoomSoloCreated, soloRoom.roomId);
         }
     }
 
@@ -37,7 +38,7 @@ export class ClassicModeService {
             oneVsOneRoom.clientGame.mode = GameModes.ClassicOneVsOne;
             oneVsOneRoom.player1.playerId = socket.id;
             this.roomsManagerService.updateRoom(oneVsOneRoom);
-            server.to(socket.id).emit(GameEvents.RoomOneVsOneCreated, oneVsOneRoom.roomId);
+            server.to(socket.id).emit(RoomEvents.RoomOneVsOneCreated, oneVsOneRoom.roomId);
         }
     }
 
@@ -63,6 +64,7 @@ export class ClassicModeService {
         if (!player) return;
         if (room.clientGame.differencesCount === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicSolo) {
             this.endGame(room, player, server);
+            socket.rooms.delete(roomId);
         } else if (halfDifferences === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicOneVsOne) {
             this.endGame(room, player, server);
         }
@@ -84,21 +86,21 @@ export class ClassicModeService {
         const roomAvailability = this.roomAvailability.get(gameId) || { gameId, isAvailableToJoin: false, hostId };
         roomAvailability.isAvailableToJoin = !roomAvailability.isAvailableToJoin;
         this.roomAvailability.set(gameId, roomAvailability);
-        server.emit(GameEvents.RoomOneVsOneAvailable, roomAvailability);
+        server.emit(RoomEvents.RoomOneVsOneAvailable, roomAvailability);
     }
 
     checkRoomOneVsOneAvailability(hostId: string, gameId: string, server: io.Server): void {
         const availabilityData: RoomAvailability = this.roomAvailability.has(gameId)
             ? { gameId, isAvailableToJoin: this.roomAvailability.get(gameId).isAvailableToJoin, hostId }
             : { gameId, isAvailableToJoin: false, hostId };
-        server.emit(GameEvents.RoomOneVsOneAvailable, availabilityData);
+        server.emit(RoomEvents.RoomOneVsOneAvailable, availabilityData);
     }
 
     acceptPlayer(acceptedPlayer: Player, roomId: string, server: io.Server): void {
         const room = this.roomsManagerService.getRoomById(roomId);
         if (!room) return;
         this.roomsManagerService.addAcceptedPlayer(roomId, acceptedPlayer);
-        server.to(acceptedPlayer.playerId).emit(GameEvents.PlayerAccepted, true);
+        server.to(acceptedPlayer.playerId).emit(PlayerEvents.PlayerAccepted, true);
     }
 
     getGameIdByHostId(playerId: string): string {

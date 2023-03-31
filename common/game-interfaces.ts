@@ -1,4 +1,5 @@
 import { Coordinate } from '@common/coordinate';
+import{ MessageTag  } from '@common/enums';
 
 export interface Players {
     player1: Player;
@@ -88,69 +89,6 @@ export interface AcceptedPlayer {
 export interface WaitingPlayerNameList {
     gameId: string;
     playerNamesList: string[];
-}
-
-export enum GameEvents {
-    ValidateCoords = 'validateCoords',
-    CheckStatus = 'checkStatus',
-    CreateSoloGame = 'createSoloGame',
-    RoomOneVsOneCreated = 'roomOneVsOneCreated',
-    EndGame = 'endGame',
-    TimerStarted = 'timerStarted',
-    RemoveDiff = 'removeDiff',
-    RoomOneVsOneAvailable = 'RoomOneVsOneAvailable',
-    StartGameByRoomId = 'CreateOneVsOneGame',
-    CheckRoomOneVsOneAvailability = 'CheckRoomOneVsOneAvailability',
-    UpdateRoomOneVsOneAvailability = 'UpdateRoomOneVsOneAvailability',
-    DeleteCreatedOneVsOneRoom = 'DeleteCreatedOneVsOneRoom',
-    UpdateWaitingPlayerNameList = 'UpdateWaitingPlayerNameList',
-    RefusePlayer = 'RefusePlayer',
-    CheckIfPlayerNameIsAvailable = 'CheckIfPlayerNameIsAvailable',
-    PlayerNameTaken = 'PlayerNameTaken',
-    CancelJoining = 'CancelJoining',
-    AcceptPlayer = 'AcceptPlayer',
-    CreateOneVsOneRoom = 'CreateOneVsOneRoom',
-    OneVsOneRoomDeleted = 'OneVsOneRoomDeleted',
-    PlayerAccepted = 'PlayerAccepted',
-    GameStarted = 'OneVsOneStarted',
-    RoomSoloCreated = 'RoomSoloCreated',
-    AbandonGame = 'AbandonGame',
-    JoinOneVsOneGame = 'JoinOneVsOneGame',
-    GetGameCards = 'GetGameCards',
-    UndoCreation = 'UndoCreation',
-    Disconnect = 'Disconnect',
-    PlayerRefused = 'PlayerRefused',
-    GameCardDeleted = 'GameCardDeleted',
-    GameCardCreated = 'GameCardCreated',
-    RequestReload = 'RequestGameCardsUpdate',
-    WaitingPlayerNameListUpdated = 'WaitingPlayerNameListUpdated',
-    GetJoinedPlayerNames = 'GetJoinedPlayerNames',
-    ResetTopTime = 'ResetTopTime',
-    ResetAllTopTimes = 'ResetAllTopTimes',
-    GameConstantsUpdated = 'GameConstantsUpdated',
-    AllGamesDeleted = 'AllGamesDeleted',
-    GameDeleted = "GameDeleted",
-    RoomLimitedCreated = "RoomLimitedCreated",
-    CreateSoloLimitedRoom = "CreateSoloLimitedRoom"
-}
-
-export enum GameModes {
-    ClassicSolo = 'Classic->Solo',
-    ClassicOneVsOne = 'Classic->OneVsOne',
-    LimitedSolo = 'Limited->Solo',
-    LimitedCoop = 'Limited->Coop',
-}
-
-export enum MessageEvents {
-    LocalMessage = 'LocalMessage',
-    GlobalMessage = 'GlobalMessage',
-}
-
-export enum MessageTag {
-    sent = 'sent',
-    received = 'received',
-    common = 'common',
-    global = 'global',
 }
 
 export interface ChatMessage {

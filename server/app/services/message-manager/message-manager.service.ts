@@ -1,4 +1,5 @@
-import { ChatMessage, GameModes, MessageTag, NewRecord } from '@common/game-interfaces';
+import { ChatMessage, NewRecord } from '@common/game-interfaces';
+import { GameModes, MessageTag } from '@common/enums';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

@@ -3,7 +3,8 @@
 import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
 import { CHARACTERS, KEY_SIZE, NOT_FOUND } from '@common/constants';
-import { ClassicPlayRoom, ClientSideGame, Coordinate, Differences, GameEvents, GameModes, MessageEvents, Player } from '@common/game-interfaces';
+import { ClassicPlayRoom, ClientSideGame, Coordinate, Differences, Player } from '@common/game-interfaces';
+import { GameEvents, GameModes, MessageEvents } from '@common/enums';
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as io from 'socket.io';
