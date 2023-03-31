@@ -7,6 +7,7 @@ import { CanvasMeasurements } from '@app/interfaces/game-interfaces';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { ImageService } from '@app/services/image-service/image.service';
+import { ReplayService } from '@app/services/replay-service/replay.service';
 import { Coordinate } from '@common/coordinate';
 import { ChatMessage, ClientSideGame, MessageTag, Players } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
@@ -32,6 +33,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     readonly canvasSize: CanvasMeasurements;
     private cheatDifferences: Coordinate[];
     private timerSub: Subscription;
+    private replayTimerSub: Subscription;
     private gameSub: Subscription;
     private differenceSub: Subscription;
     private routeParamSub: Subscription;
@@ -47,6 +49,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         private readonly classicService: ClassicSystemService,
         private readonly imageService: ImageService,
         private readonly matDialog: MatDialog,
+        private readonly replayService: ReplayService,
     ) {
         this.classicService.manageSocket();
         this.differencesFound = 0;
@@ -106,6 +109,12 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
                 this.gameAreaService.setAllData();
             }
         });
+
+        this.replayTimerSub = this.replayService.replayTimer$.subscribe((replayTimer: number) => {
+            if (this.isReplayAvailable) {
+                this.timer = replayTimer;
+            }
+        });
         this.timerSub = this.classicService.timer$.subscribe((timer) => {
             this.timer = timer;
         });
@@ -163,6 +172,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.endGameSub?.unsubscribe();
         this.opponentDifferenceSub?.unsubscribe();
         this.cheatDifferencesSub?.unsubscribe();
+        this.replayTimerSub?.unsubscribe();
         this.classicService.disconnect();
     }
 }

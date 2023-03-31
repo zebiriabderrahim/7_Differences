@@ -18,6 +18,7 @@ export class ReplayButtonsComponent implements OnInit, OnDestroy {
 
     replay() {
         this.replayService.startReplay();
+        this.replayService.restartTimer();
     }
 
     pause() {

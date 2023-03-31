@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { Injectable } from '@angular/core';
+import { ONE_SECOND } from '@app/constants/constants';
 import { REPLAY_LIMITER, SPEED_X1, SPEED_X2, SPEED_X4 } from '@app/constants/replay';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
@@ -8,6 +9,7 @@ import { ClassicSystemService } from '@app/services/classic-system-service/class
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { ChatMessage, Coordinate } from '@common/game-interfaces';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -18,6 +20,7 @@ export class ReplayService {
     private replayInterval: ReplayInterval;
     private replayEvents: ReplayEvent[] = [];
     private currentReplayIndex: number = 0;
+    private replayTimer: BehaviorSubject<number>;
     constructor(
         private readonly gameAreaService: GameAreaService,
         private readonly classicSystemService: ClassicSystemService,
@@ -33,6 +36,11 @@ export class ReplayService {
                 this.replayEvents.push(replayEvent);
             }
         });
+        this.replayTimer = new BehaviorSubject<number>(0);
+    }
+
+    get replayTimer$() {
+        return this.replayTimer.asObservable();
     }
 
     createReplayInterval(callback: () => void, getNextInterval: () => number): ReplayInterval {
@@ -87,6 +95,7 @@ export class ReplayService {
         switch (replayData.action) {
             case ReplayActions.StartGame:
                 console.log('StartGame');
+                console.log(replayData.data as string[]);
                 break;
             case ReplayActions.ClickFound:
                 this.soundService.playCorrectSound();
@@ -164,6 +173,16 @@ export class ReplayService {
     upSpeedx4(): void {
         console.log('upSpeedx4');
         this.replaySpeed = SPEED_X4;
+    }
+
+    restartTimer(): void {
+        this.replayTimer.next(0);
+        const interval = setInterval(() => {
+            this.replayTimer.next(this.replayTimer.value + 1);
+            if (!this.isReplaying) {
+                clearInterval(interval);
+            }
+        }, ONE_SECOND / this.replaySpeed);
     }
 
     resetReplay(): void {

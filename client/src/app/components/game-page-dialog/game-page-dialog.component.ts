@@ -24,15 +24,6 @@ export class GamePageDialogComponent {
 
     replay() {
         this.replayService.startReplay();
-    }
-
-    pause() {
-        this.isReplayPaused = !this.isReplayPaused;
-        this.replayService.pauseReplay();
-    }
-
-    resume() {
-        this.isReplayPaused = !this.isReplayPaused;
-        this.replayService.resumeReplay();
+        this.replayService.restartTimer();
     }
 }
