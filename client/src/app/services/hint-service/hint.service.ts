@@ -113,22 +113,17 @@ export class HintService {
         const halfHeight = (quadrant.topCorner.y - quadrant.bottomCorner.y) / 2;
         const middleCoordinate: Coordinate = { x: quadrant.bottomCorner.x + halfWidth, y: quadrant.bottomCorner.y + halfHeight };
 
-        const firstQuadrant: Quadrant = { bottomCorner: quadrant.bottomCorner, topCorner: middleCoordinate };
-        const secondQuadrant: Quadrant = {
+        const subQuadrants: Quadrant[] = [];
+        subQuadrants[QuadrantPosition.First] = { bottomCorner: quadrant.bottomCorner, topCorner: middleCoordinate };
+        subQuadrants[QuadrantPosition.Second] = {
             bottomCorner: { x: middleCoordinate.x, y: quadrant.bottomCorner.y },
             topCorner: { x: quadrant.topCorner.x, y: middleCoordinate.y },
-        };
-        const thirdQuadrant: Quadrant = {
+        }
+        subQuadrants[QuadrantPosition.Third] = {
             bottomCorner: { x: quadrant.bottomCorner.x, y: middleCoordinate.y },
             topCorner: { x: middleCoordinate.x, y: quadrant.topCorner.y },
         };
-        const fourthQuadrant: Quadrant = { bottomCorner: middleCoordinate, topCorner: quadrant.topCorner };
-
-        const subQuadrants: Quadrant[] = [];
-        subQuadrants[QuadrantPosition.First] = firstQuadrant;
-        subQuadrants[QuadrantPosition.Second] = secondQuadrant;
-        subQuadrants[QuadrantPosition.Third] = thirdQuadrant;
-        subQuadrants[QuadrantPosition.Fourth] = fourthQuadrant;
+        subQuadrants[QuadrantPosition.Fourth] = { bottomCorner: middleCoordinate, topCorner: quadrant.topCorner };
         return subQuadrants;
     }
 }
