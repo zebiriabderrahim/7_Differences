@@ -7,7 +7,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class GameService {
-
     constructor(private readonly databaseService: DatabaseService) {}
 
     async getGameConstants(): Promise<GameConfigConst> {
