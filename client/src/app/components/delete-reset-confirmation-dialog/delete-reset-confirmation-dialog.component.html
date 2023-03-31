@@ -1,0 +1,35 @@
+<div *ngIf="data.actions === actions.DeleteAllGames">
+    <h1 mat-dialog-title>Supprimer tous les jeux</h1>
+    <div mat-dialog-content>
+        <p>Êtes-vous sûr de vouloir supprimer tous les jeux ?</p>
+    </div>
+    <button mat-raised-button mat-dialog-close (click)="deleteAllGames()">Oui</button>
+    <button mat-raised-button mat-dialog-close >Non</button>
+</div>
+<div *ngIf="data.actions === actions.DeleteGame">
+    <h1 mat-dialog-title>Supprimer le jeu</h1>
+    <div mat-dialog-content>
+        <p>Êtes-vous sûr de vouloir supprimer le jeu ?</p>
+    </div>
+    <button mat-raised-button mat-dialog-close (click)="deleteGameCard()">Oui</button>
+    <button mat-raised-button mat-dialog-close>Non</button>
+</div>
+<div *ngIf="data.actions === actions.ResetAllTopTimes">
+    <h1 mat-dialog-title>Réinitialiser tous les tops temps</h1>
+    <div mat-dialog-content>
+        <p>Êtes-vous sûr de vouloir réinitialiser tous les tops temps ?</p>
+    </div>
+    <button mat-raised-button mat-dialog-close (click)="resetAllTopTimes()">Oui</button>
+    <button mat-raised-button mat-dialog-close>Non</button>
+</div>
+<div *ngIf="data.actions === actions.ResetTopTime">
+    <h1 mat-dialog-title>Réinitialiser le top temps</h1>
+    <div mat-dialog-content>
+        <p>Êtes-vous sûr de vouloir réinitialiser le top temps ?</p>
+    </div>
+    <button mat-raised-button mat-dialog-close (click)="resetTopTime()">Oui</button>
+    <button mat-raised-button mat-dialog-close>Non</button>
+</div>
+
+
+

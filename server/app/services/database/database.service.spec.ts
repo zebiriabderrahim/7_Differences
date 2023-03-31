@@ -7,7 +7,8 @@ import { GameConstants, GameConstantsDocument, gameConstantsSchema } from '@app/
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameConstantsDto } from '@app/model/dto/game/game-constants.dto';
 import { GameListsManagerService } from '@app/services/game-lists-manager/game-lists-manager.service';
-import { CarouselPaginator, GameModes, PlayerTime } from '@common/game-interfaces';
+import { GameModes } from '@common/enums';
+import { CarouselPaginator, PlayerTime } from '@common/game-interfaces';
 import { getConnectionToken, getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as fs from 'fs';
