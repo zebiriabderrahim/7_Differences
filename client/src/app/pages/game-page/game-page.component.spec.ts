@@ -9,7 +9,8 @@ import { DEFAULT_PLAYERS } from '@app/constants/constants';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
-import { ChatMessage, ClientSideGame, Coordinate, MessageTag, Players } from '@common/game-interfaces';
+import { MessageTag } from '@common/enums';
+import { ChatMessage, ClientSideGame, Coordinate, Players } from '@common/game-interfaces';
 import { Subject, Subscription } from 'rxjs';
 
 describe('GamePageComponent', () => {
@@ -47,11 +48,12 @@ describe('GamePageComponent', () => {
     const opponentDifferencesFoundSubjectTest = new Subject<number>();
     const cheatDifferencesSubjectTest = new Subject<Coordinate[]>();
     const paramsSubjectTest = new Subject<{ roomId: string }>();
+    const isFirstDifferencesFoundTest = new Subject<boolean>();
 
     beforeEach(async () => {
         classicServiceSpy = jasmine.createSpyObj(
             'ClassicService',
-            ['sendMessage', 'requestVerification', 'manageSocket', 'disconnect', 'setIsLeftCanvas', 'getSocketId', 'startGame'],
+            ['sendMessage', 'requestVerification', 'manageSocket', 'disconnect', 'setIsLeftCanvas', 'getSocketId', 'startGame', 'removeAllListeners'],
             {
                 currentGame$: clientSideGameSubjectTest,
                 timer$: timerSubjectTest,
@@ -61,6 +63,7 @@ describe('GamePageComponent', () => {
                 endMessage$: endMessageTest,
                 opponentDifferencesFound$: opponentDifferencesFoundSubjectTest,
                 cheatDifferences$: cheatDifferencesSubjectTest,
+                isFirstDifferencesFound$: isFirstDifferencesFoundTest,
             },
         );
         routeSpy = jasmine.createSpyObj('ActivatedRoute', ['navigate'], { params: paramsSubjectTest });
@@ -82,6 +85,13 @@ describe('GamePageComponent', () => {
         component = fixture.componentInstance;
         gameAreaService = TestBed.inject(GameAreaService);
         classicService = TestBed.inject(ClassicSystemService);
+        fixture.detectChanges();
+    });
+
+    afterEach(() => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        spyOn(component, 'ngOnDestroy').and.callFake(() => {});
+        fixture.destroy();
         fixture.detectChanges();
     });
 
@@ -247,7 +257,7 @@ describe('GamePageComponent', () => {
         component['gameSub'] = undefined as unknown as Subscription;
         component['timerSub'] = undefined as unknown as Subscription;
         component['differenceSub'] = undefined as unknown as Subscription;
-        component['routeParamSub'] = undefined as unknown as Subscription;
+        // component['routeParamSub'] = undefined as unknown as Subscription;
         component['opponentDifferenceSub'] = undefined as unknown as Subscription;
         component['messageSub'] = undefined as unknown as Subscription;
         component['endGameSub'] = undefined as unknown as Subscription;

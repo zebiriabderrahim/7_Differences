@@ -9,7 +9,10 @@
                     <button mat-raised-button [routerLink]="createRoute" class="create_button">Création de jeu</button>
                 </div>
                 <div class="change-game">
-                    <button mat-raised-button class="create_button" (click)="resetAllTopTimes()">Tout réinitialiser</button>
+                    <button mat-raised-button class="create_button" (click)="openConfirmationDialog(actions.ResetAllTopTimes)">Tout réinitialiser</button>
+                </div>
+                <div class="change-game">
+                  <button mat-raised-button class="create_button" (click)="openConfirmationDialog(actions.DeleteAllGames)">Tout supprimer </button>
                 </div>
             </mat-grid-tile>
             <mat-grid-tile
