@@ -2,14 +2,15 @@ import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CreationGameDialogComponent } from '@app/components/creation-game-dialog/creation-game-dialog.component';
-import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/difference';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
-import { CanvasPosition } from '@app/enum/canvas-position';
-import { GameDetails } from '@app/interfaces/game-interfaces';
 import { LEFT_BUTTON } from '@app/constants/constants';
+import { DEFAULT_RADIUS, RADIUS_SIZES } from '@app/constants/difference';
+import { CANVAS_MEASUREMENTS } from '@app/constants/image';
+import { CanvasPosition } from '@app/enum/canvas-position';
+import { CanvasMeasurements, GameDetails } from '@app/interfaces/game-interfaces';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
-import { ImageService } from '@app/services/image-service/image.service';
 import { ForegroundService } from '@app/services/foreground-service/foreground.service';
+import { ImageService } from '@app/services/image-service/image.service';
+import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 
 @Component({
     selector: 'app-root',
@@ -18,8 +19,8 @@ import { ForegroundService } from '@app/services/foreground-service/foreground.s
 })
 export class CreationPageComponent implements AfterViewInit {
     @ViewChild('combinedCanvas') combinedCanvas: ElementRef;
-    readonly canvasSizes = { width: IMG_WIDTH, height: IMG_HEIGHT };
-    readonly configRoute = '/config';
+    readonly canvasSizes: CanvasMeasurements;
+    readonly configRoute: string;
     canvasPosition: typeof CanvasPosition;
     readonly radiusSizes: number[];
     radius: number;
@@ -32,10 +33,13 @@ export class CreationPageComponent implements AfterViewInit {
         private readonly matDialog: MatDialog,
         private readonly communicationService: CommunicationService,
         private readonly router: Router,
+        private readonly roomManagerService: RoomManagerService,
     ) {
         this.radiusSizes = RADIUS_SIZES;
         this.radius = DEFAULT_RADIUS;
         this.canvasPosition = CanvasPosition;
+        this.canvasSizes = CANVAS_MEASUREMENTS;
+        this.configRoute = '/config';
     }
 
     @HostListener('window:keydown', ['$event'])
@@ -76,9 +80,8 @@ export class CreationPageComponent implements AfterViewInit {
             .subscribe((game: GameDetails) => {
                 if (game) {
                     this.communicationService.postGame(game).subscribe(() => {
-                        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-                            this.router.navigate(['/config']);
-                        });
+                        this.router.navigate(['/config']);
+                        this.roomManagerService.gameCardCreated();
                     });
                 }
             });

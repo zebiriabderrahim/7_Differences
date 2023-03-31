@@ -1,5 +1,10 @@
 import { Coordinate } from '@common/coordinate';
 
+export interface Players {
+    player1: Player;
+    player2?: Player;
+}
+
 export interface ClientSideGame {
     id: string;
     name: string;
@@ -52,6 +57,11 @@ export interface Player {
     diffData: Differences;
 }
 
+export interface playerData {
+    playerName: string;
+    gameId: string;
+}
+
 export interface Differences {
     currentDifference: Coordinate[];
     differencesFound: number;
@@ -60,6 +70,7 @@ export interface Differences {
 export interface RoomAvailability {
     gameId: string;
     isAvailableToJoin: boolean;
+    hostId: string;
 }
 
 export interface PlayerNameAvailability {
@@ -104,7 +115,19 @@ export enum GameEvents {
     RoomSoloCreated = 'RoomSoloCreated',
     AbandonGame = 'AbandonGame',
     JoinOneVsOneGame = 'JoinOneVsOneGame',
-    Disconnect = "Disconnect"
+    GetGameCards = 'GetGameCards',
+    UndoCreation = 'UndoCreation',
+    Disconnect = 'Disconnect',
+    PlayerRefused = 'PlayerRefused',
+    GameCardDeleted = 'GameCardDeleted',
+    DeleteGameCard = 'DeleteGameCard',
+    GameCardCreated = 'GameCardCreated',
+    RequestReload = 'RequestGameCardsUpdate',
+    WaitingPlayerNameListUpdated = 'WaitingPlayerNameListUpdated',
+    GetJoinedPlayerNames = 'GetJoinedPlayerNames',
+    ResetTopTime = 'ResetTopTime',
+    ResetAllTopTimes = 'ResetAllTopTimes',
+    GameConstantsUpdated = 'GameConstantsUpdated',
 }
 
 export enum GameModes {
@@ -132,3 +155,4 @@ export enum GameCardActions {
     Create = 'create',
     Join = 'join',
 }
+export { Coordinate };

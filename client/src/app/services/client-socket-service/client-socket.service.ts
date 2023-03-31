@@ -9,8 +9,10 @@ import { environment } from 'src/environments/environment';
 })
 export class ClientSocketService {
     socket: Socket;
-    private readonly baseUrl: string = environment.serverUrl.replace('/api', '');
-
+    private readonly baseUrl: string;
+    constructor() {
+        this.baseUrl = environment.serverUrl.replace('/api', '');
+    }
     isSocketAlive() {
         return this.socket && this.socket.connected;
     }
@@ -19,9 +21,8 @@ export class ClientSocketService {
         this.socket = io(this.baseUrl, { transports: ['websocket'], upgrade: false });
     }
 
-    // TODO REVIEW ?
     disconnect() {
-        this.socket?.disconnect();
+        this.socket.disconnect();
     }
 
     on<T>(event: string, action: (data: T) => void): void {

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 // Needed more lines for the tests
 /* eslint-disable max-lines */
-// needed to spy on private methods
+// Needed to spy on private methods
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';

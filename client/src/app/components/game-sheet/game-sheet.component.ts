@@ -2,6 +2,7 @@
 /* eslint-disable no-underscore-dangle */
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { JoinedPlayerDialogComponent } from '@app/components/joined-player-dialog/joined-player-dialog.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
@@ -18,6 +19,7 @@ import { filter, Subscription, take } from 'rxjs';
 })
 export class GameSheetComponent implements OnDestroy, OnInit {
     @Input() game: GameCard;
+    url: SafeResourceUrl;
     private isAvailable: boolean;
     private roomIdSubscription: Subscription;
     private roomAvailabilitySubscription: Subscription;
@@ -29,10 +31,10 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         public router: Router,
         private readonly roomManagerService: RoomManagerService,
         private readonly communicationService: CommunicationService,
-    ) {
-        this.roomManagerService.handleRoomEvents();
-    }
+        private sanitizer: DomSanitizer,
+    ) {}
     ngOnInit(): void {
+        this.url = this.sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + this.game.thumbnail);
         this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
         this.roomAvailabilitySubscription = this.roomManagerService.oneVsOneRoomsAvailabilityByRoomId$
             .pipe(filter((data) => data.gameId === this.game._id))
@@ -60,14 +62,9 @@ export class GameSheetComponent implements OnDestroy, OnInit {
 
     playSolo(): void {
         this.createSoloRoom();
-        this.roomIdSubscription = this.roomManagerService.roomId$
-            .pipe(
-                filter((roomId) => !!roomId),
-                take(1),
-            )
-            .subscribe((roomId) => {
-                this.router.navigate(['/game', roomId]);
-            });
+        this.roomIdSubscription = this.roomManagerService.createdRoomId$.pipe(filter((roomId) => !!roomId)).subscribe(() => {
+            this.router.navigate(['/game']);
+        });
     }
 
     createOneVsOne(): void {
@@ -76,13 +73,12 @@ export class GameSheetComponent implements OnDestroy, OnInit {
             .afterClosed()
             .subscribe((playerName: string) => {
                 if (playerName) {
-                    this.roomManagerService.createOneVsOneRoom(this.game._id);
+                    this.roomManagerService.createOneVsOneRoom(this.game._id, playerName);
                     this.openWaitingDialog(playerName);
                 } else {
-                    this.roomManagerService.deleteCreatedOneVsOneRoom(this.game._id);
+                    this.roomManagerService.updateRoomOneVsOneAvailability(this.game._id);
                 }
             });
-        this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
     }
 
     joinOneVsOne(): void {
@@ -100,7 +96,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     }
 
     openWaitingDialog(playerName: string): void {
-        this.roomIdSubscription = this.roomManagerService.roomId$
+        this.roomIdSubscription = this.roomManagerService.createdRoomId$
             .pipe(
                 filter((roomId) => !!roomId),
                 take(1),
@@ -119,14 +115,16 @@ export class GameSheetComponent implements OnDestroy, OnInit {
 
     deleteGameCard() {
         this.communicationService.deleteGameById(this.game._id).subscribe(() => {
-            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-                this.router.navigate(['/config']);
-            });
+            this.router.navigate(['/config']);
+            this.roomManagerService.gameCardDeleted(this.game._id);
         });
     }
 
+    resetTopTime() {
+        this.roomManagerService.resetTopTime(this.game._id);
+    }
+
     ngOnDestroy(): void {
-        this.roomManagerService.disconnect();
         this.roomIdSubscription?.unsubscribe();
         this.roomAvailabilitySubscription?.unsubscribe();
     }

@@ -1,5 +1,6 @@
 import { Game } from '@app/model/database/game';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
+import { GameConstantsDto } from '@app/model/dto/game/game-constants.dto';
 import { GameService } from '@app/services/game/game.service';
 import { CarouselPaginator, GameConfigConst } from '@common/game-interfaces';
 import { HttpStatus } from '@nestjs/common';
@@ -113,8 +114,8 @@ describe('GameController', () => {
         expect(gameService.getGameById.called).toBeTruthy();
     });
 
-    it('getConfigConstants() should call getConfigConstants() in gameService', () => {
-        gameService.getConfigConstants.returns(gameConfigConstTest);
+    it('getConfigConstants() should call getConfigConstants() in gameService', async () => {
+        gameService.getGameConstants.resolves(gameConfigConstTest);
         const res = {} as unknown as Response;
         res.status = (code) => {
             expect(code).toEqual(HttpStatus.OK);
@@ -125,12 +126,12 @@ describe('GameController', () => {
             return res;
         };
         res.send = () => res;
-        controller.getConfigConstants(res);
-        expect(gameService.getConfigConstants.calledOnce).toBeTruthy();
+        await controller.getGameConstants(res);
+        expect(gameService.getGameConstants.calledOnce).toBeTruthy();
     });
 
-    it('getConfigConstants() should return NOT_FOUND when service unable to fetch game ConfigConstants', () => {
-        gameService.getConfigConstants.throwsException();
+    it('getGameConstants() should return NOT_FOUND when service unable to fetch game GameConstants', async () => {
+        gameService.getGameConstants.rejects();
         const res = {} as unknown as Response;
         res.status = (code) => {
             expect(code).toEqual(HttpStatus.NOT_FOUND);
@@ -141,9 +142,8 @@ describe('GameController', () => {
             return res;
         };
         res.send = () => res;
-        controller.getConfigConstants(res);
-        expect(gameService.getConfigConstants).toThrow();
-        expect(gameService.getConfigConstants.called).toBeTruthy();
+        await controller.getGameConstants(res);
+        expect(gameService.getGameConstants.called).toBeTruthy();
     });
 
     it('addGame()should call addGame() in gameService', async () => {
@@ -207,5 +207,29 @@ describe('GameController', () => {
         await controller.deleteGameById('0', res);
         expect(gameService.deleteGameById).toThrow();
         expect(gameService.deleteGameById.called).toBeTruthy();
+    });
+
+    it('updateGameConstants() should call updateGameConstants() in gameService', async () => {
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.OK);
+            return res;
+        };
+        res.send = () => res;
+        await controller.updateGameConstants(new GameConstantsDto(), res);
+        expect(gameService.updateGameConstants.calledOnce).toBeTruthy();
+    });
+
+    it('updateGameConstants() should return NOT_FOUND when service unable to update game constants', async () => {
+        gameService.updateGameConstants.throwsException();
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.NO_CONTENT);
+            return res;
+        };
+        res.send = () => res;
+        await controller.updateGameConstants(new GameConstantsDto(), res);
+        expect(gameService.updateGameConstants).toThrow();
+        expect(gameService.updateGameConstants.called).toBeTruthy();
     });
 });

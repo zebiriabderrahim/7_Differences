@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ONE_SECOND, TEN_SECONDS } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { filter, interval, skip, Subscription, take, takeWhile } from 'rxjs';
+import { filter, interval, Subscription, takeWhile } from 'rxjs';
 
 @Component({
     selector: 'app-joined-player-dialog',
@@ -15,8 +15,9 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
     refusedMessage: string;
     private playerNamesSubscription: Subscription;
     private countdownSubscription: Subscription;
-    private roomIdSubscription: Subscription;
     private acceptedPlayerSubscription: Subscription;
+    private deletedGameIdSubscription: Subscription;
+    private roomAvailabilitySubscription: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
@@ -28,63 +29,56 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        this.getJoinedPlayerNamesByGameId();
-    }
-
-    getJoinedPlayerNamesByGameId() {
-        this.playerNamesSubscription = this.roomManagerService.joinedPlayerNamesByGameId$
-            .pipe(
-                skip(1),
-                filter((data) => data.gameId === this.data.gameId && !!data.playerNamesList),
-            )
-            .subscribe((data) => {
-                this.handleRefusedPlayer(data.playerNamesList);
-                this.handleAcceptedPlayer();
-            });
+        this.handleRefusedPlayer();
+        this.handleAcceptedPlayer();
+        this.handleGameCardDelete();
     }
 
     cancelJoining() {
-        this.roomManagerService.cancelJoining(this.data.gameId, this.data.player);
+        this.roomManagerService.cancelJoining(this.data.gameId);
     }
 
-    handleRefusedPlayer(playerNames: string[]) {
-        if (!playerNames.includes(this.data.player)) {
-            this.countdown = TEN_SECONDS;
-            const countdown$ = interval(ONE_SECOND).pipe(takeWhile(() => this.countdown > 0));
-            const countdownObserver = {
-                next: () => {
-                    this.countdown--;
-                    this.refusedMessage = `You have been refused. You will be redirected in ${this.countdown} seconds`;
-                },
-                complete: () => {
-                    this.dialogRef.close();
-                },
-            };
-            this.countdownSubscription = countdown$.subscribe(countdownObserver);
-        }
+    handleRefusedPlayer() {
+        this.roomManagerService.refusedPlayerId$.pipe(filter((playerId) => playerId === this.roomManagerService.getSocketId())).subscribe(() => {
+            this.countDownBeforeClosing('Vous avez été refusé');
+        });
     }
 
     handleAcceptedPlayer() {
-        this.acceptedPlayerSubscription = this.roomManagerService.acceptedPlayerByRoom$
-            .pipe(
-                filter((acceptedPlayer) => acceptedPlayer?.playerName === this.data.player && acceptedPlayer?.gameId === this.data.gameId),
-                take(1),
-            )
-            .subscribe((acceptedPlayer) => {
+        this.acceptedPlayerSubscription = this.roomManagerService.roomId$.subscribe((roomId) => {
+            if (roomId) {
                 this.dialogRef.close();
-                this.navigateToGame(acceptedPlayer.roomId);
-            });
+                this.router.navigate(['/game']);
+            }
+        });
     }
-    navigateToGame(roomId: string) {
-        this.dialogRef.afterClosed().subscribe(() => {
-            this.router.navigate(['/game', roomId]);
+
+    countDownBeforeClosing(message: string) {
+        this.countdown = TEN_SECONDS;
+        const countdown$ = interval(ONE_SECOND).pipe(takeWhile(() => this.countdown > 0));
+        const countdownObserver = {
+            next: () => {
+                this.countdown--;
+                this.refusedMessage = `${message}. Vous serez redirigé dans ${this.countdown} secondes`;
+            },
+            complete: () => {
+                this.dialogRef.close();
+            },
+        };
+        this.countdownSubscription = countdown$.subscribe(countdownObserver);
+    }
+
+    handleGameCardDelete() {
+        this.deletedGameIdSubscription = this.roomManagerService.deletedGameId$.subscribe(() => {
+            this.countDownBeforeClosing('La fiche de jeu a été supprimée');
         });
     }
 
     ngOnDestroy(): void {
         this.playerNamesSubscription?.unsubscribe();
         this.countdownSubscription?.unsubscribe();
-        this.roomIdSubscription?.unsubscribe();
         this.acceptedPlayerSubscription?.unsubscribe();
+        this.deletedGameIdSubscription?.unsubscribe();
+        this.roomAvailabilitySubscription?.unsubscribe();
     }
 }

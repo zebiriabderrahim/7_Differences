@@ -2,7 +2,7 @@
     <div class="header">
         <h1 *ngIf="router.url === '/selection'">Selectionne ton jeu</h1>
         <h1 *ngIf="router.url === '/config'">Configure ton jeu</h1>
-        <app-nav-bar></app-nav-bar>
+        <app-nav-bar id ="nav-bar"></app-nav-bar>
     </div>
     <mat-grid-list class="gameCarrousel" cols="4">
        <ng-container  *ngIf="gameCarrousel.gameCards">
@@ -15,19 +15,18 @@
         <button mat-raised-button *ngIf="gameCarrousel.hasPrevious" mat-raised-button class="previous_button" (click)="previousCarrousel()"><< Précedent</button>
         <button mat-raised-button *ngIf="gameCarrousel.hasNext" mat-raised-button class="next_button" (click)="nextCarrousel()">Suivant >></button>
     </div>
+    <img id = "selection" src = "./assets/SelectionBackground.jpg"/>
 </div>
 <div *ngIf="router.url === '/selection'" class="footerPreview">
-    <div class="section blabla">
-        <h2 class="sectionOne button" >Créer ton propre Jeux dès maintenant</h2>
-        <p>Tu peux créer ton propre jeux des 7 différences pour y jouer en solo ou en duo</p>
-        <p> Ne perd pas de temps est créer ton premier jeu</p>
-        <div class="buttonCreate"><a [routerLink]="configRoute"> Créer mon Jeu</a></div>
+    <div class="section">
+        <h2 class="sectionOne button" >Créer ton propre jeu</h2>
+        <p>Tu peux créer ton propre jeu des sept différences pour y jouer en solo ou en duo</p>
+        <p> Ne perds pas de temps et fais ton premier jeu !</p>
+        <div class="buttonCreate"><a [routerLink]="configRoute"> Créer mon jeu</a></div>
     </div>
     <div class="section logo">
-        <img class="project-logo justified" src="./assets/RatCoon.png" alt="Logo Projet " [routerLink]="homeRoute" />
-        <p>Design by RatCoon Teams</p>
+        <img class="project-logo justified" src="./assets/raton.png" alt="Logo Projet " [routerLink]="homeRoute" />
     </div>
 </div>
 <div *ngIf="router.url === '/selection'" class="footer">
-    &copy;<span id="year"> </span><span> RAT-COON Games. All rights reserved.</span>
 </div>
