@@ -74,33 +74,16 @@ body {
     font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
-// .background-image .mat-dialog-container{
-//     background-image: url('/../assets/gameSheet.png');
-//     background-size: cover;
-//     background-position: center;
-//     height: 80%;
-//     width: 80%;
-//     position: fixed;
-//     top: 0;
-//     left: 0;
-//     z-index: 9999;
-// }
-
-// .background-image .mat-dialog-container{
-//     background-image: url('/../assets/gameSheet.png');
-//     background-size: cover;
-//     background-position: center;
-//     height: 100%;
-//     width: 100%;
-//     top: 0;
-//     left: 0;
-//     display: flex;
-//     justify-content: center;
-//     align-items: center;
-// }
-
-// .background-image .mat-dialog-container {
-//     max-height: 90%;
-//     max-width: 90%;
-// }
+.background-image .mat-dialog-container{
+    background-image: url('/../assets/gameSheet.png');
+    background-size: cover;
+    background-position: center;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
