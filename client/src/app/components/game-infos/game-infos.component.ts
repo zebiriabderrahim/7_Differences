@@ -18,6 +18,6 @@ export class GameInfosComponent {
     }
 
     requestHint() {
-        this.hintService.requestHint();
+        this.hintService.requestHint(this.game.id);
     }
 }

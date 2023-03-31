@@ -10,15 +10,21 @@ import { Coordinate } from '@common/coordinate';
 })
 export class HintService {
     nAvailableHints: number;
+    private gameId: string;
     constructor(private readonly classicSystem: ClassicSystemService, private readonly gameAreaService: GameAreaService) {
         this.nAvailableHints = DEFAULT_N_HINTS;
+        this.gameId = '';
     }
 
     get differences(): Coordinate[][] {
         return this.classicSystem.differences;
     }
 
-    requestHint() {
+    requestHint(gameId: string): void {
+        if (this.gameId !== gameId) {
+            this.nAvailableHints = DEFAULT_N_HINTS;
+            this.gameId = gameId;
+        }
         if (this.nAvailableHints > 0 && this.differences.length > 0) {
             let hintSquare: Coordinate[] = [];
             const differenceIndex: number = this.differences.length > 1 ? this.generateRandomNumber(0, this.differences.length - 1) : 0;

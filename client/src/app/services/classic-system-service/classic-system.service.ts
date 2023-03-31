@@ -19,7 +19,7 @@ export class ClassicSystemService {
     private isLeftCanvas: boolean;
     private endMessage: Subject<string>;
     private players: Subject<Players>;
-    private cheatDifferences: Subject<Coordinate[]>;
+    // private cheatDifferences: Subject<Coordinate[]>;
     private isFirstDifferencesFound: Subject<boolean>;
 
     constructor(
@@ -62,6 +62,10 @@ export class ClassicSystemService {
         return this.players.asObservable();
     }
 
+    get isFirstDifferencesFound$() {
+        return this.isFirstDifferencesFound.asObservable();
+    }
+
     getSocketId(): string {
         return this.clientSocket.socket.id;
     }
@@ -94,7 +98,7 @@ export class ClassicSystemService {
         }
     }
 
-    handleRemoveDiff(data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[] }): void {
+    handleRemoveDiff(data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }): void {
         if (data.playerId === this.getSocketId()) {
             this.replaceDifference(data.differencesData.currentDifference);
             this.differencesFound.next(data.differencesData.differencesFound);
@@ -103,7 +107,8 @@ export class ClassicSystemService {
             this.replaceDifference(data.differencesData.currentDifference);
             this.opponentDifferencesFound.next(data.differencesData.differencesFound);
         }
-        this.cheatDifferences.next(data.cheatDifferences);
+        this.differences = data.cheatDifferences;
+        // this.cheatDifferences.next(data.cheatDifferences);
     }
 
     abandonGame(): void {
@@ -128,15 +133,16 @@ export class ClassicSystemService {
     }
 
     manageSocket(): void {
-        this.clientSocket.on(GameEvents.GameStarted, (data: { clientGame: ClientSideGame; players: Players; cheatDifferences: Coordinate[] }) => {
+        this.clientSocket.on(GameEvents.GameStarted, (data: { clientGame: ClientSideGame; players: Players; cheatDifferences: Coordinate[][] }) => {
             this.currentGame.next(data.clientGame);
             this.players.next(data.players);
-            this.cheatDifferences.next(data.cheatDifferences);
+            this.differences = data.cheatDifferences;
+            // this.cheatDifferences.next(data.cheatDifferences);
             if (data.players) {
                 this.players.next(data.players);
             }
         });
-        this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[] }) => {
+        this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
             this.handleRemoveDiff(data);
         });
 
