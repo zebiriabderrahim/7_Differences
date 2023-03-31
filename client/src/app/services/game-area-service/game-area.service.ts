@@ -74,7 +74,7 @@ export class GameAreaService {
         });
     }
 
-    replaceDifference(differenceCoord: Coordinate[]): void {
+    replaceDifference(differenceCoord: Coordinate[], replaySpeed?: number, isPaused: boolean = false): void {
         const imageDataIndex = this.convert2DCoordToPixelIndex(differenceCoord);
         for (const index of imageDataIndex) {
             for (let i = 0; i < N_PIXEL_ATTRIBUTE; i++) {
@@ -83,12 +83,12 @@ export class GameAreaService {
         }
         this.modifiedContext.putImageData(this.modifiedPixelData, 0, 0);
         this.resetCheatMode();
-        this.flashCorrectPixels(differenceCoord);
+        this.flashCorrectPixels(differenceCoord, replaySpeed, isPaused);
     }
 
-    flashCorrectPixels(differenceCoord: Coordinate[]): void {
+    flashCorrectPixels(differenceCoord: Coordinate[], replaySpeed?: number, isPaused: boolean = false): void {
         const imageDataIndexes = this.convert2DCoordToPixelIndex(differenceCoord);
-        this.flashPixels(imageDataIndexes);
+        this.flashPixels(imageDataIndexes, replaySpeed, isPaused);
         this.replayEventsSubject.next({
             action: ReplayActions.ClickFound,
             timestamp: Date.now(),
@@ -96,12 +96,13 @@ export class GameAreaService {
         });
     }
 
-    flashPixels(imageDataIndexes: number[]): void {
+    flashPixels(imageDataIndexes: number[], replaySpeed?: number, isPaused: boolean = false): void {
+        const speed = replaySpeed ? replaySpeed : 1;
         const firstInterval = setInterval(() => {
             const secondInterval = setInterval(() => {
                 this.setPixelData(imageDataIndexes, this.modifiedFrontPixelData, this.originalFrontPixelData);
                 this.putImageDataToContexts();
-            }, GREEN_FLASH_TIME);
+            }, GREEN_FLASH_TIME / speed);
 
             const color = [YELLOW_PIXEL.red, YELLOW_PIXEL.green, YELLOW_PIXEL.blue, YELLOW_PIXEL.alpha];
             for (const index of imageDataIndexes) {
@@ -112,17 +113,17 @@ export class GameAreaService {
 
             setTimeout(() => {
                 clearInterval(secondInterval);
-                this.clearFlashing();
-            }, FLASH_WAIT_TIME);
-        }, YELLOW_FLASH_TIME);
+                this.clearFlashing(isPaused);
+            }, FLASH_WAIT_TIME / speed);
+        }, YELLOW_FLASH_TIME / speed);
 
         setTimeout(() => {
             clearInterval(firstInterval);
-            this.clearFlashing();
-        }, FLASH_WAIT_TIME);
+            this.clearFlashing(isPaused);
+        }, FLASH_WAIT_TIME / speed);
     }
 
-    toggleCheatMode(startDifferences: Coordinate[], replaySpeed?: number, isPaused: boolean = false): void {
+    toggleCheatMode(startDifferences: Coordinate[], replaySpeed?: number): void {
         const speed = replaySpeed ? replaySpeed : 1;
         const imageDataIndexes: number[] = this.convert2DCoordToPixelIndex(startDifferences);
         if (!this.isCheatMode) {
@@ -150,7 +151,7 @@ export class GameAreaService {
                 data: startDifferences,
             });
             clearInterval(this.cheatModeInterval);
-            this.clearFlashing(isPaused);
+            this.clearFlashing();
         }
         this.isCheatMode = !this.isCheatMode;
     }
