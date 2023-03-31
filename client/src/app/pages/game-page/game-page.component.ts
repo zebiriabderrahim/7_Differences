@@ -1,35 +1,35 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute } from '@angular/router';
-import { SoloGameViewDialogComponent } from '@app/components/solo-game-view-dialog/solo-game-view-dialog.component';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
+import { GamePageDialogComponent } from '@app/components/game-page-dialog/game-page-dialog.component';
+import { DEFAULT_PLAYERS, INPUT_TAG_NAME } from '@app/constants/constants';
+import { CANVAS_MEASUREMENTS } from '@app/constants/image';
+import { CanvasMeasurements } from '@app/interfaces/game-interfaces';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { ImageService } from '@app/services/image-service/image.service';
-import { ChatMessage, ClientSideGame, MessageTag, Player } from '@common/game-interfaces';
+import { Coordinate } from '@common/coordinate';
+import { ChatMessage, ClientSideGame, MessageTag, Players } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-solo-game-view',
-    templateUrl: './solo-game-view.component.html',
-    styleUrls: ['./solo-game-view.component.scss'],
+    selector: 'app-game-page',
+    templateUrl: './game-page.component.html',
+    styleUrls: ['./game-page.component.scss'],
 })
-export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
+export class GamePageComponent implements AfterViewInit, OnDestroy {
     @ViewChild('originalCanvas', { static: false }) originalCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('modifiedCanvas', { static: false }) modifiedCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('originalCanvasFG', { static: false }) originalCanvasForeground!: ElementRef<HTMLCanvasElement>;
     @ViewChild('modifiedCanvasFG', { static: false }) modifiedCanvasForeground!: ElementRef<HTMLCanvasElement>;
     game: ClientSideGame;
-    differencesFound: number = 0;
-    opponentDifferencesFound: number = 0;
-    timer: number = 0;
-    messages: ChatMessage[] = [];
-    player: string = '';
-    players: { player1: Player; player2: Player } = {
-        player1: { name: '', diffData: { currentDifference: [], differencesFound: 0 } },
-        player2: { name: '', diffData: { currentDifference: [], differencesFound: 0 } },
-    };
-    readonly canvasSize = { width: IMG_WIDTH, height: IMG_HEIGHT };
+    differencesFound: number;
+    opponentDifferencesFound: number;
+    timer: number;
+    messages: ChatMessage[];
+    player: string;
+    players: Players;
+    readonly canvasSize: CanvasMeasurements;
+    private cheatDifferences: Coordinate[];
     private timerSub: Subscription;
     private gameSub: Subscription;
     private differenceSub: Subscription;
@@ -37,31 +37,41 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     private messageSub: Subscription;
     private endGameSub: Subscription;
     private opponentDifferenceSub: Subscription;
+    private cheatDifferencesSub: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
     constructor(
-        private gameAreaService: GameAreaService,
-        private classicService: ClassicSystemService,
-        private imageService: ImageService,
+        private readonly gameAreaService: GameAreaService,
+        private readonly classicService: ClassicSystemService,
+        private readonly imageService: ImageService,
         private readonly matDialog: MatDialog,
-        private route: ActivatedRoute,
     ) {
         this.classicService.manageSocket();
+        this.differencesFound = 0;
+        this.opponentDifferencesFound = 0;
+        this.timer = 0;
+        this.messages = [];
+        this.player = '';
+        this.players = DEFAULT_PLAYERS;
+        this.canvasSize = CANVAS_MEASUREMENTS;
+    }
+
+    @HostListener('window:keydown', ['$event'])
+    keyboardEvent(event: KeyboardEvent) {
+        const eventHTMLElement = event.target as HTMLElement;
+        if (event.key === 't' && eventHTMLElement.tagName !== INPUT_TAG_NAME) {
+            this.gameAreaService.toggleCheatMode(this.cheatDifferences);
+        }
     }
 
     ngAfterViewInit(): void {
-        this.routeParamSub = this.route.params.subscribe((params) => {
-            if (params['roomId']) {
-                this.classicService.startGameByRoomId(params['roomId']);
-            }
-        });
+        this.classicService.startGame();
         this.classicService.players$.subscribe((players) => {
             this.players = players;
-            if (players && players.player1.playerId === this.classicService.getSocketId()) {
+            if (players.player1.playerId === this.classicService.getSocketId()) {
                 this.player = players.player1.name;
-            }
-            if (players && players.player2?.playerId === this.classicService.getSocketId()) {
+            } else if (players.player2 && players.player2.playerId === this.classicService.getSocketId()) {
                 this.player = players.player2.name;
             }
         });
@@ -111,31 +121,26 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
         this.opponentDifferenceSub = this.classicService.opponentDifferencesFound$.subscribe((opponentDifferencesFound) => {
             this.opponentDifferencesFound = opponentDifferencesFound;
         });
+        this.cheatDifferencesSub = this.classicService.cheatDifferences$.subscribe((cheatDifferences) => {
+            this.cheatDifferences = cheatDifferences;
+        });
     }
 
     showAbandonDialog(): void {
-        this.matDialog.open(SoloGameViewDialogComponent, {
+        this.matDialog.open(GamePageDialogComponent, {
             data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ?' },
             disableClose: true,
         });
     }
 
     showEndGameDialog(endingMessage: string): void {
-        this.matDialog.open(SoloGameViewDialogComponent, { data: { action: 'endGame', message: endingMessage }, disableClose: true });
+        this.matDialog.open(GamePageDialogComponent, { data: { action: 'endGame', message: endingMessage }, disableClose: true });
     }
 
-    mouseClickOnOriginal(event: MouseEvent) {
+    mouseClickOnCanvas(event: MouseEvent, isLeft: boolean) {
         if (this.gameAreaService.detectLeftClick(event)) {
             this.gameAreaService.setAllData();
-            this.classicService.setIsLeftCanvas(true);
-            this.classicService.requestVerification(this.gameAreaService.getMousePosition());
-        }
-    }
-
-    mouseClickOnModified(event: MouseEvent) {
-        if (this.gameAreaService.detectLeftClick(event)) {
-            this.gameAreaService.setAllData();
-            this.classicService.setIsLeftCanvas(false);
+            this.classicService.setIsLeftCanvas(isLeft);
             this.classicService.requestVerification(this.gameAreaService.getMousePosition());
         }
     }
@@ -146,13 +151,15 @@ export class SoloGameViewComponent implements AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.gameAreaService.resetCheatMode();
         this.gameSub?.unsubscribe();
         this.timerSub?.unsubscribe();
         this.differenceSub?.unsubscribe();
         this.routeParamSub?.unsubscribe();
-        this.messageSub.unsubscribe();
-        this.endGameSub.unsubscribe();
+        this.messageSub?.unsubscribe();
+        this.endGameSub?.unsubscribe();
         this.opponentDifferenceSub?.unsubscribe();
+        this.cheatDifferencesSub?.unsubscribe();
         this.classicService.disconnect();
     }
 }

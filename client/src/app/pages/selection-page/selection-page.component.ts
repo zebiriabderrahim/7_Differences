@@ -1,24 +1,44 @@
-import { AfterViewInit, Component } from '@angular/core';
+// Id comes from database to allow _id
+/* eslint-disable no-underscore-dangle */
+import { AfterViewInit, Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
+import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { CarouselPaginator } from '@common/game-interfaces';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-selection-page',
     templateUrl: './selection-page.component.html',
     styleUrls: ['./selection-page.component.scss'],
 })
-export class SelectionPageComponent implements AfterViewInit {
+export class SelectionPageComponent implements AfterViewInit, OnDestroy {
     gameCarrousel: CarouselPaginator;
-    readonly homeRoute: string = '/home';
-    readonly selectionRoute: string = '/selection';
-    readonly configRoute: string = '/config';
-    private index: number = 0;
-    constructor(private readonly communicationService: CommunicationService, public router: Router) {
+    readonly homeRoute: string;
+    readonly selectionRoute: string;
+    readonly configRoute: string;
+    private index: number;
+    private reloadSubscription: Subscription;
+    constructor(
+        private readonly communicationService: CommunicationService,
+        public router: Router,
+        private readonly roomManagerService: RoomManagerService,
+    ) {
         this.gameCarrousel = { hasNext: false, hasPrevious: false, gameCards: [] };
+        this.homeRoute = '/home';
+        this.selectionRoute = '/selection';
+        this.configRoute = '/config';
+        this.index = 0;
+        this.roomManagerService.connect();
+        this.roomManagerService.handleRoomEvents();
     }
 
     ngAfterViewInit(): void {
+        this.loadGameCarrousel();
+        this.handleGameCardsUpdate();
+    }
+
+    loadGameCarrousel() {
         this.communicationService.loadGameCarrousel(this.index).subscribe((gameCarrousel) => {
             if (gameCarrousel) {
                 this.gameCarrousel = gameCarrousel;
@@ -28,21 +48,28 @@ export class SelectionPageComponent implements AfterViewInit {
 
     nextCarrousel() {
         if (this.gameCarrousel.hasNext) {
-            this.communicationService.loadGameCarrousel(++this.index).subscribe((gameCarrousel) => {
-                if (gameCarrousel) {
-                    this.gameCarrousel = gameCarrousel;
-                }
-            });
+            ++this.index;
+            this.loadGameCarrousel();
         }
     }
 
     previousCarrousel() {
         if (this.gameCarrousel.hasPrevious) {
-            this.communicationService.loadGameCarrousel(--this.index).subscribe((gameCarrousel) => {
-                if (gameCarrousel) {
-                    this.gameCarrousel = gameCarrousel;
-                }
-            });
+            --this.index;
+            this.loadGameCarrousel();
         }
+    }
+
+    handleGameCardsUpdate() {
+        this.reloadSubscription = this.roomManagerService.isReloadNeeded$.subscribe((isGameCardsNeedToBeReloaded) => {
+            if (isGameCardsNeedToBeReloaded) {
+                this.index = 0;
+                this.loadGameCarrousel();
+            }
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.reloadSubscription?.unsubscribe();
     }
 }

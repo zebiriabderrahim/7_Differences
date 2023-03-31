@@ -107,7 +107,7 @@ export class DrawService {
     }
 
     setSquareMode(squareMode: boolean) {
-        if (this.isMouseBeingDragged && this.isCurrentActionRectangle()) {
+        if (this.isMouseBeingDragged && this.isCurrentActionRectangle() && !this.isMouseOutOfCanvas) {
             this.drawRectangle();
             this.isSquareModeOn = squareMode;
         }

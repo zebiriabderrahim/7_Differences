@@ -2,7 +2,6 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { Game, GameDetails } from '@app/interfaces/game-interfaces';
 import { CarouselPaginator, GameConfigConst } from '@common/game-interfaces';
-
 import { CommunicationService } from './communication.service';
 
 describe('CommunicationService', () => {

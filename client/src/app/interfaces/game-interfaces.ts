@@ -22,3 +22,8 @@ export interface Game {
     thumbnail: string;
     hintList: string[];
 }
+
+export interface CanvasMeasurements {
+    width: number;
+    height: number;
+}
