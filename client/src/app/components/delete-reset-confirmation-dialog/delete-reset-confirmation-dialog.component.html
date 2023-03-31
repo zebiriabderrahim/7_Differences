@@ -15,17 +15,17 @@
     <button mat-raised-button mat-dialog-close>Non</button>
 </div>
 <div *ngIf="data.actions === actions.ResetAllTopTimes">
-    <h1 mat-dialog-title>Réinitialiser tous les tops temps</h1>
+    <h1 mat-dialog-title>Réinitialiser tous les meilleurs temps</h1>
     <div mat-dialog-content>
-        <p>Êtes-vous sûr de vouloir réinitialiser tous les tops temps ?</p>
+        <p>Êtes-vous sûr de vouloir réinitialiser tous les meilleurs temps ?</p>
     </div>
     <button mat-raised-button mat-dialog-close (click)="resetAllTopTimes()">Oui</button>
     <button mat-raised-button mat-dialog-close>Non</button>
 </div>
 <div *ngIf="data.actions === actions.ResetTopTime">
-    <h1 mat-dialog-title>Réinitialiser le top temps</h1>
+    <h1 mat-dialog-title>Réinitialiser le meilleur temps</h1>
     <div mat-dialog-content>
-        <p>Êtes-vous sûr de vouloir réinitialiser le top temps ?</p>
+        <p>Êtes-vous sûr de vouloir réinitialiser le meilleur temps ?</p>
     </div>
     <button mat-raised-button mat-dialog-close (click)="resetTopTime()">Oui</button>
     <button mat-raised-button mat-dialog-close>Non</button>
