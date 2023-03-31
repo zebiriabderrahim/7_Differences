@@ -112,6 +112,24 @@
   display: inline-block;
   color: rgb(224, 19, 19);
   font-weight: bold;
+  overflow-wrap: break-word;
+}
+
+#chat-box .content .messages ul li.global p {
+  display: inline-block;
+  color: rgb(8, 109, 11);
+  font-weight: bold;
+  overflow-wrap: break-word;
+}
+
+#chat-box .content .messages ul li.global {
+  display: inline-block;
+  clear: both;
+  float: left;
+  text-align: center; 
+  margin: 15px 15px 15px 15px;
+  width: calc(100% - 25px);
+  font-size: 0.9em;
 }
 
 #chat-box .content .messages::-webkit-scrollbar {

@@ -23,7 +23,7 @@ describe('SelectionPageComponent', () => {
     beforeEach(async () => {
         deletedGameIdMock = new BehaviorSubject<string>('idMock');
         // mockGameCard = { _id: '123', name: 'mockName', difficultyLevel: true, soloTopTime: [], oneVsOneTopTime: [], thumbnail: '' };
-        roomManagerService = jasmine.createSpyObj('RoomManagerService', ['handleRoomEvents', 'connect', 'disconnect'], {
+        roomManagerService = jasmine.createSpyObj('RoomManagerService', ['handleRoomEvents', 'connect', 'disconnect', 'removeAllListeners'], {
             deletedGameId$: deletedGameIdMock,
             isReloadNeeded$: of(false),
         });
@@ -41,10 +41,18 @@ describe('SelectionPageComponent', () => {
                 },
                 { provide: RoomManagerService, useValue: roomManagerService },
             ],
+            teardown: { destroyAfterEach: false },
         }).compileComponents();
 
         fixture = TestBed.createComponent(SelectionPageComponent);
         component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    afterEach(() => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        spyOn(component, 'ngOnDestroy').and.callFake(() => {});
+        fixture.destroy();
         fixture.detectChanges();
     });
 
