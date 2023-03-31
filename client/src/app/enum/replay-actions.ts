@@ -9,5 +9,5 @@ export enum ReplayActions {
     TimerUpdate = 'TimerUpdate',
     DifferenceFoundUpdate = 'DifferenceFoundUpdate',
     OpponentDifferencesFoundUpdate = 'OpponentDifferencesFoundUpdate',
-    EndGame = 'EnGame',
+    EndGame = 'EndGame',
 }
