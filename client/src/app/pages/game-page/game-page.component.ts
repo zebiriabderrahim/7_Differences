@@ -34,7 +34,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     private timerSub: Subscription;
     private gameSub: Subscription;
     private differenceSub: Subscription;
-    private routeParamSub: Subscription;
+    // private routeParamSub: Subscription;
     private messageSub: Subscription;
     private endGameSub: Subscription;
     private opponentDifferenceSub: Subscription;
@@ -163,7 +163,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.gameSub?.unsubscribe();
         this.timerSub?.unsubscribe();
         this.differenceSub?.unsubscribe();
-        this.routeParamSub?.unsubscribe();
+        // this.routeParamSub?.unsubscribe();
         this.messageSub?.unsubscribe();
         this.endGameSub?.unsubscribe();
         this.opponentDifferenceSub?.unsubscribe();

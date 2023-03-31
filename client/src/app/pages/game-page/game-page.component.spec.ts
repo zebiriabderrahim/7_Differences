@@ -52,7 +52,7 @@ describe('GamePageComponent', () => {
     beforeEach(async () => {
         classicServiceSpy = jasmine.createSpyObj(
             'ClassicService',
-            ['sendMessage', 'requestVerification', 'manageSocket', 'disconnect', 'setIsLeftCanvas', 'getSocketId', 'startGame'],
+            ['sendMessage', 'requestVerification', 'manageSocket', 'disconnect', 'setIsLeftCanvas', 'getSocketId', 'startGame', 'removeALlListeners'],
             {
                 currentGame$: clientSideGameSubjectTest,
                 timer$: timerSubjectTest,
@@ -83,6 +83,13 @@ describe('GamePageComponent', () => {
         component = fixture.componentInstance;
         gameAreaService = TestBed.inject(GameAreaService);
         classicService = TestBed.inject(ClassicSystemService);
+        fixture.detectChanges();
+    });
+
+    afterEach(() => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        spyOn(component, 'ngOnDestroy').and.callFake(() => {});
+        fixture.destroy();
         fixture.detectChanges();
     });
 
@@ -248,7 +255,7 @@ describe('GamePageComponent', () => {
         component['gameSub'] = undefined as unknown as Subscription;
         component['timerSub'] = undefined as unknown as Subscription;
         component['differenceSub'] = undefined as unknown as Subscription;
-        component['routeParamSub'] = undefined as unknown as Subscription;
+        // component['routeParamSub'] = undefined as unknown as Subscription;
         component['opponentDifferenceSub'] = undefined as unknown as Subscription;
         component['messageSub'] = undefined as unknown as Subscription;
         component['endGameSub'] = undefined as unknown as Subscription;
