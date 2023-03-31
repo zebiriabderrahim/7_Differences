@@ -26,6 +26,10 @@
     font-family: 'Troika', sans-serif;
 }
 
+.button-container:hover img {
+    filter: drop-shadow(10px 10px 10px black);
+}
+
 .menu_button {
     font-size: 20px;
     width: 600px;
