@@ -48,11 +48,12 @@ describe('GamePageComponent', () => {
     const opponentDifferencesFoundSubjectTest = new Subject<number>();
     const cheatDifferencesSubjectTest = new Subject<Coordinate[]>();
     const paramsSubjectTest = new Subject<{ roomId: string }>();
+    const isFirstDifferencesFoundTest = new Subject<boolean>();
 
     beforeEach(async () => {
         classicServiceSpy = jasmine.createSpyObj(
             'ClassicService',
-            ['sendMessage', 'requestVerification', 'manageSocket', 'disconnect', 'setIsLeftCanvas', 'getSocketId', 'startGame', 'removeALlListeners'],
+            ['sendMessage', 'requestVerification', 'manageSocket', 'disconnect', 'setIsLeftCanvas', 'getSocketId', 'startGame', 'removeAllListeners'],
             {
                 currentGame$: clientSideGameSubjectTest,
                 timer$: timerSubjectTest,
@@ -62,6 +63,7 @@ describe('GamePageComponent', () => {
                 endMessage$: endMessageTest,
                 opponentDifferencesFound$: opponentDifferencesFoundSubjectTest,
                 cheatDifferences$: cheatDifferencesSubjectTest,
+                isFirstDifferencesFound$: isFirstDifferencesFoundTest,
             },
         );
         routeSpy = jasmine.createSpyObj('ActivatedRoute', ['navigate'], { params: paramsSubjectTest });
