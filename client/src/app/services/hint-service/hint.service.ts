@@ -118,7 +118,7 @@ export class HintService {
         subQuadrants[QuadrantPosition.Second] = {
             bottomCorner: { x: middleCoordinate.x, y: quadrant.bottomCorner.y },
             topCorner: { x: quadrant.topCorner.x, y: middleCoordinate.y },
-        }
+        };
         subQuadrants[QuadrantPosition.Third] = {
             bottomCorner: { x: quadrant.bottomCorner.x, y: middleCoordinate.y },
             topCorner: { x: middleCoordinate.x, y: quadrant.topCorner.y },
