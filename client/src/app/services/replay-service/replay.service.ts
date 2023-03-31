@@ -127,10 +127,10 @@ export class ReplayService {
                 this.classicSystemService.setMessage(replayData.data as ChatMessage);
                 break;
             case ReplayActions.ActivateCheat:
-                this.gameAreaService.toggleCheatMode(replayData.data as Coordinate[]);
+                this.gameAreaService.toggleCheatMode(replayData.data as Coordinate[], this.replaySpeed);
                 break;
             case ReplayActions.DeactivateCheat:
-                this.gameAreaService.toggleCheatMode(replayData.data as Coordinate[]);
+                this.gameAreaService.toggleCheatMode(replayData.data as Coordinate[], this.replaySpeed);
                 break;
             case ReplayActions.TimerUpdate:
                 this.replayTimer.next(this.replayTimer.value + 1);
