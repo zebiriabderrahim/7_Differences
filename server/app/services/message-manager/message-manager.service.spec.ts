@@ -4,8 +4,8 @@ import { MessageManagerService } from './message-manager.service';
 
 describe('MessageManagerService', () => {
     let service: MessageManagerService;
-    let formatedTimeStub: string;
-    const timeStub = new Date();
+    // let formatedTimeStub: string;
+    // const timeStub = new Date();
     const playerNameStub = 'playerName';
 
     beforeEach(async () => {
@@ -14,7 +14,7 @@ describe('MessageManagerService', () => {
         }).compile();
 
         service = module.get<MessageManagerService>(MessageManagerService);
-        formatedTimeStub = `${timeStub.getHours()} : ${timeStub.getMinutes()} : ${timeStub.getSeconds()}`;
+        // formatedTimeStub = `${timeStub.getHours()} : ${timeStub.getMinutes()} : ${timeStub.getSeconds()}`;
     });
 
     it('should be defined', () => {
