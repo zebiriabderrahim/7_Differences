@@ -20,6 +20,7 @@ export class ReplayService {
     private replaySpeed = SPEED_X1;
     private currentCoords: Coordinate[] = [];
     private isCheatMode: boolean = false;
+    private isDifferenceFound: boolean = false;
     private replayInterval: ReplayInterval;
     private replayEvents: ReplayEvent[] = [];
     private currentReplayIndex: number = 0;
@@ -114,6 +115,8 @@ export class ReplayService {
                 this.gameAreaService.setAllData();
                 break;
             case ReplayActions.ClickFound:
+                this.currentCoords = replayData.data as Coordinate[];
+                this.isDifferenceFound = true;
                 this.soundService.playCorrectSound();
                 this.gameAreaService.setAllData();
                 this.gameAreaService.replaceDifference(replayData.data as Coordinate[]);
@@ -157,6 +160,7 @@ export class ReplayService {
 
     getNextInterval(): number {
         const nextActionIndex = this.currentReplayIndex + 1;
+        this.isDifferenceFound = false;
         if (nextActionIndex < this.replayEvents.length) {
             return (this.replayEvents[nextActionIndex].timestamp - this.replayEvents[this.currentReplayIndex].timestamp) / this.replaySpeed;
         }
@@ -175,14 +179,20 @@ export class ReplayService {
 
     pauseReplay(): void {
         if (this.isCheatMode) {
-            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed, true);
+            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
+        }
+        if (this.isDifferenceFound) {
+            this.gameAreaService.flashCorrectPixels(this.currentCoords, this.replaySpeed, true);
         }
         this.replayInterval.pause();
     }
 
     resumeReplay(): void {
         if (this.isCheatMode) {
-            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed, false);
+            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
+        }
+        if (this.isDifferenceFound) {
+            this.gameAreaService.flashCorrectPixels(this.currentCoords, this.replaySpeed, false);
         }
         this.replayInterval.resume();
     }
