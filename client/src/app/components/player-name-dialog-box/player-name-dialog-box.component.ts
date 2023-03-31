@@ -37,8 +37,10 @@ export class PlayerNameDialogBoxComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.handleCreateUndoCreation(this.data.gameId);
-        this.handleGameCardDelete();
+        if (this.data) {
+            this.handleCreateUndoCreation(this.data.gameId);
+            this.handleGameCardDelete();
+        }
     }
 
     submitForm() {
@@ -64,6 +66,7 @@ export class PlayerNameDialogBoxComponent implements OnInit, OnDestroy {
     }
 
     async validatePlayerName(control: FormControl): Promise<{ [key: string]: unknown } | null> {
+        if (!this.data) return null;
         this.roomManagerService.isPlayerNameIsAlreadyTaken(this.data.gameId, control.value);
         const isNameTaken = await firstValueFrom(this.roomManagerService.isNameTaken$, {
             defaultValue: { gameId: this.data.gameId, isNameAvailable: true },

@@ -9,7 +9,8 @@ import { GameAreaService } from '@app/services/game-area-service/game-area.servi
 import { ImageService } from '@app/services/image-service/image.service';
 import { ReplayService } from '@app/services/replay-service/replay.service';
 import { Coordinate } from '@common/coordinate';
-import { ChatMessage, ClientSideGame, MessageTag, Players } from '@common/game-interfaces';
+import { GameModes, MessageTag } from '@common/enums';
+import { ChatMessage, ClientSideGame, Players } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -38,11 +39,12 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     private replayOpponentDifferenceFoundSub: Subscription;
     private gameSub: Subscription;
     private differenceSub: Subscription;
-    private routeParamSub: Subscription;
+    // private routeParamSub: Subscription;
     private messageSub: Subscription;
     private endGameSub: Subscription;
     private opponentDifferenceSub: Subscription;
     private cheatDifferencesSub: Subscription;
+    private isFirstDifferencesFoundSub: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
@@ -154,6 +156,12 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.cheatDifferencesSub = this.classicService.cheatDifferences$.subscribe((cheatDifferences) => {
             this.cheatDifferences = cheatDifferences;
         });
+
+        this.isFirstDifferencesFoundSub = this.classicService.isFirstDifferencesFound$.subscribe((isFirstDifferencesFound) => {
+            if ((isFirstDifferencesFound && this.game.mode === GameModes.LimitedSolo) || GameModes.LimitedCoop) {
+                this.classicService.startNextGame();
+            }
+        });
     }
 
     showAbandonDialog(): void {
@@ -181,12 +189,12 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.classicService.sendMessage(text);
     }
 
-    ngOnDestroy(): void {
+    cleanUpLogic(): void {
         this.gameAreaService.resetCheatMode();
         this.gameSub?.unsubscribe();
         this.timerSub?.unsubscribe();
         this.differenceSub?.unsubscribe();
-        this.routeParamSub?.unsubscribe();
+        // this.routeParamSub?.unsubscribe();
         this.messageSub?.unsubscribe();
         this.endGameSub?.unsubscribe();
         this.opponentDifferenceSub?.unsubscribe();
@@ -194,6 +202,11 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.replayTimerSub?.unsubscribe();
         this.replayDifferencesFoundSub?.unsubscribe();
         this.replayOpponentDifferenceFoundSub?.unsubscribe();
-        this.classicService.disconnect();
+        this.isFirstDifferencesFoundSub?.unsubscribe();
+        this.classicService.removeAllListeners();
+    }
+
+    ngOnDestroy(): void {
+        this.cleanUpLogic();
     }
 }

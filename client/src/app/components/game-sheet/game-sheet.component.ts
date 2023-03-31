@@ -7,10 +7,11 @@ import { Router } from '@angular/router';
 import { JoinedPlayerDialogComponent } from '@app/components/joined-player-dialog/joined-player-dialog.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { WaitingForPlayerToJoinComponent } from '@app/components/waiting-player-to-join/waiting-player-to-join.component';
-import { CommunicationService } from '@app/services/communication-service/communication.service';
+import { Actions } from '@app/enum/delete-reset-actions';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameCard } from '@common/game-interfaces';
 import { filter, Subscription, take } from 'rxjs';
+import { DeleteResetConfirmationDialogComponent } from '@app/components/delete-reset-confirmation-dialog/delete-reset-confirmation-dialog.component';
 
 @Component({
     selector: 'app-game-sheet',
@@ -20,6 +21,7 @@ import { filter, Subscription, take } from 'rxjs';
 export class GameSheetComponent implements OnDestroy, OnInit {
     @Input() game: GameCard;
     url: SafeResourceUrl;
+    actions: typeof Actions;
     private isAvailable: boolean;
     private roomIdSubscription: Subscription;
     private roomAvailabilitySubscription: Subscription;
@@ -30,9 +32,10 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         private readonly dialog: MatDialog,
         public router: Router,
         private readonly roomManagerService: RoomManagerService,
-        private readonly communicationService: CommunicationService,
         private sanitizer: DomSanitizer,
-    ) {}
+    ) {
+        this.actions = Actions;
+    }
     ngOnInit(): void {
         this.url = this.sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + this.game.thumbnail);
         this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
@@ -113,15 +116,11 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         return this.isAvailable;
     }
 
-    deleteGameCard() {
-        this.communicationService.deleteGameById(this.game._id).subscribe(() => {
-            this.router.navigate(['/config']);
-            this.roomManagerService.gameCardDeleted(this.game._id);
+    openConfirmationDialog(actions: Actions): void {
+        this.dialog.open(DeleteResetConfirmationDialogComponent, {
+            data: { actions, gameId: this.game._id },
+            disableClose: true,
         });
-    }
-
-    resetTopTime() {
-        this.roomManagerService.resetTopTime(this.game._id);
     }
 
     ngOnDestroy(): void {

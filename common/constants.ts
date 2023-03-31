@@ -16,3 +16,4 @@ export const KEY_SIZE = 36;
 export const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 export const MAX_TIMES_INDEX = 2;
+export const NOT_FOUND = -1;
