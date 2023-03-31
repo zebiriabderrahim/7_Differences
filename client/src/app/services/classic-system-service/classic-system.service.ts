@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { TEN_SECONDS } from '@app/constants/constants';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { ReplayEvent } from '@app/interfaces/replay-actions';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
@@ -147,13 +146,11 @@ export class ClassicSystemService {
             if (data.players) {
                 this.players.next(data.players);
             }
-            setTimeout(() => {
-                this.replayEventsSubject.next({
-                    action: ReplayActions.StartGame,
-                    timestamp: Date.now(),
-                    data: [data.clientGame.original, data.clientGame.modified],
-                });
-            }, TEN_SECONDS);
+            this.replayEventsSubject.next({
+                action: ReplayActions.StartGame,
+                timestamp: Date.now(),
+                data: [data.clientGame.original, data.clientGame.modified],
+            });
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[] }) => {
             if (data.playerId === this.getSocketId()) {
