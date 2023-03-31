@@ -73,7 +73,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
                 const differencesCoordinates = ([] as Coordinate[]).concat(...this.differences);
                 this.gameAreaService.toggleCheatMode(differencesCoordinates);
             } else if (event.key === 'i' && this.game.mode.includes(SOLO_GAME_ID)) {
-                this.hintService.requestHint();
+                this.hintService.requestHint(this.game.id);
             }
         }
     }
@@ -137,6 +137,12 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         // this.cheatDifferencesSub = this.classicService.cheatDifferences$.subscribe((cheatDifferences) => {
         //     this.cheatDifferences = cheatDifferences;
         // });
+
+        this.isFirstDifferencesFoundSub = this.classicService.isFirstDifferencesFound$.subscribe((isFirstDifferencesFound) => {
+            if ((isFirstDifferencesFound && this.game.mode === GameModes.LimitedSolo) || GameModes.LimitedCoop) {
+                this.classicService.startNextGame();
+            }
+        });
     }
 
     showAbandonDialog(): void {

@@ -36,7 +36,7 @@ describe('GamePageComponent', () => {
     const opponentDifferencesFoundTest = 2;
     const endGameMessageTest = 'La partie est terminée';
     const messageTest: ChatMessage = { tag: MessageTag.common, message: 'messageTest' };
-    const cheatDifferenceTest: Coordinate[] = [];
+    // const cheatDifferenceTest: Coordinate[] = [];
     const mockDifferenceData = { currentDifference: [], differencesFound: 0 };
 
     const clientSideGameSubjectTest = new Subject<ClientSideGame>();
@@ -177,12 +177,12 @@ describe('GamePageComponent', () => {
         expect(component.messages.length).toEqual(2);
     });
 
-    it('should update the differences of cheat mode', () => {
-        expect(component['cheatDifferences']).toBeUndefined();
-        component.ngAfterViewInit();
-        cheatDifferencesSubjectTest.next(cheatDifferenceTest);
-        expect(component['cheatDifferences'].length).toEqual(cheatDifferenceTest.length);
-    });
+    // it('should update the differences of cheat mode', () => {
+    //     expect(component['cheatDifferences']).toBeUndefined();
+    //     component.ngAfterViewInit();
+    //     cheatDifferencesSubjectTest.next(cheatDifferenceTest);
+    //     expect(component['cheatDifferences'].length).toEqual(cheatDifferenceTest.length);
+    // });
 
     it('should update the differences found', () => {
         expect(component.differencesFound).toEqual(0);

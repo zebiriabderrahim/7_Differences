@@ -100,7 +100,7 @@ export class RoomsManagerService {
         server.to(roomId).emit(GameEvents.GameStarted, {
             clientGame: room.clientGame,
             players: { player1: room.player1, player2: room.player2 },
-            cheatDifferences: room.originalDifferences.flat(),
+            cheatDifferences: room.originalDifferences,
         });
     }
 
@@ -131,7 +131,7 @@ export class RoomsManagerService {
         this.rooms.set(roomId, room);
 
         const differencesData = { currentDifference: diffData.currentDifference, differencesFound: diffData.differencesFound } as Differences;
-        const cheatDifferences = room.originalDifferences.flat();
+        const cheatDifferences = room.originalDifferences;
         server.to(room.roomId).emit(GameEvents.RemoveDiff, { differencesData, playerId: socket.id, cheatDifferences });
     }
 
