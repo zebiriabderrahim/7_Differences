@@ -103,7 +103,6 @@ export class ClassicSystemService implements OnDestroy {
             this.gameAreaService.replaceDifference(differences);
         }
     }
-
     abandonGame(): void {
         this.clientSocket.send(GameEvents.AbandonGame);
     }
@@ -141,6 +140,13 @@ export class ClassicSystemService implements OnDestroy {
             if (data.players) {
                 this.players.next(data.players);
             }
+            setTimeout(() => {
+                this.replayEventsSubject.next({
+                    action: ReplayActions.StartGame,
+                    timestamp: Date.now(),
+                    data: [data.clientGame.original, data.clientGame.modified],
+                });
+            }, 10);
         });
         this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[] }) => {
             if (data.playerId === this.getSocketId()) {
