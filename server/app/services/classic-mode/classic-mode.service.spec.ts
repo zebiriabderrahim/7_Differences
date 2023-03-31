@@ -16,12 +16,14 @@ import { createStubInstance, SinonStubbedInstance } from 'sinon';
 // import { BroadcastOperator, Server, Socket } from 'socket.io';
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
 import { ClassicModeService } from './classic-mode.service';
+import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 
 describe('ClassicModeService', () => {
     let service: ClassicModeService;
     let messageManagerService: SinonStubbedInstance<MessageManagerService>;
     let gameService: SinonStubbedInstance<GameService>;
     let playersListManagerService: SinonStubbedInstance<PlayersListManagerService>;
+    let roomsManagerService: SinonStubbedInstance<RoomsManagerService>;
     // let socket: SinonStubbedInstance<Socket>;
     // let server: SinonStubbedInstance<Server>;
 
@@ -88,6 +90,7 @@ describe('ClassicModeService', () => {
         gameService = createStubInstance(GameService);
         messageManagerService = createStubInstance(MessageManagerService);
         playersListManagerService = createStubInstance(PlayersListManagerService);
+        roomsManagerService = createStubInstance(RoomsManagerService);
         // socket = createStubInstance<Socket>(Socket);
         // server = createStubInstance<Server>(Server);
         const module: TestingModule = await Test.createTestingModule({
@@ -104,6 +107,10 @@ describe('ClassicModeService', () => {
                 {
                     provide: PlayersListManagerService,
                     useValue: playersListManagerService,
+                },
+                {
+                    provide: RoomsManagerService,
+                    useValue: roomsManagerService,
                 },
             ],
         }).compile();
