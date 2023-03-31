@@ -122,7 +122,7 @@ export class GameAreaService {
         }, FLASH_WAIT_TIME);
     }
 
-    toggleCheatMode(startDifferences: Coordinate[], replaySpeed?: number): void {
+    toggleCheatMode(startDifferences: Coordinate[], replaySpeed?: number, isPaused: boolean = false): void {
         const speed = replaySpeed ? replaySpeed : 1;
         const imageDataIndexes: number[] = this.convert2DCoordToPixelIndex(startDifferences);
         if (!this.isCheatMode) {
@@ -150,7 +150,7 @@ export class GameAreaService {
                 data: startDifferences,
             });
             clearInterval(this.cheatModeInterval);
-            this.clearFlashing();
+            this.clearFlashing(isPaused);
         }
         this.isCheatMode = !this.isCheatMode;
     }
@@ -174,12 +174,14 @@ export class GameAreaService {
         this.originalContextFrontLayer?.putImageData(this.originalFrontPixelData, 0, 0);
     }
 
-    clearFlashing(): void {
-        this.modifiedContextFrontLayer?.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.originalContextFrontLayer?.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.originalFrontPixelData = this.originalContextFrontLayer?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.modifiedFrontPixelData = this.modifiedContextFrontLayer?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.clickDisabled = false;
+    clearFlashing(isPaused: boolean = false): void {
+        if (!isPaused) {
+            this.modifiedContextFrontLayer?.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+            this.originalContextFrontLayer?.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+            this.originalFrontPixelData = this.originalContextFrontLayer?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+            this.modifiedFrontPixelData = this.modifiedContextFrontLayer?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+            this.clickDisabled = false;
+        }
     }
 
     getOgContext(): CanvasRenderingContext2D {

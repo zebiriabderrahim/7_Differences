@@ -18,6 +18,8 @@ import { BehaviorSubject } from 'rxjs';
 export class ReplayService {
     isReplaying: boolean = false;
     private replaySpeed = SPEED_X1;
+    private currentCoords: Coordinate[] = [];
+    private isCheatMode: boolean = false;
     private replayInterval: ReplayInterval;
     private replayEvents: ReplayEvent[] = [];
     private currentReplayIndex: number = 0;
@@ -127,9 +129,12 @@ export class ReplayService {
                 this.classicSystemService.setMessage(replayData.data as ChatMessage);
                 break;
             case ReplayActions.ActivateCheat:
+                this.isCheatMode = true;
+                this.currentCoords = replayData.data as Coordinate[];
                 this.gameAreaService.toggleCheatMode(replayData.data as Coordinate[], this.replaySpeed);
                 break;
             case ReplayActions.DeactivateCheat:
+                this.isCheatMode = false;
                 this.gameAreaService.toggleCheatMode(replayData.data as Coordinate[], this.replaySpeed);
                 break;
             case ReplayActions.TimerUpdate:
@@ -168,17 +173,20 @@ export class ReplayService {
     }
 
     pauseReplay(): void {
-        console.log('pauseReplay');
+        if (this.isCheatMode) {
+            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed, true);
+        }
         this.replayInterval.pause();
     }
 
     resumeReplay(): void {
-        console.log('resumeReplay');
+        if (this.isCheatMode) {
+            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed, false);
+        }
         this.replayInterval.resume();
     }
 
     cancelReplay(): void {
-        console.log('cancelReplay');
         this.replayInterval.cancel();
         this.currentReplayIndex = 0;
     }
