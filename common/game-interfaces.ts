@@ -90,7 +90,6 @@ export interface WaitingPlayerNameList {
     playerNamesList: string[];
 }
 
-
 export enum GameEvents {
     ValidateCoords = 'validateCoords',
     CheckStatus = 'checkStatus',
@@ -130,12 +129,16 @@ export enum GameEvents {
     ResetAllTopTimes = 'ResetAllTopTimes',
     GameConstantsUpdated = 'GameConstantsUpdated',
     AllGamesDeleted = 'AllGamesDeleted',
-    GameDeleted = "GameDeleted"
+    GameDeleted = "GameDeleted",
+    RoomLimitedCreated = "RoomLimitedCreated",
+    CreateSoloLimitedRoom = "CreateSoloLimitedRoom"
 }
 
 export enum GameModes {
     ClassicSolo = 'Classic->Solo',
     ClassicOneVsOne = 'Classic->OneVsOne',
+    LimitedSolo = 'Limited->Solo',
+    LimitedCoop = 'Limited->Coop',
 }
 
 export enum MessageEvents {
