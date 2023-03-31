@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { GamePageDialogComponent } from '@app/components/game-page-dialog/game-page-dialog.component';
-import { DEFAULT_PLAYERS, INPUT_TAG_NAME } from '@app/constants/constants';
+import { DEFAULT_PLAYERS, INPUT_TAG_NAME, SOLO_GAME_ID } from '@app/constants/constants';
 import { CANVAS_MEASUREMENTS } from '@app/constants/image';
 import { CanvasMeasurements } from '@app/interfaces/game-interfaces';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
@@ -70,7 +70,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
             if (event.key === 't') {
                 const differencesCoordinates = ([] as Coordinate[]).concat(...this.differences);
                 this.gameAreaService.toggleCheatMode(differencesCoordinates);
-            } else if (event.key === 'i') {
+            } else if (event.key === 'i' && this.game.mode.includes(SOLO_GAME_ID)) {
                 this.hintService.requestHint();
             }
         }
