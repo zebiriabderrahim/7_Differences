@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ConfigDialogComponent } from '@app/components/config-dialog/config-dialog.component';
 import {
     DEFAULT_BONUS_VALUE,
@@ -93,9 +93,7 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
     }
 
     openDialog() {
-        this.matDialog.open(ConfigDialogComponent, {
-            panelClass: 'background-image',
-        });
+        this.matDialog.open(ConfigDialogComponent, new MatDialogConfig());
     }
 
     ngOnDestroy() {

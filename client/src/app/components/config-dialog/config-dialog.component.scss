@@ -1,3 +1,27 @@
+// .dialog-wrapper {
+//     position: relative;
+//     margin-top: -50px; /* adjust this value to suit your needs */
+// }
+  
+.dialog-image {
+    position: absolute;
+    top: 150px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 25%;
+    height: 65%;
+}
+
+// .dialog-image {
+//     position: absolute center;
+//     top: 50%;
+//     left: 50%;
+//     transform: rotate(90deg) translate(-50%);
+//     z-index: 1;
+//     width: 45%;
+//     height: 45%;
+// }
+
 .mat-form-field {
     display: block;
     padding-top: 10px;
@@ -5,6 +29,18 @@
     margin-bottom: 25px; 
     width: 265px;
 }
+
+// .dialog-image {
+//     position: absolute;
+//     top: 350px;
+//     left: 50%;
+//     transform: rotate(90deg);
+//     // transform: translateX(-50%);
+//     z-index: 1;
+//     //opacity: 0.5;
+//     width: 45%;
+//     height: 45%;
+// }
   
 // .mat-label {
 //     font-size: 0.7rem; 
