@@ -194,8 +194,8 @@ describe('GameAreaService', () => {
         const convert2DCoordToPixelIndexSpy = spyOn<any>(gameAreaService, 'convert2DCoordToPixelIndex').and.callThrough();
         const flashPixelsSpy = spyOn(gameAreaService, 'flashPixels').and.callFake(() => {});
         gameAreaService.flashCorrectPixels(differenceCoord, undefined, false);
-        expect(convert2DCoordToPixelIndexSpy).toHaveBeenCalledWith(differenceCoord, undefined, false);
-        expect(flashPixelsSpy).toHaveBeenCalledWith(expectedIndexList);
+        expect(convert2DCoordToPixelIndexSpy).toHaveBeenCalledWith(differenceCoord);
+        expect(flashPixelsSpy).toHaveBeenCalledWith(expectedIndexList, undefined, false);
     });
 
     it('toggleCheatMode should enable cheat mode and start flashing red pixels', () => {
