@@ -68,7 +68,10 @@ describe('ReplayButtonsComponent', () => {
         expect(component.isReplayPaused).toBeFalsy();
     });
 
-    it('quit() should reset the replay when player leave', () => {});
+    it('quit() should reset the replay when player leave', () => {
+        component.quit();
+        expect(replayServiceSpy.resetReplay).toHaveBeenCalled();
+    });
 
     it('isReplaying() should return the state of the replay', () => {});
 
