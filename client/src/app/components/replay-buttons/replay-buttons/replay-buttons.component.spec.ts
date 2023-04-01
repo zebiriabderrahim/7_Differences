@@ -74,11 +74,15 @@ describe('ReplayButtonsComponent', () => {
     });
 
     it('isReplaying() should return the state of the replay', () => {
+        const isReplayingSpy = spyOn(component, 'isReplaying');
         component.isReplaying();
-        expect(replayServiceSpy.isReplaying).toHaveBeenCalled();
+        expect(isReplayingSpy).toHaveBeenCalled();
     });
 
-    it('upSpeedX1() should call speedX1', () => {});
+    it('upSpeedX1() should call speedX1', () => {
+        component.speedX1();
+        expect(replayServiceSpy.upSpeedx1).toHaveBeenCalled();
+    });
 
     it('upSpeedX2() should call speedX2', () => {});
 
