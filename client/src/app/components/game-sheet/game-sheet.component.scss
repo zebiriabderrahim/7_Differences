@@ -147,36 +147,57 @@ h3 {
     z-index: 1;
 }
 
-.playButton {
+.button-container img {
     position: absolute;
+    transition: all 0.3s ease;
+}
+
+.button-container:hover img {
+    filter: drop-shadow(10px 10px 10px black);
+}
+
+.playButton {
     width: 25%;
     height: 15%;
     left: 22%;
-    bottom: 6.5%;
+    bottom: 7%;
 }
 
 .createButton {
-    position: absolute;
     width: 25%;
     height: 15%;
     right: 22%;
-    bottom: 6.5%;
+    bottom: 7%;
 }
 
 .playText {
     position: absolute;
-    z-index: 20;
-    font-size: 15px;
+    font-size: 20px;
     color: #ffffff;
-    bottom: 11%;
+    bottom: 12%;
     left: 29%;
 }
 
 .createText {
     position: absolute;
-    z-index: 20;
-    font-size: 15px;
+    font-size: 20px;
     color: #ffffff;
-    bottom: 11%;
+    bottom: 12%;
+    left: 59%;
+}
+
+.deleteText {
+    position: absolute;
+    font-size: 16px;
+    color: #ffffff;
+    bottom: 12%;
+    left: 26%;
+}
+
+.reinitializeText {
+    position: absolute;
+    font-size: 16px;
+    color: #ffffff;
+    bottom: 12%;
     left: 55%;
 }
