@@ -34,6 +34,10 @@ describe('ReplayButtonsComponent', () => {
 
     it('pause() should pause the replay and toggle button UI', () => {
     });
+
     it('resume() should resume the replat and toggle button UI', () => {
+    });
+
+    it('quit() should reset the replay when player leave', () => {
     });
 });
