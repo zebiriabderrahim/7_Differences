@@ -155,7 +155,7 @@ describe('GameAreaService', () => {
         setTimeout(() => {
             timerCallback();
         }, ONE_SECOND);
-        gameAreaService.showError(true);
+        gameAreaService.showError(true, { x: 1, y: 1 });
         expect(timerCallback).not.toHaveBeenCalled();
         jasmine.clock().tick(ONE_SECOND + 1);
         expect(timerCallback).toHaveBeenCalled();
