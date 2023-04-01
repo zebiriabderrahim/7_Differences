@@ -98,9 +98,7 @@ describe('ReplayButtonsComponent', () => {
     });
 
     it('should call resetReplay when component is destroyed', () => {
-        const onDestorySpy = spyOn(component, 'ngOnDestroy');
         component.ngOnDestroy();
         expect(replayServiceSpy.resetReplay).toHaveBeenCalled();
-        expect(onDestorySpy).toHaveBeenCalled();
     });
 });
