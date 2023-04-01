@@ -47,10 +47,10 @@ describe('ReplayButtonsComponent', () => {
     it('upSpeedX1() should call speedX1', () => {
     });
 
-    it('upSpeedX1() should call speedX1', () => {
+    it('upSpeedX2() should call speedX2', () => {
     });
-    
 
-    it('replay() should ', () => {
+    it('upSpeedX3() should call speedX3', () => {
     });
+
 });
