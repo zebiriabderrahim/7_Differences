@@ -55,7 +55,11 @@ describe('ReplayButtonsComponent', () => {
         expect(component.isReplayButtonDisabled).toBeTruthy();
     });
 
-    it('pause() should pause the replay and toggle button UI', () => {});
+    it('pause() should pause the replay and toggle button UI', () => {
+        component.pause();
+        expect(replayServiceSpy.pauseReplay).toHaveBeenCalled();
+        expect(component.isReplayPaused).toBeTruthy();
+    });
 
     it('resume() should resume the replat and toggle button UI', () => {});
 
