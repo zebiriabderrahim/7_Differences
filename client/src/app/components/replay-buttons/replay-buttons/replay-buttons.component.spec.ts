@@ -28,4 +28,7 @@ describe('ReplayButtonsComponent', () => {
         expect(onInitSpy).toHaveBeenCalled();
         expect(component.selectedSpeed).toEqual('x1');
     });
+
+    it('replay() should start the replay and disable the button for one second', () => {
+    });
 });
