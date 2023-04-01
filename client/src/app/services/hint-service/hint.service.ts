@@ -37,6 +37,7 @@ export class HintService {
                 hintSquare = this.generateHintSquare(hintQuadrant);
             }
             this.gameAreaService.flashCorrectPixels(hintSquare);
+            this.classicSystem.requestHint();
             this.nAvailableHints--;
         }
     }

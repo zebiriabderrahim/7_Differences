@@ -9,6 +9,7 @@ export enum GameEvents {
     WaitingPlayerNameListUpdated = 'WaitingPlayerNameListUpdated',
     StartGameByRoomId = 'CreateOneVsOneGame',
     StartNextGame = 'StartNextGame',
+    RequestHint = 'RequestHint',
 }
 
 export enum PlayerEvents {

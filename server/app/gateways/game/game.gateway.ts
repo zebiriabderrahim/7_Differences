@@ -178,6 +178,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         this.server.emit(GameCardEvents.RequestReload);
     }
 
+    @SubscribeMessage(GameEvents.RequestHint)
+    requestHint(@ConnectedSocket() socket: Socket) {
+        this.roomsManagerService.addHintPenalty(socket, this.server);
+    }
+
     afterInit() {
         setInterval(() => {
             this.roomsManagerService.updateTimers(this.server);
