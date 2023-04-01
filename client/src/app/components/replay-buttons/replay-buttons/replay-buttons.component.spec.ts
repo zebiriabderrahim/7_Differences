@@ -31,4 +31,7 @@ describe('ReplayButtonsComponent', () => {
 
     it('replay() should start the replay and disable the button for one second', () => {
     });
+
+    it('pause() should pause de the replay and toggle button UI', () => {
+    });
 });
