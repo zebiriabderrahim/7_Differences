@@ -106,6 +106,18 @@ describe('ReplayService', () => {
     });
 
     it('should handle StartGame action', () => {
-       
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.StartGame,
+            data: ['image1', 'image2'],
+            timestamp: 0,
+        };
+
+        service.replaySwitcher(replayEvent);
+
+        expect(imageServiceSpy.loadImage.calls.allArgs()).toEqual([
+            [service['gameAreaService'].getOgContext(), 'image1'],
+            [service['gameAreaService'].getMdContext(), 'image2'],
+        ]);
+        expect(gameAreaServiceSpy.setAllData).toHaveBeenCalled();
     });
 });
