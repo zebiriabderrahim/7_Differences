@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -16,7 +17,15 @@ describe('LimitedTimePageComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [LimitedTimePageComponent, PlayerNameDialogBoxComponent, NavBarComponent],
-            imports: [RouterTestingModule, MatDialogModule, BrowserAnimationsModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
+            imports: [
+                RouterTestingModule,
+                MatDialogModule,
+                BrowserAnimationsModule,
+                MatFormFieldModule,
+                MatInputModule,
+                ReactiveFormsModule,
+                MatIconModule,
+            ],
             providers: [
                 { provide: MAT_DIALOG_DATA, useValue: {} },
                 { provide: MatDialogRef, useValue: {} },
