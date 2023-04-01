@@ -117,6 +117,10 @@ export class ClassicSystemService {
         this.clientSocket.send(GameEvents.AbandonGame);
     }
 
+    requestHint(): void {
+        this.clientSocket.send(GameEvents.RequestHint);
+    }
+
     setIsLeftCanvas(isLeft: boolean): void {
         this.isLeftCanvas = isLeft;
     }

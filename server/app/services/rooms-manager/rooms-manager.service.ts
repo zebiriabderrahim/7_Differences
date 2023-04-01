@@ -145,6 +145,17 @@ export class RoomsManagerService {
         }
     }
 
+    addHintPenalty(socket: io.Socket, server: io.Server): void {
+        const roomId = this.getRoomIdFromSocket(socket);
+        const room = this.getRoomById(roomId);
+        if (!room) return;
+        if (room) {
+            room.timer += room.gameConstants.penaltyTime;
+            this.rooms.set(room.roomId, room);
+            server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
+        }
+    }
+
     async changeGameOfRoom(roomId: string, gameId: string): Promise<void> {
         const game = await this.gameService.getGameById(gameId);
         if (!game) return;
