@@ -3,6 +3,7 @@ import { ClassicSystemService } from '@app/services/classic-system-service/class
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
+import { BehaviorSubject } from 'rxjs';
 import { ReplayService } from './replay.service';
 
 describe('ReplayService', () => {
@@ -11,18 +12,20 @@ describe('ReplayService', () => {
     let classicSystemServiceSpy: jasmine.SpyObj<ClassicSystemService>;
     let soundServiceSpy: jasmine.SpyObj<SoundService>;
     let imageServiceSpy: jasmine.SpyObj<ImageService>;
+    const replayEventGameAreaServiceSubTest = new BehaviorSubject<number>(0);
+    const replayEventClassicSystemServiceSubTest = new BehaviorSubject<number>(0);
 
     beforeEach(() => {
-        gameAreaServiceSpy = jasmine.createSpyObj('GameAreaService', [
-            'getOgContext',
-            'getMdContext',
-            'setAllData',
-            'replaceDifference',
-            'showError',
-            'toggleCheatMode',
-            'flashCorrectPixels',
-        ]);
-        classicSystemServiceSpy = jasmine.createSpyObj('ClassicSystemService', ['setMessage']);
+        gameAreaServiceSpy = jasmine.createSpyObj(
+            'GameAreaService',
+            ['getOgContext', 'getMdContext', 'setAllData', 'replaceDifference', 'showError', 'toggleCheatMode', 'flashCorrectPixels'],
+            {
+                replayEventsSubject: replayEventGameAreaServiceSubTest,
+            },
+        );
+        classicSystemServiceSpy = jasmine.createSpyObj('ClassicSystemService', ['setMessage'], {
+            replayEventsSubject: replayEventClassicSystemServiceSubTest,
+        });
         soundServiceSpy = jasmine.createSpyObj('SoundService', ['playCorrectSound', 'playErrorSound']);
         imageServiceSpy = jasmine.createSpyObj('ImageService', ['loadImage']);
 
