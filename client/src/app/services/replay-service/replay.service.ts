@@ -27,6 +27,7 @@ export class ReplayService {
     private replayTimer: BehaviorSubject<number>;
     private replayDifferenceFound: BehaviorSubject<number>;
     private replayOpponentDifferenceFound: BehaviorSubject<number>;
+
     constructor(
         private readonly gameAreaService: GameAreaService,
         private readonly classicSystemService: ClassicSystemService,

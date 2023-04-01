@@ -13,10 +13,18 @@ describe('ReplayService', () => {
     let imageServiceSpy: jasmine.SpyObj<ImageService>;
 
     beforeEach(() => {
-        gameAreaServiceSpy = jasmine.createSpyObj('GameAreaService', []);
-        classicSystemServiceSpy = jasmine.createSpyObj('ClassicSystemService', []);
-        soundServiceSpy = jasmine.createSpyObj('SoundService', []);
-        imageServiceSpy = jasmine.createSpyObj('ImageService', []);
+        gameAreaServiceSpy = jasmine.createSpyObj('GameAreaService', [
+            'getOgContext',
+            'getMdContext',
+            'setAllData',
+            'replaceDifference',
+            'showError',
+            'toggleCheatMode',
+            'flashCorrectPixels',
+        ]);
+        classicSystemServiceSpy = jasmine.createSpyObj('ClassicSystemService', ['setMessage']);
+        soundServiceSpy = jasmine.createSpyObj('SoundService', ['playCorrectSound', 'playErrorSound']);
+        imageServiceSpy = jasmine.createSpyObj('ImageService', ['loadImage']);
 
         TestBed.configureTestingModule({
             providers: [
