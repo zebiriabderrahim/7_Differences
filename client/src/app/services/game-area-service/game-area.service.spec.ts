@@ -193,8 +193,8 @@ describe('GameAreaService', () => {
         const expectedIndexList: number[] = [38448, 0, 256080, 120];
         const convert2DCoordToPixelIndexSpy = spyOn<any>(gameAreaService, 'convert2DCoordToPixelIndex').and.callThrough();
         const flashPixelsSpy = spyOn(gameAreaService, 'flashPixels').and.callFake(() => {});
-        gameAreaService.flashCorrectPixels(differenceCoord);
-        expect(convert2DCoordToPixelIndexSpy).toHaveBeenCalledWith(differenceCoord);
+        gameAreaService.flashCorrectPixels(differenceCoord, undefined, false);
+        expect(convert2DCoordToPixelIndexSpy).toHaveBeenCalledWith(differenceCoord, undefined, false);
         expect(flashPixelsSpy).toHaveBeenCalledWith(expectedIndexList);
     });
 
