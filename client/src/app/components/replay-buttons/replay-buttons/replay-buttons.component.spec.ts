@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ONE_SECOND } from '@app/constants/constants';
 import { ReplayService } from '@app/services/replay-service/replay.service';
 
 import { ReplayButtonsComponent } from './replay-buttons.component';
@@ -47,12 +48,14 @@ describe('ReplayButtonsComponent', () => {
     });
 
     it('replay() should start the replay and disable the button for one second', () => {
-        const setTimeoutSpy = spyOn(window, 'setTimeout');
+        jasmine.clock().install();
         component.replay();
         expect(replayServiceSpy.startReplay).toHaveBeenCalled();
         expect(replayServiceSpy.restartTimer).toHaveBeenCalled();
-        expect(setTimeoutSpy).toHaveBeenCalled();
         expect(component.isReplayButtonDisabled).toBeTruthy();
+        jasmine.clock().tick(ONE_SECOND);
+        expect(component.isReplayButtonDisabled).toBeFalsy();
+        jasmine.clock().uninstall();
     });
 
     it('pause() should pause the replay and toggle button UI', () => {
@@ -94,5 +97,10 @@ describe('ReplayButtonsComponent', () => {
         expect(replayServiceSpy.upSpeedx4).toHaveBeenCalled();
     });
 
-    it('should call resetReplay when component is destroyed', () => {});
+    it('should call resetReplay when component is destroyed', () => {
+        const onDestorySpy = spyOn(component, 'ngOnDestroy');
+        component.ngOnDestroy();
+        expect(replayServiceSpy.resetReplay).toHaveBeenCalled();
+        expect(onDestorySpy).toHaveBeenCalled();
+    });
 });
