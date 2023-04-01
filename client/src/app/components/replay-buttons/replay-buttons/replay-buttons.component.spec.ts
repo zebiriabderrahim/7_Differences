@@ -43,4 +43,10 @@ describe('ReplayButtonsComponent', () => {
 
     it('isReplaying() should return the state of the replay', () => {
     });
+
+    it('upSpeedX1() should call speedX1', () => {
+    });
+
+    it('replay() should ', () => {
+    });
 });
