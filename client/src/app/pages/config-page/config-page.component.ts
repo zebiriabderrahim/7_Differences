@@ -30,7 +30,8 @@ export class ConfigPageComponent implements OnInit, OnDestroy {
     configConstants: GameConfigConst;
     private communicationSubscription: Subscription;
     private isReloadNeededSubscription: Subscription;
-    // all the parameters are needed
+
+    // Services are needed for the page and dialog needed
     // eslint-disable-next-line max-params
     constructor(
         private readonly communicationService: CommunicationService,
