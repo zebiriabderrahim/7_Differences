@@ -73,13 +73,14 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
                 const differencesCoordinates = ([] as Coordinate[]).concat(...this.differences);
                 this.gameAreaService.toggleCheatMode(differencesCoordinates);
             } else if (event.key === 'i' && this.game.mode.includes(SOLO_GAME_ID)) {
-                this.hintService.requestHint(this.game.id);
+                this.hintService.requestHint();
             }
         }
     }
 
     ngAfterViewInit(): void {
         this.classicService.startGame();
+        this.hintService.resetHints();
         this.classicService.players$.subscribe((players) => {
             this.players = players;
             if (players.player1.playerId === this.classicService.getSocketId()) {

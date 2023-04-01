@@ -34,6 +34,7 @@ export class ClassicSystemService {
         this.message = new Subject<ChatMessage>();
         this.endMessage = new Subject<string>();
         this.opponentDifferencesFound = new Subject<number>();
+        this.isFirstDifferencesFound = new Subject<boolean>();
     }
 
     get currentGame$() {
@@ -100,6 +101,7 @@ export class ClassicSystemService {
 
     handleRemoveDiff(data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }): void {
         if (data.playerId === this.getSocketId()) {
+            console.log('current difference: ', data.differencesData.currentDifference);
             this.replaceDifference(data.differencesData.currentDifference);
             this.differencesFound.next(data.differencesData.differencesFound);
             this.checkStatus();
