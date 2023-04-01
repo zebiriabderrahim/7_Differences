@@ -28,13 +28,13 @@ import { CanvasMiddleButtonsComponent } from './components/canvas-middle-buttons
 import { CanvasTopButtonsComponent } from './components/canvas-top-buttons/canvas-top-buttons.component';
 import { CanvasUnderButtonsComponent } from './components/canvas-under-buttons/canvas-under-buttons.component';
 import { ChatBoxComponent } from './components/chat-box/chat-box.component';
+import { DeleteResetConfirmationDialogComponent } from './components/delete-reset-confirmation-dialog/delete-reset-confirmation-dialog.component';
 import { GamePageDialogComponent } from './components/game-page-dialog/game-page-dialog.component';
 import { ImageCanvasComponent } from './components/image-canvas/image-canvas.component';
 import { JoinedPlayerDialogComponent } from './components/joined-player-dialog/joined-player-dialog.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { WaitingForPlayerToJoinComponent } from './components/waiting-player-to-join/waiting-player-to-join.component';
 import { ConfigPageComponent } from './pages/config-page/config-page.component';
-import { DeleteResetConfirmationDialogComponent } from './components/delete-reset-confirmation-dialog/delete-reset-confirmation-dialog.component';
 import { LimitedTimePageComponent } from './pages/limited-time-page/limited-time-page.component';
 /**
  * Main module that is used in main.ts.
