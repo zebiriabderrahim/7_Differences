@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReplayService } from '@app/services/replay-service/replay.service';
 
 import { ReplayButtonsComponent } from './replay-buttons.component';
 
@@ -9,6 +10,7 @@ describe('ReplayButtonsComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [ReplayButtonsComponent],
+            providers: [ReplayService],
         }).compileComponents();
 
         fixture = TestBed.createComponent(ReplayButtonsComponent);
@@ -19,4 +21,7 @@ describe('ReplayButtonsComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('should select speed to "x1" on creation of component', () => {
+  });
 });
