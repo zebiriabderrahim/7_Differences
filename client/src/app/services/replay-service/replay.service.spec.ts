@@ -104,4 +104,8 @@ describe('ReplayService', () => {
         expect(cancelReplaySpy).toHaveBeenCalled();
         expect(service.isReplaying).toBe(false);
     });
+
+    it('should handle StartGame action', () => {
+       
+    });
 });
