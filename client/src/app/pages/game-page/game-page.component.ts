@@ -158,7 +158,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         });
 
         this.isFirstDifferencesFoundSub = this.classicService.isFirstDifferencesFound$.subscribe((isFirstDifferencesFound) => {
-            if ((isFirstDifferencesFound && this.game.mode === GameModes.LimitedSolo) || GameModes.LimitedCoop) {
+            if ((isFirstDifferencesFound && this.game.mode === GameModes.LimitedSolo) || this.game.mode === GameModes.LimitedCoop) {
                 this.classicService.startNextGame();
             }
         });
