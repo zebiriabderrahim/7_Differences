@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NavBarComponent } from '@app/components/nav-bar/nav-bar.component';
+import { DEFAULT_BONUS_VALUE, DEFAULT_COUNTDOWN_VALUE, DEFAULT_PENALTY_VALUE } from '@app/constants/constants';
 import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
@@ -108,6 +109,22 @@ describe('ConfigPageComponent', () => {
 
         expect(component['communicationService'].updateGameConstants).toHaveBeenCalledWith(component.configConstants);
         expect(component['roomManagerService'].gameConstantsUpdated).toHaveBeenCalled();
+    });
+
+    it('resetConfigForm should reset the config form and update the game constants', () => {
+        const resetSpy = spyOn(component.configForm, 'reset');
+        const updateSpy = spyOn(component['communicationService'], 'updateGameConstants').and.returnValue(of(void 0));
+        const gameConstantsSpy = spyOn(component['roomManagerService'], 'gameConstantsUpdated');
+
+        component.resetConfigForm();
+
+        expect(resetSpy).toHaveBeenCalledWith({
+            countdownTime: DEFAULT_COUNTDOWN_VALUE,
+            penaltyTime: DEFAULT_PENALTY_VALUE,
+            bonusTime: DEFAULT_BONUS_VALUE,
+        });
+        expect(updateSpy).toHaveBeenCalledWith(component.configConstants);
+        expect(gameConstantsSpy).toHaveBeenCalled();
     });
 
     // it('should reset the form values to the default values', () => {
