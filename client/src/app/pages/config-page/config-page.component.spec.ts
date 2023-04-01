@@ -13,14 +13,24 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { NavBarComponent } from '@app/components/nav-bar/nav-bar.component';
 import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
+import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { of } from 'rxjs';
 import { ConfigPageComponent } from './config-page.component';
 
 describe('ConfigPageComponent', () => {
     let component: ConfigPageComponent;
     let fixture: ComponentFixture<ConfigPageComponent>;
+    // let communicationServiceSpy: CommunicationService;
+    // let roomManagerServiceSpy: RoomManagerService;
+    // let isReloadNeededSpy: BehaviorSubject<boolean>;
 
     beforeEach(async () => {
+        // isReloadNeededSpy = new BehaviorSubject<boolean>(true);
+        // eslint-disable-next-line max-len
+        // communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['loadConfigConstants', 'saveConfigConstants', 'updateGameConstants']);
+        // roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['isReloadNeeded', 'gameConstantsUpdated', 'handleRoomEvents'], {
+        //     isReloadNeeded: isReloadNeededSpy,
+        // });
         await TestBed.configureTestingModule({
             imports: [
                 RouterTestingModule,
@@ -36,13 +46,18 @@ describe('ConfigPageComponent', () => {
                 MatDialogModule,
             ],
             declarations: [ConfigPageComponent, SelectionPageComponent, NavBarComponent],
-            providers: [CommunicationService],
+            providers: [CommunicationService, RoomManagerService],
         }).compileComponents();
     });
 
     beforeEach(() => {
         fixture = TestBed.createComponent(ConfigPageComponent);
         component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    afterEach(() => {
+        fixture.destroy();
         fixture.detectChanges();
     });
 
@@ -82,6 +97,17 @@ describe('ConfigPageComponent', () => {
         component.onSubmit();
 
         expect(component.configConstants.bonusTime).toBe(2);
+    });
+
+    it('onSubmit should call updateGameConstants on communicationService and gameConstantsUpdated on roomManagerService', () => {
+        spyOn(component['communicationService'], 'updateGameConstants').and.returnValue(of(void 0));
+        spyOn(component['roomManagerService'], 'gameConstantsUpdated').and.callThrough();
+
+        component.configConstants = { countdownTime: 10, penaltyTime: 6, bonusTime: 3 };
+        component.onSubmit();
+
+        expect(component['communicationService'].updateGameConstants).toHaveBeenCalledWith(component.configConstants);
+        expect(component['roomManagerService'].gameConstantsUpdated).toHaveBeenCalled();
     });
 
     // it('should reset the form values to the default values', () => {
