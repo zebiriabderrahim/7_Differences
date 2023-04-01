@@ -31,7 +31,8 @@ import { DELAY_BEFORE_EMITTING_TIME } from './game.gateway.constants';
 @Injectable()
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
     @WebSocketServer() private server: Server;
-
+    // Services needed for this gateway
+    // eslint-disable-next-line max-params
     constructor(
         private readonly logger: Logger,
         private readonly classicModeService: ClassicModeService,

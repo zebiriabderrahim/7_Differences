@@ -71,7 +71,6 @@ export class RoomManagerService implements OnDestroy {
     }
 
     createSoloLimitedRoom(playerName: string): void {
-        console.log('createSoloLimitedRoom', playerName);
         this.clientSocket.send(RoomEvents.CreateSoloLimitedRoom, playerName);
     }
 
