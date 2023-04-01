@@ -8,7 +8,7 @@ describe('NavBarComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [MatIconModule, RouterTestingModule],
+            imports: [MatIconModule, RouterTestingModule, MatIconModule],
             declarations: [NavBarComponent],
         }).compileComponents();
 

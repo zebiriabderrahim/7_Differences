@@ -2,7 +2,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { BehaviorSubject } from 'rxjs';
 import { PlayerNameDialogBoxComponent } from './player-name-dialog-box.component';
@@ -24,7 +25,7 @@ describe('PlayerNameDialogBoxComponent', () => {
             deletedGameId$: new BehaviorSubject<string>('12'),
         });
         await TestBed.configureTestingModule({
-            imports: [ReactiveFormsModule],
+            imports: [ReactiveFormsModule, MatFormFieldModule],
             declarations: [],
             providers: [
                 { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } },
