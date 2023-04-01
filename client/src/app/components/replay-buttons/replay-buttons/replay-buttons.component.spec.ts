@@ -40,4 +40,7 @@ describe('ReplayButtonsComponent', () => {
 
     it('quit() should reset the replay when player leave', () => {
     });
+
+    it('isReplaying() should return the state of the replay', () => {
+    });
 });
