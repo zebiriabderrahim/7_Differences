@@ -6,11 +6,28 @@ import { ReplayButtonsComponent } from './replay-buttons.component';
 describe('ReplayButtonsComponent', () => {
     let component: ReplayButtonsComponent;
     let fixture: ComponentFixture<ReplayButtonsComponent>;
+    let replayServiceSpy: jasmine.SpyObj<ReplayService>;
 
     beforeEach(async () => {
+        replayServiceSpy = jasmine.createSpyObj('ReplayService', [
+            'startReplay',
+            'restartTimer',
+            'pauseReplay',
+            'resumeReplay',
+            'resetReplay',
+            'isReplaying',
+            'upSpeedx1',
+            'upSpeedx2',
+            'upSpeedx4',
+        ]);
         await TestBed.configureTestingModule({
             declarations: [ReplayButtonsComponent],
-            providers: [ReplayService],
+            providers: [
+                {
+                    provide: ReplayService,
+                    useValue: replayServiceSpy,
+                },
+            ],
         }).compileComponents();
 
         fixture = TestBed.createComponent(ReplayButtonsComponent);
@@ -30,30 +47,27 @@ describe('ReplayButtonsComponent', () => {
     });
 
     it('replay() should start the replay and disable the button for one second', () => {
-        
+        const setTimeoutSpy = spyOn(window, 'setTimeout');
+        component.replay();
+        expect(replayServiceSpy.startReplay).toHaveBeenCalled();
+        expect(replayServiceSpy.restartTimer).toHaveBeenCalled();
+        expect(setTimeoutSpy).toHaveBeenCalled();
+        expect(component.isReplayButtonDisabled).toBeTruthy();
     });
 
-    it('pause() should pause the replay and toggle button UI', () => {
-    });
+    it('pause() should pause the replay and toggle button UI', () => {});
 
-    it('resume() should resume the replat and toggle button UI', () => {
-    });
+    it('resume() should resume the replat and toggle button UI', () => {});
 
-    it('quit() should reset the replay when player leave', () => {
-    });
+    it('quit() should reset the replay when player leave', () => {});
 
-    it('isReplaying() should return the state of the replay', () => {
-    });
+    it('isReplaying() should return the state of the replay', () => {});
 
-    it('upSpeedX1() should call speedX1', () => {
-    });
+    it('upSpeedX1() should call speedX1', () => {});
 
-    it('upSpeedX2() should call speedX2', () => {
-    });
+    it('upSpeedX2() should call speedX2', () => {});
 
-    it('upSpeedX4() should call speedX4', () => {
-    });
+    it('upSpeedX4() should call speedX4', () => {});
 
-    it('should call resetReplay when component is destroyed', () => {
-    });
+    it('should call resetReplay when component is destroyed', () => {});
 });
