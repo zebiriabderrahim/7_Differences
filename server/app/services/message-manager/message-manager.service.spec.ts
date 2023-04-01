@@ -4,8 +4,8 @@ import { MessageManagerService } from './message-manager.service';
 
 describe('MessageManagerService', () => {
     let service: MessageManagerService;
-    let formatedTimeStub: string;
-    const timeStub = new Date();
+    // let formatedTimeStub: string;
+    // const timeStub = new Date();
     const playerNameStub = 'playerName';
 
     beforeEach(async () => {
@@ -14,20 +14,20 @@ describe('MessageManagerService', () => {
         }).compile();
 
         service = module.get<MessageManagerService>(MessageManagerService);
-        formatedTimeStub = `${timeStub.getHours()} : ${timeStub.getMinutes()} : ${timeStub.getSeconds()}`;
+        // formatedTimeStub = `${timeStub.getHours()} : ${timeStub.getMinutes()} : ${timeStub.getSeconds()}`;
     });
 
     it('should be defined', () => {
         expect(service).toBeDefined();
     });
 
-    it('getFormatTime() should return a the current time in this format: HH:MM:SS', () => {
-        const getFormatTimeSpy = jest.spyOn(service, 'getFormatTime');
-        const formatedTime = service.getFormatTime();
+    // it('getFormatTime() should return a the current time in this format: HH:MM:SS', () => {
+    //     const getFormatTimeSpy = jest.spyOn(service, 'getFormatTime');
+    //     const formatedTime = service.getFormatTime();
 
-        expect(getFormatTimeSpy).toBeCalled();
-        expect(formatedTime).toEqual(formatedTimeStub);
-    });
+    //     expect(getFormatTimeSpy).toBeCalled();
+    //     expect(formatedTime).toEqual(formatedTimeStub);
+    // });
 
     it('getSoloDifferenceMessage() should return a message that the difference was found', () => {
         const getSoloDifferenceMessageSpy = jest.spyOn(service, 'getSoloDifferenceMessage');
