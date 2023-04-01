@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { ReplayActions } from '@app/enum/replay-actions';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { ImageService } from '@app/services/image-service/image.service';
@@ -44,5 +45,23 @@ describe('ReplayService', () => {
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('should set isReplaying to true when startReplay is called', () => {
+        service.startReplay();
+        expect(service.isReplaying).toBe(true);
+    });
+
+    it('should call createReplayInterval and replaySwitcher when startReplay is called', () => {
+        const createReplayIntervalSpy = spyOn(service, 'createReplayInterval').and.callThrough();
+        const replaySwitcherSpy = spyOn(service, 'replaySwitcher');
+
+        service['replayEvents'] = [{ timestamp: 0, action: ReplayActions.StartGame, data: ['0', '1'] }];
+
+        service.startReplay();
+
+        expect(service.isReplaying).toBe(true);
+        expect(createReplayIntervalSpy).toHaveBeenCalled();
+        expect(replaySwitcherSpy).toHaveBeenCalledTimes(1);
     });
 });
