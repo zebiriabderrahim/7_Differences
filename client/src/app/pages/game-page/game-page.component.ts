@@ -34,7 +34,6 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     private timerSub: Subscription;
     private gameSub: Subscription;
     private differenceSub: Subscription;
-    // private routeParamSub: Subscription;
     private messageSub: Subscription;
     private endGameSub: Subscription;
     private opponentDifferenceSub: Subscription;
