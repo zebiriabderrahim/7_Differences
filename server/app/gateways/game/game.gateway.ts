@@ -1,3 +1,5 @@
+/* eslint-disable max-params */
+// gateway needs to be injected all the services that it needs to use
 import { ClassicModeService } from '@app/services/classic-mode/classic-mode.service';
 import { LimitedModeService } from '@app/services/limited-mode/limited-mode.service';
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
