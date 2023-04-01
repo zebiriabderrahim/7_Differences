@@ -61,7 +61,12 @@ describe('ReplayButtonsComponent', () => {
         expect(component.isReplayPaused).toBeTruthy();
     });
 
-    it('resume() should resume the replat and toggle button UI', () => {});
+    it('resume() should resume the replat and toggle button UI', () => {
+        component.pause();
+        component.resume();
+        expect(replayServiceSpy.resumeReplay).toHaveBeenCalled();
+        expect(component.isReplayPaused).toBeFalsy();
+    });
 
     it('quit() should reset the replay when player leave', () => {});
 
