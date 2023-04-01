@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ReplayActions } from '@app/enum/replay-actions';
+import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { ImageService } from '@app/services/image-service/image.service';
@@ -16,7 +17,14 @@ describe('ReplayService', () => {
     const replayEventGameAreaServiceSubTest = new BehaviorSubject<number>(0);
     const replayEventClassicSystemServiceSubTest = new BehaviorSubject<number>(0);
 
-    beforeEach(() => {
+    const replayEventsStub: ReplayEvent[] = [
+        { timestamp: 0, action: ReplayActions.StartGame, data: ['0', '1'] },
+        { timestamp: 0, action: ReplayActions.TimerUpdate },
+        { timestamp: 0, action: ReplayActions.ClickFound, data: ['og', 'md'] },
+        { timestamp: 0, action: ReplayActions.ClickError, data: { isMainCanvas: true, pos: { x: 0, y: 0 } } as ClickErrorData },
+    ];
+
+    beforeEach(async () => {
         gameAreaServiceSpy = jasmine.createSpyObj(
             'GameAreaService',
             ['getOgContext', 'getMdContext', 'setAllData', 'replaceDifference', 'showError', 'toggleCheatMode', 'flashCorrectPixels'],
@@ -56,12 +64,44 @@ describe('ReplayService', () => {
         const createReplayIntervalSpy = spyOn(service, 'createReplayInterval').and.callThrough();
         const replaySwitcherSpy = spyOn(service, 'replaySwitcher');
 
-        service['replayEvents'] = [{ timestamp: 0, action: ReplayActions.StartGame, data: ['0', '1'] }];
+        service['replayEvents'] = replayEventsStub;
 
         service.startReplay();
 
         expect(service.isReplaying).toBe(true);
         expect(createReplayIntervalSpy).toHaveBeenCalled();
         expect(replaySwitcherSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should stop the replay when there are no more events to process', () => {
+        spyOn(service, 'createReplayInterval').and.callFake((callback: (i: ReplayEvent) => void) => {
+            return {
+                start: () => {
+                    for (const i of service['replayEvents']) {
+                        callback(i);
+                    }
+                },
+                pause: () => {},
+                resume: () => {},
+                cancel: () => {
+                    service.isReplaying = false;
+                },
+            };
+        });
+
+        const replaySwitcherSpy = spyOn(service, 'replaySwitcher').and.callThrough();
+        const cancelReplaySpy = spyOn(service, 'cancelReplay').and.callThrough();
+
+        service['replayEvents'] = replayEventsStub;
+
+        service.startReplay();
+
+        expect(service.isReplaying).toBe(true);
+        expect(replaySwitcherSpy).toHaveBeenCalledTimes(replayEventsStub.length);
+
+        service.cancelReplay();
+
+        expect(cancelReplaySpy).toHaveBeenCalled();
+        expect(service.isReplaying).toBe(false);
     });
 });
