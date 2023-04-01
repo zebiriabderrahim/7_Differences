@@ -23,5 +23,9 @@ describe('ReplayButtonsComponent', () => {
     });
 
     it('should select speed to "x1" on creation of component', () => {
-  });
+        const onInitSpy = spyOn(component, 'ngOnInit');
+        component.ngOnInit();
+        expect(onInitSpy).toHaveBeenCalled();
+        expect(component.selectedSpeed).toEqual('x1');
+    });
 });

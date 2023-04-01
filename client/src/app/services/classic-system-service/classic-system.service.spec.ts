@@ -9,7 +9,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { SocketTestHelper } from '@app/services/client-socket-service/client-socket.service.spec';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
-import { ReplayService } from '@app/services/replay-service/replay.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
 import { GameEvents, MessageEvents, MessageTag } from '@common/enums';
@@ -105,12 +104,7 @@ describe('ClassicSystemService', () => {
 
     beforeEach(() => {
         service = TestBed.inject(ClassicSystemService);
-        service = new ClassicSystemService(
-            socketServiceMock,
-            TestBed.inject(GameAreaService),
-            TestBed.inject(SoundService),
-            TestBed.inject(ReplayService),
-        );
+        service = new ClassicSystemService(socketServiceMock, TestBed.inject(GameAreaService), TestBed.inject(SoundService));
         gameAreaService = TestBed.inject(GameAreaService);
         service['currentGame'].next(mockClientSideGame);
     });
