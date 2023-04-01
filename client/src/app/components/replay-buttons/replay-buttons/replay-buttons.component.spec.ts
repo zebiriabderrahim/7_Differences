@@ -84,9 +84,15 @@ describe('ReplayButtonsComponent', () => {
         expect(replayServiceSpy.upSpeedx1).toHaveBeenCalled();
     });
 
-    it('upSpeedX2() should call speedX2', () => {});
+    it('upSpeedX2() should call speedX2', () => {
+        component.speedX2();
+        expect(replayServiceSpy.upSpeedx2).toHaveBeenCalled();
+    });
 
-    it('upSpeedX4() should call speedX4', () => {});
+    it('upSpeedX4() should call speedX4', () => {
+        component.speedX4();
+        expect(replayServiceSpy.upSpeedx4).toHaveBeenCalled();
+    });
 
     it('should call resetReplay when component is destroyed', () => {});
 });
