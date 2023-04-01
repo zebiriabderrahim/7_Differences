@@ -73,7 +73,10 @@ describe('ReplayButtonsComponent', () => {
         expect(replayServiceSpy.resetReplay).toHaveBeenCalled();
     });
 
-    it('isReplaying() should return the state of the replay', () => {});
+    it('isReplaying() should return the state of the replay', () => {
+        component.isReplaying();
+        expect(replayServiceSpy.isReplaying).toHaveBeenCalled();
+    });
 
     it('upSpeedX1() should call speedX1', () => {});
 
