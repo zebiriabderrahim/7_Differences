@@ -204,7 +204,25 @@ describe('ReplayService', () => {
         expect(gameAreaServiceSpy.toggleCheatMode).toHaveBeenCalledWith(replayEvent.data as Coordinate[], service['replaySpeed']);
     });
 
-    it('should handle DeactivateCheat action', () => {});
+    it('should handle DeactivateCheat action', () => {
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.DeactivateCheat,
+            data: [
+                { x: 10, y: 20 },
+                { x: 30, y: 40 },
+            ] as Coordinate[],
+            timestamp: 0,
+        };
+
+        // Call replaySwitcher with the DeactivateCheat event
+        service.replaySwitcher(replayEvent);
+
+        // The isCheatMode should be updated
+        expect(service['isCheatMode']).toBe(false);
+
+        // The gameAreaService method should be called
+        expect(gameAreaServiceSpy.toggleCheatMode).toHaveBeenCalledWith(replayEvent.data as Coordinate[], service['replaySpeed']);
+    });
 
     it('should handle TimerUpdate action', () => {
         const replayEvent: ReplayEvent = {
