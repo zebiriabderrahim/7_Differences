@@ -183,7 +183,26 @@ describe('ReplayService', () => {
         expect(classicSystemServiceSpy.setMessage).toHaveBeenCalledWith(replayEvent.data as ChatMessage);
     });
 
-    it('should handle ActivateCheat action', () => {});
+    it('should handle ActivateCheat action', () => {
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.ActivateCheat,
+            data: [
+                { x: 10, y: 20 },
+                { x: 30, y: 40 },
+            ] as Coordinate[],
+            timestamp: 0,
+        };
+
+        // Call replaySwitcher with the ActivateCheat event
+        service.replaySwitcher(replayEvent);
+
+        // The isCheatMode and currentCoords should be updated
+        expect(service['isCheatMode']).toBe(true);
+        expect(service['currentCoords']).toEqual(replayEvent.data as Coordinate[]);
+
+        // The gameAreaService method should be called
+        expect(gameAreaServiceSpy.toggleCheatMode).toHaveBeenCalledWith(replayEvent.data as Coordinate[], service['replaySpeed']);
+    });
 
     it('should handle DeactivateCheat action', () => {});
 
