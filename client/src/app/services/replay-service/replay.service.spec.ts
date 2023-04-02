@@ -340,5 +340,10 @@ describe('ReplayService', () => {
     });
 
     it('should reset replay properties', () => {
+        service.resetReplay();
+
+        expect(service['replayEvents']).toEqual([]);
+        expect(service['currentReplayIndex']).toBe(0);
+        expect(service['isReplaying']).toBe(false);
     });
 });
