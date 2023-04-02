@@ -129,5 +129,7 @@ describe('ReplayService', () => {
 
     it('should handle CaptureMessage action', () => {
     });
-    
+
+    it('should handle ActivateCheat action', () => {
+    });
 });
