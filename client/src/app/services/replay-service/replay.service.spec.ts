@@ -126,4 +126,8 @@ describe('ReplayService', () => {
 
     it('should handle ClickError action', () => {
     });
+
+    it('should handle CaptureMessage action', () => {
+    });
+    
 });
