@@ -134,14 +134,11 @@ describe('ReplayService', () => {
             timestamp: 0,
         };
 
-        // Call replaySwitcher with the ClickFound event
         service.replaySwitcher(replayEvent);
 
-        // The currentCoords and isDifferenceFound should be updated
         expect(service['currentCoords']).toEqual(replayEvent.data as Coordinate[]);
         expect(service['isDifferenceFound']).toBe(true);
 
-        // The soundService, gameAreaService methods should be called
         expect(soundServiceSpy.playCorrectSound).toHaveBeenCalled();
         expect(gameAreaServiceSpy.setAllData).toHaveBeenCalled();
         expect(gameAreaServiceSpy.replaceDifference).toHaveBeenCalledWith(replayEvent.data as Coordinate[]);
@@ -157,10 +154,8 @@ describe('ReplayService', () => {
             timestamp: 0,
         };
 
-        // Call replaySwitcher with the ClickError event
         service.replaySwitcher(replayEvent);
 
-        // The soundService and gameAreaService methods should be called
         expect(soundServiceSpy.playErrorSound).toHaveBeenCalled();
         expect(gameAreaServiceSpy.showError).toHaveBeenCalledWith(
             (replayEvent.data as ClickErrorData).isMainCanvas,
@@ -193,14 +188,11 @@ describe('ReplayService', () => {
             timestamp: 0,
         };
 
-        // Call replaySwitcher with the ActivateCheat event
         service.replaySwitcher(replayEvent);
 
-        // The isCheatMode and currentCoords should be updated
         expect(service['isCheatMode']).toBe(true);
         expect(service['currentCoords']).toEqual(replayEvent.data as Coordinate[]);
 
-        // The gameAreaService method should be called
         expect(gameAreaServiceSpy.toggleCheatMode).toHaveBeenCalledWith(replayEvent.data as Coordinate[], service['replaySpeed']);
     });
 
@@ -214,13 +206,9 @@ describe('ReplayService', () => {
             timestamp: 0,
         };
 
-        // Call replaySwitcher with the DeactivateCheat event
         service.replaySwitcher(replayEvent);
 
-        // The isCheatMode should be updated
         expect(service['isCheatMode']).toBe(false);
-
-        // The gameAreaService method should be called
         expect(gameAreaServiceSpy.toggleCheatMode).toHaveBeenCalledWith(replayEvent.data as Coordinate[], service['replaySpeed']);
     });
 
