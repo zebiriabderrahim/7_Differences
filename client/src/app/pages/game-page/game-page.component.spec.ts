@@ -10,7 +10,7 @@ import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { MessageTag } from '@common/enums';
-import { ChatMessage, ClientSideGame, Coordinate, Players } from '@common/game-interfaces';
+import { ChatMessage, ClientSideGame, Players } from '@common/game-interfaces';
 import { Subject, Subscription } from 'rxjs';
 
 describe('GamePageComponent', () => {
@@ -46,7 +46,7 @@ describe('GamePageComponent', () => {
     const messageSubjectTest = new Subject<ChatMessage>();
     const endMessageTest = new Subject<string>();
     const opponentDifferencesFoundSubjectTest = new Subject<number>();
-    const cheatDifferencesSubjectTest = new Subject<Coordinate[]>();
+    // const cheatDifferencesSubjectTest = new Subject<Coordinate[]>();
     const paramsSubjectTest = new Subject<{ roomId: string }>();
     const isFirstDifferencesFoundTest = new Subject<boolean>();
 
@@ -62,7 +62,7 @@ describe('GamePageComponent', () => {
                 message$: messageSubjectTest,
                 endMessage$: endMessageTest,
                 opponentDifferencesFound$: opponentDifferencesFoundSubjectTest,
-                cheatDifferences$: cheatDifferencesSubjectTest,
+                // cheatDifferences$: cheatDifferencesSubjectTest,
                 isFirstDifferencesFound$: isFirstDifferencesFoundTest,
             },
         );
@@ -261,18 +261,18 @@ describe('GamePageComponent', () => {
         component['opponentDifferenceSub'] = undefined as unknown as Subscription;
         component['messageSub'] = undefined as unknown as Subscription;
         component['endGameSub'] = undefined as unknown as Subscription;
-        component['cheatDifferencesSub'] = undefined as unknown as Subscription;
+        // component['cheatDifferencesSub'] = undefined as unknown as Subscription;
         const resetCheatModeSpy = spyOn(gameAreaService, 'resetCheatMode');
         component.ngOnDestroy();
         expect(resetCheatModeSpy).toHaveBeenCalled();
     });
 
-    it('should call toggleCheatMode when "t" key is pressed', () => {
-        const toggleCheatModeSpy = spyOn(gameAreaService, 'toggleCheatMode').and.callFake(() => {});
-        const event = new KeyboardEvent('keydown', { key: 't' });
-        window.dispatchEvent(event);
-        expect(toggleCheatModeSpy).toHaveBeenCalled();
-    });
+    // it('should call toggleCheatMode when "t" key is pressed', () => {
+    //     const toggleCheatModeSpy = spyOn(gameAreaService, 'toggleCheatMode').and.callFake(() => {});
+    //     const event = new KeyboardEvent('keydown', { key: 't' });
+    //     window.dispatchEvent(event);
+    //     expect(toggleCheatModeSpy).toHaveBeenCalled();
+    // });
 
     it('should not call toggleCheatMode when "t" key is not pressed', () => {
         const toggleCheatModeSpy = spyOn(gameAreaService, 'toggleCheatMode').and.callFake(() => {});

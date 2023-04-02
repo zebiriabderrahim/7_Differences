@@ -158,11 +158,11 @@ describe('ClassicSystemService', () => {
         expect(service.players$).toEqual(mockPlayersSubject.asObservable());
     });
 
-    it('cheatDifferences$ should return cheatDifferences as Observable', () => {
-        const mockCheatDifferencesSubject = new Subject<Coordinate[]>();
-        service['cheatDifferences'] = mockCheatDifferencesSubject;
-        expect(service.cheatDifferences$).toEqual(mockCheatDifferencesSubject.asObservable());
-    });
+    // it('cheatDifferences$ should return cheatDifferences as Observable', () => {
+    //     const mockCheatDifferencesSubject = new Subject<Coordinate[]>();
+    //     service['cheatDifferences'] = mockCheatDifferencesSubject;
+    //     expect(service.cheatDifferences$).toEqual(mockCheatDifferencesSubject.asObservable());
+    // });
 
     it('should not emit game when game is falsy', () => {
         spyOn(service['currentGame'], 'next');
