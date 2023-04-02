@@ -5,6 +5,7 @@ import { ClassicSystemService } from '@app/services/classic-system-service/class
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
+import { Coordinate } from '@common/coordinate';
 import { BehaviorSubject } from 'rxjs';
 import { ReplayService } from './replay.service';
 
@@ -122,32 +123,59 @@ describe('ReplayService', () => {
     });
 
     it('should handle ClickFound action', () => {
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.ClickFound,
+            data: [
+                { x: 10, y: 20 },
+                { x: 30, y: 40 },
+            ] as Coordinate[],
+            timestamp: 0,
+        };
+
+        // Call replaySwitcher with the ClickFound event
+        service.replaySwitcher(replayEvent);
+
+        // The currentCoords and isDifferenceFound should be updated
+        expect(service['currentCoords']).toEqual(replayEvent.data as Coordinate[]);
+        expect(service['isDifferenceFound']).toBe(true);
+
+        // The soundService, gameAreaService methods should be called
+        expect(soundServiceSpy.playCorrectSound).toHaveBeenCalled();
+        expect(gameAreaServiceSpy.setAllData).toHaveBeenCalled();
+        expect(gameAreaServiceSpy.replaceDifference).toHaveBeenCalledWith(replayEvent.data as Coordinate[]);
     });
 
-    it('should handle ClickError action', () => {
-    });
+    it('should handle ClickError action', () => {});
 
-    it('should handle CaptureMessage action', () => {
-    });
+    it('should handle CaptureMessage action', () => {});
 
-    it('should handle ActivateCheat action', () => {
-    });
+    it('should handle ActivateCheat action', () => {});
 
-    it('should handle DeactivateCheat action', () => {
-    });
+    it('should handle DeactivateCheat action', () => {});
 
     it('should handle TimerUpdate action', () => {
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.TimerUpdate,
+            timestamp: 0,
+        };
+
+        const timerValues: number[] = [];
+        service['replayTimer$'].subscribe((value) => {
+            timerValues.push(value);
+        });
+
+        expect(timerValues).toEqual([0]);
+
+        service.replaySwitcher(replayEvent);
+
+        expect(timerValues).toEqual([0, 1]);
     });
 
-    it('should handle DifferenceFoundUpdate action', () => {
-    });
+    it('should handle DifferenceFoundUpdate action', () => {});
 
-    it('should handle OpponentDifferencesFoundUpdate action', () => {
-    });
-    
-    it('should handle DeactivateCheat action', () => {
-    });
+    it('should handle OpponentDifferencesFoundUpdate action', () => {});
 
-    it('should handle UseHint action', () => {
-    });
+    it('should handle DeactivateCheat action', () => {});
+
+    it('should handle UseHint action', () => {});
 });
