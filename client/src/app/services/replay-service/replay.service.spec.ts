@@ -123,4 +123,7 @@ describe('ReplayService', () => {
 
     it('should handle ClickFound action', () => {
     });
+
+    it('should handle ClickError action', () => {
+    });
 });
