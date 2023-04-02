@@ -120,4 +120,7 @@ describe('ReplayService', () => {
         ]);
         expect(gameAreaServiceSpy.setAllData).toHaveBeenCalled();
     });
+
+    it('should handle ClickFound action', () => {
+    });
 });
