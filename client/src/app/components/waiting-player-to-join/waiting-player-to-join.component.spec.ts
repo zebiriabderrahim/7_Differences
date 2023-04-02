@@ -5,7 +5,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { TEN_SECONDS } from '@app/constants/constants';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { WaitingPlayerNameList } from '@common/game-interfaces';
 import { BehaviorSubject, of } from 'rxjs';
 import { WaitingForPlayerToJoinComponent } from './waiting-player-to-join.component';
 
@@ -16,15 +15,12 @@ describe('WaitingPlayerToJoinComponent', () => {
     let clientSocketServiceSpy: jasmine.SpyObj<ClientSocketService>;
     let dialogRefSpy: jasmine.SpyObj<MatDialogRef<WaitingForPlayerToJoinComponent>>;
     let router: jasmine.SpyObj<Router>;
-    let joinedPlayerNamesMock: BehaviorSubject<WaitingPlayerNameList>;
+    let joinedPlayerNamesMock: BehaviorSubject<string[]>;
     let deletedGameIdMock: BehaviorSubject<string>;
 
     beforeEach(async () => {
         deletedGameIdMock = new BehaviorSubject<string>('idMock');
-        joinedPlayerNamesMock = new BehaviorSubject<WaitingPlayerNameList>({
-            gameId: 'test-game-id',
-            playerNamesList: ['Alice', 'Bob'],
-        });
+        joinedPlayerNamesMock = new BehaviorSubject<string[]>(['Alice', 'Bob']);
         roomManagerServiceSpy = jasmine.createSpyObj(
             'RoomManagerService',
             ['refusePlayer', 'acceptPlayer', 'deleteCreatedOneVsOneRoom', 'getJoinedPlayerNames'],
