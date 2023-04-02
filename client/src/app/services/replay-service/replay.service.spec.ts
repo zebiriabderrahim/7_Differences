@@ -327,6 +327,8 @@ describe('ReplayService', () => {
     });
 
     it('should set replaySpeed to SPEED_X4', () => {
+        service.upSpeedx4();
+        expect(service['replaySpeed']).toBe(SPEED_X4);
     });
 
     it('should reset replay timer and found differences', () => {
