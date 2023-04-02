@@ -3,7 +3,7 @@
         <app-selection-page> </app-selection-page>
     </div>
     <div class="under-game-list">
-        <mat-grid-list cols="2" rowHeight="300px">
+        <mat-grid-list cols="2" rows="2" rowHeight="225px">
             <mat-grid-tile>
                 <div class="button-container">
                     <button class="create_button" mat-button [routerLink]="createRoute">
@@ -12,30 +12,49 @@
                     <div class="centered-create">Création de jeu</div>
                 </div>
                 <div class="button-container">
-                    <button mat-raised-button class="reset_button" (click)="resetAllTopTimes()"></button>
+                    <button mat-raised-button class="reset_button" (click)="openConfirmationDialog(actions.ResetAllTopTimes)"></button>
                     <img src="./assets/icon/ResetButton.png">
                     <div class="centered-reset">Tout réinitialiser</div>
                 </div>
             </mat-grid-tile>
             <mat-grid-tile
                 ><div class="game-constants">
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title> Constantes de jeu </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <ul>
-                            <p>
-                                Temps initial du compte à rebours : <strong>{{ configConstants.countdownTime }} secondes</strong>
-                            </p>
-                            <p>
-                                Temps de pénalité pour l’utilisation d’un indice : <strong>{{ configConstants.penaltyTime }} secondes</strong>
-                            </p>
-                            <p>
-                                Temps gagné avec la découverte d’une différence : <strong>{{ configConstants.bonusTime }} secondes</strong>
-                            </p>
-                        </ul>
-                    </mat-expansion-panel>
+                    <form [formGroup]="configForm" (ngSubmit)="onSubmit()">
+                        <mat-form-field appearance="outline">
+                          <mat-label>Temps initial du compte à rebours</mat-label>
+                          <input matInput type="number" formControlName="countdownTime" required>
+                          <mat-hint>La valeur du compte à rebours doit être comprise entre 0 et 60.</mat-hint>
+                          <mat-error *ngIf="configForm.controls.countdownTime.errors?.min || configForm.controls.countdownTime.errors?.max">
+                            La valeur du compte à rebours doit être comprise entre 0 et 60.
+                          </mat-error>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                          <mat-label>Temps de pénalité pour l’utilisation d’un indice</mat-label>
+                          <input matInput type="number" formControlName="penaltyTime" required>
+                          <mat-hint>La valeur du temps de pénalité doit être comprise entre 0 et 10.</mat-hint>
+                          <mat-error *ngIf="configForm.controls.penaltyTime.errors?.min || configForm.controls.penaltyTime.errors?.max">
+                            La valeur du temps de pénalité doit être comprise entre 0 et 10.
+                          </mat-error> 
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                          <mat-label>Temps gagné avec la découverte d’une différence</mat-label>
+                          <input matInput type="number" formControlName="bonusTime" required>
+                          <mat-hint>La valeur du temps gagné doit être comprise entre 0 et 10.</mat-hint>
+                          <mat-error *ngIf="configForm.controls.bonusTime.errors?.min || configForm.controls.bonusTime.errors?.max">
+                            La valeur du temps gagné doit être comprise entre 0 et 10.
+                          </mat-error> 
+                        </mat-form-field>
+                        <button mat-raised-button type="submit" [disabled]="configForm.invalid">Enregistrer la configuration</button>
+                        <button mat-raised-button (click)="resetConfigForm()">réinitialiser</button>
+                    </form>
                 </div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+              <div class="button-container">
+                <button mat-raised-button class="delete_button" (click)="openConfirmationDialog(actions.DeleteAllGames)"></button>
+                <img src="./assets/icon/DeleteAll.png">
+                <div class="centered-delete">Tout supprimer</div>
+              </div>
             </mat-grid-tile>
         </mat-grid-list>
     </div>

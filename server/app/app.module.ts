@@ -12,6 +12,8 @@ import { GameCard, gameCardSchema } from './model/database/game-card';
 import { MessageManagerService } from './services/message-manager/message-manager.service';
 import { PlayersListManagerService } from './services/players-list-manager/players-list-manager.service';
 import { GameConstants, gameConstantsSchema } from './model/database/game-config-constants';
+import { RoomsManagerService } from './services/rooms-manager/rooms-manager.service';
+import { LimitedModeService } from './services/limited-mode/limited-mode.service';
 
 @Module({
     imports: [
@@ -40,6 +42,8 @@ import { GameConstants, gameConstantsSchema } from './model/database/game-config
         GameListsManagerService,
         MessageManagerService,
         PlayersListManagerService,
+        RoomsManagerService,
+        LimitedModeService,
     ],
 })
 export class AppModule {}
