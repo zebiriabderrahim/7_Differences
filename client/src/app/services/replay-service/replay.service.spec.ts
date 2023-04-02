@@ -328,4 +328,6 @@ describe('ReplayService', () => {
     it('should reset replay timer and found differences', () => {
     });
 
+    it('should reset replay properties', () => {
+    });
 });
