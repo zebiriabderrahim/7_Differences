@@ -144,4 +144,10 @@ describe('ReplayService', () => {
 
     it('should handle OpponentDifferencesFoundUpdate action', () => {
     });
+    
+    it('should handle DeactivateCheat action', () => {
+    });
+
+    it('should handle UseHint action', () => {
+    });
 });
