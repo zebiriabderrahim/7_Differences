@@ -6,7 +6,6 @@ export enum GameEvents {
     RemoveDiff = 'removeDiff',
     GameStarted = 'GameStarted',
     AbandonGame = 'AbandonGame',
-    WaitingPlayerNameListUpdated = 'WaitingPlayerNameListUpdated',
     StartGameByRoomId = 'CreateOneVsOneGame',
     StartNextGame = 'StartNextGame',
     RequestHint = 'RequestHint',
@@ -22,6 +21,7 @@ export enum PlayerEvents {
     PlayerNameTaken = 'PlayerNameTaken',
     UpdateWaitingPlayerNameList = 'UpdateWaitingPlayerNameList',
     CheckIfPlayerNameIsAvailable = 'CheckIfPlayerNameIsAvailable',
+    WaitingPlayerNameListUpdated = 'WaitingPlayerNameListUpdated',
 }
 
 export enum GameCardEvents {
@@ -35,6 +35,13 @@ export enum GameCardEvents {
     GameConstantsUpdated = 'GameConstantsUpdated',
     GetGameCards = 'GetGameCards',
 }
+
+
+
+
+
+
+
 
 export enum RoomEvents {
     CreateClassicSoloRoom = 'CreateClassicSoloRoom',
@@ -51,6 +58,9 @@ export enum RoomEvents {
     UndoRoomCreation = 'UndoRoomCreation',
     DeleteCreatedOneVsOneRoom = 'DeleteCreatedOneVsOneRoom',
     JoinOneVsOneRoom = 'JoinOneVsOneRoom',
+    CheckIfAnyCoopRoomExists = "CheckIfAnyCoopRoomExists",
+    LimitedCoopRoomJoined = "LimitedCoopRoomJoined",
+    DeleteCreatedCoopRoom = "DeleteCreatedCoopRoom"
 }
 
 export enum GameModes {
