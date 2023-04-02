@@ -6,6 +6,8 @@ import { GameAreaService } from '@app/services/game-area-service/game-area.servi
 import { ImageService } from '@app/services/image-service/image.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
+import { MessageTag } from '@common/enums';
+import { ChatMessage } from '@common/game-interfaces';
 import { BehaviorSubject } from 'rxjs';
 import { ReplayService } from './replay.service';
 
@@ -166,7 +168,20 @@ describe('ReplayService', () => {
         );
     });
 
-    it('should handle CaptureMessage action', () => {});
+    it('should handle CaptureMessage action', () => {
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.CaptureMessage,
+            data: {
+                tag: MessageTag.common,
+                message: 'test',
+            } as ChatMessage,
+            timestamp: 0,
+        };
+
+        service.replaySwitcher(replayEvent);
+
+        expect(classicSystemServiceSpy.setMessage).toHaveBeenCalledWith(replayEvent.data as ChatMessage);
+    });
 
     it('should handle ActivateCheat action', () => {});
 
