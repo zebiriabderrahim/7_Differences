@@ -119,10 +119,10 @@ export class ClassicModeService {
             room.endMessage = "L'adversaire a abandonné la partie!";
             const localMessage = this.messageManager.getQuitMessage(player.name);
             server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
-            this.roomsManagerService.deleteRoom(roomId);
             server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
-            socket.rooms.delete(roomId);
         }
+        socket.rooms.delete(roomId);
+        this.roomsManagerService.deleteRoom(roomId);
     }
 
     handleSocketDisconnect(socket: io.Socket, server: io.Server): void {
