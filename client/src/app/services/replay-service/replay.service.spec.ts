@@ -138,4 +138,7 @@ describe('ReplayService', () => {
 
     it('should handle TimerUpdate action', () => {
     });
+
+    it('should handle DifferenceFoundUpdate action', () => {
+    });
 });
