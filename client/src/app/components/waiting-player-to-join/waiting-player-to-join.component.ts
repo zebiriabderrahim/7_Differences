@@ -32,14 +32,10 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         this.actions = GameCardActions;
     }
     ngOnInit(): void {
-        // this.roomManagerService.joinedPlayerNames(this.data.gameId);
+        if (!this.data?.gameId) return;
+        this.roomManagerService.getJoinedPlayerNames(this.data.gameId);
         this.loadPlayerNamesList();
         this.handleGameCardDelete();
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    toArray(obj: any): any[] {
-        return Object.values(obj);
     }
 
     loadPlayerNamesList(): void {
@@ -60,7 +56,8 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
     }
 
     undoCreateOneVsOneRoom() {
-        this.roomManagerService.deleteCreatedOneVsOneRoom(this.data.roomId);
+        if (this.data.player) this.roomManagerService.deleteCreatedOneVsOneRoom(this.data.roomId);
+        else if (!this.data.player) this.roomManagerService.deleteCreatedCoopRoom(this.data.roomId);
     }
 
     countDownBeforeClosing() {
