@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
     DEFAULT_BONUS_VALUE,
@@ -19,10 +19,11 @@ import { Subscription } from 'rxjs';
     templateUrl: './config-dialog.component.html',
     styleUrls: ['./config-dialog.component.scss'],
 })
-export class ConfigDialogComponent implements OnInit {
+export class ConfigDialogComponent implements OnInit, OnDestroy {
     configForm: FormGroup;
     configConstants: GameConfigConst;
     communicationSubscription: Subscription;
+    private isReloadNeededSubscription: Subscription;
     constructor(
         private formBuilder: FormBuilder,
         private readonly communicationService: CommunicationService,
@@ -39,6 +40,7 @@ export class ConfigDialogComponent implements OnInit {
 
     ngOnInit(): void {
         this.loadGameConstants();
+        this.handleChanges();
     }
 
     onSubmit() {
@@ -54,6 +56,15 @@ export class ConfigDialogComponent implements OnInit {
             this.patchConfigForm();
         });
     }
+
+    handleChanges() {
+        this.isReloadNeededSubscription = this.roomManagerService.isReloadNeeded$.subscribe((isReloadNeeded) => {
+            if (isReloadNeeded) {
+                this.loadGameConstants();
+            }
+        });
+    }
+
     patchConfigForm() {
         this.configForm.patchValue({
             countdownTime: this.configConstants.countdownTime,
@@ -67,5 +78,10 @@ export class ConfigDialogComponent implements OnInit {
         this.communicationSubscription = this.communicationService.updateGameConstants(this.configConstants).subscribe(() => {
             this.roomManagerService.gameConstantsUpdated();
         });
+    }
+
+    ngOnDestroy() {
+        this.communicationSubscription?.unsubscribe();
+        this.isReloadNeededSubscription?.unsubscribe();
     }
 }
