@@ -1,23 +1,21 @@
-<div>
-<p id = "abandon" *ngIf="data.action === 'abandon'">{{ data.message }}</p>
-<div id = "button1">
-    <div class="button-container">
-        <button id = "yesButton" mat-button *ngIf="data.action === 'abandon'" mat-dialog-close (click)="abandonGame()" routerLink="/home"></button>
-        <img src="./assets/icon/PlayButton.png">
-        <div class="centered-yes">Oui</div>
+    <p id = "abandon" *ngIf="data.action === 'abandon'">{{ data.message }}</p>
+    <div id = "button1">
+        <div class="button-container">
+            <button id = "yesButton" mat-button *ngIf="data.action === 'abandon'" mat-dialog-close (click)="abandonGame()" routerLink="/home"></button>
+            <img src="./assets/icon/PlayButton.png">
+            <div class="centered-yes">Oui</div>
+        </div>
     </div>
-</div>
-<div id = "button2">
-    <div class="button-container">
-    <button id = "noButton" mat-button *ngIf="data.action === 'abandon'" mat-dialog-close>Invisible Non</button>
-        <img src="./assets/icon/CreateButton.png">
-        <div class="centered-no">Non</div>
+    <div id = "button2">
+        <div class="button-container">
+        <button id = "noButton" mat-button *ngIf="data.action === 'abandon'" mat-dialog-close>Invisible Non</button>
+            <img src="./assets/icon/CreateButton.png">
+            <div class="centered-no">Non</div>
+        </div>
     </div>
-</div>
-<img src="./assets/icon/woodenPopUp.png" class="dialog-image">
-</div>
-<!-- <div class="dialog-wrapper">
-      <p *ngIf="data.action === 'endGame'">{{ data.message }}</p>
-
-      <button mat-button *ngIf="data.action === 'endGame'" mat-dialog-close routerLink="/home">Retourner à la vue initiale</button>
-  </div> -->
+    <img src="./assets/icon/woodenPopUp.png" class="dialog-image">
+    <!-- <div class="dialog-wrapper">
+          <p *ngIf="data.action === 'endGame'">{{ data.message }}</p>
+    
+          <button mat-button *ngIf="data.action === 'endGame'" mat-dialog-close routerLink="/home">Retourner à la vue initiale</button>
+      </div> -->
