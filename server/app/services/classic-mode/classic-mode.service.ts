@@ -23,23 +23,15 @@ export class ClassicModeService {
     }
 
     async createSoloRoom(socket: io.Socket, playerPayLoad: playerData, server: io.Server): Promise<void> {
-        const soloRoom = await this.roomsManagerService.createRoom(playerPayLoad.playerName, playerPayLoad.gameId);
-        if (soloRoom) {
-            soloRoom.clientGame.mode = GameModes.ClassicSolo;
-            soloRoom.player1.playerId = socket.id;
-            this.roomsManagerService.updateRoom(soloRoom);
-            server.to(socket.id).emit(RoomEvents.RoomSoloCreated, soloRoom.roomId);
-        }
+        const soloRoomId = await this.createClassicRoom(socket, playerPayLoad, GameModes.ClassicSolo);
+        if (!soloRoomId) return;
+        server.to(socket.id).emit(RoomEvents.RoomSoloCreated, soloRoomId);
     }
 
     async createOneVsOneRoom(socket: io.Socket, playerPayLoad: playerData, server: io.Server) {
-        const oneVsOneRoom = await this.roomsManagerService.createRoom(playerPayLoad.playerName, playerPayLoad.gameId);
-        if (oneVsOneRoom) {
-            oneVsOneRoom.clientGame.mode = GameModes.ClassicOneVsOne;
-            oneVsOneRoom.player1.playerId = socket.id;
-            this.roomsManagerService.updateRoom(oneVsOneRoom);
-            server.to(socket.id).emit(RoomEvents.RoomOneVsOneCreated, oneVsOneRoom.roomId);
-        }
+        const oneVsOneRoomId = await this.createClassicRoom(socket, playerPayLoad, GameModes.ClassicOneVsOne);
+        if (!oneVsOneRoomId) return;
+        server.to(socket.id).emit(RoomEvents.RoomOneVsOneCreated, oneVsOneRoomId);
     }
 
     deleteCreatedRoom(hostId: string, roomId: string, server: io.Server): void {
@@ -67,7 +59,8 @@ export class ClassicModeService {
             socket.rooms.delete(roomId);
         } else if (halfDifferences === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicOneVsOne) {
             this.endGame(room, player, server);
-            socket.rooms.delete(roomId);
+            server.sockets.sockets.get(room.player2.playerId)?.rooms.delete(roomId);
+            server.sockets.sockets.get(room.player1.playerId)?.rooms.delete(roomId);
         }
     }
 
@@ -120,6 +113,7 @@ export class ClassicModeService {
             const localMessage = this.messageManager.getQuitMessage(player.name);
             server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
             server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
+            server.sockets.sockets.get(player.playerId)?.rooms.delete(roomId);
         }
         socket.rooms.delete(roomId);
         this.roomsManagerService.deleteRoom(roomId);
@@ -143,5 +137,13 @@ export class ClassicModeService {
             this.playersListManagerService.deleteJoinedPlayerByPlayerId(socket.id, createdGameId);
             this.playersListManagerService.getWaitingPlayerNameList(hostId, createdGameId, server);
         }
+    }
+
+    private async createClassicRoom(socket: io.Socket, playerPayLoad: playerData, gameMode: GameModes): Promise<string> {
+        const classicRoom = await this.roomsManagerService.createRoom(playerPayLoad.playerName, playerPayLoad.gameId, gameMode);
+        if (!classicRoom) return;
+        classicRoom.player1.playerId = socket.id;
+        this.roomsManagerService.updateRoom(classicRoom);
+        return classicRoom.roomId;
     }
 }

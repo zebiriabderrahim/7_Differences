@@ -18,8 +18,11 @@ export class RoomsManagerService {
         this.rooms = new Map<string, GameRoom>();
     }
 
-    async createRoom(playerName: string, gameId: string): Promise<GameRoom> {
-        const game = await this.gameService.getGameById(gameId);
+    async createRoom(playerName: string, gameId: string, gameMode: GameModes): Promise<GameRoom> {
+        const game =
+            gameMode === GameModes.LimitedSolo || gameMode === GameModes.LimitedCoop
+                ? await this.gameService.getRandomGame([])
+                : await this.gameService.getGameById(gameId);
         if (!game) return;
         const gameConstants = await this.gameService.getGameConstants();
         const diffData = { currentDifference: [], differencesFound: 0 } as Differences;
@@ -33,6 +36,7 @@ export class RoomsManagerService {
             player1: player,
             gameConstants,
         };
+        room.clientGame.mode = gameMode;
         return room;
     }
 
@@ -58,10 +62,18 @@ export class RoomsManagerService {
     }
 
     getHostIdByGameId(gameId: string): string {
-        const roomTarget = Array.from(this.rooms.values()).find(
-            (room) => room.clientGame.id === gameId && room.clientGame.mode === GameModes.ClassicOneVsOne && room.timer === 0,
-        );
+        const roomTarget = Array.from(this.rooms.values()).find((room) => room.clientGame.id === gameId);
         return roomTarget?.player1.playerId;
+    }
+
+    getLimitedRoom(): GameRoom {
+        return Array.from(this.rooms.values()).find((room) => room.clientGame.mode === GameModes.LimitedCoop && !room.player2);
+    }
+
+    getAllLimitedRoomIds(): string[] {
+        return Array.from(this.rooms.values())
+            .filter((room) => room.clientGame.mode.startsWith('Limited'))
+            .map((room) => room.roomId);
     }
 
     addAcceptedPlayer(roomId: string, player: Player): void {
@@ -139,7 +151,7 @@ export class RoomsManagerService {
         for (const [roomId, room] of this.rooms) {
             if (room.clientGame.mode === GameModes.ClassicSolo || (room.player2 && room.clientGame.mode === GameModes.ClassicOneVsOne)) {
                 this.updateTimer(roomId, server);
-            } else if (room.clientGame.mode === GameModes.LimitedCoop || room.clientGame.mode === GameModes.LimitedSolo) {
+            } else if (room.clientGame.mode === GameModes.LimitedSolo || (room.player2 && room.clientGame.mode === GameModes.LimitedCoop)) {
                 this.countdown(roomId, server);
             }
         }
@@ -160,14 +172,30 @@ export class RoomsManagerService {
         }
     }
 
-    async changeGameOfRoom(roomId: string, gameId: string): Promise<void> {
-        const game = await this.gameService.getGameById(gameId);
-        if (!game) return;
+    addHintPenalty(socket: io.Socket, server: io.Server): void {
+        const roomId = this.getRoomIdFromSocket(socket);
         const room = this.getRoomById(roomId);
         if (!room) return;
+        if (room) {
+            let penaltyTime = room.gameConstants.penaltyTime;
+            if (room.clientGame.mode === GameModes.LimitedSolo || room.clientGame.mode === GameModes.LimitedCoop) {
+                penaltyTime = -penaltyTime;
+            }
+            room.timer += penaltyTime;
+            this.rooms.set(room.roomId, room);
+            server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
+        }
+    }
+
+    async loadNextGame(room: GameRoom, playedGameIds: string[]): Promise<string> {
+        const game = await this.gameService.getRandomGame(playedGameIds);
+        if (!game) return;
+        const gameMode = room.clientGame.mode;
         room.clientGame = this.buildClientGameVersion(game);
+        room.clientGame.mode = gameMode;
         room.originalDifferences = structuredClone(JSON.parse(fs.readFileSync(`assets/${game.name}/differences.json`, 'utf-8')));
         this.updateRoom(room);
+        return game._id.toString();
     }
 
     private updateTimer(roomId: string, server: io.Server): void {
@@ -181,11 +209,22 @@ export class RoomsManagerService {
 
     private countdown(roomId: string, server: io.Server): void {
         const room = this.rooms.get(roomId);
-        if (room && room.timer > 0) {
-            room.timer--;
-            this.rooms.set(room.roomId, room);
-            server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
-        }
+        if (!room || room.timer === 0) return;
+
+        room.timer--;
+        this.rooms.set(room.roomId, room);
+        server.to(room.roomId)?.emit(GameEvents.TimerUpdate, room.timer);
+
+        if (room.timer === 0) this.countdownIsOver(roomId, server);
+    }
+
+    private countdownIsOver(roomId: string, server: io.Server): void {
+        const room = this.rooms.get(roomId);
+        room.endMessage = 'Temps écoulé !';
+        server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
+        this.deleteRoom(room.roomId);
+        server.sockets.sockets.get(room.player1.playerId)?.rooms.delete(roomId);
+        server.sockets.sockets.get(room.player2.playerId)?.rooms.delete(roomId);
     }
 
     private generateRoomId(): string {

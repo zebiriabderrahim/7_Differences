@@ -1,10 +1,12 @@
+/* eslint-disable max-params */
+// gateway needs to be injected all the services that it needs to use
 import { ClassicModeService } from '@app/services/classic-mode/classic-mode.service';
 import { LimitedModeService } from '@app/services/limited-mode/limited-mode.service';
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { Coordinate } from '@common/coordinate';
 import { GameCardEvents, GameEvents, MessageEvents, PlayerEvents, RoomEvents } from '@common/enums';
-import { ChatMessage, playerData } from '@common/game-interfaces';
+import { ChatMessage, LimitedGameDetails, playerData } from '@common/game-interfaces';
 import { Injectable, Logger } from '@nestjs/common';
 import {
     ConnectedSocket,
@@ -29,8 +31,7 @@ import { DELAY_BEFORE_EMITTING_TIME } from './game.gateway.constants';
 @Injectable()
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
     @WebSocketServer() private server: Server;
-    // Services needed for this gateway
-    // eslint-disable-next-line max-params
+
     constructor(
         private readonly logger: Logger,
         private readonly classicModeService: ClassicModeService,
@@ -55,13 +56,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(RoomEvents.CreateSoloLimitedRoom)
-    async createSoloLimitedRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerName: string) {
-        await this.limitedModeService.createSoloLimitedRoom(socket, playerName, this.server);
-    }
-
-    @SubscribeMessage(RoomEvents.CreateCoopLimitedRoom)
-    async createCoopLimitedRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
-        await this.limitedModeService.createOneVsOneLimitedRoom(socket, playerPayLoad, this.server);
+    async createLimitedRoom(@ConnectedSocket() socket: Socket, @MessageBody() gameDetails: LimitedGameDetails) {
+        await this.limitedModeService.createLimitedRoom(socket, gameDetails, this.server);
     }
 
     @SubscribeMessage(GameEvents.StartNextGame)
@@ -94,6 +90,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         const gameId = this.roomsManagerService.getRoomById(roomId)?.clientGame.id;
         this.playersListManagerService.cancelAllJoining(gameId, this.server);
         this.classicModeService.deleteCreatedRoom(socket.id, roomId, this.server);
+    }
+    @SubscribeMessage(RoomEvents.DeleteCreatedCoopRoom)
+    deleteCreatedCoopRoom(@ConnectedSocket() socket: Socket, @MessageBody() roomId: string) {
+        this.roomsManagerService.deleteRoom(roomId);
+        this.limitedModeService.deleteAvailableGame(roomId);
+        socket.leave(roomId);
     }
 
     @SubscribeMessage(PlayerEvents.GetJoinedPlayerNames)
@@ -139,6 +141,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         this.classicModeService.abandonGame(socket, this.server);
     }
 
+    @SubscribeMessage(RoomEvents.CheckIfAnyCoopRoomExists)
+    checkIfAnyCoopRoomExists(@ConnectedSocket() socket: Socket, @MessageBody() gameDetails: LimitedGameDetails) {
+        this.limitedModeService.checkIfAnyCoopRoomExists(socket, gameDetails, this.server);
+    }
+
     @SubscribeMessage(MessageEvents.LocalMessage)
     sendMessage(@ConnectedSocket() socket: Socket, @MessageBody() data: ChatMessage) {
         const roomId = this.roomsManagerService.getRoomIdFromSocket(socket);
@@ -155,6 +162,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage(GameCardEvents.GameCardCreated)
     gameCardCreated() {
         this.server.emit(GameCardEvents.RequestReload);
+        this.limitedModeService.handleCreateGame();
     }
 
     @SubscribeMessage(GameCardEvents.ResetTopTime)

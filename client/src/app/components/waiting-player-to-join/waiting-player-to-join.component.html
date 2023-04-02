@@ -3,7 +3,7 @@
     <h1 *ngIf="!refusedMessage"> En attente d’un deuxième joueur....</h1>
     <div *ngIf="playerNames && !refusedMessage ">
         <h2> Joueur(s) en attente : </h2>
-        <div *ngFor="let playerName of toArray(playerNames);let i = index">
+        <div *ngFor="let playerName of playerNames">
             <h1>Joueur: {{ playerName }}</h1>
             <button mat-button (click)="refusePlayer(playerName)">Refuser</button>
             <button mat-button mat-dialog-close (click)="acceptPlayer(playerName)">Accepter</button>

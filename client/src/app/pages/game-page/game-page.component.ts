@@ -9,7 +9,7 @@ import { GameAreaService } from '@app/services/game-area-service/game-area.servi
 import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { Coordinate } from '@common/coordinate';
-import { GameModes, MessageTag } from '@common/enums';
+import { MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, Players } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
@@ -134,7 +134,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         });
 
         this.isFirstDifferencesFoundSub = this.classicService.isFirstDifferencesFound$.subscribe((isFirstDifferencesFound) => {
-            if ((isFirstDifferencesFound && this.game.mode === GameModes.LimitedSolo) || this.game.mode === GameModes.LimitedCoop) {
+            if (isFirstDifferencesFound && this.game.mode.startsWith('Limited')) {
                 this.classicService.startNextGame();
             }
         });
