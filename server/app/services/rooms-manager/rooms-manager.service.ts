@@ -150,7 +150,11 @@ export class RoomsManagerService {
         const room = this.getRoomById(roomId);
         if (!room) return;
         if (room) {
-            room.timer += room.gameConstants.penaltyTime;
+            let penaltyTime = room.gameConstants.penaltyTime;
+            if (room.clientGame.mode === GameModes.LimitedSolo || room.clientGame.mode === GameModes.LimitedCoop) {
+                penaltyTime = -penaltyTime;
+            }
+            room.timer += penaltyTime;
             this.rooms.set(room.roomId, room);
             server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
         }
