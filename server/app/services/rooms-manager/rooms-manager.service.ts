@@ -109,11 +109,7 @@ export class RoomsManagerService {
         if (!room && room?.player1.playerId !== socket.id && room?.player2.playerId !== socket.id) return;
         socket.join(roomId);
         this.updateRoom(room);
-        server.to(roomId).emit(GameEvents.GameStarted, {
-            clientGame: room.clientGame,
-            players: { player1: room.player1, player2: room.player2 },
-            cheatDifferences: room.originalDifferences,
-        });
+        server.to(roomId).emit(GameEvents.GameStarted, room);
     }
 
     verifyCoords(socket: io.Socket, coords: Coordinate, server: io.Server): void {
@@ -166,24 +162,13 @@ export class RoomsManagerService {
             if (room.clientGame.mode === GameModes.LimitedSolo || room.clientGame.mode === GameModes.LimitedCoop) {
                 penaltyTime = -penaltyTime;
             }
-            room.timer += penaltyTime;
-            this.rooms.set(room.roomId, room);
-            server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
-        }
-    }
-
-    addHintPenalty(socket: io.Socket, server: io.Server): void {
-        const roomId = this.getRoomIdFromSocket(socket);
-        const room = this.getRoomById(roomId);
-        if (!room) return;
-        if (room) {
-            let penaltyTime = room.gameConstants.penaltyTime;
-            if (room.clientGame.mode === GameModes.LimitedSolo || room.clientGame.mode === GameModes.LimitedCoop) {
-                penaltyTime = -penaltyTime;
+            if (room.timer + penaltyTime < 0) {
+                this.countdownIsOver(roomId, server);
+            } else {
+                room.timer += penaltyTime;
+                this.rooms.set(room.roomId, room);
+                server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
             }
-            room.timer += penaltyTime;
-            this.rooms.set(room.roomId, room);
-            server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
         }
     }
 
@@ -224,7 +209,9 @@ export class RoomsManagerService {
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
         this.deleteRoom(room.roomId);
         server.sockets.sockets.get(room.player1.playerId)?.rooms.delete(roomId);
-        server.sockets.sockets.get(room.player2.playerId)?.rooms.delete(roomId);
+        if (room.player2) {
+            server.sockets.sockets.get(room.player2.playerId)?.rooms.delete(roomId);
+        }
     }
 
     private generateRoomId(): string {

@@ -10,7 +10,7 @@ import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { Coordinate } from '@common/coordinate';
 import { MessageTag } from '@common/enums';
-import { ChatMessage, ClientSideGame, Players } from '@common/game-interfaces';
+import { ChatMessage, ClientSideGame, GameConfigConst, Players } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -60,6 +60,10 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
 
     get differences(): Coordinate[][] {
         return this.classicService.differences;
+    }
+
+    get gameConstants(): GameConfigConst {
+        return this.classicService.gameConstants;
     }
 
     @HostListener('window:keydown', ['$event'])
