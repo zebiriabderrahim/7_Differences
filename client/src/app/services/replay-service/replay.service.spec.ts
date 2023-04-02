@@ -145,7 +145,26 @@ describe('ReplayService', () => {
         expect(gameAreaServiceSpy.replaceDifference).toHaveBeenCalledWith(replayEvent.data as Coordinate[]);
     });
 
-    it('should handle ClickError action', () => {});
+    it('should handle ClickError action', () => {
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.ClickError,
+            data: {
+                isMainCanvas: true,
+                pos: { x: 10, y: 20 },
+            } as ClickErrorData,
+            timestamp: 0,
+        };
+
+        // Call replaySwitcher with the ClickError event
+        service.replaySwitcher(replayEvent);
+
+        // The soundService and gameAreaService methods should be called
+        expect(soundServiceSpy.playErrorSound).toHaveBeenCalled();
+        expect(gameAreaServiceSpy.showError).toHaveBeenCalledWith(
+            (replayEvent.data as ClickErrorData).isMainCanvas,
+            (replayEvent.data as ClickErrorData).pos,
+        );
+    });
 
     it('should handle CaptureMessage action', () => {});
 
