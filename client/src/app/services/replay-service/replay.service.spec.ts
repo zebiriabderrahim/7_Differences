@@ -307,7 +307,16 @@ describe('ReplayService', () => {
     });
 
     it('should call toggleCheatMode and flashCorrectPixels when isCheatMode and isDifferenceFound are true', () => {
-        
+        service['replayInterval'] = replayIntervalMock;
+
+        service['isCheatMode'] = true;
+        service['isDifferenceFound'] = true;
+
+        service.resumeReplay();
+
+        expect(gameAreaServiceSpy.toggleCheatMode).toHaveBeenCalledWith(service['currentCoords'], service['replaySpeed']);
+        expect(gameAreaServiceSpy.flashCorrectPixels).toHaveBeenCalledWith(service['currentCoords'], service['replaySpeed'], false);
+        expect(replayIntervalMock.resume).toHaveBeenCalled();
     });
 
 });
