@@ -193,7 +193,6 @@ export class RoomsManagerService {
         room.endMessage = 'Temps écoulé !';
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
         this.deleteRoom(room.roomId);
-        //to optimize
         server.sockets.sockets.get(room.player1.playerId)?.rooms.delete(roomId);
         server.sockets.sockets.get(room.player2.playerId)?.rooms.delete(roomId);
     }
