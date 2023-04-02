@@ -274,10 +274,15 @@ describe('ReplayService', () => {
             timestamp: 0,
         };
 
-        const initialReplayOpponentDifferenceFound = service['replayOpponentDifferenceFound'].value;
+        const opponentDifferenceFoundValues: number[] = [];
+        service['replayOpponentDifferenceFound$'].subscribe((value) => {
+            opponentDifferenceFoundValues.push(value);
+        });
+
+        expect(opponentDifferenceFoundValues).toEqual([0]);
 
         service.replaySwitcher(replayEvent);
 
-        expect(service['replayOpponentDifferenceFound'].value).toBe(initialReplayOpponentDifferenceFound + (replayEvent.data as number));
+        expect(opponentDifferenceFoundValues).toEqual([0, replayEvent.data as number]);
     });
 });
