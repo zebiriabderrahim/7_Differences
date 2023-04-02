@@ -1,5 +1,5 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TEN_SECONDS } from '@app/constants/constants';
@@ -25,10 +25,14 @@ describe('WaitingPlayerToJoinComponent', () => {
             gameId: 'test-game-id',
             playerNamesList: ['Alice', 'Bob'],
         });
-        roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['refusePlayer', 'acceptPlayer', 'deleteCreatedOneVsOneRoom'], {
-            joinedPlayerNamesByGameId$: joinedPlayerNamesMock,
-            deletedGameId$: deletedGameIdMock,
-        });
+        roomManagerServiceSpy = jasmine.createSpyObj(
+            'RoomManagerService',
+            ['refusePlayer', 'acceptPlayer', 'deleteCreatedOneVsOneRoom', 'getJoinedPlayerNames'],
+            {
+                joinedPlayerNamesByGameId$: joinedPlayerNamesMock,
+                deletedGameId$: deletedGameIdMock,
+            },
+        );
         clientSocketServiceSpy = jasmine.createSpyObj('ClientSocketService', ['send', 'disconnect']);
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed', 'close']);
         dialogRefSpy.afterClosed.and.returnValue(of('dialog closed'));
