@@ -135,4 +135,7 @@ describe('ReplayService', () => {
 
     it('should handle DeactivateCheat action', () => {
     });
+
+    it('should handle TimerUpdate action', () => {
+    });
 });
