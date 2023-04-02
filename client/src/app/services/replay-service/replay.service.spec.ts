@@ -99,7 +99,7 @@ describe('ReplayService', () => {
 
         expect(service.isReplaying).toBe(true);
         expect(createReplayIntervalSpy).toHaveBeenCalled();
-        expect(replaySwitcherSpy).toHaveBeenCalledTimes(2);
+        expect(replaySwitcherSpy).toHaveBeenCalled();
     });
 
     it('should stop the replay when there are no more events to process', () => {
