@@ -52,8 +52,8 @@
         <button mat-raised-button *ngIf="router.url === '/selection'" (click)="playSolo()">Jouer</button>
         <button mat-raised-button *ngIf="router.url === '/selection'"
         (click)="isAvailableToJoin()?joinOneVsOne():createOneVsOne()">{{isAvailableToJoin()?"Joindre":"Creer"}} </button>
-        <button mat-raised-button *ngIf="router.url === '/config'" (click)="deleteGameCard()">Supprimer</button>
-        <button mat-raised-button *ngIf="router.url === '/config'" (click)="resetTopTime()">Réinitialiser</button>
+        <button mat-raised-button *ngIf="router.url === '/config'" (click)="openConfirmationDialog(actions.DeleteGame)">Supprimer</button>
+        <button mat-raised-button *ngIf="router.url === '/config'" (click)="openConfirmationDialog(actions.ResetTopTime)">Réinitialiser</button>
     </div>
 </div>
 
