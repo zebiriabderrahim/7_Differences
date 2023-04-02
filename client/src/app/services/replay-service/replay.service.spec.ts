@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+// Need to mock functions
 import { TestBed } from '@angular/core/testing';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
@@ -74,6 +76,22 @@ describe('ReplayService', () => {
         expect(service.isReplaying).toBe(true);
         expect(createReplayIntervalSpy).toHaveBeenCalled();
         expect(replaySwitcherSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call createReplayInterval and replaySwitcher when interval is paused and resumed', () => {
+        const createReplayIntervalSpy = spyOn(service, 'createReplayInterval').and.callThrough();
+        const replaySwitcherSpy = spyOn(service, 'replaySwitcher');
+
+        service['replayEvents'] = replayEventsStub;
+
+        service.startReplay();
+
+        service.pauseReplay();
+        service.resumeReplay();
+
+        expect(service.isReplaying).toBe(true);
+        expect(createReplayIntervalSpy).toHaveBeenCalled();
+        expect(replaySwitcherSpy).toHaveBeenCalledTimes(2);
     });
 
     it('should stop the replay when there are no more events to process', () => {
@@ -258,5 +276,5 @@ describe('ReplayService', () => {
         expect(service['replayOpponentDifferenceFound'].value).toBe(initialReplayOpponentDifferenceFound + (replayEvent.data as number));
     });
 
-    it('should handle UseHint action', () => {});
+
 });
