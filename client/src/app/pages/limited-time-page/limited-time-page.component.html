@@ -6,10 +6,10 @@
     <section id="server-message" class="flex-column section">
         <h2>Choisis ton mode de jeu en temps limité :</h2>
         <div class="flex-row">
-            <button mat-raised-button class="button" (click)="playLimitedSolo()">
+            <button mat-raised-button class="button" (click)="playLimited(gameModes.LimitedSolo)">
                 <span id = "solo">Solo</span>
             </button>
-            <button class="button">
+            <button mat-raised-button class="button" (click)="playLimited(gameModes.LimitedCoop)">
                 <span id = "coop">Coopérative</span>
             </button>
         </div>
