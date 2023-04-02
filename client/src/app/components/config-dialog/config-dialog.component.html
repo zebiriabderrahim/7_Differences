@@ -1,8 +1,8 @@
 <img src="/../assets/gameSheet.png" class="dialog-image">
 <div mat-dialog-content>
-    <form [formGroup]="configForm" (ngSubmit)="onSubmit()">
+    <form class="config-form" [formGroup]="configForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="outline">
-          <mat-label>Temps initial du compte à rebours</mat-label>
+          <mat-label class="large-label">Temps initial du compte à rebours</mat-label>
           <input matInput type="number" formControlName="countdownTime" required>
           <mat-hint>La valeur du compte à rebours doit être comprise entre 0 et 60.</mat-hint>
           <mat-error *ngIf="configForm.controls.countdownTime.errors?.min || configForm.controls.countdownTime.errors?.max">
@@ -10,7 +10,7 @@
           </mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Temps de pénalité pour l’utilisation d’un indice</mat-label>
+          <mat-label class="large-label">Temps de pénalité pour l’utilisation d’un indice</mat-label>
           <input matInput type="number" formControlName="penaltyTime" required>
           <mat-hint>La valeur du temps de pénalité doit être comprise entre 0 et 10.</mat-hint>
           <mat-error *ngIf="configForm.controls.penaltyTime.errors?.min || configForm.controls.penaltyTime.errors?.max">
@@ -18,7 +18,7 @@
           </mat-error> 
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Temps gagné avec la découverte d’une différence</mat-label>
+          <mat-label class="large-label">Temps gagné avec la découverte d’une différence</mat-label>
           <input matInput type="number" formControlName="bonusTime" required>
           <mat-hint>La valeur du temps gagné doit être comprise entre 0 et 10.</mat-hint>
           <mat-error *ngIf="configForm.controls.bonusTime.errors?.min || configForm.controls.bonusTime.errors?.max">
