@@ -1,0 +1,54 @@
+@import url('https://fonts.cdnfonts.com/css/troika-2');
+* {
+    font-family: 'Troika', sans-serif;
+    font-size: 20px;
+}
+
+*:not(#selection) {
+    z-index: 1;
+}
+
+::ng-deep .mat-dialog-container {
+    background: none;
+    box-shadow: none;
+}
+
+::ng-deep .mat-form-field-appearance-outline {
+    height: 140px !important;
+    width: 650px !important; 
+}
+
+mat-input {
+    font-size: 25px;
+}
+
+mat-hint {
+    font-size: 20px; 
+}
+
+mat-error {
+    font-size: 20px;
+}
+
+.large-label {
+    font-size: 30px;
+}
+
+.dialog-image {
+    position: absolute;
+    top: 30px;
+    left: 50.7%;
+    transform: translateX(-50%) rotate(90deg);
+    width: 45%;
+    height: 100%;
+}
+
+.mat-form-field {
+    display: block;
+    padding-top: 15px;
+    padding-left: 15px;
+    margin-bottom: 25px; 
+    width: 265px;
+    font-family: 'Troika', sans-serif;
+}
+  
