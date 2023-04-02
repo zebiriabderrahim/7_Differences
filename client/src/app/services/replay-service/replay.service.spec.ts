@@ -306,4 +306,8 @@ describe('ReplayService', () => {
         expect(replayIntervalMock.pause).toHaveBeenCalled();
     });
 
+    it('should call toggleCheatMode and flashCorrectPixels when isCheatMode and isDifferenceFound are true', () => {
+        
+    });
+
 });
