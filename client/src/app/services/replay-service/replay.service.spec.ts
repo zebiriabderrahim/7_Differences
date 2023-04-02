@@ -322,6 +322,8 @@ describe('ReplayService', () => {
     it('should set replaySpeed to SPEED_X2', () => {
     });
 
+    it('should set replaySpeed to SPEED_X4', () => {
+    });
 
 
 });
