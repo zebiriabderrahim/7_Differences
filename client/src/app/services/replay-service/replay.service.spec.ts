@@ -255,11 +255,16 @@ describe('ReplayService', () => {
             timestamp: 0,
         };
 
-        const initialReplayDifferenceFound = service['replayDifferenceFound'].value;
+        const differenceFoundValues: number[] = [];
+        service['replayDifferenceFound$'].subscribe((value) => {
+            differenceFoundValues.push(value);
+        });
+
+        expect(differenceFoundValues).toEqual([0]);
 
         service.replaySwitcher(replayEvent);
 
-        expect(service['replayDifferenceFound'].value).toBe(initialReplayDifferenceFound + (replayEvent.data as number));
+        expect(differenceFoundValues).toEqual([0, replayEvent.data as number]);
     });
 
     it('should handle OpponentDifferencesFoundUpdate action', () => {
@@ -275,6 +280,4 @@ describe('ReplayService', () => {
 
         expect(service['replayOpponentDifferenceFound'].value).toBe(initialReplayOpponentDifferenceFound + (replayEvent.data as number));
     });
-
-
 });
