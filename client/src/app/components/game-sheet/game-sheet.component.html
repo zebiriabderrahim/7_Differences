@@ -1,10 +1,8 @@
 <div *ngIf="game" class="gameSheet">
-    <svg class="background">
-        <image href="./assets/gameSheet.svg"/>
-    </svg>
     <div class="gameContainer">
+        <img *ngIf="game.difficultyLevel === true" class="background"  alt="background-image" src="./assets/background/gameSheetDifficile.png" />
+        <img *ngIf="game.difficultyLevel === false" class="background"  alt="background-image" src="./assets/background/gameSheetFacile.png" />
         <h1 class="title">{{ game.name }}</h1>
-        <h2 class="difficulty">{{ game.difficultyLevel ? ' Difficile' : ' Facile' }}</h2>
         <img class="thumbnail" [src]="url" alt="track" />
         <div class="gameInfo">
             <div class="ranking">
@@ -12,15 +10,15 @@
                     <h3>Top Solo</h3>
                     <div class="topText Solo" *ngFor="let player of game.soloTopTime; index as i">
                         <ng-container *ngIf="i === 0">
-                            <img class="gold" src="./assets/icon/gold.png" />
+                            <img class="gold" alt="gold" src="./assets/icon/gold.png" />
                         </ng-container>
                         <ng-container *ngIf="i === 1">
-                            <img class="argent" src="./assets/icon/argent.png" />
+                            <img class="argent" alt="argent" src="./assets/icon/argent.png" />
                         </ng-container>
                         <ng-container *ngIf="i === 2">
-                            <img class="bronze" src="./assets/icon/bronze.png" />
+                            <img class="bronze" alt="bronze" src="./assets/icon/bronze.png" />
                         </ng-container>
-                        &nbsp;
+                        &nbsp;&nbsp;&nbsp;
                         &nbsp;&nbsp;<strong>{{ player.name }}</strong>&nbsp;&nbsp; {{ player.time*1000|date:'mm:ss'}} &nbsp;&nbsp;
                     </div>
                 </div>
@@ -32,28 +30,23 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="buttonSection">
-        <!-- <div class="button-container">
-            <button mat-raised-button *ngIf="router.url === '/selection'" (click)="playSolo()"></button>
-            <button mat-raised-button *ngIf="router.url === '/config'" (click)="deleteGameCard()"></button>
-            <img class="playButton" src="./assets/PlayButton.png"/>
-            <div class="centered-reset" *ngIf="router.url === '/selection'">Jouer</div>
-            <div class="centered-reset" *ngIf="router.url === '/config'">Supprimer</div>
+        <div class="buttonSection">
+            <div class="button-container">
+                <button mat-raised-button *ngIf="router.url === '/selection'" (click)="playSolo()">Jouer</button>
+                <button mat-raised-button *ngIf="router.url === '/config'" (click)="openConfirmationDialog(actions.DeleteGame)">Supprimer</button>
+                <img class="playButton" alt="button" src="./assets/icon/PlayButton.png"/>
+                <div class="playText" *ngIf="router.url === '/selection'">Jouer</div>
+                <div class="deleteText" *ngIf="router.url === '/config'">Supprimer</div>
+            </div>
+            <div class="button-container">
+                <button mat-raised-button *ngIf="router.url === '/selection'"
+                (click)="isAvailableToJoin()?joinOneVsOne():createOneVsOne()">{{isAvailableToJoin()?"Joindre":"Creer"}} </button>
+                <button mat-raised-button *ngIf="router.url === '/config'" (click)="openConfirmationDialog(actions.ResetTopTime)">Réinitialiser</button>
+                <img class="createButton" alt="button" src="./assets/icon/CreateButton.png"/>
+                <div class="createText" *ngIf="router.url === '/selection'">{{isAvailableToJoin()?"Joindre":"Creer"}} </div>
+                <div class="reinitializeText" *ngIf="router.url === '/config'">Réinitialiser</div>
+            </div>
         </div>
-        <div class="button-container">
-            <button mat-raised-button *ngIf="router.url === '/selection'"
-            (click)="isAvailableToJoin()?joinOneVsOne():createOneVsOne()">{{isAvailableToJoin()?"Joindre":"Creer"}} </button>
-            <button mat-raised-button *ngIf="router.url === '/config'" (click)="resetTopTime()">Réinitialiser</button>
-            <img class="createButton" src="./assets/CreateButton.png"/>
-            <div class="centered-reset" *ngIf="router.url === '/selection'">{{isAvailableToJoin()?"Joindre":"Creer"}} </div>
-            <div class="centered-reset" *ngIf="router.url === '/config'">Réinitialiser</div>
-        </div> -->
-        <button mat-raised-button *ngIf="router.url === '/selection'" (click)="playSolo()">Jouer</button>
-        <button mat-raised-button *ngIf="router.url === '/selection'"
-        (click)="isAvailableToJoin()?joinOneVsOne():createOneVsOne()">{{isAvailableToJoin()?"Joindre":"Creer"}} </button>
-        <button mat-raised-button *ngIf="router.url === '/config'" (click)="openConfirmationDialog(actions.DeleteGame)">Supprimer</button>
-        <button mat-raised-button *ngIf="router.url === '/config'" (click)="openConfirmationDialog(actions.ResetTopTime)">Réinitialiser</button>
     </div>
 </div>
 

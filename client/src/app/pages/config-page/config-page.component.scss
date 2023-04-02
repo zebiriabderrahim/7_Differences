@@ -71,19 +71,18 @@
     width: 500px;
     height: 150px;
     margin-right: 40px;
-  }
-  
-  .button-container img {
+}
+
+.button-container img {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     transition: all 0.3s ease;
-  }
-  
-  
-  .button-container .centered-create {
+}
+
+.button-container .centered-create {
     position: absolute;
     font-size: 50px;
     top: 50%;
@@ -93,9 +92,9 @@
     width: 450px;
     color: white;
     font-family: 'Troika', sans-serif;
-  }
+}
 
-  .button-container .centered-reset {
+.button-container .centered-reset {
     position: absolute;
     font-size: 50px;
     top: 50%;

@@ -18,6 +18,7 @@ h1 {
     font-size: 180%;
     font-weight: 600;
     z-index: 2;
+    margin-top: 25px;
 }
 
 .difficulty {
@@ -52,6 +53,7 @@ h3 {
 
 .thumbnail {
     display: flex;
+    margin-top: 20px;
     padding: 3px 3px 3px;
     background-color: rgb(0, 0, 0);
     box-shadow: 0 1px 3px rgba(34, 25, 25, 0.4);
@@ -79,6 +81,8 @@ h3 {
 }
 
 .buttonSection {
+    display: flex;
+    flex-direction: row;
     margin-left: 5px;
     margin-right: 5px;
     text-align: center;
@@ -86,14 +90,17 @@ h3 {
 }
 
 .mat-raised-button {
-    padding: 10px;
-    min-width: 100px;
-    margin-left: 20px;
-    margin-right: 20px;
+    min-width: 130px;
+    min-height: 60px;
+    margin-left: 2px;
+    margin-right: 2px;
+    left: 0;
     background-color: #1778f2;
     color: #ffffff;
     z-index: 2;
+    opacity: 0;
 }
+
 
 .mat-raised-button:hover {
     background-color: #ffffff;
@@ -108,9 +115,8 @@ h3 {
 .background {
     position: absolute;
     top: 0;
-    right: 0;
     z-index: 0;
-    width: 100%;
+    width: 85%;
     height: 100%;
     object-fit: cover;
 }
@@ -120,7 +126,7 @@ h3 {
     width: 4%;
     height: 4%;
     left: 15%;
-    bottom: 37.5%;
+    bottom: 33%;
     z-index: 1;
 }
 
@@ -129,7 +135,7 @@ h3 {
     width: 4%;
     height: 4%;
     left: 15%;
-    bottom: 32.5%;
+    bottom: 28%;
     z-index: 1;
 }
 
@@ -138,15 +144,61 @@ h3 {
     width: 4%;
     height: 4%;
     left: 15%;
-    bottom: 27.5%;
+    bottom: 23%;
     z-index: 1;
 }
 
-.playButton {
+.button-container img {
     position: absolute;
-    width: 4%;
-    height: 4%;
-    left: 15%;
-    bottom: 22.5%;
-    z-index: 3;
+    transition: all 0.3s ease;
+}
+
+.button-container:hover img {
+    filter: drop-shadow(10px 10px 10px black);
+}
+
+.playButton {
+    width: 25%;
+    height: 15%;
+    left: 22%;
+    bottom: 7%;
+}
+
+.createButton {
+    width: 25%;
+    height: 15%;
+    right: 22%;
+    bottom: 7%;
+}
+
+.playText {
+    position: absolute;
+    font-size: 20px;
+    color: #ffffff;
+    bottom: 12%;
+    left: 30%;
+}
+
+.createText {
+    position: absolute;
+    font-size: 20px;
+    color: #ffffff;
+    bottom: 12%;
+    left: 61%;
+}
+
+.deleteText {
+    position: absolute;
+    font-size: 16px;
+    color: #ffffff;
+    bottom: 12%;
+    left: 26%;
+}
+
+.reinitializeText {
+    position: absolute;
+    font-size: 16px;
+    color: #ffffff;
+    bottom: 12%;
+    left: 55%;
 }
