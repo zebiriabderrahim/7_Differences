@@ -141,4 +141,7 @@ describe('ReplayService', () => {
 
     it('should handle DifferenceFoundUpdate action', () => {
     });
+
+    it('should handle OpponentDifferencesFoundUpdate action', () => {
+    });
 });
