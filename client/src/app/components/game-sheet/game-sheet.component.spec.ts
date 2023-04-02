@@ -11,7 +11,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { GameSheetComponent } from '@app/components/game-sheet/game-sheet.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { routes } from '@app/modules/app-routing.module';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { BehaviorSubject, of, Subject, Subscription } from 'rxjs';
@@ -49,7 +48,7 @@ describe('GameSheetComponent', () => {
             },
         );
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule.withRoutes(routes), BrowserAnimationsModule, MatDialogModule, HttpClientTestingModule, MatFormFieldModule],
+            imports: [RouterTestingModule.withRoutes(routes), BrowserAnimationsModule, MatDialogModule, HttpClientTestingModule],
             declarations: [GameSheetComponent],
             providers: [
                 CommunicationService,
