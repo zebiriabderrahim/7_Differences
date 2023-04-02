@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 // Need to mock functions
 import { TestBed } from '@angular/core/testing';
+import { SPEED_X1, SPEED_X2, SPEED_X4 } from '@app/constants/replay';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
@@ -295,10 +296,8 @@ describe('ReplayService', () => {
 
     it('should call toggleCheatMode and flashCorrectPixels when isCheatMode and isDifferenceFound are true', () => {
         service['replayInterval'] = replayIntervalMock;
-
         service['isCheatMode'] = true;
         service['isDifferenceFound'] = true;
-
         service.pauseReplay();
 
         expect(gameAreaServiceSpy.toggleCheatMode).toHaveBeenCalledWith(service['currentCoords'], service['replaySpeed']);
@@ -308,15 +307,19 @@ describe('ReplayService', () => {
 
     it('should call toggleCheatMode and flashCorrectPixels when isCheatMode and isDifferenceFound are true', () => {
         service['replayInterval'] = replayIntervalMock;
-
         service['isCheatMode'] = true;
         service['isDifferenceFound'] = true;
-
         service.resumeReplay();
 
         expect(gameAreaServiceSpy.toggleCheatMode).toHaveBeenCalledWith(service['currentCoords'], service['replaySpeed']);
         expect(gameAreaServiceSpy.flashCorrectPixels).toHaveBeenCalledWith(service['currentCoords'], service['replaySpeed'], false);
         expect(replayIntervalMock.resume).toHaveBeenCalled();
     });
+
+    it('should set replaySpeed to SPEED_X1', () => {
+    });
+
+
+
 
 });
