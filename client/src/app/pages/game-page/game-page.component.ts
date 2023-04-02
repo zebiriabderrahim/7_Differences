@@ -31,15 +31,12 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     player: string;
     players: Players;
     readonly canvasSize: CanvasMeasurements;
-    // private cheatDifferences: Coordinate[];
     private timerSub: Subscription;
     private gameSub: Subscription;
     private differenceSub: Subscription;
-    // private routeParamSub: Subscription;
     private messageSub: Subscription;
     private endGameSub: Subscription;
     private opponentDifferenceSub: Subscription;
-    private cheatDifferencesSub: Subscription;
     private isFirstDifferencesFoundSub: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
@@ -135,9 +132,6 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.opponentDifferenceSub = this.classicService.opponentDifferencesFound$.subscribe((opponentDifferencesFound) => {
             this.opponentDifferencesFound = opponentDifferencesFound;
         });
-        // this.cheatDifferencesSub = this.classicService.cheatDifferences$.subscribe((cheatDifferences) => {
-        //     this.cheatDifferences = cheatDifferences;
-        // });
 
         this.isFirstDifferencesFoundSub = this.classicService.isFirstDifferencesFound$.subscribe((isFirstDifferencesFound) => {
             if ((isFirstDifferencesFound && this.game.mode === GameModes.LimitedSolo) || this.game.mode === GameModes.LimitedCoop) {
@@ -175,11 +169,9 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.gameSub?.unsubscribe();
         this.timerSub?.unsubscribe();
         this.differenceSub?.unsubscribe();
-        // this.routeParamSub?.unsubscribe();
         this.messageSub?.unsubscribe();
         this.endGameSub?.unsubscribe();
         this.opponentDifferenceSub?.unsubscribe();
-        this.cheatDifferencesSub?.unsubscribe();
         this.isFirstDifferencesFoundSub?.unsubscribe();
         this.classicService.removeAllListeners();
     }

@@ -19,7 +19,6 @@ export class ClassicSystemService {
     private isLeftCanvas: boolean;
     private endMessage: Subject<string>;
     private players: Subject<Players>;
-    // private cheatDifferences: Subject<Coordinate[]>;
     private isFirstDifferencesFound: Subject<boolean>;
 
     constructor(
@@ -101,7 +100,6 @@ export class ClassicSystemService {
 
     handleRemoveDiff(data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }): void {
         if (data.playerId === this.getSocketId()) {
-            console.log('current difference: ', data.differencesData.currentDifference);
             this.replaceDifference(data.differencesData.currentDifference);
             this.differencesFound.next(data.differencesData.differencesFound);
             this.checkStatus();
@@ -110,7 +108,6 @@ export class ClassicSystemService {
             this.opponentDifferencesFound.next(data.differencesData.differencesFound);
         }
         this.differences = data.cheatDifferences;
-        // this.cheatDifferences.next(data.cheatDifferences);
     }
 
     abandonGame(): void {
@@ -143,7 +140,6 @@ export class ClassicSystemService {
             this.currentGame.next(data.clientGame);
             this.players.next(data.players);
             this.differences = data.cheatDifferences;
-            // this.cheatDifferences.next(data.cheatDifferences);
             if (data.players) {
                 this.players.next(data.players);
             }
