@@ -36,6 +36,7 @@ import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { WaitingForPlayerToJoinComponent } from './components/waiting-player-to-join/waiting-player-to-join.component';
 import { ConfigPageComponent } from './pages/config-page/config-page.component';
 import { LimitedTimePageComponent } from './pages/limited-time-page/limited-time-page.component';
+import { ConfigDialogComponent } from './components/config-dialog/config-dialog.component';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -65,6 +66,7 @@ import { LimitedTimePageComponent } from './pages/limited-time-page/limited-time
         CanvasMiddleButtonsComponent,
         DeleteResetConfirmationDialogComponent,
         LimitedTimePageComponent,
+        ConfigDialogComponent,
     ],
     imports: [
         AppMaterialModule,
