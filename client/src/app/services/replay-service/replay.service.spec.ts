@@ -325,5 +325,7 @@ describe('ReplayService', () => {
     it('should set replaySpeed to SPEED_X4', () => {
     });
 
+    it('should reset replay timer and found differences', () => {
+    });
 
 });
