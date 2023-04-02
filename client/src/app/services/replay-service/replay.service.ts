@@ -151,7 +151,6 @@ export class ReplayService {
                 this.replayOpponentDifferenceFound.next(replayData.data as number);
                 break;
             case ReplayActions.UseHint:
-                console.log('UseHint');
                 break;
             default:
                 break;
