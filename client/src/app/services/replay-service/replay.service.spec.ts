@@ -230,7 +230,19 @@ describe('ReplayService', () => {
         expect(timerValues).toEqual([0, 1]);
     });
 
-    it('should handle DifferenceFoundUpdate action', () => {});
+    it('should handle DifferenceFoundUpdate action', () => {
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.DifferenceFoundUpdate,
+            data: 3,
+            timestamp: 0,
+        };
+
+        const initialReplayDifferenceFound = service['replayDifferenceFound'].value;
+
+        service.replaySwitcher(replayEvent);
+
+        expect(service['replayDifferenceFound'].value).toBe(initialReplayDifferenceFound + (replayEvent.data as number));
+    });
 
     it('should handle OpponentDifferencesFoundUpdate action', () => {});
 
