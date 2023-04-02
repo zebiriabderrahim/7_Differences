@@ -332,6 +332,11 @@ describe('ReplayService', () => {
     });
 
     it('should reset replay timer and found differences', () => {
+        service.restartTimer();
+
+        expect(service['replayOpponentDifferenceFound'].value).toBe(0);
+        expect(service['replayDifferenceFound'].value).toBe(0);
+        expect(service['replayTimer'].value).toBe(0);
     });
 
     it('should reset replay properties', () => {
