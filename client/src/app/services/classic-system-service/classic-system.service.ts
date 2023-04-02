@@ -138,15 +138,12 @@ export class ClassicSystemService {
 
     manageSocket(): void {
         this.clientSocket.on(GameEvents.GameStarted, (room: GameRoom) => {
-            // const players: Players = ;
             this.currentGame.next(room.clientGame);
             this.gameConstants = room.gameConstants;
             this.players.next({ player1: room.player1, player2: room.player2 });
             this.differences = room.originalDifferences;
-            // if (players) {
-            //     this.players.next(players);
-            // }
         });
+
         this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
             this.handleRemoveDiff(data);
         });
