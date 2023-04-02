@@ -29,6 +29,13 @@ describe('ReplayService', () => {
         { timestamp: 0, action: ReplayActions.ClickError, data: { isMainCanvas: true, pos: { x: 0, y: 0 } } as ClickErrorData },
     ];
 
+    const replayIntervalMock = {
+        start: jasmine.createSpy('start'),
+        pause: jasmine.createSpy('pause'),
+        resume: jasmine.createSpy('resume'),
+        cancel: jasmine.createSpy('cancel'),
+    };
+
     beforeEach(async () => {
         gameAreaServiceSpy = jasmine.createSpyObj(
             'GameAreaService',
@@ -285,4 +292,18 @@ describe('ReplayService', () => {
 
         expect(opponentDifferenceFoundValues).toEqual([0, replayEvent.data as number]);
     });
+
+    it('should call toggleCheatMode and flashCorrectPixels when isCheatMode and isDifferenceFound are true', () => {
+        service['replayInterval'] = replayIntervalMock;
+
+        service['isCheatMode'] = true;
+        service['isDifferenceFound'] = true;
+
+        service.pauseReplay();
+
+        expect(gameAreaServiceSpy.toggleCheatMode).toHaveBeenCalledWith(service['currentCoords'], service['replaySpeed']);
+        expect(gameAreaServiceSpy.flashCorrectPixels).toHaveBeenCalledWith(service['currentCoords'], service['replaySpeed'], true);
+        expect(replayIntervalMock.pause).toHaveBeenCalled();
+    });
+
 });
