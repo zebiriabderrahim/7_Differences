@@ -244,9 +244,19 @@ describe('ReplayService', () => {
         expect(service['replayDifferenceFound'].value).toBe(initialReplayDifferenceFound + (replayEvent.data as number));
     });
 
-    it('should handle OpponentDifferencesFoundUpdate action', () => {});
+    it('should handle OpponentDifferencesFoundUpdate action', () => {
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.OpponentDifferencesFoundUpdate,
+            data: 2,
+            timestamp: 0,
+        };
 
-    it('should handle DeactivateCheat action', () => {});
+        const initialReplayOpponentDifferenceFound = service['replayOpponentDifferenceFound'].value;
+
+        service.replaySwitcher(replayEvent);
+
+        expect(service['replayOpponentDifferenceFound'].value).toBe(initialReplayOpponentDifferenceFound + (replayEvent.data as number));
+    });
 
     it('should handle UseHint action', () => {});
 });
