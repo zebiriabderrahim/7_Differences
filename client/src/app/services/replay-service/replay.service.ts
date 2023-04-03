@@ -158,7 +158,6 @@ export class ReplayService {
                 break;
             case ReplayActions.UseHint:
                 this.gameAreaService.flashCorrectPixels(replayData.data as Coordinate[], this.replaySpeed);
-                this.classicSystemService.requestHint();
                 break;
             default:
                 break;
