@@ -112,11 +112,12 @@ export class ClassicSystemService {
         if (data.playerId === this.getSocketId()) {
             this.replaceDifference(data.differencesData.currentDifference);
             this.differencesFound.next(data.differencesData.differencesFound);
-            this.replayEventsSubject.next({
+            const replayEvent: ReplayEvent = {
                 action: ReplayActions.DifferenceFoundUpdate,
                 timestamp: Date.now(),
                 data: data.differencesData.differencesFound,
-            });
+            };
+            this.replayEventsSubject.next(replayEvent);
             this.checkStatus();
         } else if (data.differencesData.currentDifference.length !== 0) {
             this.replaceDifference(data.differencesData.currentDifference);
