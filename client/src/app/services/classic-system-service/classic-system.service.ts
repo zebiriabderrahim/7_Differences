@@ -122,11 +122,12 @@ export class ClassicSystemService {
         } else if (data.differencesData.currentDifference.length !== 0) {
             this.replaceDifference(data.differencesData.currentDifference);
             this.opponentDifferencesFound.next(data.differencesData.differencesFound);
-            this.replayEventsSubject.next({
-                action: ReplayActions.OpponentDifferencesFoundUpdate,
+            const replayEvent: ReplayEvent = {
+                action: ReplayActions.DifferenceFoundUpdate,
                 timestamp: Date.now(),
                 data: data.differencesData.differencesFound,
-            });
+            };
+            this.replayEventsSubject.next(replayEvent);
         }
         this.differences = data.cheatDifferences;
     }
