@@ -17,7 +17,7 @@
             </h1>
         </div>
         <app-game-infos [game]="game" [differencesCount]="game.differencesCount" [gameConstants]="gameConstants"></app-game-infos>
-        <img *ngIf="!isThirdHintUsed && isThirdHintActive" id="raccoon" [src]="hintsAssets[proximity]" />
+        <img *ngIf="isThirdHintActive" id="raccoon" [src]="hintsAssets[proximity]" />
     </div>
     <div class="canvas-container">
         <div class="game-canvas">
