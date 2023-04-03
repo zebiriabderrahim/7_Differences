@@ -1,14 +1,17 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
-import { ChatMessage, ClientSideGame, Differences, GameEvents, MessageEvents, MessageTag, Players } from '@common/game-interfaces';
-import { filter, Subject } from 'rxjs';
+import { GameEvents, MessageEvents, MessageTag } from '@common/enums';
+import { ChatMessage, ClientSideGame, Differences, GameConfigConst, GameRoom, Players } from '@common/game-interfaces';
+import { Subject, filter } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
-export class ClassicSystemService implements OnDestroy {
+export class ClassicSystemService {
+    differences: Coordinate[][];
+    gameConstants: GameConfigConst;
     private timer: Subject<number>;
     private differencesFound: Subject<number>;
     private opponentDifferencesFound: Subject<number>;
@@ -17,7 +20,7 @@ export class ClassicSystemService implements OnDestroy {
     private isLeftCanvas: boolean;
     private endMessage: Subject<string>;
     private players: Subject<Players>;
-    private cheatDifferences: Subject<Coordinate[]>;
+    private isFirstDifferencesFound: Subject<boolean>;
 
     constructor(
         private readonly clientSocket: ClientSocketService,
@@ -31,7 +34,7 @@ export class ClassicSystemService implements OnDestroy {
         this.message = new Subject<ChatMessage>();
         this.endMessage = new Subject<string>();
         this.opponentDifferencesFound = new Subject<number>();
-        this.cheatDifferences = new Subject<Coordinate[]>();
+        this.isFirstDifferencesFound = new Subject<boolean>();
     }
 
     get currentGame$() {
@@ -60,19 +63,20 @@ export class ClassicSystemService implements OnDestroy {
         return this.players.asObservable();
     }
 
-    get cheatDifferences$() {
-        return this.cheatDifferences.asObservable();
+    get isFirstDifferencesFound$() {
+        return this.isFirstDifferencesFound.asObservable();
     }
 
     getSocketId(): string {
         return this.clientSocket.socket.id;
     }
 
-    createSoloGame(gameId: string, playerName: string): void {
-        this.clientSocket.send(GameEvents.CreateSoloGame, { gameId, playerName });
-    }
     startGame(): void {
         this.clientSocket.send(GameEvents.StartGameByRoomId);
+    }
+
+    startNextGame(): void {
+        this.clientSocket.send(GameEvents.StartNextGame);
     }
 
     checkStatus(): void {
@@ -88,14 +92,31 @@ export class ClassicSystemService implements OnDestroy {
             this.soundService.playErrorSound();
             this.gameAreaService.showError(this.isLeftCanvas);
         } else {
+            this.isFirstDifferencesFound.next(true);
             this.soundService.playCorrectSound();
             this.gameAreaService.setAllData();
             this.gameAreaService.replaceDifference(differences);
         }
     }
 
+    handleRemoveDiff(data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }): void {
+        if (data.playerId === this.getSocketId()) {
+            this.replaceDifference(data.differencesData.currentDifference);
+            this.differencesFound.next(data.differencesData.differencesFound);
+            this.checkStatus();
+        } else if (data.differencesData.currentDifference.length !== 0) {
+            this.replaceDifference(data.differencesData.currentDifference);
+            this.opponentDifferencesFound.next(data.differencesData.differencesFound);
+        }
+        this.differences = data.cheatDifferences;
+    }
+
     abandonGame(): void {
         this.clientSocket.send(GameEvents.AbandonGame);
+    }
+
+    requestHint(): void {
+        this.clientSocket.send(GameEvents.RequestHint);
     }
 
     setIsLeftCanvas(isLeft: boolean): void {
@@ -111,35 +132,23 @@ export class ClassicSystemService implements OnDestroy {
         this.clientSocket.send(MessageEvents.LocalMessage, newMessage);
     }
 
-    joinOneVsOneGame(gameId: string, playerName: string): void {
-        this.clientSocket.send(GameEvents.JoinOneVsOneGame, { gameId, playerName });
+    removeAllListeners() {
+        this.clientSocket.socket.off();
     }
 
     manageSocket(): void {
-        this.clientSocket.on(GameEvents.CreateSoloGame, (clientGame: ClientSideGame) => {
-            this.currentGame.next(clientGame);
+        this.clientSocket.on(GameEvents.GameStarted, (room: GameRoom) => {
+            this.currentGame.next(room.clientGame);
+            this.gameConstants = room.gameConstants;
+            this.players.next({ player1: room.player1, player2: room.player2 });
+            this.differences = room.originalDifferences;
         });
 
-        this.clientSocket.on(GameEvents.GameStarted, (data: { clientGame: ClientSideGame; players: Players; cheatDifferences: Coordinate[] }) => {
-            this.currentGame.next(data.clientGame);
-            this.cheatDifferences.next(data.cheatDifferences);
-            if (data.players) {
-                this.players.next(data.players);
-            }
-        });
-        this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[] }) => {
-            if (data.playerId === this.getSocketId()) {
-                this.replaceDifference(data.differencesData.currentDifference);
-                this.differencesFound.next(data.differencesData.differencesFound);
-                this.checkStatus();
-            } else if (data.differencesData.currentDifference.length !== 0) {
-                this.replaceDifference(data.differencesData.currentDifference);
-                this.opponentDifferencesFound.next(data.differencesData.differencesFound);
-            }
-            this.cheatDifferences.next(data.cheatDifferences);
+        this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
+            this.handleRemoveDiff(data);
         });
 
-        this.clientSocket.on(GameEvents.TimerStarted, (timer: number) => {
+        this.clientSocket.on(GameEvents.TimerUpdate, (timer: number) => {
             this.timer.next(timer);
         });
 
@@ -150,9 +159,5 @@ export class ClassicSystemService implements OnDestroy {
         this.clientSocket.on(MessageEvents.LocalMessage, (receivedMessage: ChatMessage) => {
             this.message.next(receivedMessage);
         });
-    }
-
-    ngOnDestroy(): void {
-        this.clientSocket.disconnect();
     }
 }

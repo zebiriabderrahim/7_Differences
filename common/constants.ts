@@ -199,3 +199,5 @@ export const GAME_HISTORY = [
         },
     },
 ];
+export const MAX_TIMES_INDEX = 2;
+export const NOT_FOUND = -1;

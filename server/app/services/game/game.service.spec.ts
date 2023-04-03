@@ -1,7 +1,9 @@
 import { Game } from '@app/model/database/game';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
+import { GameConstantsDto } from '@app/model/dto/game/game-constants.dto';
 import { DatabaseService } from '@app/services/database/database.service';
-import { CarouselPaginator, GameConfigConst } from '@common/game-interfaces';
+import { GameModes } from '@common/enums';
+import { CarouselPaginator, PlayerTime } from '@common/game-interfaces';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { GameService } from './game.service';
@@ -9,7 +11,14 @@ import { GameService } from './game.service';
 describe('GameService', () => {
     let gameService: GameService;
     let databaseService: SinonStubbedInstance<DatabaseService>;
-    const gameConfigConstTest: GameConfigConst = {
+
+    const defaultBestTimes: PlayerTime[] = [
+        { name: 'John Doe', time: 100 },
+        { name: 'Jane Doe', time: 200 },
+        { name: 'the scream', time: 250 },
+    ];
+
+    const gameConfigConstTest: GameConstantsDto = {
         countdownTime: 300,
         penaltyTime: 250,
         bonusTime: 100,
@@ -44,16 +53,16 @@ describe('GameService', () => {
         expect(gameService).toBeDefined();
     });
 
-    it('getConfigConstants() should call getConfigConstants() and return gameConfigConstTest as expected', () => {
-        databaseService.getConfigConstants.returns(gameConfigConstTest);
-        expect(gameService.getConfigConstants()).toEqual(gameConfigConstTest);
-        expect(databaseService.getConfigConstants.calledOnce).toBe(true);
+    it('getGameConstants() should call getConfigConstants() and return GameConstants as expected', async () => {
+        databaseService.getGameConstants.resolves(gameConfigConstTest);
+        expect(await gameService.getGameConstants()).toEqual(gameConfigConstTest);
+        expect(databaseService.getGameConstants.calledOnce).toBe(true);
     });
 
-    it('getConfigConstants() should throw NotFoundException when getConfigConstants() in databaseService unable to found GameConfigConst ', () => {
-        databaseService.getConfigConstants.returns(undefined);
-        expect(() => gameService.getConfigConstants()).toThrowError();
-        expect(databaseService.getConfigConstants.calledOnce).toBe(true);
+    it('getGameConstants() should throw NotFoundException when getGameConstants() in databaseService unable to found GameConfigConst ', async () => {
+        databaseService.getGameConstants.resolves(undefined);
+        expect(databaseService.getGameConstants.calledOnce).toBe(false);
+        expect(async () => await gameService.getGameConstants()).rejects.toThrowError();
     });
     it('getGamesCarousel() should call getGamesCarousel() and return testCarousel as expected ', async () => {
         databaseService.getGamesCarrousel.resolves(testCarousel);
@@ -106,5 +115,45 @@ describe('GameService', () => {
         await gameService.deleteGameById('1');
         expect(databaseService.deleteGameById.calledOnce).toBe(true);
         expect(databaseService.deleteGameById.calledWith('1')).toBe(true);
+    });
+
+    it('getTopTimesGameById () should call with the right arg getTopTimesGameById() and return testGame as expected', async () => {
+        databaseService.getTopTimesGameById.resolves(defaultBestTimes);
+        expect(await gameService.getTopTimesGameById('1', GameModes.ClassicOneVsOne)).toEqual(defaultBestTimes);
+        expect(databaseService.getTopTimesGameById.calledOnce).toBe(true);
+        expect(databaseService.getTopTimesGameById.calledWith('1')).toBe(true);
+    });
+
+    it('getTopTimesGameById () should throw HttpException when getTopTimesGameById() in databaseService unable to found Game', async () => {
+        databaseService.getTopTimesGameById.resolves(undefined);
+        expect(async () => await gameService.getTopTimesGameById('0', GameModes.ClassicOneVsOne)).rejects.toThrowError();
+        expect(databaseService.getTopTimesGameById.calledOnce).toBe(true);
+    });
+
+    it('updateTopTimesGameById () should call with the right arg updateTopTimesGameById() ', async () => {
+        databaseService.updateTopTimesGameById.resolves();
+        await gameService.updateTopTimesGameById('1', GameModes.ClassicOneVsOne, [{} as PlayerTime]);
+        expect(databaseService.updateTopTimesGameById.calledOnce).toBe(true);
+        expect(databaseService.updateTopTimesGameById.calledWith('1', GameModes.ClassicOneVsOne, [{} as PlayerTime])).toBe(true);
+    });
+
+    it('updateGameConstants () should call with the right arg updateGameConstants() ', async () => {
+        databaseService.updateGameConstants.resolves();
+        await gameService.updateGameConstants(gameConfigConstTest);
+        expect(databaseService.updateGameConstants.calledOnce).toBe(true);
+        expect(databaseService.updateGameConstants.calledWith(gameConfigConstTest)).toBe(true);
+    });
+
+    it('resetTopTimesGameById () should call with the right arg resetTopTimesGameById() ', async () => {
+        databaseService.resetTopTimesGameById.resolves();
+        await gameService.resetTopTimesGameById('1');
+        expect(databaseService.resetTopTimesGameById.calledOnce).toBe(true);
+        expect(databaseService.resetTopTimesGameById.calledWith('1')).toBe(true);
+    });
+
+    it('resetAllTopTimes () should call with the right arg resetAllTopTimes() ', async () => {
+        databaseService.resetAllTopTimes.resolves();
+        await gameService.resetAllTopTimes();
+        expect(databaseService.resetAllTopTimes.calledOnce).toBe(true);
     });
 });

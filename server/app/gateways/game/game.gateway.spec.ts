@@ -1,5 +1,6 @@
 import { ClassicModeService } from '@app/services/classic-mode/classic-mode.service';
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
+import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 // import { Coordinate } from '@common/coordinate';
 // import { ClassicPlayRoom, ClientSideGame, Differences, GameEvents, GameModes, MessageEvents, MessageTag, Player } from '@common/game-interfaces';
 import { Logger } from '@nestjs/common';
@@ -7,6 +8,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { Server } from 'socket.io';
 import { GameGateway } from './game.gateway';
+import { LimitedModeService } from '@app/services//limited-mode/limited-mode.service';
+
 // import { DELAY_BEFORE_EMITTING_TIME } from './game.gateway.constants';
 
 describe('GameGateway', () => {
@@ -16,6 +19,8 @@ describe('GameGateway', () => {
     let logger: SinonStubbedInstance<Logger>;
     // let socket: SinonStubbedInstance<Socket>;
     let server: SinonStubbedInstance<Server>;
+    let roomsManagerService: SinonStubbedInstance<RoomsManagerService>;
+    let limitedModeService: SinonStubbedInstance<LimitedModeService>;
 
     // const fakeRoom: ClassicPlayRoom = {
     //     roomId: 'fakeRoomId',
@@ -47,6 +52,8 @@ describe('GameGateway', () => {
         playersListManagerService = createStubInstance(PlayersListManagerService);
         server = createStubInstance<Server>(Server);
         classicService = createStubInstance(ClassicModeService);
+        roomsManagerService = createStubInstance(RoomsManagerService);
+        limitedModeService = createStubInstance(LimitedModeService);
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 GameGateway,
@@ -61,6 +68,14 @@ describe('GameGateway', () => {
                 {
                     provide: PlayersListManagerService,
                     useValue: playersListManagerService,
+                },
+                {
+                    provide: RoomsManagerService,
+                    useValue: roomsManagerService,
+                },
+                {
+                    provide: LimitedModeService,
+                    useValue: limitedModeService,
                 },
             ],
         }).compile();

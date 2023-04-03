@@ -1,11 +1,16 @@
+// Services are needed for the dialog and dialog needs to talk to the parent component
+/* eslint-disable max-params */
 // Id comes from database to allow _id
 /* eslint-disable no-underscore-dangle */
 import { Game, GameDocument } from '@app/model/database/game';
 import { GameCard, GameCardDocument } from '@app/model/database/game-card';
+import { GameConstants, GameConstantsDocument } from '@app/model/database/game-config-constants';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
+import { GameConstantsDto } from '@app/model/dto/game/game-constants.dto';
 import { GameListsManagerService } from '@app/services/game-lists-manager/game-lists-manager.service';
-import { DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
-import { CarouselPaginator, GameConfigConst } from '@common/game-interfaces';
+import { DEFAULT_BEST_TIMES, DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
+import { CarouselPaginator, PlayerTime } from '@common/game-interfaces';
+import { GameModes } from '@common/enums';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as fs from 'fs';
@@ -13,7 +18,7 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class DatabaseService {
-    private defaultConstants: GameConfigConst = {
+    private defaultConstants: GameConstants = {
         countdownTime: DEFAULT_COUNTDOWN_VALUE,
         penaltyTime: DEFAULT_HINT_PENALTY,
         bonusTime: DEFAULT_BONUS_TIME,
@@ -21,6 +26,7 @@ export class DatabaseService {
     constructor(
         @InjectModel(Game.name) private readonly gameModel: Model<GameDocument>,
         @InjectModel(GameCard.name) private readonly gameCardModel: Model<GameCardDocument>,
+        @InjectModel(GameConstants.name) private readonly gameConstantsModel: Model<GameConstantsDocument>,
         private readonly gameListManager: GameListsManagerService,
     ) {}
 
@@ -31,13 +37,21 @@ export class DatabaseService {
         }
         return this.gameListManager.getCarouselGames();
     }
-
+    async getTopTimesGameById(gameId: string, gameMode: string): Promise<PlayerTime[]> {
+        const mode = gameMode === GameModes.ClassicSolo ? 'soloTopTime' : 'oneVsOneTopTime';
+        const topTimes = await this.gameCardModel
+            .findById(gameId)
+            .sort({ [mode]: -1 })
+            .exec();
+        return topTimes[mode];
+    }
     async getGameById(id: string): Promise<Game> {
         return await this.gameModel.findById(id, '-__v').exec();
     }
 
-    getConfigConstants(): GameConfigConst {
-        return this.defaultConstants;
+    async getGameConstants(): Promise<GameConstants> {
+        await this.populateDbWithGameConstants();
+        return await this.gameConstantsModel.findOne().select('-__v -_id').exec();
     }
 
     async verifyIfGameExists(gameName: string): Promise<boolean> {
@@ -89,10 +103,91 @@ export class DatabaseService {
             await this.gameModel.findByIdAndDelete(id).exec();
             const gameName = (await this.gameCardModel.findByIdAndDelete(id).exec()).name;
             this.deleteGameAssetsByName(gameName);
-            const gameCardsList: GameCard[] = await this.gameCardModel.find().exec();
-            this.gameListManager.buildGameCarousel(gameCardsList);
+            await this.rebuildGameCarousel();
         } catch (error) {
             return Promise.reject(`Failed to delete game with id : ${id} --> ${error}`);
+        }
+    }
+
+    async deleteAllGames() {
+        try {
+            const games = await this.gameModel.find().exec();
+            for (const game of games) {
+                await this.deleteGameById(game._id.toString());
+            }
+        } catch (error) {
+            return Promise.reject(`Failed to delete all games --> ${error}`);
+        }
+    }
+
+    async updateTopTimesGameById(id: string, gameMode: string, topTimes: PlayerTime[]): Promise<void> {
+        try {
+            const mode = gameMode === GameModes.ClassicSolo ? 'soloTopTime' : 'oneVsOneTopTime';
+            await this.gameCardModel.findByIdAndUpdate(id, { [mode]: topTimes }).exec();
+            await this.rebuildGameCarousel();
+        } catch (error) {
+            return Promise.reject(`Failed to update top times game with id : ${id} --> ${error}`);
+        }
+    }
+
+    async rebuildGameCarousel(): Promise<void> {
+        const gameCardsList: GameCard[] = await this.gameCardModel.find().exec();
+        this.gameListManager.buildGameCarousel(gameCardsList);
+    }
+
+    async populateDbWithGameConstants(): Promise<void> {
+        try {
+            if (!(await this.gameConstantsModel.exists({}))) {
+                await this.gameConstantsModel.create(this.defaultConstants);
+            }
+        } catch (error) {
+            return Promise.reject(`Failed to populate game constants --> ${error}`);
+        }
+    }
+
+    async updateGameConstants(gameConstantsDto: GameConstantsDto): Promise<void> {
+        try {
+            await this.gameConstantsModel.replaceOne({}, gameConstantsDto).exec();
+        } catch (error) {
+            return Promise.reject(`Failed to update game constants --> ${error}`);
+        }
+    }
+
+    async resetTopTimesGameById(gameId: string) {
+        try {
+            await this.gameCardModel.findByIdAndUpdate(gameId, { soloTopTime: DEFAULT_BEST_TIMES, oneVsOneTopTime: DEFAULT_BEST_TIMES }).exec();
+            await this.rebuildGameCarousel();
+        } catch (error) {
+            return Promise.reject(`Failed to reset top times game with id : ${gameId} --> ${error}`);
+        }
+    }
+
+    async resetAllTopTimes() {
+        try {
+            await this.gameCardModel.updateMany({}, { soloTopTime: DEFAULT_BEST_TIMES, oneVsOneTopTime: DEFAULT_BEST_TIMES }).exec();
+            await this.rebuildGameCarousel();
+        } catch (error) {
+            return Promise.reject(`Failed to reset all top times --> ${error}`);
+        }
+    }
+
+    async getAllGameIds(): Promise<string[]> {
+        try {
+            const gameCardsIds = await this.gameCardModel.find().select('_id').exec();
+            return gameCardsIds.map((gameCard) => gameCard._id.toString());
+        } catch (error) {
+            return Promise.reject(`Failed to get all game ids --> ${error}`);
+        }
+    }
+
+    async getRandomGame(playedGameIds: string[]): Promise<Game> {
+        try {
+            const gameIds = await this.getAllGameIds();
+            const gameIdsToPlay = gameIds.filter((id) => !playedGameIds.includes(id));
+            const randomGameId = gameIdsToPlay[Math.floor(Math.random() * gameIdsToPlay.length)];
+            return await this.getGameById(randomGameId);
+        } catch (error) {
+            return Promise.reject(`Failed to get random game --> ${error}`);
         }
     }
 }

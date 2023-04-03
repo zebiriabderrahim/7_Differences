@@ -1,12 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
-import { GameEvents, GameHistory, HistoryEvents, playerData, PlayerNameAvailability, RoomAvailability } from '@common/game-interfaces';
+import { GameCardEvents, PlayerEvents, RoomEvents } from '@common/enums';
+import { LimitedGameDetails, GameHistory, HistoryEvents, playerData, PlayerNameAvailability, RoomAvailability } from '@common/game-interfaces';
 import { Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
-export class RoomManagerService {
+export class RoomManagerService implements OnDestroy {
     gameHistory: GameHistory[];
     private joinedPlayerNames: Subject<string[]>;
     private isPlayerNameTaken: Subject<PlayerNameAvailability>;
@@ -16,6 +17,7 @@ export class RoomManagerService {
     private createdRoomId: Subject<string>;
     private deletedGameId: Subject<string>;
     private isReloadNeeded: Subject<boolean>;
+    private isLimitedCoopRoomAvailable: Subject<boolean>;
 
     constructor(private readonly clientSocket: ClientSocketService) {
         this.isPlayerNameTaken = new Subject<PlayerNameAvailability>();
@@ -27,6 +29,8 @@ export class RoomManagerService {
         this.gameHistory = [];
         this.refusedPlayerId = new Subject<string>();
         this.isReloadNeeded = new Subject<boolean>();
+        this.isLimitedCoopRoomAvailable = new Subject<boolean>();
+        this.connect();
     }
 
     get joinedPlayerNamesByGameId$() {
@@ -61,61 +65,93 @@ export class RoomManagerService {
         return this.isReloadNeeded.asObservable();
     }
 
+    get isLimitedCoopRoomAvailable$() {
+        return this.isLimitedCoopRoomAvailable.asObservable();
+    }
+
     createSoloRoom(gameId: string, playerName: string) {
         const playerPayLoad = { gameId, playerName } as playerData;
-        this.clientSocket.send(GameEvents.CreateSoloGame, playerPayLoad);
+        this.clientSocket.send(RoomEvents.CreateClassicSoloRoom, playerPayLoad);
     }
 
     createOneVsOneRoom(gameId: string, playerName: string): void {
         const playerPayLoad = { gameId, playerName } as playerData;
-        this.clientSocket.send(GameEvents.CreateOneVsOneRoom, playerPayLoad);
+        this.clientSocket.send(RoomEvents.CreateOneVsOneRoom, playerPayLoad);
+    }
+
+    createLimitedRoom(gameDetails: LimitedGameDetails): void {
+        this.clientSocket.send(RoomEvents.CreateSoloLimitedRoom, gameDetails);
     }
 
     updateRoomOneVsOneAvailability(gameId: string): void {
-        this.clientSocket.send(GameEvents.UpdateRoomOneVsOneAvailability, gameId);
+        this.clientSocket.send(RoomEvents.UpdateRoomOneVsOneAvailability, gameId);
     }
 
     checkRoomOneVsOneAvailability(gameId: string): void {
-        this.clientSocket.send(GameEvents.CheckRoomOneVsOneAvailability, gameId);
+        this.clientSocket.send(RoomEvents.CheckRoomOneVsOneAvailability, gameId);
     }
 
     deleteCreatedOneVsOneRoom(roomId: string) {
-        this.clientSocket.send(GameEvents.DeleteCreatedOneVsOneRoom, roomId);
+        this.clientSocket.send(RoomEvents.DeleteCreatedOneVsOneRoom, roomId);
+    }
+
+    deleteCreatedCoopRoom(roomId: string) {
+        this.clientSocket.send(RoomEvents.DeleteCreatedCoopRoom, roomId);
     }
 
     getJoinedPlayerNames(gameId: string): void {
-        this.clientSocket.send(GameEvents.GetJoinedPlayerNames, gameId);
+        this.clientSocket.send(PlayerEvents.GetJoinedPlayerNames, gameId);
     }
 
     updateWaitingPlayerNameList(gameId: string, playerName: string): void {
         const playerPayLoad = { gameId, playerName } as playerData;
-        this.clientSocket.send(GameEvents.UpdateWaitingPlayerNameList, playerPayLoad);
+        this.clientSocket.send(PlayerEvents.UpdateWaitingPlayerNameList, playerPayLoad);
     }
 
     isPlayerNameIsAlreadyTaken(gameId: string, playerName: string): void {
         const playerPayLoad = { gameId, playerName } as playerData;
-        this.clientSocket.send(GameEvents.CheckIfPlayerNameIsAvailable, playerPayLoad);
+        this.clientSocket.send(PlayerEvents.CheckIfPlayerNameIsAvailable, playerPayLoad);
     }
 
     refusePlayer(gameId: string, playerName: string): void {
         const playerPayLoad = { gameId, playerName } as playerData;
-        this.clientSocket.send(GameEvents.RefusePlayer, playerPayLoad);
+        this.clientSocket.send(PlayerEvents.RefusePlayer, playerPayLoad);
     }
 
     acceptPlayer(gameId: string, roomId: string, playerName: string) {
-        this.clientSocket.send(GameEvents.AcceptPlayer, { gameId, roomId, playerName });
+        this.clientSocket.send(PlayerEvents.AcceptPlayer, { gameId, roomId, playerName });
     }
 
     cancelJoining(gameId: string): void {
-        this.clientSocket.send(GameEvents.CancelJoining, gameId);
+        this.clientSocket.send(PlayerEvents.CancelJoining, gameId);
+    }
+
+    checkIfAnyCoopRoomExists(gameDetails: LimitedGameDetails) {
+        this.clientSocket.send(RoomEvents.CheckIfAnyCoopRoomExists, gameDetails);
     }
 
     gameCardCreated() {
-        this.clientSocket.send(GameEvents.GameCardCreated);
+        this.clientSocket.send(GameCardEvents.GameCardCreated);
     }
 
     gameCardDeleted(gameId: string) {
-        this.clientSocket.send(GameEvents.DeleteGameCard, gameId);
+        this.clientSocket.send(GameCardEvents.GameCardDeleted, gameId);
+    }
+
+    allGamesDeleted() {
+        this.clientSocket.send(GameCardEvents.AllGamesDeleted);
+    }
+
+    resetTopTime(gameId: string) {
+        this.clientSocket.send(GameCardEvents.ResetTopTime, gameId);
+    }
+
+    resetAllTopTimes() {
+        this.clientSocket.send(GameCardEvents.ResetAllTopTimes);
+    }
+
+    gameConstantsUpdated() {
+        this.clientSocket.send(GameCardEvents.GameConstantsUpdated);
     }
 
     connect(): void {
@@ -130,50 +166,64 @@ export class RoomManagerService {
         this.clientSocket.disconnect();
     }
 
+    removeAllListeners() {
+        this.clientSocket.socket.off();
+    }
+
     handleRoomEvents(): void {
-        this.clientSocket.on(GameEvents.RoomSoloCreated, (roomId: string) => {
+        this.clientSocket.on(RoomEvents.RoomSoloCreated, (roomId: string) => {
             this.createdRoomId.next(roomId);
         });
 
-        this.clientSocket.on(GameEvents.RoomOneVsOneAvailable, (availabilityData: RoomAvailability) => {
+        this.clientSocket.on(RoomEvents.RoomOneVsOneCreated, (roomId: string) => {
+            this.createdRoomId.next(roomId);
+        });
+
+        this.clientSocket.on(RoomEvents.RoomLimitedCreated, (roomId: string) => {
+            this.createdRoomId.next(roomId);
+        });
+
+        this.clientSocket.on(RoomEvents.RoomOneVsOneAvailable, (availabilityData: RoomAvailability) => {
             this.oneVsOneRoomsAvailabilityByGameId.next(availabilityData);
         });
 
-        this.clientSocket.on(GameEvents.OneVsOneRoomDeleted, (availabilityData: RoomAvailability) => {
+        this.clientSocket.on(RoomEvents.OneVsOneRoomDeleted, (availabilityData: RoomAvailability) => {
             this.oneVsOneRoomsAvailabilityByGameId.next(availabilityData);
         });
 
-        this.clientSocket.on(GameEvents.WaitingPlayerNameListUpdated, (waitingPlayerNameList: string[]) => {
+        this.clientSocket.on(RoomEvents.LimitedCoopRoomJoined, () => {
+            this.isLimitedCoopRoomAvailable.next(true);
+        });
+
+        this.clientSocket.on(PlayerEvents.WaitingPlayerNameListUpdated, (waitingPlayerNameList: string[]) => {
             this.joinedPlayerNames.next(waitingPlayerNameList);
         });
 
-        this.clientSocket.on(GameEvents.PlayerNameTaken, (playerNameAvailability: PlayerNameAvailability) => {
+        this.clientSocket.on(PlayerEvents.PlayerNameTaken, (playerNameAvailability: PlayerNameAvailability) => {
             this.isPlayerNameTaken.next(playerNameAvailability);
         });
 
-        this.clientSocket.on(GameEvents.RoomOneVsOneCreated, (roomId: string) => {
-            this.createdRoomId.next(roomId);
-        });
-
-        this.clientSocket.on(GameEvents.PlayerAccepted, (isAccepted: boolean) => {
+        this.clientSocket.on(PlayerEvents.PlayerAccepted, (isAccepted: boolean) => {
             this.isPlayerAccepted.next(isAccepted);
         });
 
-        this.clientSocket.on(GameEvents.GameCardDeleted, (gameId: string) => {
+        this.clientSocket.on(PlayerEvents.PlayerRefused, (playerId: string) => {
+            this.refusedPlayerId.next(playerId);
+        });
+
+        this.clientSocket.on(GameCardEvents.GameDeleted, (gameId: string) => {
             this.deletedGameId.next(gameId);
+        });
+        this.clientSocket.on(GameCardEvents.RequestReload, () => {
+            this.isReloadNeeded.next(true);
         });
 
         this.clientSocket.on(HistoryEvents.EntryAdded, (gameHistory: GameHistory[]) => {
             console.log('gameHistory', gameHistory);
             this.gameHistory = gameHistory;
         });
-
-        this.clientSocket.on(GameEvents.PlayerRefused, (playerId: string) => {
-            this.refusedPlayerId.next(playerId);
-        });
-
-        this.clientSocket.on(GameEvents.RequestGameCardsUpdate, () => {
-            this.isReloadNeeded.next(true);
-        });
+    }
+    ngOnDestroy(): void {
+        this.clientSocket.disconnect();
     }
 }
