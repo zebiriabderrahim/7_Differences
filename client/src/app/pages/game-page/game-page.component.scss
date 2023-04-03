@@ -1,23 +1,23 @@
 @import url('https://fonts.cdnfonts.com/css/troika-2');
 
 .container {
-  position: relative;
+    position: relative;
 }
 
 .justified {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
 }
 
 #game-page {
-  background-color: #67A28B;
-  width: 100%;
-  height: 100%;
+    background-color: #67a28b;
+    width: 100%;
+    height: 100%;
 }
 
-.canvas-container{
+.canvas-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -49,26 +49,25 @@ canvas {
 }
 
 #original {
-  z-index: 1;
+    z-index: 1;
 }
 
 #originalFG {
-  z-index: 2;
+    z-index: 2;
 }
 
 #modified {
-  z-index: 1;
+    z-index: 1;
 }
 #modifiedFG {
-  z-index: 2;
+    z-index: 2;
 }
-
 
 img {
     width: 100%;
-  }
+}
 
-  .information-header{
+.information-header {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -89,7 +88,7 @@ img {
     font-family: 'Troika', sans-serif;
     -webkit-text-stroke: 1px black;
 }
-.game-feedback{
+.game-feedback {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -128,36 +127,43 @@ img {
   transform: scale(1.05);
 }
 
-.hintIcon{
-  margin-top: 5px;
-  margin-left: 25px;
-  width: 30px;
-  height: 30px;
+.hintIcon {
+    margin-top: 5px;
+    margin-left: 25px;
+    width: 30px;
+    height: 30px;
 }
-.hintIcon:hover{
-  opacity: .5;
+.hintIcon:hover {
+    opacity: 0.5;
 }
 
 .personIcon {
-  width: 35px;
-  height: 35px;
+    width: 35px;
+    height: 35px;
 }
 
-app-chat-box{
-  position: absolute;
-  left: 35.75%;
-  bottom: 15%;
-  z-index: 1;
+app-chat-box {
+    position: absolute;
+    left: 35.75%;
+    bottom: 15%;
+    z-index: 1;
+}
+
+app-replay-buttons {
+    position: absolute;
+    left: 38%;
+    bottom: 5%;
+    z-index: 1;
 }
 
 #background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 
