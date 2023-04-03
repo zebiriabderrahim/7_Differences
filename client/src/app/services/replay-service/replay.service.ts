@@ -184,6 +184,11 @@ export class ReplayService {
         this.replayInterval.start();
     }
 
+    restartReplay(): void {
+        this.currentReplayIndex = 0;
+        this.replayInterval.resume();
+    }
+
     pauseReplay(): void {
         if (this.isCheatMode) {
             this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
