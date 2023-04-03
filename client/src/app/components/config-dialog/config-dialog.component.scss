@@ -8,12 +8,12 @@
     z-index: 1;
 }
 
-/*::ng-deep .mat-dialog-container {
+::ng-deep .config-form .mat-dialog-container {
     background: none;
     box-shadow: none;
-}*/
+}
 
-::ng-deep .mat-form-field-appearance-outline {
+::ng-deep .config-form .mat-form-field-appearance-outline {
     height: 140px !important;
     width: 650px !important; 
 }
