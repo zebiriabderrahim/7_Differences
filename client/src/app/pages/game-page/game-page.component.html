@@ -1,5 +1,5 @@
 <div id = "game-page" class = "justified">
-    <div *ngIf="game" class="information-header justified">
+    <div *ngIf="game" class="game-infos information-header justified">
         <h1>{{ game.name }}</h1>
         <div class="game-feedback">
             <mat-icon class="personIcon">person</mat-icon>
@@ -52,9 +52,9 @@
             ></canvas>
         </div>
     </div>
-    <button class="importantButton justified" (click)="showAbandonDialog()">Abandonner la partie</button>
+    <button class="importantButton justified" (click)="showAbandonDialog()"> <span id = "abandon">Abandonner la partie</span></button>
 </div>
-<img id = "background" src = "./assets/BackgroundImage.jpg" />
+<img id = "background" src = "./assets/background/BackgroundImage.jpg" />
 <div *ngIf="game">
     <app-chat-box (add)="addRightSideMessage($event)" [messages]="messages" [gameMode]="game.mode"></app-chat-box>
 </div>
