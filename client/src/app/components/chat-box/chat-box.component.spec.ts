@@ -13,6 +13,7 @@ describe('ChatBoxComponent', () => {
         }).compileComponents();
         fixture = TestBed.createComponent(ChatBoxComponent);
         component = fixture.componentInstance;
+        component.gameMode = 'Solo';
         fixture.detectChanges();
     });
 

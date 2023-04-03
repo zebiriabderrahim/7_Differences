@@ -50,7 +50,7 @@ export interface GameRoom {
     originalDifferences: Coordinate[][];
     gameConstants: GameConfigConst;
     player2?: Player;
-    player1?: Player;
+    player1: Player;
 }
 
 export interface Player {
