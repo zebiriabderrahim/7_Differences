@@ -182,6 +182,7 @@ export class ClassicSystemService {
             this.replayEventsSubject.next({
                 action: ReplayActions.TimerUpdate,
                 timestamp: Date.now(),
+                data: timer,
             });
         });
 
