@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DEFAULT_N_HINTS, HINT_SQUARE_PADDING, INITIAL_QUADRANT, QUADRANT_POSITIONS } from '@app/constants/hint';
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { QuadrantPosition } from '@app/enum/quadrant-position';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { Quadrant } from '@app/interfaces/quadrant';
@@ -95,10 +96,11 @@ export class HintService {
         const hintSquare: Coordinate[] = [];
         const { topCorner, bottomCorner } = quadrant;
 
-        for (let i = bottomCorner.x - HINT_SQUARE_PADDING; i < topCorner.x + HINT_SQUARE_PADDING; i++) {
-            for (let j = bottomCorner.y - HINT_SQUARE_PADDING; j < topCorner.y + HINT_SQUARE_PADDING; j++) {
-                if (this.isCoordinateInHintSquare({ x: i, y: j }, quadrant)) {
-                    hintSquare.push({ x: i, y: j });
+        for (let i = bottomCorner.x; i < topCorner.x + HINT_SQUARE_PADDING; i++) {
+            for (let j = bottomCorner.y; j < topCorner.y + HINT_SQUARE_PADDING; j++) {
+                const coordinate = { x: i, y: j };
+                if (this.isCoordinateInHintSquare(coordinate, quadrant)) {
+                    hintSquare.push(coordinate);
                 }
             }
         }
@@ -106,12 +108,16 @@ export class HintService {
         return hintSquare;
     }
 
+    private isCoordinateValid(coordinate: Coordinate): boolean {
+        return coordinate.x >= 0 && coordinate.y >= 0 && coordinate.x < IMG_WIDTH && coordinate.y < IMG_HEIGHT;
+    }
+
     private isCoordinateInHintSquare(coordinate: Coordinate, quadrant: Quadrant): boolean {
         const { topCorner, bottomCorner } = quadrant;
         const { x, y } = coordinate;
         return (
-            (x >= bottomCorner.x && x < topCorner.x && (y === bottomCorner.y || y === topCorner.y - 1)) ||
-            (y >= bottomCorner.y && y < topCorner.y && (x === bottomCorner.x || x === topCorner.x - 1))
+            this.isCoordinateValid(coordinate) &&
+            (x <= bottomCorner.x + HINT_SQUARE_PADDING || x >= topCorner.x || y <= bottomCorner.y + HINT_SQUARE_PADDING || y >= topCorner.y)
         );
     }
 
