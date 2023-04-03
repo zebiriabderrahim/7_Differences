@@ -69,19 +69,16 @@ export class HintService {
 
     generateLastHintDifferences(difference: Coordinate[]): void {
         this.thirdHintCoords = difference;
-        console.log(this.thirdHintCoords);
         for (const coord of difference) {
             this.thirdHintDifference[coord.x][coord.y] = true;
         }
         const littleEnlarge = this.differenceService.enlargeDifferences(difference, SMALL_HINT_ENLARGEMENT);
-        console.log(littleEnlarge);
         for (const coord of littleEnlarge) {
             if (!this.thirdHintDifference[coord.x][coord.y]) {
                 this.thirdHintDifferenceSlightlyEnlarged[coord.x][coord.y] = true;
             }
         }
         const bigEnlarge = this.differenceService.enlargeDifferences(difference, LARGE_HINT_ENLARGEMENT);
-        console.log(bigEnlarge);
         for (const coord of bigEnlarge) {
             if (!this.thirdHintDifference[coord.x][coord.y] && !this.thirdHintDifferenceSlightlyEnlarged[coord.x][coord.y]) {
                 this.thirdHintDifferenceEnlarged[coord.x][coord.y] = true;
