@@ -150,11 +150,12 @@ export class ClassicSystemService {
 
     sendMessage(textMessage: string): void {
         const newMessage = { tag: MessageTag.received, message: textMessage };
-        this.replayEventsSubject.next({
+        const replayEvent: ReplayEvent = {
             action: ReplayActions.CaptureMessage,
             timestamp: Date.now(),
             data: { tag: MessageTag.sent, message: textMessage } as ChatMessage,
-        });
+        };
+        this.replayEventsSubject.next(replayEvent);
         this.clientSocket.send(MessageEvents.LocalMessage, newMessage);
     }
 
