@@ -1,16 +1,17 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { GamePageDialogComponent } from '@app/components/game-page-dialog/game-page-dialog.component';
-import { DEFAULT_PLAYERS, INPUT_TAG_NAME } from '@app/constants/constants';
+import { DEFAULT_PLAYERS, INPUT_TAG_NAME, SOLO_GAME_ID } from '@app/constants/constants';
 import { CANVAS_MEASUREMENTS } from '@app/constants/image';
 import { CanvasMeasurements } from '@app/interfaces/game-interfaces';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ReplayService } from '@app/services/replay-service/replay.service';
 import { Coordinate } from '@common/coordinate';
 import { MessageTag } from '@common/enums';
-import { ChatMessage, ClientSideGame, Players } from '@common/game-interfaces';
+import { ChatMessage, ClientSideGame, GameConfigConst, Players } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -32,7 +33,6 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     players: Players;
     isReplayAvailable: boolean;
     readonly canvasSize: CanvasMeasurements;
-    private cheatDifferences: Coordinate[];
     private timerSub: Subscription;
     private replayTimerSub: Subscription;
     private replayDifferencesFoundSub: Subscription;
@@ -42,7 +42,6 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     private messageSub: Subscription;
     private endGameSub: Subscription;
     private opponentDifferenceSub: Subscription;
-    private cheatDifferencesSub: Subscription;
     private isFirstDifferencesFoundSub: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
@@ -51,6 +50,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         private readonly gameAreaService: GameAreaService,
         private readonly classicService: ClassicSystemService,
         private readonly imageService: ImageService,
+        private readonly hintService: HintService,
         private readonly matDialog: MatDialog,
         private readonly replayService: ReplayService,
     ) {
@@ -65,16 +65,30 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.isReplayAvailable = false;
     }
 
+    get differences(): Coordinate[][] {
+        return this.classicService.differences;
+    }
+
+    get gameConstants(): GameConfigConst {
+        return this.classicService.gameConstants;
+    }
+
     @HostListener('window:keydown', ['$event'])
     keyboardEvent(event: KeyboardEvent) {
         const eventHTMLElement = event.target as HTMLElement;
-        if (event.key === 't' && eventHTMLElement.tagName !== INPUT_TAG_NAME) {
-            this.gameAreaService.toggleCheatMode(this.cheatDifferences);
+        if (eventHTMLElement.tagName !== INPUT_TAG_NAME) {
+            if (event.key === 't') {
+                const differencesCoordinates = ([] as Coordinate[]).concat(...this.differences);
+                this.gameAreaService.toggleCheatMode(differencesCoordinates);
+            } else if (event.key === 'i' && this.game.mode.includes(SOLO_GAME_ID)) {
+                this.hintService.requestHint();
+            }
         }
     }
 
     ngAfterViewInit(): void {
         this.classicService.startGame();
+        this.hintService.resetHints();
         this.classicService.players$.subscribe((players) => {
             this.players = players;
             if (players.player1.playerId === this.classicService.getSocketId()) {
@@ -152,9 +166,6 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.opponentDifferenceSub = this.classicService.opponentDifferencesFound$.subscribe((opponentDifferencesFound) => {
             this.opponentDifferencesFound = opponentDifferencesFound;
         });
-        this.cheatDifferencesSub = this.classicService.cheatDifferences$.subscribe((cheatDifferences) => {
-            this.cheatDifferences = cheatDifferences;
-        });
 
         this.isFirstDifferencesFoundSub = this.classicService.isFirstDifferencesFound$.subscribe((isFirstDifferencesFound) => {
             if (isFirstDifferencesFound && this.game.mode.startsWith('Limited')) {
@@ -196,7 +207,6 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.messageSub?.unsubscribe();
         this.endGameSub?.unsubscribe();
         this.opponentDifferenceSub?.unsubscribe();
-        this.cheatDifferencesSub?.unsubscribe();
         this.replayTimerSub?.unsubscribe();
         this.replayDifferencesFoundSub?.unsubscribe();
         this.replayOpponentDifferenceFoundSub?.unsubscribe();
