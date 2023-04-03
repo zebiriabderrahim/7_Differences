@@ -1,8 +1,18 @@
 import { Injectable } from '@angular/core';
-import { DEFAULT_N_HINTS, HINT_SQUARE_PADDING, INITIAL_QUADRANT, QUADRANT_POSITIONS } from '@app/constants/hint';
+import {
+    DEFAULT_N_HINTS,
+    HINT_SQUARE_PADDING,
+    INITIAL_QUADRANT,
+    LARGE_HINT_ENLARGEMENT,
+    QUADRANT_POSITIONS,
+    SMALL_HINT_ENLARGEMENT,
+} from '@app/constants/hint';
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
+import { HintProximity } from '@app/enum/hint-proximity';
 import { QuadrantPosition } from '@app/enum/quadrant-position';
 import { Quadrant } from '@app/interfaces/quadrant';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
+import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { Coordinate } from '@common/coordinate';
 @Injectable({
@@ -10,8 +20,22 @@ import { Coordinate } from '@common/coordinate';
 })
 export class HintService {
     nAvailableHints: number;
-    constructor(private readonly classicSystem: ClassicSystemService, private readonly gameAreaService: GameAreaService) {
+    proximity: HintProximity;
+    thirdHintCoords: Coordinate[];
+    thirdHintDifference: boolean[][];
+    thirdHintDifferenceSlightlyEnlarged: boolean[][];
+    thirdHintDifferenceEnlarged: boolean[][];
+
+    constructor(
+        private readonly classicSystem: ClassicSystemService,
+        private readonly gameAreaService: GameAreaService,
+        private readonly differenceService: DifferenceService,
+    ) {
         this.nAvailableHints = DEFAULT_N_HINTS;
+        this.proximity = HintProximity.TooFar;
+        this.thirdHintDifference = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        this.thirdHintDifferenceSlightlyEnlarged = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        this.thirdHintDifferenceEnlarged = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
     }
 
     get differences(): Coordinate[][] {
@@ -29,6 +53,7 @@ export class HintService {
             const difference: Coordinate[] = this.differences[differenceIndex];
             if (this.nAvailableHints === 1) {
                 hintSquare = this.generateAdjustedHintSquare(difference);
+                this.generateLastHintDifferences(difference);
             } else {
                 let hintQuadrant = this.getHintQuadrant(difference, INITIAL_QUADRANT);
                 if (this.nAvailableHints === DEFAULT_N_HINTS - 1) {
@@ -39,6 +64,40 @@ export class HintService {
             this.gameAreaService.flashCorrectPixels(hintSquare);
             this.classicSystem.requestHint();
             this.nAvailableHints--;
+        }
+    }
+
+    generateLastHintDifferences(difference: Coordinate[]): void {
+        this.thirdHintCoords = difference;
+        console.log(this.thirdHintCoords);
+        for (const coord of difference) {
+            this.thirdHintDifference[coord.x][coord.y] = true;
+        }
+        const littleEnlarge = this.differenceService.enlargeDifferences(difference, SMALL_HINT_ENLARGEMENT);
+        console.log(littleEnlarge);
+        for (const coord of littleEnlarge) {
+            if (!this.thirdHintDifference[coord.x][coord.y]) {
+                this.thirdHintDifferenceSlightlyEnlarged[coord.x][coord.y] = true;
+            }
+        }
+        const bigEnlarge = this.differenceService.enlargeDifferences(difference, LARGE_HINT_ENLARGEMENT);
+        console.log(bigEnlarge);
+        for (const coord of bigEnlarge) {
+            if (!this.thirdHintDifference[coord.x][coord.y] && !this.thirdHintDifferenceSlightlyEnlarged[coord.x][coord.y]) {
+                this.thirdHintDifferenceEnlarged[coord.x][coord.y] = true;
+            }
+        }
+    }
+
+    checkThirdHint(coordinate: Coordinate): void {
+        if (this.thirdHintDifferenceEnlarged[coordinate.x][coordinate.y]) {
+            this.proximity = HintProximity.Far;
+        } else if (this.thirdHintDifferenceSlightlyEnlarged[coordinate.x][coordinate.y]) {
+            this.proximity = HintProximity.Close;
+        } else if (this.thirdHintDifference[coordinate.x][coordinate.y]) {
+            this.proximity = HintProximity.OnIt;
+        } else {
+            this.proximity = HintProximity.TooFar;
         }
     }
 
@@ -73,11 +132,7 @@ export class HintService {
             maxY = Math.max(maxY, coord.y);
         }
 
-        const adjustedQuadrant = {
-            bottomCorner: { x: minX, y: minY },
-            topCorner: { x: maxX, y: maxY },
-        };
-        return this.generateHintSquare(adjustedQuadrant);
+        return this.generateHintSquare({ bottomCorner: { x: minX, y: minY }, topCorner: { x: maxX, y: maxY } });
     }
 
     private generateHintSquare(quadrant: Quadrant): Coordinate[] {

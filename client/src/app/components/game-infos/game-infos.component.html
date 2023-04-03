@@ -3,11 +3,12 @@
     <p><strong>Mode de jeu :</strong> {{ game.mode }}</p>
     <p><strong>Nombre de différences présentes :</strong> {{ differencesCount }}</p>
     <div *ngIf="game.mode.includes('Limited')">
-        <p><strong>Valeur du temps gagné : </strong> {{gameConstants.bonusTime}} secondes </p>
+        <p><strong>Valeur du temps gagné : </strong> {{ gameConstants.bonusTime }} secondes</p>
     </div>
     <div *ngIf="game.mode.includes('Solo')">
-        <p><strong>Pénalité d'utilisation d'indice : </strong> {{gameConstants.penaltyTime}} secondes </p>
-        <p><strong>Indices restants : </strong> {{ nHints }} </p>
+        <p><strong>Pénalité d'utilisation d'indice : </strong> {{ gameConstants.penaltyTime }} secondes</p>
+        <p><strong>Indices restants : </strong> {{ nHints }}</p>
         <button mat-raised-button color="white" (click)="requestHint()" [disabled]="nHints === 0">Indice</button>
     </div>
+    <img *ngIf="nHints === 0" [src]="hintsAssets[proximity]" />
 </div>
