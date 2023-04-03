@@ -1,13 +1,13 @@
 <div id="chat-box">
     <div class="content">
         <div class="contact-profile">
-            <img src="assets/raccoonChatAvatarOther.png" alt="" />
+            <img src="assets/raccoonChatAvatarOther.png" alt="raccoonAvatar" />
         </div>
         <div class="messages">
             <ul>
                 <li [class]="messageItem.tag" *ngFor="let messageItem of messages">
-                    <img *ngIf="messageItem.tag === 'sent'" src="assets/raccoonChatAvatar.png" alt="" />
-                    <img *ngIf="messageItem.tag === 'received'" src="assets/raccoonChatAvatarOther.png" alt="" />
+                    <img *ngIf="messageItem.tag === 'sent'" src="assets/raccoonChatAvatar.png" alt="raccoonAvatar" />
+                    <img *ngIf="messageItem.tag === 'received'" src="assets/raccoonChatAvatarOther.png" alt="raccoonAvatar" />
                     <p>{{ messageItem.message }}</p>
                 </li>
             </ul>

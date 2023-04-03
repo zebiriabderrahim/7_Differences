@@ -1,6 +1,6 @@
 <div mat-dialog-actions>
     <h1 *ngIf="!refusedMessage">En attente d'etre accepté</h1>
-    <img *ngIf="!refusedMessage" src = "./assets/raccoonLoadingScreen.gif"/>
+    <img *ngIf="!refusedMessage" src = "./assets/raccoonLoadingScreen.gif" alt="loadingGif"/>
     <h1 *ngIf="refusedMessage"> {{refusedMessage}}</h1> 
     <button mat-button mat-dialog-close (click)="cancelJoining()">Annuler</button>
 </div>
