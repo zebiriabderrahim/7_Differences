@@ -296,17 +296,17 @@ describe('ReplayService', () => {
     });
 
     it('should set replaySpeed to SPEED_X1', () => {
-        service.upSpeedx1();
+        service.upSpeed(SPEED_X1);
         expect(service['replaySpeed']).toBe(SPEED_X1);
     });
 
     it('should set replaySpeed to SPEED_X2', () => {
-        service.upSpeedx2();
+        service.upSpeed(SPEED_X2);
         expect(service['replaySpeed']).toBe(SPEED_X2);
     });
 
     it('should set replaySpeed to SPEED_X4', () => {
-        service.upSpeedx4();
+        service.upSpeed(SPEED_X4);
         expect(service['replaySpeed']).toBe(SPEED_X4);
     });
 
