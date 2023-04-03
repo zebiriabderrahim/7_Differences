@@ -83,17 +83,17 @@ export class GameAreaService {
         }
         this.modifiedContext.putImageData(this.modifiedPixelData, 0, 0);
         this.resetCheatMode();
+        this.replayEventsSubject.next({
+            action: ReplayActions.ClickFound,
+            timestamp: Date.now(),
+            data: differenceCoord,
+        });
         this.flashCorrectPixels(differenceCoord, replaySpeed, isPaused);
     }
 
     flashCorrectPixels(differenceCoord: Coordinate[], replaySpeed?: number, isPaused: boolean = false): void {
         const imageDataIndexes = this.convert2DCoordToPixelIndex(differenceCoord);
         this.flashPixels(imageDataIndexes, replaySpeed, isPaused);
-        this.replayEventsSubject.next({
-            action: ReplayActions.ClickFound,
-            timestamp: Date.now(),
-            data: differenceCoord,
-        });
     }
 
     flashPixels(imageDataIndexes: number[], replaySpeed?: number, isPaused: boolean = false): void {

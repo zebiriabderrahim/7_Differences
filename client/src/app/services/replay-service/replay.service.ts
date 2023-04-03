@@ -6,6 +6,7 @@ import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { ChatMessage, Coordinate } from '@common/game-interfaces';
@@ -32,6 +33,7 @@ export class ReplayService {
         private readonly classicSystemService: ClassicSystemService,
         private readonly soundService: SoundService,
         private readonly imageService: ImageService,
+        private readonly hintService: HintService,
     ) {
         this.gameAreaService.replayEventsSubject.asObservable().subscribe((replayEvent: ReplayEvent) => {
             if (!this.isReplaying) {
@@ -39,6 +41,11 @@ export class ReplayService {
             }
         });
         this.classicSystemService.replayEventsSubject.asObservable().subscribe((replayEvent: ReplayEvent) => {
+            if (!this.isReplaying) {
+                this.replayEvents.push(replayEvent);
+            }
+        });
+        this.hintService.replayEventsSubject.asObservable().subscribe((replayEvent: ReplayEvent) => {
             if (!this.isReplaying) {
                 this.replayEvents.push(replayEvent);
             }
@@ -150,6 +157,8 @@ export class ReplayService {
                 this.replayOpponentDifferenceFound.next(replayData.data as number);
                 break;
             case ReplayActions.UseHint:
+                this.gameAreaService.flashCorrectPixels(replayData.data as Coordinate[], this.replaySpeed);
+                this.classicSystemService.requestHint();
                 break;
             default:
                 break;
