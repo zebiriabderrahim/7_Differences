@@ -148,12 +148,16 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.matDialog.open(GamePageDialogComponent, {
             data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ? ' },
             disableClose: true,
-            panelClass: 'custom-dialog',
+            panelClass: 'dialog',
         });
     }
 
     showEndGameDialog(endingMessage: string): void {
-        this.matDialog.open(GamePageDialogComponent, { data: { action: 'endGame', message: endingMessage }, disableClose: true });
+        this.matDialog.open(GamePageDialogComponent, {
+            data: { action: 'endGame', message: endingMessage },
+            disableClose: true,
+            panelClass: 'dialog',
+        });
     }
 
     mouseClickOnCanvas(event: MouseEvent, isLeft: boolean) {
