@@ -8,7 +8,7 @@ import { ClassicSystemService } from '@app/services/classic-system-service/class
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { Coordinate } from '@common/coordinate';
-import { GameModes, MessageTag } from '@common/enums';
+import { MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, Players } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
@@ -34,7 +34,6 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     private timerSub: Subscription;
     private gameSub: Subscription;
     private differenceSub: Subscription;
-    // private routeParamSub: Subscription;
     private messageSub: Subscription;
     private endGameSub: Subscription;
     private opponentDifferenceSub: Subscription;
@@ -128,7 +127,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         });
 
         this.isFirstDifferencesFoundSub = this.classicService.isFirstDifferencesFound$.subscribe((isFirstDifferencesFound) => {
-            if ((isFirstDifferencesFound && this.game.mode === GameModes.LimitedSolo) || this.game.mode === GameModes.LimitedCoop) {
+            if (isFirstDifferencesFound && this.game.mode.startsWith('Limited')) {
                 this.classicService.startNextGame();
             }
         });
@@ -164,7 +163,6 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.gameSub?.unsubscribe();
         this.timerSub?.unsubscribe();
         this.differenceSub?.unsubscribe();
-        // this.routeParamSub?.unsubscribe();
         this.messageSub?.unsubscribe();
         this.endGameSub?.unsubscribe();
         this.opponentDifferenceSub?.unsubscribe();

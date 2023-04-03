@@ -31,6 +31,76 @@
     filter: drop-shadow(10px 10px 10px black);
 }
 
+.config_button {
+    font-size: 150px;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    z-index: 1;
+    opacity: 0;
+}
+
+.button-container img {
+    position: absolute;
+    bottom:100px;
+    left: 210px;
+    width: 50%;
+    height: 50%;
+    transition: all 0.3s ease;
+  }
+
+.button-container .centered-reset {
+    position: absolute;
+    font-size: 45px;
+    top: 50%;
+    left: 47.5%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 400px;
+    line-height: normal;
+    color: white;
+    font-family: 'Troika', sans-serif;
+}
+
+.button-container:hover img {
+    filter: drop-shadow(10px 10px 10px black);
+}
+
+.config_button {
+    font-size: 150px;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    z-index: 1;
+    opacity: 0;
+}
+
+.button-container img {
+    position: absolute;
+    bottom:100px;
+    left: 210px;
+    width: 50%;
+    height: 50%;
+    transition: all 0.3s ease;
+  }
+
+.button-container .centered-reset {
+    position: absolute;
+    font-size: 45px;
+    top: 50%;
+    left: 47.5%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 400px;
+    line-height: normal;
+    color: white;
+    font-family: 'Troika', sans-serif;
+}
+
+.button-container:hover img {
+    filter: drop-shadow(10px 10px 10px black);
+}
+
 .menu_button {
     font-size: 20px;
     width: 600px;
