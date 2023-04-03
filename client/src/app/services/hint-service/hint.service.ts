@@ -48,6 +48,10 @@ export class HintService {
         this.isThirdHintActive = false;
     }
 
+    clickDuringThirdHint(): void {
+        this.isThirdHintActive = false;
+    }
+
     requestHint(): void {
         if (this.nAvailableHints > 0 && this.differences.length > 0) {
             let hintSquare: Coordinate[] = [];

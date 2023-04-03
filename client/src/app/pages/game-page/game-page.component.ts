@@ -34,7 +34,6 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     player: string;
     players: Players;
     showThirdHintHelp: boolean;
-    isThirdHintUsed: boolean;
     hintsAssets: string[];
     readonly canvasSize: CanvasMeasurements;
     private timerSub: Subscription;
@@ -64,7 +63,6 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.hintsAssets = ASSETS_HINTS;
         this.player = '';
         this.players = DEFAULT_PLAYERS;
-        this.isThirdHintUsed = false;
         this.canvasSize = CANVAS_MEASUREMENTS;
     }
 
@@ -176,7 +174,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     mouseClickOnCanvas(event: MouseEvent, isLeft: boolean) {
         if (this.gameAreaService.detectLeftClick(event)) {
             if (this.isThirdHintActive) {
-                this.isThirdHintUsed = true;
+                this.hintService.clickDuringThirdHint();
             }
             this.gameAreaService.setAllData();
             this.classicService.setIsLeftCanvas(isLeft);
