@@ -8,6 +8,7 @@ export enum GameEvents {
     AbandonGame = 'AbandonGame',
     StartGameByRoomId = 'CreateOneVsOneGame',
     StartNextGame = 'StartNextGame',
+    RequestHint = 'RequestHint',
 }
 
 export enum PlayerEvents {

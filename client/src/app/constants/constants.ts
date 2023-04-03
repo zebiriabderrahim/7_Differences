@@ -30,6 +30,7 @@ export const DEFAULT_PENALTY_VALUE = 5;
 export const DEFAULT_BONUS_VALUE = 5;
 
 export const INPUT_TAG_NAME = 'INPUT';
+export const SOLO_GAME_ID = 'Solo';
 
 export const DEFAULT_PLAYERS = {
     player1: { name: '', diffData: { currentDifference: [], differencesFound: 0 } },
