@@ -5,7 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { TEN_SECONDS } from '@app/constants/constants';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, map, of } from 'rxjs';
 import { WaitingForPlayerToJoinComponent } from './waiting-player-to-join.component';
 
 describe('WaitingPlayerToJoinComponent', () => {
@@ -23,7 +23,7 @@ describe('WaitingPlayerToJoinComponent', () => {
         joinedPlayerNamesMock = new BehaviorSubject<string[]>(['Alice', 'Bob']);
         roomManagerServiceSpy = jasmine.createSpyObj(
             'RoomManagerService',
-            ['refusePlayer', 'acceptPlayer', 'deleteCreatedOneVsOneRoom', 'getJoinedPlayerNames'],
+            ['refusePlayer', 'acceptPlayer', 'deleteCreatedOneVsOneRoom', 'getJoinedPlayerNames', 'deleteCreatedCoopRoom'],
             {
                 joinedPlayerNamesByGameId$: joinedPlayerNamesMock,
                 deletedGameId$: deletedGameIdMock,
@@ -56,6 +56,22 @@ describe('WaitingPlayerToJoinComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should return if the data does contain gameId', () => {
+        const roomId = undefined as unknown as string;
+        const gameId = undefined as unknown as string;
+        component['data'] = { roomId, player: 'Alice', gameId };
+        component.ngOnInit();
+        expect(component['data']).toBeDefined();
+    });
+
+
+    it('should return if the data does contain gameId', () => {
+        const data = undefined as unknown as { roomId: string; player: string; gameId: string };
+        component['data'] = data;
+        component.ngOnInit();
+        expect(component['data']).toBeUndefined();
     });
 
     // it('getJoinedPlayerNamesByGameId should subscribe to joinedPlayerNamesByGameId$ and set playerNames', () => {
@@ -138,12 +154,12 @@ describe('WaitingPlayerToJoinComponent', () => {
         expect(roomManagerServiceSpy.refusePlayer).toHaveBeenCalledWith(gameId, playerName);
     });
 
-    // it('acceptPlayer should navigate to the game page after dialog close', () => {
-    //     // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for fake afterClosed
-    //     dialogRefSpy.afterClosed.and.returnValue(of({}).pipe(map(() => {})));
-    //     component.acceptPlayer('Alice');
-    //     expect(router.navigate).toHaveBeenCalledWith(['/game', undefined, 'Alice']);
-    // });
+    it('acceptPlayer should navigate to the game page after dialog close', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for fake afterClosed
+        dialogRefSpy.afterClosed.and.returnValue(of({}).pipe(map(() => {})));
+        component.acceptPlayer('Alice');
+        expect(router.navigate).toHaveBeenCalledWith(['/game']);
+    });
 
     // it('acceptPlayer should refuse all other players and accept the given player', () => {
     //     const refusePlayerSpy = spyOn(component, 'refusePlayer');
@@ -157,19 +173,21 @@ describe('WaitingPlayerToJoinComponent', () => {
     //     expect(router.navigate).toHaveBeenCalledWith(['/game', undefined, stubName]);
     // });
 
-    // it('undoCreateOneVsOneRoom should delete created one vs one room and refuse all players', () => {
-    //     const gameId = '123';
-    //     const playerNames = ['John', 'Jane'];
-    //     component['data'] = { roomId: '23', player: playerNames[0], gameId };
-    //     spyOn(component, 'refusePlayer');
-    //     component.playerNames = playerNames;
-    //     component.undoCreateOneVsOneRoom();
-    //     expect(roomManagerServiceSpy.deleteCreatedOneVsOneRoom).toHaveBeenCalledWith(gameId);
-    //     expect(component.refusePlayer).toHaveBeenCalledTimes(playerNames.length);
-    //     playerNames.forEach((player) => {
-    //         expect(component.refusePlayer).toHaveBeenCalledWith(player);
-    //     });
-    // });
+    it('undoCreateOneVsOneRoom should delete created one vs one room and refuse all players', () => {
+        const gameId = '23';
+        const playerNames = ['John', 'Jane'];
+        component['data'] = { roomId: '23', player: playerNames[0], gameId };
+        component.playerNames = playerNames;
+        component.undoCreateOneVsOneRoom();
+        expect(roomManagerServiceSpy.deleteCreatedOneVsOneRoom).toHaveBeenCalledWith(gameId);
+    });
+
+    it('undoCreateOneVsOneRoom should delete created coop room and refuse all players', () => {
+        const gameId = '123';
+        component['data'] = { roomId: '23', player: undefined as unknown as string, gameId };
+        component.undoCreateOneVsOneRoom();
+        expect(roomManagerServiceSpy.deleteCreatedCoopRoom).toHaveBeenCalled();
+    });
 
     it('ngOnDestroy should not unsubscribe from playerNamesSubscription if it is undefined', () => {
         component['playerNamesSubscription'] = undefined;
