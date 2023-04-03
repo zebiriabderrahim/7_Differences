@@ -10,5 +10,4 @@
         <p><strong>Indices restants : </strong> {{ nHints }}</p>
         <button mat-raised-button color="white" (click)="requestHint()" [disabled]="nHints === 0">Indice</button>
     </div>
-    <img *ngIf="nHints === 0" [src]="hintsAssets[proximity]" />
 </div>

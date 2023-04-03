@@ -1,4 +1,4 @@
-<div id = "game-page" class = "justified">
+<div id="game-page" class="justified">
     <div *ngIf="game" class="information-header justified">
         <h1>{{ game.name }}</h1>
         <div class="game-feedback">
@@ -17,6 +17,7 @@
             </h1>
         </div>
         <app-game-infos [game]="game" [differencesCount]="game.differencesCount" [gameConstants]="gameConstants"></app-game-infos>
+        <img *ngIf="!isThirdHintUsed && isThirdHintActive" id="raccoon" [src]="hintsAssets[proximity]" />
     </div>
     <div class="canvas-container">
         <div class="game-canvas">
@@ -25,7 +26,7 @@
                 [attr.height]="canvasSize.height"
                 [attr.width]="canvasSize.width"
                 #originalCanvasFG
-                (click)="mouseClickOnCanvas($event,true)"
+                (click)="mouseClickOnCanvas($event, true)"
                 (mousemove)="checkThirdHint($event)"
             ></canvas>
             <canvas
@@ -33,7 +34,7 @@
                 [attr.height]="canvasSize.height"
                 [attr.width]="canvasSize.width"
                 #originalCanvas
-                (click)="mouseClickOnCanvas($event,true)"
+                (click)="mouseClickOnCanvas($event, true)"
                 (mousemove)="checkThirdHint($event)"
             ></canvas>
         </div>
@@ -43,7 +44,7 @@
                 [attr.height]="canvasSize.height"
                 [attr.width]="canvasSize.width"
                 #modifiedCanvasFG
-                (click)="mouseClickOnCanvas($event,false)"
+                (click)="mouseClickOnCanvas($event, false)"
                 (mousemove)="checkThirdHint($event)"
             ></canvas>
             <canvas
@@ -51,14 +52,14 @@
                 [attr.height]="canvasSize.height"
                 [attr.width]="canvasSize.width"
                 #modifiedCanvas
-                (click)="mouseClickOnCanvas($event,false)"
+                (click)="mouseClickOnCanvas($event, false)"
                 (mousemove)="checkThirdHint($event)"
             ></canvas>
         </div>
     </div>
     <button class="importantButton justified" (click)="showAbandonDialog()">Abandonner la partie</button>
 </div>
-<img id = "background" src = "./assets/BackgroundImage.jpg" />
+<img id="background" src="./assets/BackgroundImage.jpg" />
 <div *ngIf="game">
     <app-chat-box (add)="addRightSideMessage($event)" [messages]="messages" [gameMode]="game.mode"></app-chat-box>
 </div>
