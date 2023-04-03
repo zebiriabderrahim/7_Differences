@@ -1,5 +1,4 @@
 /* eslint-disable max-params */
-/* eslint-disable no-console */
 import { Injectable } from '@angular/core';
 import { REPLAY_LIMITER, SPEED_X1, SPEED_X2, SPEED_X4 } from '@app/constants/replay';
 import { ReplayActions } from '@app/enum/replay-actions';
@@ -203,17 +202,14 @@ export class ReplayService {
     }
 
     upSpeedx1(): void {
-        console.log('upSpeedx1');
         this.replaySpeed = SPEED_X1;
     }
 
     upSpeedx2(): void {
-        console.log('upSpeedx2');
         this.replaySpeed = SPEED_X2;
     }
 
     upSpeedx4(): void {
-        console.log('upSpeedx4');
         this.replaySpeed = SPEED_X4;
     }
 
