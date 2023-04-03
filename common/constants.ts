@@ -23,7 +23,7 @@ export const GAME_HISTORY = [
         duration: 0,
         gameMode: 'classic',
         player1: {
-            name: 'yomama',
+            name: 'test1',
             isWinner: true,
             isQuitter: false,
         },
@@ -35,12 +35,12 @@ export const GAME_HISTORY = [
         duration: 0,
         gameMode: 'classic',
         player1: {
-            name: 'yomama',
+            name: 'test1',
             isWinner: true,
             isQuitter: false,
         },
         player2: {
-            name: 'bloop',
+            name: 'test2',
             isWinner: false,
             isQuitter: true,
         },
