@@ -155,7 +155,7 @@ describe('GameAreaService', () => {
         setTimeout(() => {
             timerCallback();
         }, ONE_SECOND);
-        gameAreaService.showError(true);
+        gameAreaService.showError(true, { x: 1, y: 1 });
         expect(timerCallback).not.toHaveBeenCalled();
         jasmine.clock().tick(ONE_SECOND + 1);
         expect(timerCallback).toHaveBeenCalled();
@@ -174,7 +174,7 @@ describe('GameAreaService', () => {
         setTimeout(() => {
             timerCallback();
         }, ONE_SECOND);
-        gameAreaService.showError(false);
+        gameAreaService.showError(false, { x: 1, y: 1 });
         expect(timerCallback).not.toHaveBeenCalled();
         jasmine.clock().tick(ONE_SECOND + 1);
         expect(timerCallback).toHaveBeenCalled();
@@ -193,9 +193,9 @@ describe('GameAreaService', () => {
         const expectedIndexList: number[] = [38448, 0, 256080, 120];
         const convert2DCoordToPixelIndexSpy = spyOn<any>(gameAreaService, 'convert2DCoordToPixelIndex').and.callThrough();
         const flashPixelsSpy = spyOn(gameAreaService, 'flashPixels').and.callFake(() => {});
-        gameAreaService.flashCorrectPixels(differenceCoord);
+        gameAreaService.flashCorrectPixels(differenceCoord, undefined, false);
         expect(convert2DCoordToPixelIndexSpy).toHaveBeenCalledWith(differenceCoord);
-        expect(flashPixelsSpy).toHaveBeenCalledWith(expectedIndexList);
+        expect(flashPixelsSpy).toHaveBeenCalledWith(expectedIndexList, undefined, false);
     });
 
     it('toggleCheatMode should enable cheat mode and start flashing red pixels', () => {

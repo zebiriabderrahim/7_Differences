@@ -9,9 +9,10 @@ import { DEFAULT_PLAYERS } from '@app/constants/constants';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { ReplayService } from '@app/services/replay-service/replay.service';
 import { MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, Players } from '@common/game-interfaces';
-import { Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
@@ -21,6 +22,7 @@ describe('GamePageComponent', () => {
     let classicService: ClassicSystemService;
     let dialog: jasmine.SpyObj<MatDialog>;
     let classicServiceSpy: jasmine.SpyObj<ClassicSystemService>;
+    let replayServiceSpy: jasmine.SpyObj<ReplayService>;
     let routeSpy: jasmine.SpyObj<ActivatedRoute>;
     const clientSideGameTest: ClientSideGame = {
         id: '1',
@@ -49,8 +51,16 @@ describe('GamePageComponent', () => {
     // const cheatDifferencesSubjectTest = new Subject<Coordinate[]>();
     const paramsSubjectTest = new Subject<{ roomId: string }>();
     const isFirstDifferencesFoundTest = new Subject<boolean>();
+    const replayTimerSubjectTest = new BehaviorSubject<number>(0);
+    const replayDifferenceFoundSubjectTest = new BehaviorSubject<number>(0);
+    const replayOpponentDifferenceFoundSubjectTest = new BehaviorSubject<number>(0);
 
     beforeEach(async () => {
+        replayServiceSpy = jasmine.createSpyObj('ReplayService', ['resetReplay'], {
+            replayTimer$: replayTimerSubjectTest,
+            replayDifferenceFound$: replayDifferenceFoundSubjectTest,
+            replayOpponentDifferenceFound$: replayOpponentDifferenceFoundSubjectTest,
+        });
         classicServiceSpy = jasmine.createSpyObj(
             'ClassicService',
             ['sendMessage', 'requestVerification', 'manageSocket', 'disconnect', 'setIsLeftCanvas', 'getSocketId', 'startGame', 'removeAllListeners'],
@@ -76,6 +86,7 @@ describe('GamePageComponent', () => {
                 { provide: ClassicSystemService, useValue: classicServiceSpy },
                 { provide: MatDialog, useValue: dialog },
                 { provide: ActivatedRoute, useValue: routeSpy },
+                { provide: ReplayService, useValue: replayServiceSpy },
             ],
         }).compileComponents();
     });
@@ -241,6 +252,8 @@ describe('GamePageComponent', () => {
 
     it('showEndGameDialog should call dialog.open with the correct arguments', () => {
         const endingMessage = 'Bravo !';
+        clientSideGameTest.mode = 'Classic';
+        component.game = clientSideGameTest;
         component.showEndGameDialog(endingMessage);
         expect(dialog.open).toHaveBeenCalled();
     });
