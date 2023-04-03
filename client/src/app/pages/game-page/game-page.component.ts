@@ -184,7 +184,9 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
 
     showEndGameDialog(endingMessage: string): void {
         this.matDialog.open(GamePageDialogComponent, { data: { action: 'endGame', message: endingMessage }, disableClose: true });
-        this.isReplayAvailable = true;
+        if (this.game?.mode.includes('Classic')) {
+            this.isReplayAvailable = true;
+        }
     }
 
     mouseClickOnCanvas(event: MouseEvent, isLeft: boolean) {

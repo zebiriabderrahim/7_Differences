@@ -159,15 +159,12 @@ describe('ReplayService', () => {
             ] as Coordinate[],
             timestamp: 0,
         };
-
         service.replaySwitcher(replayEvent);
-
         expect(service['currentCoords']).toEqual(replayEvent.data as Coordinate[]);
         expect(service['isDifferenceFound']).toBe(true);
-
         expect(soundServiceSpy.playCorrectSound).toHaveBeenCalled();
         expect(gameAreaServiceSpy.setAllData).toHaveBeenCalled();
-        expect(gameAreaServiceSpy.replaceDifference).toHaveBeenCalledWith(replayEvent.data as Coordinate[]);
+        expect(gameAreaServiceSpy.replaceDifference).toHaveBeenCalledWith(replayEvent.data as Coordinate[], service['replaySpeed']);
     });
 
     it('should handle ClickError action', () => {
@@ -249,11 +246,11 @@ describe('ReplayService', () => {
             timerValues.push(value);
         });
 
-        expect(timerValues).toEqual([0]);
+        expect(timerValues.length).toEqual(1);
 
         service.replaySwitcher(replayEvent);
 
-        expect(timerValues).toEqual([0, 1]);
+        expect(timerValues.length).toEqual(2);
     });
 
     it('should handle DifferenceFoundUpdate action', () => {

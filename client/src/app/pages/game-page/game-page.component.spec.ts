@@ -11,7 +11,7 @@ import { ClassicSystemService } from '@app/services/classic-system-service/class
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { ReplayService } from '@app/services/replay-service/replay.service';
 import { MessageTag } from '@common/enums';
-import { ChatMessage, ClientSideGame, Coordinate, Players } from '@common/game-interfaces';
+import { ChatMessage, ClientSideGame, Players } from '@common/game-interfaces';
 import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 
 describe('GamePageComponent', () => {
@@ -252,6 +252,8 @@ describe('GamePageComponent', () => {
 
     it('showEndGameDialog should call dialog.open with the correct arguments', () => {
         const endingMessage = 'Bravo !';
+        clientSideGameTest.mode = 'Classic';
+        component.game = clientSideGameTest;
         component.showEndGameDialog(endingMessage);
         expect(dialog.open).toHaveBeenCalled();
     });
