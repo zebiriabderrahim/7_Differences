@@ -1,17 +1,22 @@
 import { Injectable } from '@angular/core';
 import { DEFAULT_N_HINTS, HINT_SQUARE_PADDING, INITIAL_QUADRANT, QUADRANT_POSITIONS } from '@app/constants/hint';
 import { QuadrantPosition } from '@app/enum/quadrant-position';
+import { ReplayActions } from '@app/enum/replay-actions';
 import { Quadrant } from '@app/interfaces/quadrant';
+import { ReplayEvent } from '@app/interfaces/replay-actions';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { Coordinate } from '@common/coordinate';
+import { Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class HintService {
     nAvailableHints: number;
+    replayEventsSubject: Subject<ReplayEvent>;
     constructor(private readonly classicSystem: ClassicSystemService, private readonly gameAreaService: GameAreaService) {
         this.nAvailableHints = DEFAULT_N_HINTS;
+        this.replayEventsSubject = new Subject<ReplayEvent>();
     }
 
     get differences(): Coordinate[][] {
@@ -36,6 +41,11 @@ export class HintService {
                 }
                 hintSquare = this.generateHintSquare(hintQuadrant);
             }
+            this.replayEventsSubject.next({
+                action: ReplayActions.UseHint,
+                timestamp: Date.now(),
+                data: hintSquare,
+            });
             this.gameAreaService.flashCorrectPixels(hintSquare);
             this.classicSystem.requestHint();
             this.nAvailableHints--;
