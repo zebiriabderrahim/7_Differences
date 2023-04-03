@@ -141,7 +141,7 @@ export class ReplayService {
                 this.gameAreaService.toggleCheatMode(replayData.data as Coordinate[], this.replaySpeed);
                 break;
             case ReplayActions.TimerUpdate:
-                this.replayTimer.next(this.replayTimer.value + 1);
+                this.replayTimer.next(replayData.data as number);
                 break;
             case ReplayActions.DifferenceFoundUpdate:
                 this.replayDifferenceFound.next(replayData.data as number);
