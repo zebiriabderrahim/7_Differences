@@ -10,7 +10,7 @@ import { ReplayService } from '@app/services/replay-service/replay.service';
 export class GamePageDialogComponent {
     isReplayPaused: boolean = false;
     constructor(
-        @Inject(MAT_DIALOG_DATA) public data: { action: string; message: string },
+        @Inject(MAT_DIALOG_DATA) public data: { action: string; message: string; isReplayMode: boolean },
         private readonly classicSystem: ClassicSystemService,
         private readonly replayService: ReplayService,
     ) {}
