@@ -7,22 +7,33 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DEFAULT_BONUS_VALUE, DEFAULT_COUNTDOWN_VALUE, DEFAULT_PENALTY_VALUE } from '@app/constants/constants';
+import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
+import { BehaviorSubject, of } from 'rxjs';
 import { ConfigDialogComponent } from './config-dialog.component';
-import { of } from 'rxjs';
 
 describe('ConfigDialogComponent', () => {
     let component: ConfigDialogComponent;
     let fixture: ComponentFixture<ConfigDialogComponent>;
+    let roomManagerServiceSpy: jasmine.SpyObj<RoomManagerService>;
+    let isReloadNeeded: BehaviorSubject<boolean>;
 
     beforeEach(async () => {
+        isReloadNeeded = new BehaviorSubject<boolean>(true);
+        roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['gameConstantsUpdated'], {
+            isReloadNeeded$: isReloadNeeded,
+        });
         await TestBed.configureTestingModule({
             declarations: [ConfigDialogComponent],
             imports: [MatDialogModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, HttpClientModule, NoopAnimationsModule],
+            providers: [{ provide: RoomManagerService, useValue: roomManagerServiceSpy }],
         }).compileComponents();
 
         fixture = TestBed.createComponent(ConfigDialogComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+    });
+    afterEach(() => {
+        component.ngOnDestroy();
     });
 
     it('should create', () => {
@@ -65,7 +76,6 @@ describe('ConfigDialogComponent', () => {
 
     it('onSubmit should call updateGameConstants on communicationService and gameConstantsUpdated on roomManagerService', () => {
         spyOn(component['communicationService'], 'updateGameConstants').and.returnValue(of(void 0));
-        spyOn(component['roomManagerService'], 'gameConstantsUpdated').and.callThrough();
 
         component.configConstants = { countdownTime: 10, penaltyTime: 6, bonusTime: 3 };
         component.onSubmit();
@@ -77,7 +87,6 @@ describe('ConfigDialogComponent', () => {
     it('resetConfigForm should reset the config form and update the game constants', () => {
         const resetSpy = spyOn(component.configForm, 'reset');
         const updateSpy = spyOn(component['communicationService'], 'updateGameConstants').and.returnValue(of(void 0));
-        const gameConstantsSpy = spyOn(component['roomManagerService'], 'gameConstantsUpdated');
 
         component.resetConfigForm();
 
@@ -87,6 +96,12 @@ describe('ConfigDialogComponent', () => {
             bonusTime: DEFAULT_BONUS_VALUE,
         });
         expect(updateSpy).toHaveBeenCalledWith(component.configConstants);
-        expect(gameConstantsSpy).toHaveBeenCalled();
+        expect(component['roomManagerService'].gameConstantsUpdated).toHaveBeenCalled();
+    });
+
+    it('should call loadGameConstants when handleChanges is called if Reload is needed', () => {
+        const loadGameConstantsSpy = spyOn(component, 'loadGameConstants');
+        component.handleChanges();
+        expect(loadGameConstantsSpy).toHaveBeenCalled();
     });
 });
