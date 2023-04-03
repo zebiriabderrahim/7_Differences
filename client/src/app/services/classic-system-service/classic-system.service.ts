@@ -149,11 +149,11 @@ export class ClassicSystemService {
     }
 
     sendMessage(textMessage: string): void {
-        const newMessage = { tag: MessageTag.received, message: textMessage };
+        const newMessage = { tag: MessageTag.Received, message: textMessage };
         const replayEvent: ReplayEvent = {
             action: ReplayActions.CaptureMessage,
             timestamp: Date.now(),
-            data: { tag: MessageTag.sent, message: textMessage } as ChatMessage,
+            data: { tag: MessageTag.Sent, message: textMessage } as ChatMessage,
         };
         this.replayEventsSubject.next(replayEvent);
         this.clientSocket.send(MessageEvents.LocalMessage, newMessage);
