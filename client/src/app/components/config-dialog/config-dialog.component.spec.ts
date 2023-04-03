@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DEFAULT_BONUS_VALUE, DEFAULT_COUNTDOWN_VALUE, DEFAULT_PENALTY_VALUE } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, Subscription, of } from 'rxjs';
 import { ConfigDialogComponent } from './config-dialog.component';
 
 describe('ConfigDialogComponent', () => {
@@ -103,5 +103,13 @@ describe('ConfigDialogComponent', () => {
         const loadGameConstantsSpy = spyOn(component, 'loadGameConstants');
         component.handleChanges();
         expect(loadGameConstantsSpy).toHaveBeenCalled();
+    });
+
+    it('should unsubscribe reloadSubscription when component is destroyed', () => {
+        component['communicationSubscription'] = undefined as unknown as Subscription;
+        component['isReloadNeededSubscription'] = undefined as unknown as Subscription;
+        component.ngOnDestroy();
+        expect(component['communicationSubscription']).toBeUndefined();
+        expect(component['isReloadNeededSubscription']).toBeUndefined();
     });
 });

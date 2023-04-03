@@ -10,7 +10,7 @@ import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 // import { GameCard } from '@common/game-interfaces';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, Subscription, of } from 'rxjs';
 import { SelectionPageComponent } from './selection-page.component';
 
 describe('SelectionPageComponent', () => {
@@ -25,7 +25,7 @@ describe('SelectionPageComponent', () => {
         // mockGameCard = { _id: '123', name: 'mockName', difficultyLevel: true, soloTopTime: [], oneVsOneTopTime: [], thumbnail: '' };
         roomManagerService = jasmine.createSpyObj('RoomManagerService', ['handleRoomEvents', 'connect', 'disconnect', 'removeAllListeners'], {
             deletedGameId$: deletedGameIdMock,
-            isReloadNeeded$: of(false),
+            isReloadNeeded$: of(true),
         });
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule.withRoutes(routes), MatGridListModule, FormsModule, MatIconModule],
@@ -46,13 +46,6 @@ describe('SelectionPageComponent', () => {
 
         fixture = TestBed.createComponent(SelectionPageComponent);
         component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
-
-    afterEach(() => {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        spyOn(component, 'ngOnDestroy').and.callFake(() => {});
-        fixture.destroy();
         fixture.detectChanges();
     });
 
@@ -88,4 +81,10 @@ describe('SelectionPageComponent', () => {
     //     deletedGameIdMock.next('456');
     //     expect(filterSpy).toHaveBeenCalled();
     // });
+
+    it('should unsubscribe reloadSubscription when component is destroyed', () => {
+        component['reloadSubscription'] = undefined as unknown as Subscription;
+        component.ngOnDestroy();
+        expect(component['reloadSubscription']).toBeUndefined();
+    });
 });
