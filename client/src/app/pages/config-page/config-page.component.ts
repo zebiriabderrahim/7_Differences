@@ -32,6 +32,6 @@ export class ConfigPageComponent {
     }
 
     openConfigDialog() {
-        this.dialog.open(ConfigDialogComponent, new MatDialogConfig()).afterClosed();
+        this.dialog.open(ConfigDialogComponent, new MatDialogConfig());
     }
 }
