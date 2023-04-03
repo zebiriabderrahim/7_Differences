@@ -16,7 +16,7 @@
                 {{ opponentDifferencesFound }}
             </h1>
         </div>
-        <app-game-infos [game]="game" [differencesCount]="game.differencesCount" [gameConstants]="gameConstants"></app-game-infos>
+        <app-game-infos [isReplayAvailable]="isReplayAvailable" [game]="game" [differencesCount]="game.differencesCount" [gameConstants]="gameConstants"></app-game-infos>
     </div>
     <div class="canvas-container">
         <div class="game-canvas">
@@ -52,9 +52,10 @@
             ></canvas>
         </div>
     </div>
-    <button class="importantButton justified" (click)="showAbandonDialog()"> <span id = "abandon">Abandonner la partie</span></button>
+    <button *ngIf="!isReplayAvailable" class="importantButton justified" (click)="showAbandonDialog()">Abandonner la partie</button>
 </div>
 <img id = "background" src = "./assets/background/BackgroundImage.jpg" />
 <div *ngIf="game">
-    <app-chat-box (add)="addRightSideMessage($event)" [messages]="messages" [gameMode]="game.mode"></app-chat-box>
+    <app-chat-box (add)="addRightSideMessage($event)" [messages]="messages" [isReplaying]="isReplayAvailable" [gameMode]="game.mode"></app-chat-box>
+    <app-replay-buttons [isReplayAvailable]="isReplayAvailable"></app-replay-buttons>
 </div>
