@@ -120,7 +120,7 @@ export class ReplayService {
                 this.isDifferenceFound = true;
                 this.soundService.playCorrectSound();
                 this.gameAreaService.setAllData();
-                this.gameAreaService.replaceDifference(replayData.data as Coordinate[]);
+                this.gameAreaService.replaceDifference(replayData.data as Coordinate[], this.replaySpeed);
                 break;
             case ReplayActions.ClickError:
                 this.soundService.playErrorSound();
