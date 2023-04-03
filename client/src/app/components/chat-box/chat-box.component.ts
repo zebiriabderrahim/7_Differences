@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ChatMessage } from '@common/game-interfaces';
 import { GameModes } from '@common/enums';
+import { ChatMessage } from '@common/game-interfaces';
 
 @Component({
     selector: 'app-chat-box',
@@ -10,6 +10,7 @@ import { GameModes } from '@common/enums';
 export class ChatBoxComponent {
     @Input() messages: ChatMessage[];
     @Input() gameMode: string;
+    @Input() isReplaying: boolean;
     @Output() add: EventEmitter<string>;
     oneVsOneGameMode: string;
 

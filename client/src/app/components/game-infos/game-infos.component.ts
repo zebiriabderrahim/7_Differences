@@ -9,6 +9,7 @@ import { ClientSideGame, GameConfigConst } from '@common/game-interfaces';
 export class GameInfosComponent {
     @Input() game: ClientSideGame;
     @Input() differencesCount: number;
+    @Input() isReplayAvailable: boolean;
     @Input() gameConstants: GameConfigConst;
 
     constructor(private readonly hintService: HintService) {}
