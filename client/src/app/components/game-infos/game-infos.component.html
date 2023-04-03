@@ -8,6 +8,6 @@
     <div *ngIf="game.mode.includes('Solo')">
         <p><strong>Pénalité d'utilisation d'indice : </strong> {{gameConstants.penaltyTime}} secondes </p>
         <p><strong>Indices restants : </strong> {{ nHints }} </p>
-        <button mat-raised-button color="white" (click)="requestHint()" [disabled]="nHints === 0">Indice</button>
+        <button *ngIf="!isReplayAvailable" mat-raised-button color="white" (click)="requestHint()" [disabled]="nHints === 0">Indice</button>
     </div>
 </div>
