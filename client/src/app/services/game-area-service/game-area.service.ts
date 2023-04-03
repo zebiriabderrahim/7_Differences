@@ -84,11 +84,12 @@ export class GameAreaService {
         }
         this.modifiedContext.putImageData(this.modifiedPixelData, 0, 0);
         this.resetCheatMode();
-        this.replayEventsSubject.next({
+        const replayEvent: ReplayEvent = {
             action: ReplayActions.ClickFound,
             timestamp: Date.now(),
             data: differenceCoord,
-        });
+        };
+        this.replayEventsSubject.next(replayEvent);
         this.flashCorrectPixels(differenceCoord, replaySpeed, isPaused);
     }
 
@@ -125,6 +126,7 @@ export class GameAreaService {
     }
 
     toggleCheatMode(startDifferences: Coordinate[], replaySpeed?: number): void {
+        let replayEvent: ReplayEvent;
         const speed = replaySpeed ? replaySpeed : 1;
         const imageDataIndexes: number[] = this.convert2DCoordToPixelIndex(startDifferences);
         if (!this.isCheatMode) {
@@ -140,17 +142,19 @@ export class GameAreaService {
                     this.clearFlashing();
                 }, RED_FLASH_TIME / speed);
             }, CHEAT_MODE_WAIT_TIME / speed) as unknown as number;
-            this.replayEventsSubject.next({
+            replayEvent = {
                 action: ReplayActions.ActivateCheat,
                 timestamp: Date.now(),
                 data: startDifferences,
-            });
+            };
+            this.replayEventsSubject.next(replayEvent);
         } else {
-            this.replayEventsSubject.next({
+            replayEvent = {
                 action: ReplayActions.DeactivateCheat,
                 timestamp: Date.now(),
                 data: startDifferences,
-            });
+            };
+            this.replayEventsSubject.next(replayEvent);
             clearInterval(this.cheatModeInterval);
             this.clearFlashing();
         }
