@@ -13,7 +13,7 @@ export class MessageManagerService {
 
     getSoloDifferenceMessage(): ChatMessage {
         const localMessage: ChatMessage = {
-            tag: MessageTag.common,
+            tag: MessageTag.Common,
             message: this.getFormatTime() + ' - Différence trouvée',
         };
         return localMessage;
@@ -21,7 +21,7 @@ export class MessageManagerService {
 
     getOneVsOneDifferenceMessage(playerName: string): ChatMessage {
         const localMessage: ChatMessage = {
-            tag: MessageTag.common,
+            tag: MessageTag.Common,
             message: this.getFormatTime() + ` - Différence trouvée par ${playerName}`,
         };
         return localMessage;
@@ -29,7 +29,7 @@ export class MessageManagerService {
 
     getSoloErrorMessage(): ChatMessage {
         const localMessage: ChatMessage = {
-            tag: MessageTag.common,
+            tag: MessageTag.Common,
             message: this.getFormatTime() + ' - Erreur',
         };
         return localMessage;
@@ -37,7 +37,7 @@ export class MessageManagerService {
 
     getOneVsOneErrorMessage(playerName: string): ChatMessage {
         const localMessage: ChatMessage = {
-            tag: MessageTag.common,
+            tag: MessageTag.Common,
             message: this.getFormatTime() + ` - Erreur par ${playerName}`,
         };
         return localMessage;
@@ -45,7 +45,7 @@ export class MessageManagerService {
 
     getQuitMessage(playerName: string): ChatMessage {
         const localMessage: ChatMessage = {
-            tag: MessageTag.common,
+            tag: MessageTag.Common,
             message: this.getFormatTime() + ` - ${playerName} a abandonné la partie`,
         };
         return localMessage;
@@ -53,7 +53,7 @@ export class MessageManagerService {
 
     getNewRecordMessage(newRecord: NewRecord): ChatMessage {
         const localMessage: ChatMessage = {
-            tag: MessageTag.global,
+            tag: MessageTag.Global,
             message:
                 this.getFormatTime() +
                 `– ${newRecord.playerName} obtient la ${newRecord.rank} e` +

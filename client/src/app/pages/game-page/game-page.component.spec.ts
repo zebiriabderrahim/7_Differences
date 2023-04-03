@@ -37,7 +37,7 @@ describe('GamePageComponent', () => {
     const differencesFoundTest = 3;
     const opponentDifferencesFoundTest = 2;
     const endGameMessageTest = 'La partie est terminée';
-    const messageTest: ChatMessage = { tag: MessageTag.common, message: 'messageTest' };
+    const messageTest: ChatMessage = { tag: MessageTag.Common, message: 'messageTest' };
     // const cheatDifferenceTest: Coordinate[] = [];
     const mockDifferenceData = { currentDifference: [], differencesFound: 0 };
 

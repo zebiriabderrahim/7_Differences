@@ -180,7 +180,7 @@ describe('ReplayService', () => {
         const replayEvent: ReplayEvent = {
             action: ReplayActions.CaptureMessage,
             data: {
-                tag: MessageTag.common,
+                tag: MessageTag.Common,
                 message: 'test',
             } as ChatMessage,
             timestamp: 0,
