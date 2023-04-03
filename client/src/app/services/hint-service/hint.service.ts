@@ -25,13 +25,14 @@ export class HintService {
     thirdHintDifference: boolean[][];
     thirdHintDifferenceSlightlyEnlarged: boolean[][];
     thirdHintDifferenceEnlarged: boolean[][];
+    isThirdHintActive: boolean;
 
     constructor(
         private readonly classicSystem: ClassicSystemService,
         private readonly gameAreaService: GameAreaService,
         private readonly differenceService: DifferenceService,
     ) {
-        this.nAvailableHints = DEFAULT_N_HINTS;
+        this.resetHints();
         this.proximity = HintProximity.TooFar;
         this.thirdHintDifference = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
         this.thirdHintDifferenceSlightlyEnlarged = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
@@ -44,6 +45,7 @@ export class HintService {
 
     resetHints(): void {
         this.nAvailableHints = DEFAULT_N_HINTS;
+        this.isThirdHintActive = false;
     }
 
     requestHint(): void {
@@ -52,6 +54,7 @@ export class HintService {
             const differenceIndex: number = this.differences.length > 1 ? this.generateRandomNumber(0, this.differences.length - 1) : 0;
             const difference: Coordinate[] = this.differences[differenceIndex];
             if (this.nAvailableHints === 1) {
+                this.isThirdHintActive = true;
                 hintSquare = this.generateAdjustedHintSquare(difference);
                 this.generateLastHintDifferences(difference);
             } else {
