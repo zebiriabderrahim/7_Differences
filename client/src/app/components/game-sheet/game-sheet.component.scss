@@ -5,81 +5,200 @@
 }
 
 .gameSheet {
-    border: 1px solid #000000;
-    border-radius: 40px;
-    background-color: #ffffff;
-    transition: 0.2s;
-}
-
-.gameSheet:hover {
-    border: 1px solid #000000;
-    border-radius: 40px;
-    background-color: #ffffff;
-    transform: scale(1.05);
+    z-index: 2;
+    padding-bottom: 65px;
 }
 
 h1 {
+    font-family: 'Troika', sans-serif;
+    color: #ffffff;
+    letter-spacing: 5px;
     text-align: center;
     padding: 15px;
-    font-size: 200%;
-    font-weight: 700;
+    font-size: 180%;
+    font-weight: 600;
+    z-index: 2;
+    margin-top: 25px;
+}
+
+.difficulty {
+    position: absolute;
+    transform: rotate(-13deg);
+    left: 12.5%;
+    top: 12.5%;
+    font-family: 'Troika', sans-serif;
+    font-size: 80%;
+    color: #000000;
+    z-index: 2;
+}
+
+h3 {
+    font-family: 'Troika', sans-serif;
+    letter-spacing: 1px;
+    text-align: center;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 5px;
+    font-size: 120%;
+    font-weight: 300;
+    z-index: 2;
 }
 
 .gameContainer {
     display: flex;
-    padding-top: 20px;
-    flex-direction: row;
+    flex-direction: column;
+    align-items: center;
     flex-wrap: nowrap;
-    margin-left: 5px;
-    margin-right: 5px;
 }
 
 .thumbnail {
     display: flex;
-    max-width: 200px;
-    max-height: 150px;
+    margin-top: 20px;
+    padding: 3px 3px 3px;
+    background-color: rgb(0, 0, 0);
+    box-shadow: 0 1px 3px rgba(34, 25, 25, 0.4);
+    -moz-box-shadow: 0 1px 2px rgba(34, 25, 25, 0.4);
+    -webkit-box-shadow: 0 1px 3px rgba(34, 25, 25, 0.4);
+    border-radius: 10px;
+    max-width: 40%;
+    max-height: 35%;
+    z-index: 2;
 }
 
 .gameInfo {
-    margin: 5px;
+    z-index: 2;
 }
 
 .ranking {
     display: flex;
     flex-direction: row;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
-.bestTime {
-    border: 2px solid #000000;
-    border-radius: 10px;
+.topText {
+    font-size: 16px;
 }
 
 .buttonSection {
+    display: flex;
+    flex-direction: row;
     margin-left: 5px;
     margin-right: 5px;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    margin-bottom: 20px;
     text-align: center;
+    z-index: 2;
 }
 
 .mat-raised-button {
-    padding: 10px;
-    min-width: 100px;
-    margin-left: 20px;
-    margin-right: 20px;
+    min-width: 130px;
+    min-height: 90px;
+    margin-left: 2px;
+    margin-right: 2px;
+    left: 0;
     background-color: #1778f2;
     color: #ffffff;
+    z-index: 2;
+    opacity: 0;
 }
+
 
 .mat-raised-button:hover {
     background-color: #ffffff;
     color: #000000;
+    z-index: 2;
 }
 
 .section {
     text-align: left;
-    margin-bottom: 10px;
+}
+
+.background {
+    position: absolute;
+    top: 0;
+    z-index: 0;
+    width: 85%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gold {
+    position: absolute;
+    width: 4%;
+    height: 4%;
+    left: 15%;
+    bottom: 33%;
+    z-index: 1;
+}
+
+.argent {
+    position: absolute;
+    width: 4%;
+    height: 4%;
+    left: 15%;
+    bottom: 28%;
+    z-index: 1;
+}
+
+.bronze {
+    position: absolute;
+    width: 4%;
+    height: 4%;
+    left: 15%;
+    bottom: 23%;
+    z-index: 1;
+}
+
+.button-container img {
+    position: absolute;
+    transition: all 0.3s ease;
+}
+
+.button-container:hover img {
+    filter: drop-shadow(10px 10px 10px black);
+}
+
+.playButton {
+    width: 25%;
+    height: 15%;
+    left: 22%;
+    bottom: 7%;
+}
+
+.createButton {
+    width: 25%;
+    height: 15%;
+    right: 22%;
+    bottom: 7%;
+}
+
+.playText {
+    position: absolute;
+    font-size: 20px;
+    color: #ffffff;
+    bottom: 12%;
+    left: 30%;
+}
+
+.createText {
+    position: absolute;
+    font-size: 20px;
+    color: #ffffff;
+    bottom: 12%;
+    left: 60%;
+}
+
+.deleteText {
+    position: absolute;
+    font-size: 16px;
+    color: #ffffff;
+    bottom: 12%;
+    left: 27%;
+}
+
+.reinitializeText {
+    position: absolute;
+    font-size: 16px;
+    color: #ffffff;
+    bottom: 12%;
+    left: 57%;
 }

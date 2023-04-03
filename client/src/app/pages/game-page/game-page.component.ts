@@ -8,6 +8,7 @@ import { ClassicSystemService } from '@app/services/classic-system-service/class
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
+import { ReplayService } from '@app/services/replay-service/replay.service';
 import { Coordinate } from '@common/coordinate';
 import { MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, GameConfigConst, Players } from '@common/game-interfaces';
@@ -30,8 +31,12 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     messages: ChatMessage[];
     player: string;
     players: Players;
+    isReplayAvailable: boolean;
     readonly canvasSize: CanvasMeasurements;
     private timerSub: Subscription;
+    private replayTimerSub: Subscription;
+    private replayDifferencesFoundSub: Subscription;
+    private replayOpponentDifferenceFoundSub: Subscription;
     private gameSub: Subscription;
     private differenceSub: Subscription;
     private messageSub: Subscription;
@@ -47,6 +52,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         private readonly imageService: ImageService,
         private readonly hintService: HintService,
         private readonly matDialog: MatDialog,
+        private readonly replayService: ReplayService,
     ) {
         this.classicService.manageSocket();
         this.differencesFound = 0;
@@ -56,6 +62,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.player = '';
         this.players = DEFAULT_PLAYERS;
         this.canvasSize = CANVAS_MEASUREMENTS;
+        this.isReplayAvailable = false;
     }
 
     get differences(): Coordinate[][] {
@@ -119,6 +126,29 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
                 this.gameAreaService.setAllData();
             }
         });
+
+        this.replayTimerSub = this.replayService.replayTimer$.subscribe((replayTimer: number) => {
+            if (this.isReplayAvailable) {
+                this.timer = replayTimer;
+                if (replayTimer === 0) {
+                    this.messages = [];
+                    this.differencesFound = 0;
+                }
+            }
+        });
+
+        this.replayDifferencesFoundSub = this.replayService.replayDifferenceFound$.subscribe((replayDiffFound) => {
+            if (this.isReplayAvailable) {
+                this.differencesFound = replayDiffFound;
+            }
+        });
+
+        this.replayOpponentDifferenceFoundSub = this.replayService.replayOpponentDifferenceFound$.subscribe((replayDiffFound) => {
+            if (this.isReplayAvailable) {
+                this.opponentDifferencesFound = replayDiffFound;
+            }
+        });
+
         this.timerSub = this.classicService.timer$.subscribe((timer) => {
             this.timer = timer;
         });
@@ -146,13 +176,17 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
 
     showAbandonDialog(): void {
         this.matDialog.open(GamePageDialogComponent, {
-            data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ?' },
+            data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ? ' },
             disableClose: true,
+            panelClass: 'custom-dialog',
         });
     }
 
     showEndGameDialog(endingMessage: string): void {
         this.matDialog.open(GamePageDialogComponent, { data: { action: 'endGame', message: endingMessage }, disableClose: true });
+        if (this.game?.mode.includes('Classic')) {
+            this.isReplayAvailable = true;
+        }
     }
 
     mouseClickOnCanvas(event: MouseEvent, isLeft: boolean) {
@@ -176,6 +210,9 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.messageSub?.unsubscribe();
         this.endGameSub?.unsubscribe();
         this.opponentDifferenceSub?.unsubscribe();
+        this.replayTimerSub?.unsubscribe();
+        this.replayDifferencesFoundSub?.unsubscribe();
+        this.replayOpponentDifferenceFoundSub?.unsubscribe();
         this.isFirstDifferencesFoundSub?.unsubscribe();
         this.classicService.removeAllListeners();
     }

@@ -3,7 +3,7 @@
 import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
-import { CHARACTERS, KEY_SIZE, NOT_FOUND } from '@common/constants';
+import { CHARACTERS, KEY_SIZE, MAX_BONUS_TIME_ALLOWED, NOT_FOUND } from '@common/constants';
 import { GameEvents, GameModes, MessageEvents } from '@common/enums';
 import { ClientSideGame, Coordinate, Differences, GameRoom, Player } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
@@ -126,6 +126,7 @@ export class RoomsManagerService {
         );
         if (index !== NOT_FOUND) {
             diffData.differencesFound++;
+            this.addBonusTime(room);
             diffData.currentDifference = originalDifferences[index];
             originalDifferences.splice(index, 1);
             const localMessage = this.messageManager.getLocalMessage(room.clientGame.mode, true, name);
@@ -181,6 +182,17 @@ export class RoomsManagerService {
         room.originalDifferences = structuredClone(JSON.parse(fs.readFileSync(`assets/${game.name}/differences.json`, 'utf-8')));
         this.updateRoom(room);
         return game._id.toString();
+    }
+
+    private addBonusTime(room: GameRoom): void {
+        room.timer += room.gameConstants.bonusTime;
+        if (
+            (room.timer > MAX_BONUS_TIME_ALLOWED && room.clientGame.mode === GameModes.LimitedSolo) ||
+            room.clientGame.mode === GameModes.LimitedCoop
+        ) {
+            room.timer = MAX_BONUS_TIME_ALLOWED;
+        }
+        this.rooms.set(room.roomId, room);
     }
 
     private updateTimer(roomId: string, server: io.Server): void {

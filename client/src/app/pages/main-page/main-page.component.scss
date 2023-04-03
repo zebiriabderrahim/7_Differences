@@ -8,9 +8,8 @@
 h1 {
     font-family: 'Troika', sans-serif;
     text-transform: uppercase;
-    font-size: 36px;
+    font-size: 80px;
     font-weight: bolder;
-    font-style: italic;
     line-height: 44px;
     margin: 0 0 12px;
     text-align: center;
@@ -20,6 +19,8 @@ h1 {
 }
 
 h2 {
+    position: absolute;
+    top: 55%;
     animation: titleFadeIn 1s ease-in-out;
     z-index: 1;
     font-family: 'Troika', sans-serif;
@@ -68,9 +69,9 @@ header {
 }
 
 .project-logo {
-    width: 250px;
-    height: 250px;
-    margin: 30px auto 70px auto;
+    width: 450px;
+    height: 450px;
+    margin: 30px auto 150px auto;
     transform: translateY(100%) scale(0);
     animation: popOut 1s ease-in-out forwards;
 }
@@ -93,6 +94,7 @@ section {
 }
 
 .button {
+    top: 250px;
     cursor: pointer;
     position: relative;
     display: inline-block;
@@ -139,10 +141,6 @@ button:hover {
     background-color: #5cbf99;
     color: black;
     transform: scale(1.05);
-}
-
-button:hover .leafs{
-    opacity: 1;
 }
 
 .team-name {
