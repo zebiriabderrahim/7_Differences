@@ -1,5 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ONE_SECOND } from '@app/constants/constants';
+import { SPEED_X1, SPEED_X2, SPEED_X4 } from '@app/constants/replay';
 import { ReplayService } from '@app/services/replay-service/replay.service';
 
 @Component({
@@ -47,15 +48,15 @@ export class ReplayButtonsComponent implements OnInit, OnDestroy {
     }
 
     speedX1() {
-        this.replayService.upSpeedx1();
+        this.replayService.upSpeed(SPEED_X1);
     }
 
     speedX2() {
-        this.replayService.upSpeedx2();
+        this.replayService.upSpeed(SPEED_X2);
     }
 
     speedX4() {
-        this.replayService.upSpeedx4();
+        this.replayService.upSpeed(SPEED_X4);
     }
 
     ngOnDestroy() {

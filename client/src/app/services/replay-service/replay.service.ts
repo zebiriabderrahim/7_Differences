@@ -1,6 +1,6 @@
 /* eslint-disable max-params */
 import { Injectable } from '@angular/core';
-import { REPLAY_LIMITER, SPEED_X1, SPEED_X2, SPEED_X4 } from '@app/constants/replay';
+import { REPLAY_LIMITER, SPEED_X1 } from '@app/constants/replay';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
@@ -209,16 +209,8 @@ export class ReplayService {
         this.currentReplayIndex = 0;
     }
 
-    upSpeedx1(): void {
-        this.replaySpeed = SPEED_X1;
-    }
-
-    upSpeedx2(): void {
-        this.replaySpeed = SPEED_X2;
-    }
-
-    upSpeedx4(): void {
-        this.replaySpeed = SPEED_X4;
+    upSpeed(speed: number): void {
+        this.replaySpeed = speed;
     }
 
     restartTimer(): void {
