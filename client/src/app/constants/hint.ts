@@ -3,7 +3,7 @@ import { Quadrant } from '@app/interfaces/quadrant';
 import { QuadrantPosition } from '@app/enum/quadrant-position';
 
 export const DEFAULT_N_HINTS = 3;
-export const HINT_SQUARE_PADDING = 2;
+export const HINT_SQUARE_PADDING = 6;
 
 export const INITIAL_QUADRANT: Quadrant = {
     bottomCorner: { x: 0, y: 0 },
