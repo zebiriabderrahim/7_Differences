@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { ClientSideGame } from '@common/game-interfaces';
-
+import { HintService } from '@app/services/hint-service/hint.service';
+import { ClientSideGame, GameConfigConst } from '@common/game-interfaces';
 @Component({
     selector: 'app-game-infos',
     templateUrl: './game-infos.component.html',
@@ -9,5 +9,15 @@ import { ClientSideGame } from '@common/game-interfaces';
 export class GameInfosComponent {
     @Input() game: ClientSideGame;
     @Input() differencesCount: number;
-    @Input() playerName: string;
+    @Input() gameConstants: GameConfigConst;
+
+    constructor(private readonly hintService: HintService) {}
+
+    get nHints(): number {
+        return this.hintService.nAvailableHints;
+    }
+
+    requestHint() {
+        this.hintService.requestHint();
+    }
 }

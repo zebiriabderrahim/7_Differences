@@ -16,7 +16,7 @@
                 {{ opponentDifferencesFound }}
             </h1>
         </div>
-        <app-game-infos class = "game-infos" [game]="game" [differencesCount]="game.differencesCount"></app-game-infos>
+        <app-game-infos [game]="game" [differencesCount]="game.differencesCount" [gameConstants]="gameConstants"></app-game-infos>
     </div>
     <div class="canvas-container">
         <div class="game-canvas">
