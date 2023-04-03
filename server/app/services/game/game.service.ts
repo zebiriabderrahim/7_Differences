@@ -76,4 +76,12 @@ export class GameService {
     async getAllGameIds(): Promise<string[]> {
         return await this.databaseService.getAllGameIds();
     }
+
+    async getRandomGame(selectedId: string[]): Promise<Game> {
+        const game = await this.databaseService.getRandomGame(selectedId);
+        if (game) {
+            return game;
+        }
+        return null;
+    }
 }

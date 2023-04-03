@@ -179,4 +179,15 @@ export class DatabaseService {
             return Promise.reject(`Failed to get all game ids --> ${error}`);
         }
     }
+
+    async getRandomGame(playedGameIds: string[]): Promise<Game> {
+        try {
+            const gameIds = await this.getAllGameIds();
+            const gameIdsToPlay = gameIds.filter((id) => !playedGameIds.includes(id));
+            const randomGameId = gameIdsToPlay[Math.floor(Math.random() * gameIdsToPlay.length)];
+            return await this.getGameById(randomGameId);
+        } catch (error) {
+            return Promise.reject(`Failed to get random game --> ${error}`);
+        }
+    }
 }
