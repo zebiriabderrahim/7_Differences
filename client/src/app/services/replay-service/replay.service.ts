@@ -228,6 +228,7 @@ export class ReplayService {
     }
 
     resetReplay(): void {
+        this.replaySpeed = SPEED_X1;
         this.replayEvents = [];
         this.currentReplayIndex = 0;
         this.isReplaying = false;
