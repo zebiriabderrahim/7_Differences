@@ -67,11 +67,12 @@ export class GameAreaService {
             frontContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
             this.clickDisabled = false;
         }, ONE_SECOND);
-        this.replayEventsSubject.next({
+        const replayEvent: ReplayEvent = {
             action: ReplayActions.ClickError,
             timestamp: Date.now(),
             data: { isMainCanvas, pos: errorCoordinate },
-        });
+        };
+        this.replayEventsSubject.next(replayEvent);
     }
 
     replaceDifference(differenceCoord: Coordinate[], replaySpeed?: number, isPaused: boolean = false): void {
