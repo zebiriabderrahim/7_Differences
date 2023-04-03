@@ -10,11 +10,13 @@ export class NavBarComponent {
     readonly selectionRoute: string;
     readonly configRoute: string;
     readonly homeRoute: string;
+    readonly limitedRoute: string;
 
     constructor() {
         this.gameRoute = '/game';
         this.selectionRoute = '/selection';
         this.configRoute = '/config';
         this.homeRoute = '/home';
+        this.limitedRoute = '/limited';
     }
 }
