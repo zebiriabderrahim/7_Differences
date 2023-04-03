@@ -19,8 +19,12 @@ export class ReplayButtonsComponent implements OnInit, OnDestroy {
         this.selectedSpeed = 'x1';
     }
 
-    replay() {
-        this.replayService.startReplay();
+    replay(isMidReplay: boolean) {
+        if (isMidReplay) {
+            this.replayService.restartReplay();
+        } else {
+            this.replayService.startReplay();
+        }
         this.replayService.restartTimer();
         this.isReplayPaused = false;
         this.isReplayButtonDisabled = true;
