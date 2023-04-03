@@ -198,11 +198,12 @@ export class ClassicSystemService {
 
         this.clientSocket.on(MessageEvents.LocalMessage, (receivedMessage: ChatMessage) => {
             this.message.next(receivedMessage);
-            this.replayEventsSubject.next({
+            const replayEvent: ReplayEvent = {
                 action: ReplayActions.CaptureMessage,
                 timestamp: Date.now(),
                 data: receivedMessage,
-            });
+            };
+            this.replayEventsSubject.next(replayEvent);
         });
     }
 }
