@@ -1,15 +1,20 @@
 import { GameService } from '@app/services/game/game.service';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { NOT_FOUND } from '@common/constants';
-import { GameEvents, RoomEvents } from '@common/enums';
+import { GameEvents, HistoryEvents, RoomEvents } from '@common/enums';
 import { LimitedGameDetails } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
+import { HistoryService } from '@app/services/history/history.service';
 
 @Injectable()
 export class LimitedModeService {
     private availableGameByRoomId: Map<string, string[]>;
-    constructor(private readonly roomsManagerService: RoomsManagerService, private readonly gameService: GameService) {
+    constructor(
+        private readonly roomsManagerService: RoomsManagerService,
+        private readonly gameService: GameService,
+        private readonly historyService: HistoryService,
+    ) {
         this.availableGameByRoomId = new Map<string, string[]>();
     }
 
@@ -69,6 +74,9 @@ export class LimitedModeService {
         if (room.player2) {
             server.sockets.sockets.get(room.player2.playerId)?.rooms.delete(roomId);
         }
+        console.log('game ended limited ');
+        this.historyService.closeEntry(roomId);
+        server.emit(HistoryEvents.EntryAdded, this.historyService.getHistory());
         this.roomsManagerService.deleteRoom(roomId);
         this.deleteAvailableGame(roomId);
     }

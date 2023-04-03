@@ -2,6 +2,7 @@
 /* eslint-disable no-underscore-dangle */
 import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
+import { HistoryService } from '@app/services/history/history.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { CHARACTERS, KEY_SIZE, NOT_FOUND } from '@common/constants';
 import { GameEvents, GameModes, MessageEvents } from '@common/enums';
@@ -14,7 +15,11 @@ import * as io from 'socket.io';
 export class RoomsManagerService {
     private rooms: Map<string, GameRoom>;
 
-    constructor(private readonly gameService: GameService, private readonly messageManager: MessageManagerService) {
+    constructor(
+        private readonly gameService: GameService,
+        private readonly messageManager: MessageManagerService,
+        private readonly historyService: HistoryService,
+    ) {
         this.rooms = new Map<string, GameRoom>();
     }
 
@@ -106,6 +111,7 @@ export class RoomsManagerService {
     startGame(socket: io.Socket, server: io.Server): void {
         const roomId = this.getRoomIdByPlayerId(socket.id);
         const room = this.getRoomById(roomId);
+        this.historyService.createEntry(room);
         if (!room && room?.player1.playerId !== socket.id && room?.player2.playerId !== socket.id) return;
         socket.join(roomId);
         this.updateRoom(room);

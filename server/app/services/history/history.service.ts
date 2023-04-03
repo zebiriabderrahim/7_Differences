@@ -1,10 +1,10 @@
 import { GAME_HISTORY } from '@common/constants';
-import { ClassicPlayRoom, GameHistory } from '@common/game-interfaces';
+import { GameHistory, GameRoom } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class HistoryService {
-    history: GameHistory[];
+    private history: GameHistory[];
     private pendingGames: Map<string, GameHistory>;
 
     constructor() {
@@ -12,7 +12,11 @@ export class HistoryService {
         this.pendingGames = new Map<string, GameHistory>();
     }
 
-    createEntry(room: ClassicPlayRoom) {
+    getHistory(): GameHistory[] {
+        return this.history;
+    }
+
+    createEntry(room: GameRoom) {
         console.log('creating entry');
         const date = new Date();
         const gameHistory: GameHistory = {
@@ -49,7 +53,7 @@ export class HistoryService {
         gameHistory.duration = new Date().getTime() - gameHistory.duration;
         this.history.push(gameHistory);
         console.log('history added');
-        console.log(gameHistory);
+        console.log(this.getHistory());
         this.pendingGames.delete(roomId);
     }
 
