@@ -162,7 +162,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage(GameCardEvents.GameCardCreated)
     gameCardCreated() {
         this.server.emit(GameCardEvents.RequestReload);
-        this.limitedModeService.handleCreateGame();
     }
 
     @SubscribeMessage(GameCardEvents.ResetTopTime)

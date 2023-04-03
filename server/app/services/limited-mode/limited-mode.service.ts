@@ -88,10 +88,7 @@ export class LimitedModeService {
 
     handleDeleteGame(gameId: string): void {
         for (const gameIds of this.availableGameByRoomId.values()) {
-            const index = gameIds.indexOf(gameId);
-            if (index !== NOT_FOUND) {
-                gameIds.splice(index, 1);
-            }
+            gameIds.push(gameId);
         }
     }
 
@@ -99,12 +96,13 @@ export class LimitedModeService {
         this.availableGameByRoomId.clear();
     }
 
-    async handleCreateGame(): Promise<void> {
-        const gameIds = await this.getAllGameIdsFromDb();
-        for (const roomId of this.roomsManagerService.getAllLimitedRoomIds()) {
-            this.availableGameByRoomId.set(roomId, gameIds);
-        }
-    }
+    // async handleCreateGame(): Promise<void> {
+    //     const gameIds = await this.getAllGameIdsFromDb();
+    //     for (const roomId of this.roomsManagerService.getAllLimitedRoomIds()) {
+    //         this.availableGameByRoomId.set(roomId, gameIds);
+    //     }
+    // }
+
     getGameIds(roomId: string): string[] {
         return this.availableGameByRoomId.get(roomId);
     }
