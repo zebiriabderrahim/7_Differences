@@ -26,6 +26,7 @@
                 [attr.width]="canvasSize.width"
                 #originalCanvasFG
                 (click)="mouseClickOnCanvas($event,true)"
+                (mousemove)="checkThirdHint($event)"
             ></canvas>
             <canvas
                 id="original"
@@ -33,6 +34,7 @@
                 [attr.width]="canvasSize.width"
                 #originalCanvas
                 (click)="mouseClickOnCanvas($event,true)"
+                (mousemove)="checkThirdHint($event)"
             ></canvas>
         </div>
         <div class="game-canvas">
@@ -42,6 +44,7 @@
                 [attr.width]="canvasSize.width"
                 #modifiedCanvasFG
                 (click)="mouseClickOnCanvas($event,false)"
+                (mousemove)="checkThirdHint($event)"
             ></canvas>
             <canvas
                 id="modified"
@@ -49,6 +52,7 @@
                 [attr.width]="canvasSize.width"
                 #modifiedCanvas
                 (click)="mouseClickOnCanvas($event,false)"
+                (mousemove)="checkThirdHint($event)"
             ></canvas>
         </div>
     </div>

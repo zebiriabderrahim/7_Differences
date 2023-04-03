@@ -168,6 +168,12 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.classicService.sendMessage(text);
     }
 
+    checkThirdHint(event: MouseEvent) {
+        if (this.hintService.nAvailableHints === 0) {
+            this.hintService.checkThirdHint({ x: event.offsetX, y: event.offsetY });
+        }
+    }
+
     cleanUpLogic(): void {
         this.gameAreaService.resetCheatMode();
         this.gameSub?.unsubscribe();

@@ -1,4 +1,6 @@
 import { Component, Input } from '@angular/core';
+import { ASSETS_HINTS } from '@app/constants/hint';
+import { HintProximity } from '@app/enum/hint-proximity';
 import { HintService } from '@app/services/hint-service/hint.service';
 import { ClientSideGame, GameConfigConst } from '@common/game-interfaces';
 @Component({
@@ -10,11 +12,17 @@ export class GameInfosComponent {
     @Input() game: ClientSideGame;
     @Input() differencesCount: number;
     @Input() gameConstants: GameConfigConst;
-
-    constructor(private readonly hintService: HintService) {}
+    hintsAssets: string[];
+    constructor(private readonly hintService: HintService) {
+        this.hintsAssets = ASSETS_HINTS;
+    }
 
     get nHints(): number {
         return this.hintService.nAvailableHints;
+    }
+
+    get proximity(): HintProximity {
+        return this.hintService.proximity;
     }
 
     requestHint() {
