@@ -168,11 +168,13 @@ export class ClassicSystemService {
             this.gameConstants = room.gameConstants;
             this.players.next({ player1: room.player1, player2: room.player2 });
             this.differences = room.originalDifferences;
-            this.replayEventsSubject.next({
+            const replayEvent: ReplayEvent = {
                 action: ReplayActions.StartGame,
                 timestamp: Date.now(),
                 data: [room.clientGame.original, room.clientGame.modified],
-            });
+            };
+
+            this.replayEventsSubject.next(replayEvent);
         });
 
         this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
