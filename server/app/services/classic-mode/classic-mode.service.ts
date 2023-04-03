@@ -2,20 +2,21 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 // Id comes from database to allow _id
 /* eslint-disable no-underscore-dangle */
+import { HistoryService } from '@app/services/history/history.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
-import { CHARACTERS, KEY_SIZE } from '@common/constants';
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
-import { GameEvents, GameModes, MessageEvents, PlayerEvents, RoomEvents, HistoryEvents } from '@common/enums';
-import { GameRoom, Player, playerData, RoomAvailability } from '@common/game-interfaces';
+import { GameEvents, GameModes, HistoryEvents, MessageEvents, PlayerEvents, RoomEvents } from '@common/enums';
+import { GameRoom, Player, RoomAvailability, playerData } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
-import { HistoryService } from '@app/services/history/history.service';
 
 @Injectable()
 export class ClassicModeService {
     private roomAvailability: Map<string, RoomAvailability>;
 
+    // Services are needed to communicate in service
+    // eslint-disable-next-line max-params
     constructor(
         private readonly roomsManagerService: RoomsManagerService,
         private readonly messageManager: MessageManagerService,
@@ -23,10 +24,6 @@ export class ClassicModeService {
         private readonly playersListManagerService: PlayersListManagerService,
     ) {
         this.roomAvailability = new Map<string, RoomAvailability>();
-    }
-
-    get history() {
-        return this.historyService.history;
     }
 
     async createSoloRoom(socket: io.Socket, playerPayLoad: playerData, server: io.Server): Promise<void> {
@@ -79,6 +76,12 @@ export class ClassicModeService {
                 ? ` remporte la partie avec ${player.diffData.differencesFound} différences trouvées! ${playerRankMessage}`
                 : `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo ${playerRankMessage}!`;
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
+        console.log('game ended classic');
+        this.historyService.closeEntry(room.roomId);
+        console.log('after close Entry');
+        console.log('history service');
+        console.log(this.historyService.getHistory());
+        server.emit(HistoryEvents.EntryAdded, this.historyService.getHistory());
         this.playersListManagerService.deleteJoinedPlayersByGameId(room.clientGame.id);
         this.roomsManagerService.deleteRoom(room.roomId);
     }

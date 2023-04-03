@@ -1,13 +1,13 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
-import { GameCardEvents, PlayerEvents, RoomEvents } from '@common/enums';
-import { LimitedGameDetails, GameHistory, HistoryEvents, playerData, PlayerNameAvailability, RoomAvailability } from '@common/game-interfaces';
+import { GameCardEvents, HistoryEvents, PlayerEvents, RoomEvents } from '@common/enums';
+import { GameHistory, LimitedGameDetails, PlayerNameAvailability, RoomAvailability, playerData } from '@common/game-interfaces';
 import { Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
-export class RoomManagerService implements OnDestroy {
+export class RoomManagerService {
     gameHistory: GameHistory[];
     private joinedPlayerNames: Subject<string[]>;
     private isPlayerNameTaken: Subject<PlayerNameAvailability>;
@@ -26,7 +26,6 @@ export class RoomManagerService implements OnDestroy {
         this.joinedPlayerNames = new Subject<string[]>();
         this.oneVsOneRoomsAvailabilityByGameId = new Subject<RoomAvailability>();
         this.deletedGameId = new Subject<string>();
-        this.gameHistory = [];
         this.refusedPlayerId = new Subject<string>();
         this.isReloadNeeded = new Subject<boolean>();
         this.isLimitedCoopRoomAvailable = new Subject<boolean>();
@@ -219,11 +218,9 @@ export class RoomManagerService implements OnDestroy {
         });
 
         this.clientSocket.on(HistoryEvents.EntryAdded, (gameHistory: GameHistory[]) => {
-            console.log('gameHistory', gameHistory);
+            console.log('Entry Added on Room Manager');
+            console.log(gameHistory);
             this.gameHistory = gameHistory;
         });
-    }
-    ngOnDestroy(): void {
-        this.clientSocket.disconnect();
     }
 }
