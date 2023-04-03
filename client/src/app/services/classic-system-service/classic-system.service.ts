@@ -183,11 +183,13 @@ export class ClassicSystemService {
 
         this.clientSocket.on(GameEvents.TimerUpdate, (timer: number) => {
             this.timer.next(timer);
-            this.replayEventsSubject.next({
+            const replayEvent: ReplayEvent = {
                 action: ReplayActions.TimerUpdate,
                 timestamp: Date.now(),
                 data: timer,
-            });
+            };
+
+            this.replayEventsSubject.next(replayEvent);
         });
 
         this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {
