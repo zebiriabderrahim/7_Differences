@@ -47,11 +47,6 @@ export interface CarouselPaginator {
     gameCards: GameCard[];
 }
 
-export enum HistoryEvents {
-    EntryAdded = 'entryAdded',
-    EntriesCleared = 'entriesCleared',
-}
-
 export interface GameConfigConst {
     countdownTime: number;
     penaltyTime: number;

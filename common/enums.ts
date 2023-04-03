@@ -36,12 +36,10 @@ export enum GameCardEvents {
     GetGameCards = 'GetGameCards',
 }
 
-
-
-
-
-
-
+export enum HistoryEvents {
+    EntryAdded = 'entryAdded',
+    EntriesCleared = 'entriesCleared',
+}
 
 export enum RoomEvents {
     CreateClassicSoloRoom = 'CreateClassicSoloRoom',
