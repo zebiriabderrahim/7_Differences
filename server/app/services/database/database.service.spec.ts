@@ -1,10 +1,14 @@
+/* eslint-disable max-lines */
 // Id comes from database to allow _id
 /* eslint-disable no-underscore-dangle */
 import { Game, GameDocument, gameSchema } from '@app/model/database/game';
 import { GameCard, GameCardDocument, gameCardSchema } from '@app/model/database/game-card';
+import { GameConstants, GameConstantsDocument, gameConstantsSchema } from '@app/model/database/game-config-constants';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
+import { GameConstantsDto } from '@app/model/dto/game/game-constants.dto';
 import { GameListsManagerService } from '@app/services/game-lists-manager/game-lists-manager.service';
-import { CarouselPaginator, GameConfigConst, PlayerTime } from '@common/game-interfaces';
+import { GameModes } from '@common/enums';
+import { CarouselPaginator, PlayerTime } from '@common/game-interfaces';
 import { getConnectionToken, getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as fs from 'fs';
@@ -18,6 +22,7 @@ describe('DatabaseService', () => {
     let listsManagerService: SinonStubbedInstance<GameListsManagerService>;
     let gameModel: Model<GameDocument>;
     let gameCardModel: Model<GameCardDocument>;
+    let gameConstantsModel: Model<GameConstantsDocument>;
     let mongoServer: MongoMemoryServer;
     let connection: Connection;
 
@@ -27,10 +32,16 @@ describe('DatabaseService', () => {
         { name: 'the scream', time: 250 },
     ];
 
-    const gameConfigConstTest: GameConfigConst = {
-        countdownTime: 300,
-        penaltyTime: 250,
-        bonusTime: 100,
+    const defaultBestTimes2: PlayerTime[] = [
+        { name: 'John Doe', time: 70 },
+        { name: 'Jane Doe', time: 10 },
+        { name: 'the scream', time: 20 },
+    ];
+
+    const gameConfigConstTest: GameConstantsDto = {
+        countdownTime: 5,
+        penaltyTime: 5,
+        bonusTime: 5,
     };
     const testCarousel: CarouselPaginator[] = [
         {
@@ -79,7 +90,7 @@ describe('DatabaseService', () => {
             thumbnail: 'assets/test/modified.bmp',
         },
     ];
-    const DELAY_BEFORE_CLOSING_CONNECTION = 10;
+    const DELAY_BEFORE_CLOSING_CONNECTION = 30;
 
     beforeEach(async () => {
         mongoServer = await MongoMemoryServer.create();
@@ -94,6 +105,7 @@ describe('DatabaseService', () => {
                 MongooseModule.forFeature([
                     { name: Game.name, schema: gameSchema },
                     { name: GameCard.name, schema: gameCardSchema },
+                    { name: GameConstants.name, schema: gameConstantsSchema },
                 ]),
             ],
             providers: [DatabaseService, { provide: GameListsManagerService, useValue: listsManagerService }],
@@ -102,6 +114,7 @@ describe('DatabaseService', () => {
         dataBaseService = module.get<DatabaseService>(DatabaseService);
         gameModel = module.get<Model<GameDocument>>(getModelToken(Game.name));
         gameCardModel = module.get<Model<GameCardDocument>>(getModelToken(GameCard.name));
+        gameConstantsModel = module.get<Model<GameConstantsDocument>>(getModelToken(GameConstants.name));
         connection = await module.get(getConnectionToken());
     });
 
@@ -118,6 +131,7 @@ describe('DatabaseService', () => {
         expect(dataBaseService).toBeDefined();
         expect(gameModel).toBeDefined();
         expect(gameCardModel).toBeDefined();
+        expect(gameConstantsModel).toBeDefined();
     });
 
     it('getGamesCarrousel() should return the games carrousel as expected', async () => {
@@ -151,9 +165,29 @@ describe('DatabaseService', () => {
         expect(JSON.stringify(game)).toEqual(JSON.stringify(testGames1));
     });
 
-    it('getConfigConstants() should return the constants as expected', () => {
-        dataBaseService['defaultConstants'] = gameConfigConstTest;
-        expect(dataBaseService.getConfigConstants()).toEqual(gameConfigConstTest);
+    it('getTopTimesGameById should return the top times of the game as expected (soloTopTime case) ', async () => {
+        const id = (await gameModel.create(newGameInDB))._id.toString();
+        testGameCards[0]._id = id;
+        await gameCardModel.create(testGameCards[0]);
+        const topTime = await dataBaseService.getTopTimesGameById(id, GameModes.ClassicSolo);
+        expect(JSON.stringify(topTime)).toEqual(JSON.stringify(testGameCards[0].soloTopTime));
+    });
+
+    it('getTopTimesGameById should return the top times of the game as expected (oneVsOneTopTime case)', async () => {
+        const id = (await gameModel.create(newGameInDB))._id.toString();
+        testGameCards[0]._id = id;
+        await gameCardModel.create(testGameCards[0]);
+        const topTime = await dataBaseService.getTopTimesGameById(id, GameModes.ClassicOneVsOne);
+        expect(JSON.stringify(topTime)).toEqual(JSON.stringify(testGameCards[0].oneVsOneTopTime));
+    });
+    it('getGameConstants() should return the constants as expected', async () => {
+        await gameConstantsModel.create(gameConfigConstTest);
+        const populateDbWithGameConstantsSpy = jest.spyOn(dataBaseService, 'populateDbWithGameConstants');
+        const findOneId = jest.spyOn(gameConstantsModel, 'findOne');
+        const gameConstants = await dataBaseService.getGameConstants();
+        expect(JSON.stringify(gameConstants)).toEqual(JSON.stringify(gameConfigConstTest));
+        expect(findOneId).toBeCalled();
+        expect(populateDbWithGameConstantsSpy).toBeCalled();
     });
 
     it('verifyIfGameExists() should return true if the game exists', async () => {
@@ -201,17 +235,18 @@ describe('DatabaseService', () => {
         expect(listsManagerService.addGameCarousel.called).toBeTruthy();
     });
 
-    it('addGameInDb() should fail if mongo query failed', async () => {
+    it('deleteGameById() should fail if mongo query failed', async () => {
         jest.spyOn(gameModel, 'create').mockImplementation(async () => Promise.reject(''));
         await expect(dataBaseService.addGameInDb(testGameDto)).rejects.toBeTruthy();
     });
 
-    it('deleteGame() should delete the game from the games list and call deleteGameCard ', async () => {
+    it('deleteGameById() should delete the game from the games list and call deleteGameCard ', async () => {
         const findByIdAndDeleteGameSpy = jest.spyOn(gameModel, 'findByIdAndDelete');
         const findByIdAndDeleteGameCardSpy = jest.spyOn(gameCardModel, 'findByIdAndDelete');
         const deleteGameAssetsByNameSpy = jest.spyOn(dataBaseService, 'deleteGameAssetsByName').mockImplementation(() => {
             return;
         });
+        const rebuildGameCarouselSpy = jest.spyOn(dataBaseService, 'rebuildGameCarousel');
         gameCardModel.find().exec = jest.fn().mockResolvedValue(testGameCards);
         const id = (await gameModel.create(newGameInDB))._id.toString();
         testGameCards[0]._id = id;
@@ -220,6 +255,7 @@ describe('DatabaseService', () => {
         expect(findByIdAndDeleteGameSpy).toBeCalledWith(id);
         expect(findByIdAndDeleteGameCardSpy).toBeCalledWith(id);
         expect(deleteGameAssetsByNameSpy).toBeCalledWith(testGameDto.name);
+        expect(rebuildGameCarouselSpy).toBeCalled();
     });
 
     it('deleteGame() should fail if mongo query failed', async () => {
@@ -233,6 +269,104 @@ describe('DatabaseService', () => {
         dataBaseService.deleteGameAssetsByName(testGames[0].name);
         expect(unlinkSpy).toBeCalledTimes(3);
         expect(rmdirSpy).toBeCalledTimes(1);
+    });
+
+    it('updateTopTimesGameById() should update the top times of the game as expected (soloTopTime cas)', async () => {
+        const id = (await gameModel.create(newGameInDB))._id.toString();
+        const rebuildGameCarouselSpy = jest.spyOn(dataBaseService, 'rebuildGameCarousel');
+        testGameCards[0]._id = id;
+        await gameCardModel.create(testGameCards[0]);
+        await dataBaseService.updateTopTimesGameById(id, GameModes.ClassicSolo, defaultBestTimes2);
+        const topTime = await dataBaseService.getTopTimesGameById(id, GameModes.ClassicSolo);
+        expect(JSON.stringify(topTime)).toEqual(JSON.stringify(defaultBestTimes2));
+        expect(rebuildGameCarouselSpy).toBeCalled();
+    });
+
+    it('updateTopTimesGameById() should fail if mongo query failed', async () => {
+        gameCardModel.findByIdAndUpdate().exec = jest.fn().mockRejectedValue('');
+        await expect(dataBaseService.updateTopTimesGameById('id', GameModes.ClassicSolo, defaultBestTimes2)).rejects.toBeTruthy();
+    });
+    it('updateTopTimesGameById() should update the top times of the game as expected (oneVsOneTopTime cas)', async () => {
+        const id = (await gameModel.create(newGameInDB))._id.toString();
+        const rebuildGameCarouselSpy = jest.spyOn(dataBaseService, 'rebuildGameCarousel');
+        testGameCards[0]._id = id;
+        await gameCardModel.create(testGameCards[0]);
+        await dataBaseService.updateTopTimesGameById(id, GameModes.ClassicOneVsOne, defaultBestTimes2);
+        const topTime = await dataBaseService.getTopTimesGameById(id, GameModes.ClassicOneVsOne);
+        expect(JSON.stringify(topTime)).toEqual(JSON.stringify(defaultBestTimes2));
+        expect(rebuildGameCarouselSpy).toBeCalled();
+    });
+
+    it('rebuildGameCarousel() should rebuild the game carousel', async () => {
+        const rebuildGameCarouselSpy = jest.spyOn(listsManagerService, 'buildGameCarousel');
+        await dataBaseService.rebuildGameCarousel();
+        expect(rebuildGameCarouselSpy).toBeCalled();
+    });
+
+    it('populateDbWithGameConstants should populate the db with the game constants', async () => {
+        const gameConstantsModelCreateSpy = jest.spyOn(gameConstantsModel, 'create');
+        await dataBaseService.populateDbWithGameConstants();
+        expect(gameConstantsModelCreateSpy).toBeCalled();
+    });
+
+    it('populateDbWithGameConstants should fail if mongo query failed', async () => {
+        gameConstantsModel.exists = jest.fn().mockRejectedValue('');
+        await expect(dataBaseService.populateDbWithGameConstants()).rejects.toBeTruthy();
+    });
+
+    it('populateDbWithGameConstants should not populate the db with the game constants if they already exist', async () => {
+        const gameConstantsModelCreateSpy = jest.spyOn(gameConstantsModel, 'create');
+        gameConstantsModel.exists = jest.fn().mockResolvedValue(true);
+        await dataBaseService.populateDbWithGameConstants();
+        expect(gameConstantsModelCreateSpy).toBeCalledTimes(0);
+    });
+    it('updateGameConstants should fail if mongo query failed', async () => {
+        jest.spyOn(gameConstantsModel, 'replaceOne').mockImplementation(() => {
+            throw new Error('Mock MongoDB error');
+        });
+        await expect(dataBaseService.updateGameConstants({} as GameConstantsDto)).rejects.toBeTruthy();
+    });
+
+    it('updateGameConstants should update the game constants', async () => {
+        const findOneAndUpdateSpy = jest.spyOn(gameConstantsModel, 'replaceOne');
+        await dataBaseService.updateGameConstants(gameConfigConstTest);
+        expect(findOneAndUpdateSpy).toBeCalledTimes(1);
+    });
+
+    it('resetTopTimesGameById should reset the top times of the game', async () => {
+        const id = (await gameModel.create(newGameInDB))._id.toString();
+        const rebuildGameCarouselSpy = jest.spyOn(dataBaseService, 'rebuildGameCarousel');
+        testGameCards[0]._id = id;
+        await gameCardModel.create(testGameCards[0]);
+        await dataBaseService.updateTopTimesGameById(id, GameModes.ClassicSolo, defaultBestTimes2);
+        await dataBaseService.resetTopTimesGameById(id);
+        const topTime = await dataBaseService.getTopTimesGameById(id, GameModes.ClassicSolo);
+        expect(JSON.stringify(topTime)).toEqual(JSON.stringify(defaultBestTimes));
+        expect(rebuildGameCarouselSpy).toBeCalledTimes(2);
+    });
+
+    it('resetTopTimesGameById should fail if mongo query failed', async () => {
+        gameCardModel.findByIdAndUpdate().exec = jest.fn().mockRejectedValue('');
+        await expect(dataBaseService.resetTopTimesGameById('id')).rejects.toBeTruthy();
+    });
+
+    it('resetAllTopTimes should reset all the top times of the games', async () => {
+        const id = (await gameModel.create(newGameInDB))._id.toString();
+        const rebuildGameCarouselSpy = jest.spyOn(dataBaseService, 'rebuildGameCarousel');
+        testGameCards[0]._id = id;
+        await gameCardModel.create(testGameCards[0]);
+        await dataBaseService.updateTopTimesGameById(id, GameModes.ClassicSolo, defaultBestTimes2);
+        await dataBaseService.resetAllTopTimes();
+        const topTime = await dataBaseService.getTopTimesGameById(id, GameModes.ClassicSolo);
+        expect(JSON.stringify(topTime)).toEqual(JSON.stringify(defaultBestTimes));
+        expect(rebuildGameCarouselSpy).toBeCalledTimes(2);
+    });
+
+    it('resetAllTopTimes should fail if mongo query failed', async () => {
+        jest.spyOn(gameCardModel, 'updateMany').mockImplementation(() => {
+            throw new Error('Mock MongoDB error');
+        });
+        await expect(dataBaseService.resetAllTopTimes()).rejects.toBeTruthy();
     });
 
     afterAll(() => {

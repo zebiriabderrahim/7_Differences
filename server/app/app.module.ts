@@ -12,6 +12,9 @@ import { GameService } from './services/game/game.service';
 import { HistoryService } from './services/history/history.service';
 import { MessageManagerService } from './services/message-manager/message-manager.service';
 import { PlayersListManagerService } from './services/players-list-manager/players-list-manager.service';
+import { GameConstants, gameConstantsSchema } from './model/database/game-config-constants';
+import { RoomsManagerService } from './services/rooms-manager/rooms-manager.service';
+import { LimitedModeService } from './services/limited-mode/limited-mode.service';
 
 @Module({
     imports: [
@@ -26,6 +29,7 @@ import { PlayersListManagerService } from './services/players-list-manager/playe
         MongooseModule.forFeature([
             { name: Game.name, schema: gameSchema },
             { name: GameCard.name, schema: gameCardSchema },
+            { name: GameConstants.name, schema: gameConstantsSchema },
         ]),
     ],
     controllers: [GameController],
@@ -40,6 +44,8 @@ import { PlayersListManagerService } from './services/players-list-manager/playe
         MessageManagerService,
         HistoryService,
         PlayersListManagerService,
+        RoomsManagerService,
+        LimitedModeService,
     ],
 })
 export class AppModule {}
