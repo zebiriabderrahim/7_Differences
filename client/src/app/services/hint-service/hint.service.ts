@@ -42,11 +42,12 @@ export class HintService {
                 }
                 hintSquare = this.generateHintSquare(hintQuadrant);
             }
-            this.replayEventsSubject.next({
+            const replayEvent: ReplayEvent = {
                 action: ReplayActions.UseHint,
                 timestamp: Date.now(),
                 data: hintSquare,
-            });
+            };
+            this.replayEventsSubject.next(replayEvent);
             this.gameAreaService.flashCorrectPixels(hintSquare);
             this.classicSystem.requestHint();
             this.nAvailableHints--;
