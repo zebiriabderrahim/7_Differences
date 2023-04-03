@@ -12,6 +12,7 @@ import { Coordinate } from '@common/coordinate';
 import { MessageTag } from '@common/enums';
 import { ChatMessage } from '@common/game-interfaces';
 import { BehaviorSubject } from 'rxjs';
+import { HintService } from '@app/services/hint-service/hint.service';
 import { ReplayService } from './replay.service';
 
 describe('ReplayService', () => {
@@ -20,8 +21,10 @@ describe('ReplayService', () => {
     let classicSystemServiceSpy: jasmine.SpyObj<ClassicSystemService>;
     let soundServiceSpy: jasmine.SpyObj<SoundService>;
     let imageServiceSpy: jasmine.SpyObj<ImageService>;
+    let hintServiceSpy: jasmine.SpyObj<HintService>;
     const replayEventGameAreaServiceSubTest = new BehaviorSubject<number>(0);
     const replayEventClassicSystemServiceSubTest = new BehaviorSubject<number>(0);
+    const replayEventHintServiceSubTest = new BehaviorSubject<number>(0);
 
     const replayEventsStub: ReplayEvent[] = [
         { timestamp: 0, action: ReplayActions.StartGame, data: ['0', '1'] },
@@ -45,11 +48,14 @@ describe('ReplayService', () => {
                 replayEventsSubject: replayEventGameAreaServiceSubTest,
             },
         );
-        classicSystemServiceSpy = jasmine.createSpyObj('ClassicSystemService', ['setMessage'], {
+        classicSystemServiceSpy = jasmine.createSpyObj('ClassicSystemService', ['setMessage', 'requestHint'], {
             replayEventsSubject: replayEventClassicSystemServiceSubTest,
         });
         soundServiceSpy = jasmine.createSpyObj('SoundService', ['playCorrectSound', 'playErrorSound']);
         imageServiceSpy = jasmine.createSpyObj('ImageService', ['loadImage']);
+        hintServiceSpy = jasmine.createSpyObj('HintService', ['requestHint'], {
+            replayEventsSubject: replayEventHintServiceSubTest,
+        });
 
         TestBed.configureTestingModule({
             providers: [
@@ -58,6 +64,7 @@ describe('ReplayService', () => {
                 { provide: ClassicSystemService, useValue: classicSystemServiceSpy },
                 { provide: SoundService, useValue: soundServiceSpy },
                 { provide: ImageService, useValue: imageServiceSpy },
+                { provide: HintService, useValue: hintServiceSpy },
             ],
         });
 
@@ -76,11 +83,8 @@ describe('ReplayService', () => {
     it('should call createReplayInterval and replaySwitcher when startReplay is called', () => {
         const createReplayIntervalSpy = spyOn(service, 'createReplayInterval').and.callThrough();
         const replaySwitcherSpy = spyOn(service, 'replaySwitcher');
-
         service['replayEvents'] = replayEventsStub;
-
         service.startReplay();
-
         expect(service.isReplaying).toBe(true);
         expect(createReplayIntervalSpy).toHaveBeenCalled();
         expect(replaySwitcherSpy).toHaveBeenCalledTimes(1);
@@ -89,14 +93,10 @@ describe('ReplayService', () => {
     it('should call createReplayInterval and replaySwitcher when interval is paused and resumed', () => {
         const createReplayIntervalSpy = spyOn(service, 'createReplayInterval').and.callThrough();
         const replaySwitcherSpy = spyOn(service, 'replaySwitcher');
-
         service['replayEvents'] = replayEventsStub;
-
         service.startReplay();
-
         service.pauseReplay();
         service.resumeReplay();
-
         expect(service.isReplaying).toBe(true);
         expect(createReplayIntervalSpy).toHaveBeenCalled();
         expect(replaySwitcherSpy).toHaveBeenCalled();
@@ -117,19 +117,13 @@ describe('ReplayService', () => {
                 },
             };
         });
-
         const replaySwitcherSpy = spyOn(service, 'replaySwitcher').and.callThrough();
         const cancelReplaySpy = spyOn(service, 'cancelReplay').and.callThrough();
-
         service['replayEvents'] = replayEventsStub;
-
         service.startReplay();
-
         expect(service.isReplaying).toBe(true);
         expect(replaySwitcherSpy).toHaveBeenCalledTimes(replayEventsStub.length);
-
         service.cancelReplay();
-
         expect(cancelReplaySpy).toHaveBeenCalled();
         expect(service.isReplaying).toBe(false);
     });
@@ -140,9 +134,7 @@ describe('ReplayService', () => {
             data: ['image1', 'image2'],
             timestamp: 0,
         };
-
         service.replaySwitcher(replayEvent);
-
         expect(imageServiceSpy.loadImage.calls.allArgs()).toEqual([
             [service['gameAreaService'].getOgContext(), 'image1'],
             [service['gameAreaService'].getMdContext(), 'image2'],
@@ -176,9 +168,7 @@ describe('ReplayService', () => {
             } as ClickErrorData,
             timestamp: 0,
         };
-
         service.replaySwitcher(replayEvent);
-
         expect(soundServiceSpy.playErrorSound).toHaveBeenCalled();
         expect(gameAreaServiceSpy.showError).toHaveBeenCalledWith(
             (replayEvent.data as ClickErrorData).isMainCanvas,
@@ -195,9 +185,7 @@ describe('ReplayService', () => {
             } as ChatMessage,
             timestamp: 0,
         };
-
         service.replaySwitcher(replayEvent);
-
         expect(classicSystemServiceSpy.setMessage).toHaveBeenCalledWith(replayEvent.data as ChatMessage);
     });
 
@@ -210,12 +198,9 @@ describe('ReplayService', () => {
             ] as Coordinate[],
             timestamp: 0,
         };
-
         service.replaySwitcher(replayEvent);
-
         expect(service['isCheatMode']).toBe(true);
         expect(service['currentCoords']).toEqual(replayEvent.data as Coordinate[]);
-
         expect(gameAreaServiceSpy.toggleCheatMode).toHaveBeenCalledWith(replayEvent.data as Coordinate[], service['replaySpeed']);
     });
 
@@ -228,9 +213,7 @@ describe('ReplayService', () => {
             ] as Coordinate[],
             timestamp: 0,
         };
-
         service.replaySwitcher(replayEvent);
-
         expect(service['isCheatMode']).toBe(false);
         expect(gameAreaServiceSpy.toggleCheatMode).toHaveBeenCalledWith(replayEvent.data as Coordinate[], service['replaySpeed']);
     });
@@ -240,16 +223,12 @@ describe('ReplayService', () => {
             action: ReplayActions.TimerUpdate,
             timestamp: 0,
         };
-
         const timerValues: number[] = [];
         service['replayTimer$'].subscribe((value) => {
             timerValues.push(value);
         });
-
         expect(timerValues.length).toEqual(1);
-
         service.replaySwitcher(replayEvent);
-
         expect(timerValues.length).toEqual(2);
     });
 
@@ -259,16 +238,12 @@ describe('ReplayService', () => {
             data: 3,
             timestamp: 0,
         };
-
         const differenceFoundValues: number[] = [];
         service['replayDifferenceFound$'].subscribe((value) => {
             differenceFoundValues.push(value);
         });
-
         expect(differenceFoundValues).toEqual([0]);
-
         service.replaySwitcher(replayEvent);
-
         expect(differenceFoundValues).toEqual([0, replayEvent.data as number]);
     });
 
@@ -278,17 +253,26 @@ describe('ReplayService', () => {
             data: 2,
             timestamp: 0,
         };
-
         const opponentDifferenceFoundValues: number[] = [];
         service['replayOpponentDifferenceFound$'].subscribe((value) => {
             opponentDifferenceFoundValues.push(value);
         });
-
         expect(opponentDifferenceFoundValues).toEqual([0]);
-
         service.replaySwitcher(replayEvent);
-
         expect(opponentDifferenceFoundValues).toEqual([0, replayEvent.data as number]);
+    });
+
+    it('should handle UseHint action', () => {
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.UseHint,
+            data: [
+                { x: 10, y: 20 },
+                { x: 30, y: 40 },
+            ] as Coordinate[],
+            timestamp: 0,
+        };
+        service.replaySwitcher(replayEvent);
+        expect(gameAreaServiceSpy.flashCorrectPixels).toHaveBeenCalledWith(replayEvent.data as Coordinate[], service['replaySpeed']);
     });
 
     it('should call toggleCheatMode and flashCorrectPixels when isCheatMode and isDifferenceFound are true', () => {
@@ -296,7 +280,6 @@ describe('ReplayService', () => {
         service['isCheatMode'] = true;
         service['isDifferenceFound'] = true;
         service.pauseReplay();
-
         expect(gameAreaServiceSpy.toggleCheatMode).toHaveBeenCalledWith(service['currentCoords'], service['replaySpeed']);
         expect(gameAreaServiceSpy.flashCorrectPixels).toHaveBeenCalledWith(service['currentCoords'], service['replaySpeed'], true);
         expect(replayIntervalMock.pause).toHaveBeenCalled();
@@ -307,7 +290,6 @@ describe('ReplayService', () => {
         service['isCheatMode'] = true;
         service['isDifferenceFound'] = true;
         service.resumeReplay();
-
         expect(gameAreaServiceSpy.toggleCheatMode).toHaveBeenCalledWith(service['currentCoords'], service['replaySpeed']);
         expect(gameAreaServiceSpy.flashCorrectPixels).toHaveBeenCalledWith(service['currentCoords'], service['replaySpeed'], false);
         expect(replayIntervalMock.resume).toHaveBeenCalled();
@@ -338,7 +320,6 @@ describe('ReplayService', () => {
 
     it('should reset replay properties', () => {
         service.resetReplay();
-
         expect(service['replayEvents']).toEqual([]);
         expect(service['currentReplayIndex']).toBe(0);
         expect(service['isReplaying']).toBe(false);
