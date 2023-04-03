@@ -1,0 +1,32 @@
+.replay-container {
+    background: #7daf9c;
+    border-radius: 15px;
+    padding: 10px 40px 10px;
+    width: 370px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(to right, rgba(125, 175, 156, 100), rgba(255, 255, 255, 50));
+    background-size: 200% 200%;
+    animation: gradientLoop 20s ease infinite;
+}
+
+mat-radio-button {
+    font-family: 'Troika', sans-serif;
+    padding: 2%;
+}
+
+.replay-container * :hover {
+    transform: scale(1.4)
+}
+
+@keyframes gradientLoop {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 75% 0%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
