@@ -11,13 +11,14 @@ import { GameListsManagerService } from '@app/services/game-lists-manager/game-l
 import { DEFAULT_BEST_TIMES, DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
 import { CarouselPaginator, PlayerTime } from '@common/game-interfaces';
 import { GameModes } from '@common/enums';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as fs from 'fs';
 import { Model } from 'mongoose';
 
 @Injectable()
-export class DatabaseService {
+export class DatabaseService implements OnModuleInit {
+    private gameIds: string[] = [];
     private defaultConstants: GameConstants = {
         countdownTime: DEFAULT_COUNTDOWN_VALUE,
         penaltyTime: DEFAULT_HINT_PENALTY,
@@ -29,6 +30,11 @@ export class DatabaseService {
         @InjectModel(GameConstants.name) private readonly gameConstantsModel: Model<GameConstantsDocument>,
         private readonly gameListManager: GameListsManagerService,
     ) {}
+
+    async onModuleInit() {
+        await this.populateDbWithGameConstants();
+        await this.getAllGameIds();
+    }
 
     async getGamesCarrousel(): Promise<CarouselPaginator[]> {
         if (this.gameListManager['carouselGames'].length === 0) {
@@ -50,7 +56,6 @@ export class DatabaseService {
     }
 
     async getGameConstants(): Promise<GameConstants> {
-        await this.populateDbWithGameConstants();
         return await this.gameConstantsModel.findOne().select('-__v -_id').exec();
     }
 
@@ -82,6 +87,7 @@ export class DatabaseService {
             };
             this.saveFiles(newGame);
             const id = (await this.gameModel.create(newGameInDB))._id.toString();
+            this.gameIds.push(id);
             newGameInDB._id = id;
             const gameCard = this.gameListManager.buildGameCardFromGame(newGameInDB);
             await this.gameCardModel.create(gameCard);
@@ -100,6 +106,7 @@ export class DatabaseService {
 
     async deleteGameById(id: string): Promise<void> {
         try {
+            this.gameIds = this.gameIds.filter((gameId) => gameId !== id);
             await this.gameModel.findByIdAndDelete(id).exec();
             const gameName = (await this.gameCardModel.findByIdAndDelete(id).exec()).name;
             this.deleteGameAssetsByName(gameName);
@@ -111,6 +118,7 @@ export class DatabaseService {
 
     async deleteAllGames() {
         try {
+            this.gameIds = [];
             const games = await this.gameModel.find().exec();
             for (const game of games) {
                 await this.deleteGameById(game._id.toString());
@@ -171,10 +179,10 @@ export class DatabaseService {
         }
     }
 
-    async getAllGameIds(): Promise<string[]> {
+    async getAllGameIds(): Promise<void> {
         try {
             const gameCardsIds = await this.gameCardModel.find().select('_id').exec();
-            return gameCardsIds.map((gameCard) => gameCard._id.toString());
+            this.gameIds = gameCardsIds.map((gameCard) => gameCard._id.toString());
         } catch (error) {
             return Promise.reject(`Failed to get all game ids --> ${error}`);
         }
@@ -182,8 +190,7 @@ export class DatabaseService {
 
     async getRandomGame(playedGameIds: string[]): Promise<Game> {
         try {
-            const gameIds = await this.getAllGameIds();
-            const gameIdsToPlay = gameIds.filter((id) => !playedGameIds.includes(id));
+            const gameIdsToPlay = this.gameIds.filter((id) => !playedGameIds.includes(id));
             const randomGameId = gameIdsToPlay[Math.floor(Math.random() * gameIdsToPlay.length)];
             return await this.getGameById(randomGameId);
         } catch (error) {

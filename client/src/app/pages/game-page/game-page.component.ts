@@ -10,7 +10,7 @@ import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ReplayService } from '@app/services/replay-service/replay.service';
 import { Coordinate } from '@common/coordinate';
-import { MessageTag } from '@common/enums';
+import { GameModes, MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, GameConfigConst, Players } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
@@ -32,6 +32,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     player: string;
     players: Players;
     isReplayAvailable: boolean;
+    gameMode: typeof GameModes;
     readonly canvasSize: CanvasMeasurements;
     private timerSub: Subscription;
     private replayTimerSub: Subscription;
@@ -43,6 +44,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     private endGameSub: Subscription;
     private opponentDifferenceSub: Subscription;
     private isFirstDifferencesFoundSub: Subscription;
+    private isGameModeChangedSub: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
@@ -63,6 +65,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.players = DEFAULT_PLAYERS;
         this.canvasSize = CANVAS_MEASUREMENTS;
         this.isReplayAvailable = false;
+        this.gameMode = GameModes;
     }
 
     get differences(): Coordinate[][] {
@@ -168,8 +171,14 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         });
 
         this.isFirstDifferencesFoundSub = this.classicService.isFirstDifferencesFound$.subscribe((isFirstDifferencesFound) => {
-            if (isFirstDifferencesFound && this.game.mode.startsWith('Limited')) {
+            if (isFirstDifferencesFound && this.isLimitedMode()) {
                 this.classicService.startNextGame();
+            }
+        });
+
+        this.isGameModeChangedSub = this.classicService.isGameModeChanged$.subscribe((isGameModeChanged) => {
+            if (isGameModeChanged) {
+                this.game.mode = GameModes.LimitedSolo;
             }
         });
     }
@@ -184,10 +193,12 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
 
     showEndGameDialog(endingMessage: string): void {
         this.matDialog.open(GamePageDialogComponent, {
-            data: { action: 'endGame', message: endingMessage },
+            data: { action: 'endGame', message: endingMessage, isReplayMode: this.game?.mode.includes('Classic') },
             disableClose: true,
-            panelClass: 'dialog',
         });
+        if (this.game?.mode.includes('Classic')) {
+            this.isReplayAvailable = true;
+        }
     }
 
     mouseClickOnCanvas(event: MouseEvent, isLeft: boolean) {
@@ -203,6 +214,14 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.classicService.sendMessage(text);
     }
 
+    isLimitedMode(): boolean {
+        return this.game.mode === GameModes.LimitedCoop || this.game.mode === GameModes.LimitedSolo;
+    }
+
+    isMultiplayerMode(): boolean {
+        return this.game.mode === GameModes.LimitedCoop || this.game.mode === GameModes.ClassicOneVsOne;
+    }
+
     cleanUpLogic(): void {
         this.gameAreaService.resetCheatMode();
         this.gameSub?.unsubscribe();
@@ -215,6 +234,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.replayDifferencesFoundSub?.unsubscribe();
         this.replayOpponentDifferenceFoundSub?.unsubscribe();
         this.isFirstDifferencesFoundSub?.unsubscribe();
+        this.isGameModeChangedSub?.unsubscribe();
         this.classicService.removeAllListeners();
     }
 
