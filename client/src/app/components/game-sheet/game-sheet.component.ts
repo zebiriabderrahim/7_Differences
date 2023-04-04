@@ -121,6 +121,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         this.dialog.open(DeleteResetConfirmationDialogComponent, {
             data: { actions, gameId: this.game._id },
             disableClose: true,
+            panelClass: 'dialog',
         });
     }
 
