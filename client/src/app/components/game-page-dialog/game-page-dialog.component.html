@@ -23,7 +23,7 @@
     </div>
     <div id = "button2" *ngIf="data.action === 'endGame' && data.isReplayMode">
         <div class="button-container">
-        <button id = "noButton" mat-button *ngIf="data.action === 'endGame'" mat-dialog-close (click)="replay()"> Voir Reprise</button>
+        <button id = "noButton" mat-button *ngIf="data.action === 'endGame'" mat-dialog-close (click)="replay()"></button>
             <img id = 'replayButton' src="./assets/icon/Replay.png" alt="replayButton">
             <div class="centered-no">Reprise vidéo</div>
         </div>
