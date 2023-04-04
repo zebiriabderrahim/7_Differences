@@ -51,7 +51,7 @@ describe('ConfigDialogComponent', () => {
         const countdownTimeControl = component.configForm.controls['countdownTime'];
         countdownTimeControl.setValue(10);
 
-        component.onSubmit();
+        component.saveGameConstants();
 
         expect(component.configConstants.countdownTime).toBe(10);
     });
@@ -60,7 +60,7 @@ describe('ConfigDialogComponent', () => {
         const penaltyTimeControl = component.configForm.controls['penaltyTime'];
         penaltyTimeControl.setValue(5);
 
-        component.onSubmit();
+        component.saveGameConstants();
 
         expect(component.configConstants.penaltyTime).toBe(5);
     });
@@ -69,7 +69,7 @@ describe('ConfigDialogComponent', () => {
         const bonusTimeControl = component.configForm.controls['bonusTime'];
         bonusTimeControl.setValue(2);
 
-        component.onSubmit();
+        component.saveGameConstants();
 
         expect(component.configConstants.bonusTime).toBe(2);
     });
@@ -78,25 +78,25 @@ describe('ConfigDialogComponent', () => {
         spyOn(component['communicationService'], 'updateGameConstants').and.returnValue(of(void 0));
 
         component.configConstants = { countdownTime: 10, penaltyTime: 6, bonusTime: 3 };
-        component.onSubmit();
+        component.saveGameConstants();
 
         expect(component['communicationService'].updateGameConstants).toHaveBeenCalledWith(component.configConstants);
         expect(component['roomManagerService'].gameConstantsUpdated).toHaveBeenCalled();
     });
 
-    it('resetConfigForm should reset the config form and update the game constants', () => {
-        const resetSpy = spyOn(component.configForm, 'reset');
-        const updateSpy = spyOn(component['communicationService'], 'updateGameConstants').and.returnValue(of(void 0));
-
-        component.resetConfigForm();
-
-        expect(resetSpy).toHaveBeenCalledWith({
+    it('resetConfigForm should reset the form with default values', () => {
+        const defaultValues = {
             countdownTime: DEFAULT_COUNTDOWN_VALUE,
             penaltyTime: DEFAULT_PENALTY_VALUE,
             bonusTime: DEFAULT_BONUS_VALUE,
+        };
+        component.configForm.setValue({
+            countdownTime: 10,
+            penaltyTime: 5,
+            bonusTime: 5,
         });
-        expect(updateSpy).toHaveBeenCalledWith(component.configConstants);
-        expect(component['roomManagerService'].gameConstantsUpdated).toHaveBeenCalled();
+        component.resetConfigForm();
+        expect(component.configForm.value).toEqual(defaultValues);
     });
 
     it('should call loadGameConstants when handleChanges is called if Reload is needed', () => {
