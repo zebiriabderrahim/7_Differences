@@ -118,20 +118,22 @@ export class ClassicSystemService {
         if (data.playerId === this.getSocketId()) {
             this.replaceDifference(data.differencesData.currentDifference);
             this.differencesFound.next(data.differencesData.differencesFound);
-            this.replayEventsSubject.next({
+            const replayEvent: ReplayEvent = {
                 action: ReplayActions.DifferenceFoundUpdate,
                 timestamp: Date.now(),
                 data: data.differencesData.differencesFound,
-            });
+            };
+            this.replayEventsSubject.next(replayEvent);
             this.checkStatus();
         } else if (data.differencesData.currentDifference.length !== 0) {
             this.replaceDifference(data.differencesData.currentDifference);
             this.opponentDifferencesFound.next(data.differencesData.differencesFound);
-            this.replayEventsSubject.next({
-                action: ReplayActions.OpponentDifferencesFoundUpdate,
+            const replayEvent: ReplayEvent = {
+                action: ReplayActions.DifferenceFoundUpdate,
                 timestamp: Date.now(),
                 data: data.differencesData.differencesFound,
-            });
+            };
+            this.replayEventsSubject.next(replayEvent);
         }
         this.differences = data.cheatDifferences;
     }
@@ -154,11 +156,12 @@ export class ClassicSystemService {
 
     sendMessage(textMessage: string): void {
         const newMessage = { tag: MessageTag.received, message: textMessage };
-        this.replayEventsSubject.next({
+        const replayEvent: ReplayEvent = {
             action: ReplayActions.CaptureMessage,
             timestamp: Date.now(),
             data: { tag: MessageTag.sent, message: textMessage } as ChatMessage,
-        });
+        };
+        this.replayEventsSubject.next(replayEvent);
         this.clientSocket.send(MessageEvents.LocalMessage, newMessage);
     }
 
@@ -172,11 +175,13 @@ export class ClassicSystemService {
             this.gameConstants = room.gameConstants;
             this.players.next({ player1: room.player1, player2: room.player2 });
             this.differences = room.originalDifferences;
-            this.replayEventsSubject.next({
+            const replayEvent: ReplayEvent = {
                 action: ReplayActions.StartGame,
                 timestamp: Date.now(),
                 data: [room.clientGame.original, room.clientGame.modified],
-            });
+            };
+
+            this.replayEventsSubject.next(replayEvent);
         });
 
         this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
@@ -185,11 +190,13 @@ export class ClassicSystemService {
 
         this.clientSocket.on(GameEvents.TimerUpdate, (timer: number) => {
             this.timer.next(timer);
-            this.replayEventsSubject.next({
+            const replayEvent: ReplayEvent = {
                 action: ReplayActions.TimerUpdate,
                 timestamp: Date.now(),
                 data: timer,
-            });
+            };
+
+            this.replayEventsSubject.next(replayEvent);
         });
 
         this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {
@@ -198,11 +205,12 @@ export class ClassicSystemService {
 
         this.clientSocket.on(MessageEvents.LocalMessage, (receivedMessage: ChatMessage) => {
             this.message.next(receivedMessage);
-            this.replayEventsSubject.next({
+            const replayEvent: ReplayEvent = {
                 action: ReplayActions.CaptureMessage,
                 timestamp: Date.now(),
                 data: receivedMessage,
-            });
+            };
+            this.replayEventsSubject.next(replayEvent);
         });
 
         this.clientSocket.on(GameEvents.UpdateDifferencesFound, (differencesFound: number) => {
