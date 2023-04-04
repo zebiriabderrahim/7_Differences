@@ -158,18 +158,17 @@ export class RoomsManagerService {
         const roomId = this.getRoomIdFromSocket(socket);
         const room = this.getRoomById(roomId);
         if (!room) return;
-        if (room) {
-            let penaltyTime = room.gameConstants.penaltyTime;
-            if (room.clientGame.mode === GameModes.LimitedSolo || room.clientGame.mode === GameModes.LimitedCoop) {
-                penaltyTime = -penaltyTime;
-            }
-            if (room.timer + penaltyTime < 0) {
-                this.countdownIsOver(roomId, server);
-            } else {
-                room.timer += penaltyTime;
-                this.rooms.set(room.roomId, room);
-                server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
-            }
+        const { clientGame, gameConstants, timer } = room;
+        let penaltyTime = gameConstants.penaltyTime;
+
+        if (this.isLimitedMode(clientGame)) penaltyTime = -penaltyTime;
+
+        if (timer + penaltyTime < 0) {
+            this.countdownIsOver(roomId, server);
+        } else {
+            room.timer += penaltyTime;
+            this.rooms.set(room.roomId, room);
+            server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
         }
     }
 
@@ -184,12 +183,48 @@ export class RoomsManagerService {
         return game._id.toString();
     }
 
+    isLimitedMode(clientGame: ClientSideGame): boolean {
+        return clientGame.mode === GameModes.LimitedSolo || clientGame.mode === GameModes.LimitedCoop;
+    }
+
+    leaveRoom(room: GameRoom, server: io.Server): void {
+        server.sockets.sockets.get(room.player1.playerId)?.rooms.delete(room.roomId);
+        if (room.player2) {
+            server.sockets.sockets.get(room.player2.playerId)?.rooms.delete(room.roomId);
+        }
+    }
+
+    abandonGame(socket: io.Socket, server: io.Server): void {
+        const roomId = this.getRoomIdByPlayerId(socket.id);
+        const room = this.getRoomById(roomId);
+        if (!room) return;
+        const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
+        const opponent: Player = room.player1.playerId === socket.id ? room.player2 : room.player1;
+        if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
+            room.endMessage = "L'adversaire a abandonné la partie!";
+            this.abandonMessage(room, player, server);
+            server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
+            this.deleteRoom(roomId);
+        }
+        if (room.clientGame.mode === GameModes.LimitedCoop) {
+            this.abandonMessage(room, player, server);
+            server.to(opponent.playerId).emit(GameEvents.GameModeChanged);
+            room.clientGame.mode = GameModes.ClassicSolo;
+            this.updateRoom(room);
+        }
+        socket.leave(roomId);
+    }
+
+    private abandonMessage(room: GameRoom, player: Player, server: io.Server): void {
+        const localMessage = this.messageManager.getQuitMessage(player.name);
+        server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
+    }
+
     private addBonusTime(room: GameRoom): void {
+        if (!this.isLimitedMode(room.clientGame)) return;
         room.timer += room.gameConstants.bonusTime;
-        if (
-            (room.timer > MAX_BONUS_TIME_ALLOWED && room.clientGame.mode === GameModes.LimitedSolo) ||
-            room.clientGame.mode === GameModes.LimitedCoop
-        ) {
+
+        if (room.timer > MAX_BONUS_TIME_ALLOWED) {
             room.timer = MAX_BONUS_TIME_ALLOWED;
         }
         this.rooms.set(room.roomId, room);
@@ -197,11 +232,10 @@ export class RoomsManagerService {
 
     private updateTimer(roomId: string, server: io.Server): void {
         const room = this.rooms.get(roomId);
-        if (room) {
-            room.timer++;
-            this.rooms.set(room.roomId, room);
-            server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
-        }
+        if (!room) return;
+        room.timer++;
+        this.rooms.set(room.roomId, room);
+        server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
     }
 
     private countdown(roomId: string, server: io.Server): void {
@@ -210,13 +244,14 @@ export class RoomsManagerService {
 
         room.timer--;
         this.rooms.set(room.roomId, room);
-        server.to(room.roomId)?.emit(GameEvents.TimerUpdate, room.timer);
+        server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
 
         if (room.timer === 0) this.countdownIsOver(roomId, server);
     }
 
     private countdownIsOver(roomId: string, server: io.Server): void {
         const room = this.rooms.get(roomId);
+        if (!room) return;
         room.endMessage = 'Temps écoulé !';
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
         this.deleteRoom(room.roomId);
