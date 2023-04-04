@@ -21,11 +21,10 @@ import { Coordinate } from '@common/coordinate';
 export class HintService {
     nAvailableHints: number;
     proximity: HintProximity;
-    thirdHintCoords: Coordinate[];
-    thirdHintDifference: boolean[][];
-    thirdHintDifferenceSlightlyEnlarged: boolean[][];
-    thirdHintDifferenceEnlarged: boolean[][];
     isThirdHintActive: boolean;
+    private thirdHintDifference: boolean[][];
+    private thirdHintDifferenceSlightlyEnlarged: boolean[][];
+    private thirdHintDifferenceEnlarged: boolean[][];
 
     constructor(
         private readonly classicSystem: ClassicSystemService,
@@ -60,6 +59,7 @@ export class HintService {
             if (this.nAvailableHints === 1) {
                 this.isThirdHintActive = true;
                 hintSquare = this.generateAdjustedHintSquare(difference);
+                console.log('generateLastHintDifferences');
                 this.generateLastHintDifferences(difference);
             } else {
                 let hintQuadrant = this.getHintQuadrant(difference, INITIAL_QUADRANT);
@@ -74,25 +74,6 @@ export class HintService {
         }
     }
 
-    generateLastHintDifferences(difference: Coordinate[]): void {
-        this.thirdHintCoords = difference;
-        for (const coord of difference) {
-            this.thirdHintDifference[coord.x][coord.y] = true;
-        }
-        const littleEnlarge = this.differenceService.enlargeDifferences(difference, SMALL_HINT_ENLARGEMENT);
-        for (const coord of littleEnlarge) {
-            if (!this.thirdHintDifference[coord.x][coord.y]) {
-                this.thirdHintDifferenceSlightlyEnlarged[coord.x][coord.y] = true;
-            }
-        }
-        const bigEnlarge = this.differenceService.enlargeDifferences(difference, LARGE_HINT_ENLARGEMENT);
-        for (const coord of bigEnlarge) {
-            if (!this.thirdHintDifference[coord.x][coord.y] && !this.thirdHintDifferenceSlightlyEnlarged[coord.x][coord.y]) {
-                this.thirdHintDifferenceEnlarged[coord.x][coord.y] = true;
-            }
-        }
-    }
-
     checkThirdHint(coordinate: Coordinate): void {
         if (this.thirdHintDifferenceEnlarged[coordinate.x][coordinate.y]) {
             this.proximity = HintProximity.Far;
@@ -103,6 +84,33 @@ export class HintService {
         } else {
             this.proximity = HintProximity.TooFar;
         }
+    }
+
+    private generateLastHintDifferences(difference: Coordinate[]): void {
+        console.log('differences length: ' + difference.length);
+        for (const coord of difference) {
+            this.thirdHintDifference[coord.x][coord.y] = true;
+        }
+        const littleEnlarge = this.differenceService.enlargeDifferences(difference, SMALL_HINT_ENLARGEMENT);
+        console.log('littleEnlarge length: ' + littleEnlarge.length);
+        let littleTruth = 0;
+        for (const coord of littleEnlarge) {
+            if (!this.thirdHintDifference[coord.x][coord.y]) {
+                littleTruth++;
+                this.thirdHintDifferenceSlightlyEnlarged[coord.x][coord.y] = true;
+            }
+        }
+        console.log('littleTruth: ' + littleTruth);
+        const bigEnlarge = this.differenceService.enlargeDifferences(difference, LARGE_HINT_ENLARGEMENT);
+        let bigTruth = 0;
+        console.log('bigEnlarge length: ' + bigEnlarge.length);
+        for (const coord of bigEnlarge) {
+            if (!this.thirdHintDifference[coord.x][coord.y] && !this.thirdHintDifferenceSlightlyEnlarged[coord.x][coord.y]) {
+                bigTruth++;
+                this.thirdHintDifferenceEnlarged[coord.x][coord.y] = true;
+            }
+        }
+        console.log('bigTruth: ' + bigTruth);
     }
 
     private getHintQuadrant(differencesCoordinates: Coordinate[], quadrant: Quadrant): Quadrant {
