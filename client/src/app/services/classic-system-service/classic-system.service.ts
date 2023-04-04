@@ -24,6 +24,7 @@ export class ClassicSystemService {
     private endMessage: Subject<string>;
     private players: Subject<Players>;
     private isFirstDifferencesFound: Subject<boolean>;
+    private isGameModeChanged: Subject<boolean>;
 
     // eslint-disable-next-line max-params
     constructor(
@@ -40,6 +41,7 @@ export class ClassicSystemService {
         this.opponentDifferencesFound = new Subject<number>();
         this.replayEventsSubject = new Subject<ReplayEvent>();
         this.isFirstDifferencesFound = new Subject<boolean>();
+        this.isGameModeChanged = new Subject<boolean>();
     }
 
     get currentGame$() {
@@ -70,6 +72,10 @@ export class ClassicSystemService {
 
     get isFirstDifferencesFound$() {
         return this.isFirstDifferencesFound.asObservable();
+    }
+
+    get isGameModeChanged$() {
+        return this.isGameModeChanged.asObservable();
     }
 
     setMessage(message: ChatMessage) {
@@ -197,6 +203,14 @@ export class ClassicSystemService {
                 timestamp: Date.now(),
                 data: receivedMessage,
             });
+        });
+
+        this.clientSocket.on(GameEvents.UpdateDifferencesFound, (differencesFound: number) => {
+            this.differencesFound.next(differencesFound);
+        });
+
+        this.clientSocket.on(GameEvents.GameModeChanged, () => {
+            this.isGameModeChanged.next(true);
         });
     }
 }

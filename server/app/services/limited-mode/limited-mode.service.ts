@@ -1,8 +1,8 @@
 import { GameService } from '@app/services/game/game.service';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { NOT_FOUND } from '@common/constants';
-import { GameEvents, RoomEvents } from '@common/enums';
-import { LimitedGameDetails } from '@common/game-interfaces';
+import { GameEvents, RoomEvents, GameModes } from '@common/enums';
+import { GameRoom, LimitedGameDetails } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
 
@@ -35,6 +35,7 @@ export class LimitedModeService {
         const nextGameId = await this.roomsManagerService.loadNextGame(room, playedGameIds);
         if (!nextGameId) this.endGame(roomId, server);
         if (playedGameIds) this.availableGameByRoomId.set(roomId, [...playedGameIds, nextGameId]);
+        this.equalizeDiffFound(room, server);
         this.roomsManagerService.startGame(socket, server);
     }
 
@@ -65,10 +66,7 @@ export class LimitedModeService {
         const room = this.roomsManagerService.getRoomById(roomId);
         if (!room) return;
         this.sendEndMessage(roomId, server);
-        server.sockets.sockets.get(room.player1.playerId)?.rooms.delete(roomId);
-        if (room.player2) {
-            server.sockets.sockets.get(room.player2.playerId)?.rooms.delete(roomId);
-        }
+        this.roomsManagerService.leaveRoom(room, server);
         this.roomsManagerService.deleteRoom(roomId);
         this.deleteAvailableGame(roomId);
     }
@@ -96,29 +94,19 @@ export class LimitedModeService {
         this.availableGameByRoomId.clear();
     }
 
-    // async handleCreateGame(): Promise<void> {
-    //     const gameIds = await this.getAllGameIdsFromDb();
-    //     for (const roomId of this.roomsManagerService.getAllLimitedRoomIds()) {
-    //         this.availableGameByRoomId.set(roomId, gameIds);
-    //     }
-    // }
-
     getGameIds(roomId: string): string[] {
         return this.availableGameByRoomId.get(roomId);
+    }
+
+    private equalizeDiffFound(room: GameRoom, server: io.Server): void {
+        if (room.clientGame.mode === GameModes.LimitedCoop) {
+            server.to(room.roomId).emit(GameEvents.UpdateDifferencesFound, room.player1.diffData.differencesFound);
+        }
     }
 
     private sendEndMessage(roomId: string, server: io.Server): void {
         const room = this.roomsManagerService.getRoomById(roomId);
         room.endMessage = `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo ${room?.player1.name}!`;
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
-    }
-
-    private async getAllGameIdsFromDb(): Promise<string[]> {
-        const gameIds = await this.gameService.getAllGameIds();
-        return gameIds;
-    }
-
-    private generateRandomIndex(max: number): number {
-        return Math.floor(Math.random() * max);
     }
 }

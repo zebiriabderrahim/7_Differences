@@ -4,7 +4,7 @@
 /* eslint-disable max-lines */
 import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { MatDialog, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { SocketTestHelper } from '@app/services/client-socket-service/client-socket.service.spec';
@@ -155,7 +155,7 @@ describe('ClassicSystemService', () => {
     it('players$ should return players as Observable', () => {
         const mockPlayersSubject = new Subject<Players>();
         service['players'] = mockPlayersSubject;
-        expect(service.players$).toEqual(mockPlayersSubject.asObservable());
+        expect(service.playerHost$).toEqual(mockPlayersSubject.asObservable());
     });
 
     // it('cheatDifferences$ should return cheatDifferences as Observable', () => {

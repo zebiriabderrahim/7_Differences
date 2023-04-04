@@ -5,7 +5,7 @@
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
-import { GameEvents, GameModes, MessageEvents, PlayerEvents, RoomEvents } from '@common/enums';
+import { GameEvents, GameModes, PlayerEvents, RoomEvents } from '@common/enums';
 import { GameRoom, Player, playerData, RoomAvailability } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
@@ -56,11 +56,8 @@ export class ClassicModeService {
         if (!player) return;
         if (room.clientGame.differencesCount === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicSolo) {
             this.endGame(room, player, server);
-            socket.rooms.delete(roomId);
         } else if (halfDifferences === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicOneVsOne) {
             this.endGame(room, player, server);
-            server.sockets.sockets.get(room.player2.playerId)?.rooms.delete(roomId);
-            server.sockets.sockets.get(room.player1.playerId)?.rooms.delete(roomId);
         }
     }
 
@@ -73,6 +70,7 @@ export class ClassicModeService {
                 : `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo ${playerRankMessage}!`;
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
         this.playersListManagerService.deleteJoinedPlayersByGameId(room.clientGame.id);
+        this.roomsManagerService.leaveRoom(room, server);
         this.roomsManagerService.deleteRoom(room.roomId);
     }
 
@@ -104,21 +102,6 @@ export class ClassicModeService {
         });
     }
 
-    abandonGame(socket: io.Socket, server: io.Server): void {
-        const roomId = this.roomsManagerService.getRoomIdByPlayerId(socket.id);
-        const room = this.roomsManagerService.getRoomById(roomId);
-        if (room && room.clientGame.mode === GameModes.ClassicOneVsOne) {
-            const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
-            room.endMessage = "L'adversaire a abandonné la partie!";
-            const localMessage = this.messageManager.getQuitMessage(player.name);
-            server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
-            server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
-            server.sockets.sockets.get(player.playerId)?.rooms.delete(roomId);
-        }
-        socket.rooms.delete(roomId);
-        this.roomsManagerService.deleteRoom(roomId);
-    }
-
     handleSocketDisconnect(socket: io.Socket, server: io.Server): void {
         const roomId = this.roomsManagerService.getRoomIdByPlayerId(socket.id);
         const room = this.roomsManagerService.getRoomById(roomId);
@@ -129,7 +112,7 @@ export class ClassicModeService {
             this.playersListManagerService.cancelAllJoining(room.clientGame.id, server);
             this.roomsManagerService.deleteRoom(roomId);
         } else if (room && room.timer !== 0 && !joinable) {
-            this.abandonGame(socket, server);
+            this.roomsManagerService.abandonGame(socket, server);
         } else if (!createdGameId) {
             this.deleteOneVsOneAvailability(socket, server);
         } else {
