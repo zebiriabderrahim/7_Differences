@@ -50,6 +50,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent, {
             data: { gameId: this.game._id },
             disableClose: true,
+            panelClass: 'dialog',
         });
         return dialogRef;
     }
