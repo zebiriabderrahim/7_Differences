@@ -44,7 +44,7 @@ export class ConfigDialogComponent implements OnInit, OnDestroy {
         this.handleChanges();
     }
 
-    onSubmit() {
+    saveGameConstants() {
         this.configConstants = this.configForm.value.valueOf();
         this.communicationService.updateGameConstants(this.configConstants).subscribe(() => {
             this.roomManagerService.gameConstantsUpdated();
@@ -76,9 +76,6 @@ export class ConfigDialogComponent implements OnInit, OnDestroy {
 
     resetConfigForm() {
         this.configForm.reset({ countdownTime: DEFAULT_COUNTDOWN_VALUE, penaltyTime: DEFAULT_PENALTY_VALUE, bonusTime: DEFAULT_BONUS_VALUE });
-        this.communicationSubscription = this.communicationService.updateGameConstants(this.configConstants).subscribe(() => {
-            this.roomManagerService.gameConstantsUpdated();
-        });
     }
 
     ngOnDestroy() {
