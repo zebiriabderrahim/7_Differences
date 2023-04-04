@@ -125,12 +125,12 @@ describe('GamePageComponent', () => {
         };
 
         classicServiceSpy.getSocketId.and.returnValue(mockId);
-        expect(component.playerHost).toEqual(DEFAULT_PLAYERS);
-        expect(component.playerHost).toEqual('');
+        expect(component.players).toEqual(DEFAULT_PLAYERS);
+        expect(component.player).toEqual('');
         component.ngAfterViewInit();
         playersSubjectTest.next(playersTest);
-        expect(component.playerHost).toBeDefined();
-        expect(component.playerHost).toEqual(playersTest.player1.name);
+        expect(component.players).toBeDefined();
+        expect(component.player).toEqual(playersTest.player1.name);
     });
 
     it('should set players that are id matches', () => {
@@ -139,10 +139,10 @@ describe('GamePageComponent', () => {
             player2: { playerId: '2', name: 'player2', diffData: mockDifferenceData },
         };
         classicServiceSpy.getSocketId.and.returnValue('0');
-        expect(component.playerHost).toEqual(DEFAULT_PLAYERS);
+        expect(component.players).toEqual(DEFAULT_PLAYERS);
         component.ngAfterViewInit();
         playersSubjectTest.next(playersTest);
-        expect(component.playerHost).toEqual(playersTest);
+        expect(component.players).toEqual(playersTest);
     });
 
     it('should set players and player of second player if id matches', () => {
@@ -153,12 +153,12 @@ describe('GamePageComponent', () => {
         };
 
         classicServiceSpy.getSocketId.and.returnValue(mockId);
-        expect(component.playerHost).toEqual(DEFAULT_PLAYERS);
-        expect(component.playerHost).toEqual('');
+        expect(component.players).toEqual(DEFAULT_PLAYERS);
+        expect(component.player).toEqual('');
         component.ngAfterViewInit();
         playersSubjectTest.next(playersTest);
-        expect(component.playerHost).toBeDefined();
-        expect(component.playerHost).toEqual(playersTest.player2.name);
+        expect(component.players).toBeDefined();
+        expect(component.player).toEqual(playersTest.player2.name);
     });
 
     it('should set players and player of second player if the 2nd player is defined', () => {
@@ -166,12 +166,12 @@ describe('GamePageComponent', () => {
             player1: { playerId: 'gdfgd', name: 'player1', diffData: mockDifferenceData },
         };
 
-        expect(component.playerHost).toEqual(DEFAULT_PLAYERS);
-        expect(component.playerHost).toEqual('');
+        expect(component.players).toEqual(DEFAULT_PLAYERS);
+        expect(component.player).toEqual('');
         component.ngAfterViewInit();
         playersSubjectTest.next(playersTest);
-        expect(component.playerHost).toEqual(playersTest);
-        expect(component.playerHost).toEqual('');
+        expect(component.players).toEqual(playersTest);
+        expect(component.player).toEqual('');
     });
 
     it('should update the timer', () => {
