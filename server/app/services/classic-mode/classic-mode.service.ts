@@ -43,7 +43,8 @@ export class ClassicModeService {
     deleteOneVsOneAvailability(socket: io.Socket, server: io.Server): void {
         const gameId = this.getGameIdByHostId(socket.id);
         if (!gameId) return;
-        this.updateRoomOneVsOneAvailability(socket.id, gameId, server);
+        const roomAvailability = { gameId, isAvailableToJoin: false, hostId: socket.id };
+        server.emit(RoomEvents.RoomOneVsOneAvailable, roomAvailability);
         this.roomAvailability.delete(gameId);
     }
 
@@ -105,6 +106,7 @@ export class ClassicModeService {
     handleSocketDisconnect(socket: io.Socket, server: io.Server): void {
         const roomId = this.roomsManagerService.getRoomIdByPlayerId(socket.id);
         const room = this.roomsManagerService.getRoomById(roomId);
+        this.roomsManagerService.handelDisconnect(room);
         const createdGameId = this.playersListManagerService.getGameIdByPlayerId(socket.id);
         const joinable = this.roomAvailability.get(room?.clientGame.id)?.isAvailableToJoin;
         if (room && !room.player2 && joinable && room.clientGame.mode === GameModes.ClassicOneVsOne) {
