@@ -186,6 +186,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.matDialog.open(GamePageDialogComponent, {
             data: { action: 'endGame', message: endingMessage, isReplayMode: this.game?.mode.includes('Classic') },
             disableClose: true,
+            panelClass: 'dialog',
         });
         if (this.game?.mode.includes('Classic')) {
             this.isReplayAvailable = true;

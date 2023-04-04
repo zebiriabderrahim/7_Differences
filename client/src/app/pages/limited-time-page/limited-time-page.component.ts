@@ -6,7 +6,7 @@ import { WaitingForPlayerToJoinComponent } from '@app/components/waiting-player-
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameModes } from '@common/enums';
 import { LimitedGameDetails } from '@common/game-interfaces';
-import { filter, Subscription } from 'rxjs';
+import { Subscription, filter } from 'rxjs';
 
 @Component({
     selector: 'app-limited-time-page',
@@ -31,7 +31,7 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
 
     openDialog() {
         this.dialog
-            .open(PlayerNameDialogBoxComponent, { disableClose: true })
+            .open(PlayerNameDialogBoxComponent, { disableClose: true, panelClass: 'dialog' })
             .afterClosed()
             .subscribe((playerName) => {
                 if (playerName) {
