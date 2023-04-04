@@ -52,7 +52,7 @@
             ></canvas>
         </div>
     </div>
-    <button *ngIf="!isReplayAvailable" class="importantButton justified" (click)="showAbandonDialog()">Abandonner la partie</button>
+    <button *ngIf="!isReplayAvailable" class="importantButton justified" (click)="showAbandonDialog()"><span id = "abandon">Abandonner la partie</span></button>
 </div>
 <img id = "background" src = "./assets/background/BackgroundImage.jpg" alt="background" />
 <div *ngIf="game">
