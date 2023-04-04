@@ -155,7 +155,7 @@ describe('ClassicSystemService', () => {
     it('players$ should return players as Observable', () => {
         const mockPlayersSubject = new Subject<Players>();
         service['players'] = mockPlayersSubject;
-        expect(service.playerHost$).toEqual(mockPlayersSubject.asObservable());
+        expect(service.players$).toEqual(mockPlayersSubject.asObservable());
     });
 
     // it('cheatDifferences$ should return cheatDifferences as Observable', () => {
