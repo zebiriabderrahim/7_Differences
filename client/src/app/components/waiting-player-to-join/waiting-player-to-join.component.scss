@@ -1,4 +1,119 @@
-.infos_container {
-    width: 500px;
-    height: 350px;
+.dialog-image {
+    position: absolute;
+    left: 50%;
+    top: 55%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 1;
+    width: 60%;
+    height: 70%;
+    animation: pop-in 0.5s ease-out forwards;
 }
+
+@keyframes pop-in {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+.infos-container {
+    position: absolute;
+    left: 26%;
+    bottom: 70%;
+    z-index: 2;
+}
+
+#waiting{
+    position: absolute;
+    z-index: 2;
+    font-family: 'Troika', sans-serif;
+    font-size: 35px;
+    width: 600px;
+    color: black;
+}
+
+.players-list {
+    position: absolute;
+    z-index: 2;
+    left: 30%;
+    bottom: 25%;
+}
+
+.waiting-text {
+    font-family: 'Troika', sans-serif;
+    font-size: 35px;
+    width: 600px;
+    color: black;  
+}
+
+.player-name {
+    font-family: 'Troika', sans-serif;
+    font-size: 25px;
+    width: 600px;
+    color: black;  
+}
+
+.button1 {
+    position: absolute;
+    left: 55%;
+    bottom: 59%;
+}
+
+.cancel {
+    position: absolute;
+    z-index: 2;
+    bottom: 35%;
+    left:2%;
+    width: 338px;
+    height: 99px;
+    opacity: 0;
+}
+
+.button-container {
+    position: relative;
+    width: 300px;
+    height: 150px;
+    margin-right: 40px;
+    z-index: 2;
+}
+
+.button-container img {
+    position: absolute;
+    top: 0;
+    left: 5%;
+    width: 70%;
+    height: 70%;
+    transition: all 0.3s ease;
+}
+
+.button-container:hover img {
+    filter: drop-shadow(10px 10px 10px black);
+}
+
+.button-container .centered-yes {
+    position: absolute;
+    font-size: 50px;
+    top: 50%;
+    left: 65%;
+    transform: translate(-66%, -150%);
+    text-align: center;
+    width: 450px;
+    color: white;
+    font-family: 'Troika', sans-serif;
+}
+
+.choice {
+    font-family: 'Troika', sans-serif;
+    font-size: 15px;
+}
+
+
+
