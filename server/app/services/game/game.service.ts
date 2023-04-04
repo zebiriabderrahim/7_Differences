@@ -73,10 +73,6 @@ export class GameService {
         await this.databaseService.resetAllTopTimes();
     }
 
-    async getAllGameIds(): Promise<void> {
-        await this.databaseService.getAllGameIds();
-    }
-
     async getRandomGame(selectedId: string[]): Promise<Game> {
         const game = await this.databaseService.getRandomGame(selectedId);
         if (game) {

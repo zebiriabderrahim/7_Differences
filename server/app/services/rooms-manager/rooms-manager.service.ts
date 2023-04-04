@@ -208,11 +208,15 @@ export class RoomsManagerService {
         }
         if (room.clientGame.mode === GameModes.LimitedCoop) {
             this.abandonMessage(room, player, server);
-            server.to(opponent.playerId).emit(GameEvents.GameModeChanged);
-            room.clientGame.mode = GameModes.ClassicSolo;
+            server.to(opponent?.playerId)?.emit(GameEvents.GameModeChanged);
+            room.clientGame.mode = GameModes.LimitedSolo;
             this.updateRoom(room);
         }
         socket.leave(roomId);
+    }
+
+    handelDisconnect(room: GameRoom): void {
+        if (room && !room.player2) this.deleteRoom(room.roomId);
     }
 
     private abandonMessage(room: GameRoom, player: Player, server: io.Server): void {

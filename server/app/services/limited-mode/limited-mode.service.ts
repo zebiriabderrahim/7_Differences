@@ -106,7 +106,7 @@ export class LimitedModeService {
 
     private sendEndMessage(roomId: string, server: io.Server): void {
         const room = this.roomsManagerService.getRoomById(roomId);
-        room.endMessage = `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo ${room?.player1.name}!`;
+        room.endMessage = `Vous avez trouvé les ${room.player1.diffData.differencesFound} différences! Bravo!`;
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
     }
 }
