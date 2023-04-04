@@ -34,7 +34,7 @@
     }
 }
 
-#abandon {
+.abandon {
     position: absolute;
     z-index: 2;
     left: 32%;
@@ -43,13 +43,13 @@
     color: black;
 }
 
-#button1 {
+.button1 {
     position: absolute;
     left: 32%;
     top: 59%;
 }
 
-#button2 {
+.button2 {
     position: absolute;
     left: 50%;
     top: 59%;
@@ -63,7 +63,7 @@
     z-index: 2;
 }
 
-#replayButton {
+.replayButton {
     height: 80%;
 }
 
@@ -104,7 +104,7 @@
     font-family: 'Troika', sans-serif;
 }
 
-#yesButton {
+.yesButton {
     position: absolute;
     z-index: 2;
     width: 350px;
@@ -112,7 +112,7 @@
     opacity: 0;
 }
 
-#noButton {
+.noButton {
     position: absolute;
     z-index: 2;
     width: 350px;
