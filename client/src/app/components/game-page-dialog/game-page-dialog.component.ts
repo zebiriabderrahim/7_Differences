@@ -14,6 +14,7 @@ export class GamePageDialogComponent {
         private readonly classicSystem: ClassicSystemService,
         private readonly replayService: ReplayService,
     ) {}
+
     abandonGame(): void {
         this.classicSystem.abandonGame();
     }
