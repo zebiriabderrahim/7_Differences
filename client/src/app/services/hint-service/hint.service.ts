@@ -9,17 +9,22 @@ import {
 } from '@app/constants/hint';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { HintProximity } from '@app/enum/hint-proximity';
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { QuadrantPosition } from '@app/enum/quadrant-position';
+import { ReplayActions } from '@app/enum/replay-actions';
 import { Quadrant } from '@app/interfaces/quadrant';
+import { ReplayEvent } from '@app/interfaces/replay-actions';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { Coordinate } from '@common/coordinate';
+import { Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class HintService {
     nAvailableHints: number;
+    replayEventsSubject: Subject<ReplayEvent>;
     proximity: HintProximity;
     isThirdHintActive: boolean;
     private thirdHintDifference: boolean[][];
@@ -36,6 +41,7 @@ export class HintService {
         this.thirdHintDifference = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
         this.thirdHintDifferenceSlightlyEnlarged = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
         this.thirdHintDifferenceEnlarged = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        this.replayEventsSubject = new Subject<ReplayEvent>();
     }
 
     get differences(): Coordinate[][] {
@@ -68,6 +74,12 @@ export class HintService {
                 }
                 hintSquare = this.generateHintSquare(hintQuadrant);
             }
+            const replayEvent: ReplayEvent = {
+                action: ReplayActions.UseHint,
+                timestamp: Date.now(),
+                data: hintSquare,
+            };
+            this.replayEventsSubject.next(replayEvent);
             this.gameAreaService.flashCorrectPixels(hintSquare);
             this.classicSystem.requestHint();
             this.nAvailableHints--;
@@ -151,10 +163,11 @@ export class HintService {
         const hintSquare: Coordinate[] = [];
         const { topCorner, bottomCorner } = quadrant;
 
-        for (let i = bottomCorner.x - HINT_SQUARE_PADDING; i < topCorner.x + HINT_SQUARE_PADDING; i++) {
-            for (let j = bottomCorner.y - HINT_SQUARE_PADDING; j < topCorner.y + HINT_SQUARE_PADDING; j++) {
-                if (this.isCoordinateInHintSquare({ x: i, y: j }, quadrant)) {
-                    hintSquare.push({ x: i, y: j });
+        for (let i = bottomCorner.x; i < topCorner.x + HINT_SQUARE_PADDING; i++) {
+            for (let j = bottomCorner.y; j < topCorner.y + HINT_SQUARE_PADDING; j++) {
+                const coordinate = { x: i, y: j };
+                if (this.isCoordinateInHintSquare(coordinate, quadrant)) {
+                    hintSquare.push(coordinate);
                 }
             }
         }
@@ -162,12 +175,16 @@ export class HintService {
         return hintSquare;
     }
 
+    private isCoordinateValid(coordinate: Coordinate): boolean {
+        return coordinate.x >= 0 && coordinate.y >= 0 && coordinate.x < IMG_WIDTH && coordinate.y < IMG_HEIGHT;
+    }
+
     private isCoordinateInHintSquare(coordinate: Coordinate, quadrant: Quadrant): boolean {
         const { topCorner, bottomCorner } = quadrant;
         const { x, y } = coordinate;
         return (
-            (x >= bottomCorner.x && x < topCorner.x && (y === bottomCorner.y || y === topCorner.y - 1)) ||
-            (y >= bottomCorner.y && y < topCorner.y && (x === bottomCorner.x || x === topCorner.x - 1))
+            this.isCoordinateValid(coordinate) &&
+            (x <= bottomCorner.x + HINT_SQUARE_PADDING || x >= topCorner.x || y <= bottomCorner.y + HINT_SQUARE_PADDING || y >= topCorner.y)
         );
     }
 

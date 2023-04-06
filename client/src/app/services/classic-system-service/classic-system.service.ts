@@ -1,15 +1,18 @@
 import { Injectable } from '@angular/core';
+import { ReplayActions } from '@app/enum/replay-actions';
+import { ReplayEvent } from '@app/interfaces/replay-actions';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
 import { GameEvents, MessageEvents, MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, Differences, GameConfigConst, GameRoom, Players } from '@common/game-interfaces';
-import { Subject, filter } from 'rxjs';
+import { filter, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class ClassicSystemService {
+    replayEventsSubject: Subject<ReplayEvent>;
     differences: Coordinate[][];
     gameConstants: GameConfigConst;
     private timer: Subject<number>;
@@ -21,7 +24,9 @@ export class ClassicSystemService {
     private endMessage: Subject<string>;
     private players: Subject<Players>;
     private isFirstDifferencesFound: Subject<boolean>;
+    private isGameModeChanged: Subject<boolean>;
 
+    // eslint-disable-next-line max-params
     constructor(
         private readonly clientSocket: ClientSocketService,
         private readonly gameAreaService: GameAreaService,
@@ -34,7 +39,9 @@ export class ClassicSystemService {
         this.message = new Subject<ChatMessage>();
         this.endMessage = new Subject<string>();
         this.opponentDifferencesFound = new Subject<number>();
+        this.replayEventsSubject = new Subject<ReplayEvent>();
         this.isFirstDifferencesFound = new Subject<boolean>();
+        this.isGameModeChanged = new Subject<boolean>();
     }
 
     get currentGame$() {
@@ -67,6 +74,14 @@ export class ClassicSystemService {
         return this.isFirstDifferencesFound.asObservable();
     }
 
+    get isGameModeChanged$() {
+        return this.isGameModeChanged.asObservable();
+    }
+
+    setMessage(message: ChatMessage) {
+        this.message.next(message);
+    }
+
     getSocketId(): string {
         return this.clientSocket.socket.id;
     }
@@ -90,7 +105,7 @@ export class ClassicSystemService {
     replaceDifference(differences: Coordinate[]): void {
         if (differences.length === 0) {
             this.soundService.playErrorSound();
-            this.gameAreaService.showError(this.isLeftCanvas);
+            this.gameAreaService.showError(this.isLeftCanvas, this.gameAreaService.mousePosition);
         } else {
             this.isFirstDifferencesFound.next(true);
             this.soundService.playCorrectSound();
@@ -103,10 +118,22 @@ export class ClassicSystemService {
         if (data.playerId === this.getSocketId()) {
             this.replaceDifference(data.differencesData.currentDifference);
             this.differencesFound.next(data.differencesData.differencesFound);
+            const replayEvent: ReplayEvent = {
+                action: ReplayActions.DifferenceFoundUpdate,
+                timestamp: Date.now(),
+                data: data.differencesData.differencesFound,
+            };
+            this.replayEventsSubject.next(replayEvent);
             this.checkStatus();
         } else if (data.differencesData.currentDifference.length !== 0) {
             this.replaceDifference(data.differencesData.currentDifference);
             this.opponentDifferencesFound.next(data.differencesData.differencesFound);
+            const replayEvent: ReplayEvent = {
+                action: ReplayActions.DifferenceFoundUpdate,
+                timestamp: Date.now(),
+                data: data.differencesData.differencesFound,
+            };
+            this.replayEventsSubject.next(replayEvent);
         }
         this.differences = data.cheatDifferences;
     }
@@ -129,6 +156,12 @@ export class ClassicSystemService {
 
     sendMessage(textMessage: string): void {
         const newMessage = { tag: MessageTag.received, message: textMessage };
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.CaptureMessage,
+            timestamp: Date.now(),
+            data: { tag: MessageTag.sent, message: textMessage } as ChatMessage,
+        };
+        this.replayEventsSubject.next(replayEvent);
         this.clientSocket.send(MessageEvents.LocalMessage, newMessage);
     }
 
@@ -142,6 +175,13 @@ export class ClassicSystemService {
             this.gameConstants = room.gameConstants;
             this.players.next({ player1: room.player1, player2: room.player2 });
             this.differences = room.originalDifferences;
+            const replayEvent: ReplayEvent = {
+                action: ReplayActions.StartGame,
+                timestamp: Date.now(),
+                data: [room.clientGame.original, room.clientGame.modified],
+            };
+
+            this.replayEventsSubject.next(replayEvent);
         });
 
         this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
@@ -150,6 +190,13 @@ export class ClassicSystemService {
 
         this.clientSocket.on(GameEvents.TimerUpdate, (timer: number) => {
             this.timer.next(timer);
+            const replayEvent: ReplayEvent = {
+                action: ReplayActions.TimerUpdate,
+                timestamp: Date.now(),
+                data: timer,
+            };
+
+            this.replayEventsSubject.next(replayEvent);
         });
 
         this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {
@@ -158,6 +205,20 @@ export class ClassicSystemService {
 
         this.clientSocket.on(MessageEvents.LocalMessage, (receivedMessage: ChatMessage) => {
             this.message.next(receivedMessage);
+            const replayEvent: ReplayEvent = {
+                action: ReplayActions.CaptureMessage,
+                timestamp: Date.now(),
+                data: receivedMessage,
+            };
+            this.replayEventsSubject.next(replayEvent);
+        });
+
+        this.clientSocket.on(GameEvents.UpdateDifferencesFound, (differencesFound: number) => {
+            this.differencesFound.next(differencesFound);
+        });
+
+        this.clientSocket.on(GameEvents.GameModeChanged, () => {
+            this.isGameModeChanged.next(true);
         });
     }
 }
