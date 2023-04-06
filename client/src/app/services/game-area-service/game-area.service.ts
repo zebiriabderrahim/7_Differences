@@ -11,12 +11,17 @@ import {
 } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { GREEN_PIXEL, N_PIXEL_ATTRIBUTE, RED_PIXEL, YELLOW_PIXEL } from '@app/constants/pixels';
+import { ReplayActions } from '@app/enum/replay-actions';
+import { ReplayEvent } from '@app/interfaces/replay-actions';
 import { Coordinate } from '@common/coordinate';
+import { Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class GameAreaService {
+    replayEventsSubject: Subject<ReplayEvent>;
+    mousePosition: Coordinate;
     private originalPixelData: ImageData;
     private modifiedPixelData: ImageData;
     private originalFrontPixelData: ImageData;
@@ -25,7 +30,6 @@ export class GameAreaService {
     private modifiedContext: CanvasRenderingContext2D;
     private originalContextFrontLayer: CanvasRenderingContext2D;
     private modifiedContextFrontLayer: CanvasRenderingContext2D;
-    private mousePosition: Coordinate;
     private clickDisabled: boolean;
     private isCheatMode: boolean;
     private cheatModeInterval: number | undefined;
@@ -34,6 +38,7 @@ export class GameAreaService {
         this.mousePosition = { x: 0, y: 0 };
         this.clickDisabled = false;
         this.isCheatMode = false;
+        this.replayEventsSubject = new Subject<ReplayEvent>();
     }
 
     @HostListener('keydown', ['$event'])
@@ -52,19 +57,25 @@ export class GameAreaService {
         return event.button === LEFT_BUTTON && !this.clickDisabled ? (this.saveCoord(event), true) : false;
     }
 
-    showError(isMainCanvas: boolean): void {
+    showError(isMainCanvas: boolean, errorCoordinate: Coordinate): void {
         const frontContext: CanvasRenderingContext2D = isMainCanvas ? this.originalContextFrontLayer : this.modifiedContextFrontLayer;
         frontContext.fillStyle = 'red';
         this.clickDisabled = true;
         frontContext.font = 'bold 30px sheriff';
-        frontContext.fillText('ERREUR', this.mousePosition.x - X_CENTERING_DISTANCE, this.mousePosition.y);
+        frontContext.fillText('ERREUR', errorCoordinate.x - X_CENTERING_DISTANCE, errorCoordinate.y);
         setTimeout(() => {
             frontContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
             this.clickDisabled = false;
         }, ONE_SECOND);
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.ClickError,
+            timestamp: Date.now(),
+            data: { isMainCanvas, pos: errorCoordinate },
+        };
+        this.replayEventsSubject.next(replayEvent);
     }
 
-    replaceDifference(differenceCoord: Coordinate[]): void {
+    replaceDifference(differenceCoord: Coordinate[], replaySpeed?: number, isPaused: boolean = false): void {
         const imageDataIndex = this.convert2DCoordToPixelIndex(differenceCoord);
         for (const index of imageDataIndex) {
             for (let i = 0; i < N_PIXEL_ATTRIBUTE; i++) {
@@ -73,20 +84,27 @@ export class GameAreaService {
         }
         this.modifiedContext.putImageData(this.modifiedPixelData, 0, 0);
         this.resetCheatMode();
-        this.flashCorrectPixels(differenceCoord);
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.ClickFound,
+            timestamp: Date.now(),
+            data: differenceCoord,
+        };
+        this.replayEventsSubject.next(replayEvent);
+        this.flashCorrectPixels(differenceCoord, replaySpeed, isPaused);
     }
 
-    flashCorrectPixels(differenceCoord: Coordinate[]): void {
+    flashCorrectPixels(differenceCoord: Coordinate[], replaySpeed?: number, isPaused: boolean = false): void {
         const imageDataIndexes = this.convert2DCoordToPixelIndex(differenceCoord);
-        this.flashPixels(imageDataIndexes);
+        this.flashPixels(imageDataIndexes, replaySpeed, isPaused);
     }
 
-    flashPixels(imageDataIndexes: number[]): void {
+    flashPixels(imageDataIndexes: number[], replaySpeed?: number, isPaused: boolean = false): void {
+        const speed = replaySpeed ? replaySpeed : 1;
         const firstInterval = setInterval(() => {
             const secondInterval = setInterval(() => {
                 this.setPixelData(imageDataIndexes, this.modifiedFrontPixelData, this.originalFrontPixelData);
                 this.putImageDataToContexts();
-            }, GREEN_FLASH_TIME);
+            }, GREEN_FLASH_TIME / speed);
 
             const color = [YELLOW_PIXEL.red, YELLOW_PIXEL.green, YELLOW_PIXEL.blue, YELLOW_PIXEL.alpha];
             for (const index of imageDataIndexes) {
@@ -97,17 +115,19 @@ export class GameAreaService {
 
             setTimeout(() => {
                 clearInterval(secondInterval);
-                this.clearFlashing();
-            }, FLASH_WAIT_TIME);
-        }, YELLOW_FLASH_TIME);
+                this.clearFlashing(isPaused);
+            }, FLASH_WAIT_TIME / speed);
+        }, YELLOW_FLASH_TIME / speed);
 
         setTimeout(() => {
             clearInterval(firstInterval);
-            this.clearFlashing();
-        }, FLASH_WAIT_TIME);
+            this.clearFlashing(isPaused);
+        }, FLASH_WAIT_TIME / speed);
     }
 
-    toggleCheatMode(startDifferences: Coordinate[]): void {
+    toggleCheatMode(startDifferences: Coordinate[], replaySpeed?: number): void {
+        let replayEvent: ReplayEvent;
+        const speed = replaySpeed ? replaySpeed : 1;
         const imageDataIndexes: number[] = this.convert2DCoordToPixelIndex(startDifferences);
         if (!this.isCheatMode) {
             this.cheatModeInterval = setInterval(() => {
@@ -120,9 +140,21 @@ export class GameAreaService {
 
                 setTimeout(() => {
                     this.clearFlashing();
-                }, RED_FLASH_TIME);
-            }, CHEAT_MODE_WAIT_TIME) as unknown as number;
+                }, RED_FLASH_TIME / speed);
+            }, CHEAT_MODE_WAIT_TIME / speed) as unknown as number;
+            replayEvent = {
+                action: ReplayActions.ActivateCheat,
+                timestamp: Date.now(),
+                data: startDifferences,
+            };
+            this.replayEventsSubject.next(replayEvent);
         } else {
+            replayEvent = {
+                action: ReplayActions.DeactivateCheat,
+                timestamp: Date.now(),
+                data: startDifferences,
+            };
+            this.replayEventsSubject.next(replayEvent);
             clearInterval(this.cheatModeInterval);
             this.clearFlashing();
         }
@@ -148,12 +180,14 @@ export class GameAreaService {
         this.originalContextFrontLayer?.putImageData(this.originalFrontPixelData, 0, 0);
     }
 
-    clearFlashing(): void {
-        this.modifiedContextFrontLayer?.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.originalContextFrontLayer?.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.originalFrontPixelData = this.originalContextFrontLayer?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.modifiedFrontPixelData = this.modifiedContextFrontLayer?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        this.clickDisabled = false;
+    clearFlashing(isPaused: boolean = false): void {
+        if (!isPaused) {
+            this.modifiedContextFrontLayer?.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+            this.originalContextFrontLayer?.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+            this.originalFrontPixelData = this.originalContextFrontLayer?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+            this.modifiedFrontPixelData = this.modifiedContextFrontLayer?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+            this.clickDisabled = false;
+        }
     }
 
     getOgContext(): CanvasRenderingContext2D {

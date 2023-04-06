@@ -7,22 +7,33 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DEFAULT_BONUS_VALUE, DEFAULT_COUNTDOWN_VALUE, DEFAULT_PENALTY_VALUE } from '@app/constants/constants';
+import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
+import { BehaviorSubject, Subscription, of } from 'rxjs';
 import { ConfigDialogComponent } from './config-dialog.component';
-import { of } from 'rxjs';
 
 describe('ConfigDialogComponent', () => {
     let component: ConfigDialogComponent;
     let fixture: ComponentFixture<ConfigDialogComponent>;
+    let roomManagerServiceSpy: jasmine.SpyObj<RoomManagerService>;
+    let isReloadNeeded: BehaviorSubject<boolean>;
 
     beforeEach(async () => {
+        isReloadNeeded = new BehaviorSubject<boolean>(true);
+        roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['gameConstantsUpdated'], {
+            isReloadNeeded$: isReloadNeeded,
+        });
         await TestBed.configureTestingModule({
             declarations: [ConfigDialogComponent],
             imports: [MatDialogModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, HttpClientModule, NoopAnimationsModule],
+            providers: [{ provide: RoomManagerService, useValue: roomManagerServiceSpy }],
         }).compileComponents();
 
         fixture = TestBed.createComponent(ConfigDialogComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+    });
+    afterEach(() => {
+        component.ngOnDestroy();
     });
 
     it('should create', () => {
@@ -40,7 +51,7 @@ describe('ConfigDialogComponent', () => {
         const countdownTimeControl = component.configForm.controls['countdownTime'];
         countdownTimeControl.setValue(10);
 
-        component.onSubmit();
+        component.saveGameConstants();
 
         expect(component.configConstants.countdownTime).toBe(10);
     });
@@ -49,7 +60,7 @@ describe('ConfigDialogComponent', () => {
         const penaltyTimeControl = component.configForm.controls['penaltyTime'];
         penaltyTimeControl.setValue(5);
 
-        component.onSubmit();
+        component.saveGameConstants();
 
         expect(component.configConstants.penaltyTime).toBe(5);
     });
@@ -58,35 +69,47 @@ describe('ConfigDialogComponent', () => {
         const bonusTimeControl = component.configForm.controls['bonusTime'];
         bonusTimeControl.setValue(2);
 
-        component.onSubmit();
+        component.saveGameConstants();
 
         expect(component.configConstants.bonusTime).toBe(2);
     });
 
     it('onSubmit should call updateGameConstants on communicationService and gameConstantsUpdated on roomManagerService', () => {
         spyOn(component['communicationService'], 'updateGameConstants').and.returnValue(of(void 0));
-        spyOn(component['roomManagerService'], 'gameConstantsUpdated').and.callThrough();
 
         component.configConstants = { countdownTime: 10, penaltyTime: 6, bonusTime: 3 };
-        component.onSubmit();
+        component.saveGameConstants();
 
         expect(component['communicationService'].updateGameConstants).toHaveBeenCalledWith(component.configConstants);
         expect(component['roomManagerService'].gameConstantsUpdated).toHaveBeenCalled();
     });
 
-    it('resetConfigForm should reset the config form and update the game constants', () => {
-        const resetSpy = spyOn(component.configForm, 'reset');
-        const updateSpy = spyOn(component['communicationService'], 'updateGameConstants').and.returnValue(of(void 0));
-        const gameConstantsSpy = spyOn(component['roomManagerService'], 'gameConstantsUpdated');
-
-        component.resetConfigForm();
-
-        expect(resetSpy).toHaveBeenCalledWith({
+    it('resetConfigForm should reset the form with default values', () => {
+        const defaultValues = {
             countdownTime: DEFAULT_COUNTDOWN_VALUE,
             penaltyTime: DEFAULT_PENALTY_VALUE,
             bonusTime: DEFAULT_BONUS_VALUE,
+        };
+        component.configForm.setValue({
+            countdownTime: 10,
+            penaltyTime: 5,
+            bonusTime: 5,
         });
-        expect(updateSpy).toHaveBeenCalledWith(component.configConstants);
-        expect(gameConstantsSpy).toHaveBeenCalled();
+        component.resetConfigForm();
+        expect(component.configForm.value).toEqual(defaultValues);
+    });
+
+    it('should call loadGameConstants when handleChanges is called if Reload is needed', () => {
+        const loadGameConstantsSpy = spyOn(component, 'loadGameConstants');
+        component.handleChanges();
+        expect(loadGameConstantsSpy).toHaveBeenCalled();
+    });
+
+    it('should unsubscribe reloadSubscription when component is destroyed', () => {
+        component['communicationSubscription'] = undefined as unknown as Subscription;
+        component['isReloadNeededSubscription'] = undefined as unknown as Subscription;
+        component.ngOnDestroy();
+        expect(component['communicationSubscription']).toBeUndefined();
+        expect(component['isReloadNeededSubscription']).toBeUndefined();
     });
 });
