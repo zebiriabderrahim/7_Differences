@@ -229,7 +229,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     }
 
     checkThirdHint(event: MouseEvent) {
-        if (this.hintService.nAvailableHints === 0) {
+        if (this.hintService.nAvailableHints === 0 && this.isReplayAvailable === false) {
             this.hintService.checkThirdHint({ x: event.offsetX, y: event.offsetY });
         }
     }
