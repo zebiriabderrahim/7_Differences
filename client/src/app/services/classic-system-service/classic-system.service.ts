@@ -178,7 +178,7 @@ export class ClassicSystemService {
             const replayEvent: ReplayEvent = {
                 action: ReplayActions.StartGame,
                 timestamp: Date.now(),
-                data: [room.clientGame.original, room.clientGame.modified],
+                data: room,
             };
 
             this.replayEventsSubject.next(replayEvent);
