@@ -135,6 +135,7 @@ export class ReplayService {
                 this.gameAreaService.showError(
                     (replayData.data as ClickErrorData).isMainCanvas as boolean,
                     (replayData.data as ClickErrorData).pos as Coordinate,
+                    this.replaySpeed,
                 );
                 break;
             case ReplayActions.CaptureMessage:
