@@ -37,10 +37,9 @@ export class PlayerNameDialogBoxComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        if (this.data) {
-            this.handleCreateUndoCreation(this.data.gameId);
-            this.handleGameCardDelete();
-        }
+        if (!this.data) return;
+        this.handleCreateUndoCreation(this.data.gameId);
+        this.handleGameCardDelete();
     }
 
     submitForm() {
