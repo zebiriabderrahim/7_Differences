@@ -7,15 +7,14 @@ import {
     QUADRANT_POSITIONS,
     SMALL_HINT_ENLARGEMENT,
 } from '@app/constants/hint';
-import { HintProximity } from '@app/enum/hint-proximity';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
+import { HintProximity } from '@app/enum/hint-proximity';
 import { QuadrantPosition } from '@app/enum/quadrant-position';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { Quadrant } from '@app/interfaces/quadrant';
 import { ReplayEvent } from '@app/interfaces/replay-actions';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
-import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { Coordinate } from '@common/coordinate';
 import { Subject } from 'rxjs';
 @Injectable({
@@ -32,7 +31,7 @@ export class HintService {
 
     constructor(
         private readonly classicSystem: ClassicSystemService,
-        private readonly gameAreaService: GameAreaService,
+        /* private readonly gameAreaService: GameAreaService,*/
         private readonly differenceService: DifferenceService,
     ) {
         this.resetHints();
@@ -54,31 +53,40 @@ export class HintService {
 
     clickDuringThirdHint(): void {
         this.isThirdHintActive = false;
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.DeactivateThirdHint,
+            timestamp: Date.now(),
+        };
+        this.replayEventsSubject.next(replayEvent);
     }
 
-    requestHint(): void {
+    requestHint(replayIndex?: number): void {
         if (this.nAvailableHints > 0 && this.differences.length > 0) {
-            let hintSquare: Coordinate[] = [];
+            // let hintSquare: Coordinate[] = [];
             const differenceIndex: number = this.differences.length > 1 ? this.generateRandomNumber(0, this.differences.length - 1) : 0;
-            const difference: Coordinate[] = this.differences[differenceIndex];
+            let difference: Coordinate[] = this.differences[differenceIndex];
+            if (replayIndex !== undefined) {
+                difference = this.differences[replayIndex];
+            }
             if (this.nAvailableHints === 1) {
                 this.isThirdHintActive = true;
-                hintSquare = this.generateAdjustedHintSquare(difference);
+                // hintSquare =
+                this.generateAdjustedHintSquare(difference);
                 this.generateLastHintDifferences(difference);
             } else {
                 let hintQuadrant = this.getHintQuadrant(difference, INITIAL_QUADRANT);
                 if (this.nAvailableHints === DEFAULT_N_HINTS - 1) {
                     hintQuadrant = this.getHintQuadrant(difference, hintQuadrant);
                 }
-                hintSquare = this.generateHintSquare(hintQuadrant);
+                // hintSquare =
+                this.generateHintSquare(hintQuadrant);
             }
             const replayEvent: ReplayEvent = {
                 action: ReplayActions.UseHint,
                 timestamp: Date.now(),
-                data: hintSquare,
+                data: differenceIndex,
             };
             this.replayEventsSubject.next(replayEvent);
-            this.gameAreaService.flashCorrectPixels(hintSquare);
             this.classicSystem.requestHint();
             this.nAvailableHints--;
         }
@@ -86,13 +94,25 @@ export class HintService {
 
     checkThirdHint(coordinate: Coordinate): void {
         if (this.thirdHintDifferenceEnlarged[coordinate.x][coordinate.y]) {
-            this.proximity = HintProximity.Far;
+            this.switchProximity(HintProximity.Far);
         } else if (this.thirdHintDifferenceSlightlyEnlarged[coordinate.x][coordinate.y]) {
-            this.proximity = HintProximity.Close;
+            this.switchProximity(HintProximity.Close);
         } else if (this.thirdHintDifference[coordinate.x][coordinate.y]) {
-            this.proximity = HintProximity.OnIt;
+            this.switchProximity(HintProximity.OnIt);
         } else {
-            this.proximity = HintProximity.TooFar;
+            this.switchProximity(HintProximity.TooFar);
+        }
+    }
+
+    switchProximity(nextProximity: HintProximity): void {
+        if (nextProximity !== this.proximity) {
+            this.proximity = nextProximity;
+            const replayEvent: ReplayEvent = {
+                action: ReplayActions.ActivateThirdHint,
+                timestamp: Date.now(),
+                data: nextProximity,
+            };
+            this.replayEventsSubject.next(replayEvent);
         }
     }
 

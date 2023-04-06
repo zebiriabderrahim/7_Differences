@@ -9,7 +9,7 @@ import { GameAreaService } from '@app/services/game-area-service/game-area.servi
 import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
-import { ChatMessage, Coordinate } from '@common/game-interfaces';
+import { ChatMessage, Coordinate, GameRoom } from '@common/game-interfaces';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -117,8 +117,10 @@ export class ReplayService {
     replaySwitcher(replayData: ReplayEvent): void {
         switch (replayData.action) {
             case ReplayActions.StartGame:
-                this.imageService.loadImage(this.gameAreaService.getOgContext(), (replayData.data as string[])[0]);
-                this.imageService.loadImage(this.gameAreaService.getMdContext(), (replayData.data as string[])[1]);
+                this.hintService.resetHints();
+                this.classicSystemService.differences = (replayData.data as GameRoom).originalDifferences;
+                this.imageService.loadImage(this.gameAreaService.getOgContext(), (replayData.data as GameRoom).clientGame.original);
+                this.imageService.loadImage(this.gameAreaService.getMdContext(), (replayData.data as GameRoom).clientGame.modified);
                 this.gameAreaService.setAllData();
                 break;
             case ReplayActions.ClickFound:
@@ -157,7 +159,13 @@ export class ReplayService {
                 this.replayOpponentDifferenceFound.next(replayData.data as number);
                 break;
             case ReplayActions.UseHint:
-                this.gameAreaService.flashCorrectPixels(replayData.data as Coordinate[], this.replaySpeed);
+                this.hintService.requestHint(replayData.data as number);
+                break;
+            case ReplayActions.ActivateThirdHint:
+                this.hintService.switchProximity(replayData.data as number);
+                break;
+            case ReplayActions.DeactivateThirdHint:
+                this.hintService.clickDuringThirdHint();
                 break;
             default:
                 break;
