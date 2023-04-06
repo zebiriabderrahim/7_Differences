@@ -62,6 +62,7 @@ export class HintService {
     }
 
     requestHint(replayDifference?: Coordinate[], replaySpeed?: number): void {
+        const speed = replaySpeed ? replaySpeed : 1;
         if (this.nAvailableHints > 0 && this.differences.length > 0) {
             let hintSquare: Coordinate[] = [];
             const differenceIndex: number = this.differences.length > 1 ? this.generateRandomNumber(0, this.differences.length - 1) : 0;
@@ -87,7 +88,7 @@ export class HintService {
             };
             this.replayEventsSubject.next(replayEvent);
             if (this.nAvailableHints !== 1) {
-                this.gameAreaService.flashCorrectPixels(hintSquare, replaySpeed);
+                this.gameAreaService.flashCorrectPixels(hintSquare, speed);
             }
             this.classicSystem.requestHint();
             this.nAvailableHints--;

@@ -57,7 +57,8 @@ export class GameAreaService {
         return event.button === LEFT_BUTTON && !this.clickDisabled ? (this.saveCoord(event), true) : false;
     }
 
-    showError(isMainCanvas: boolean, errorCoordinate: Coordinate): void {
+    showError(isMainCanvas: boolean, errorCoordinate: Coordinate, replaySpeed?: number): void {
+        const speed = replaySpeed ? replaySpeed : 1;
         const frontContext: CanvasRenderingContext2D = isMainCanvas ? this.originalContextFrontLayer : this.modifiedContextFrontLayer;
         frontContext.fillStyle = 'red';
         this.clickDisabled = true;
@@ -66,7 +67,7 @@ export class GameAreaService {
         setTimeout(() => {
             frontContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
             this.clickDisabled = false;
-        }, ONE_SECOND);
+        }, ONE_SECOND / speed);
         const replayEvent: ReplayEvent = {
             action: ReplayActions.ClickError,
             timestamp: Date.now(),
