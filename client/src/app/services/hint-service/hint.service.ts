@@ -7,7 +7,6 @@ import {
     QUADRANT_POSITIONS,
     SMALL_HINT_ENLARGEMENT,
 } from '@app/constants/hint';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { HintProximity } from '@app/enum/hint-proximity';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { QuadrantPosition } from '@app/enum/quadrant-position';
