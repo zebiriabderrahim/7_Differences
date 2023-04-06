@@ -159,7 +159,7 @@ export class ReplayService {
                 this.replayOpponentDifferenceFound.next(replayData.data as number);
                 break;
             case ReplayActions.UseHint:
-                this.hintService.requestHint(replayData.data as number);
+                this.hintService.requestHint(replayData.data as Coordinate[], this.replaySpeed);
                 break;
             case ReplayActions.ActivateThirdHint:
                 this.hintService.switchProximity(replayData.data as number);

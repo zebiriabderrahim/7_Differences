@@ -15,6 +15,7 @@ import { Quadrant } from '@app/interfaces/quadrant';
 import { ReplayEvent } from '@app/interfaces/replay-actions';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
+import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { Coordinate } from '@common/coordinate';
 import { Subject } from 'rxjs';
 @Injectable({
@@ -31,7 +32,7 @@ export class HintService {
 
     constructor(
         private readonly classicSystem: ClassicSystemService,
-        /* private readonly gameAreaService: GameAreaService,*/
+        private readonly gameAreaService: GameAreaService,
         private readonly differenceService: DifferenceService,
     ) {
         this.resetHints();
@@ -60,33 +61,34 @@ export class HintService {
         this.replayEventsSubject.next(replayEvent);
     }
 
-    requestHint(replayIndex?: number): void {
+    requestHint(replayDifference?: Coordinate[], replaySpeed?: number): void {
         if (this.nAvailableHints > 0 && this.differences.length > 0) {
-            // let hintSquare: Coordinate[] = [];
+            let hintSquare: Coordinate[] = [];
             const differenceIndex: number = this.differences.length > 1 ? this.generateRandomNumber(0, this.differences.length - 1) : 0;
             let difference: Coordinate[] = this.differences[differenceIndex];
-            if (replayIndex !== undefined) {
-                difference = this.differences[replayIndex];
+            if (replayDifference !== undefined) {
+                difference = replayDifference;
             }
             if (this.nAvailableHints === 1) {
                 this.isThirdHintActive = true;
-                // hintSquare =
-                this.generateAdjustedHintSquare(difference);
+                hintSquare = this.generateAdjustedHintSquare(difference);
                 this.generateLastHintDifferences(difference);
             } else {
                 let hintQuadrant = this.getHintQuadrant(difference, INITIAL_QUADRANT);
                 if (this.nAvailableHints === DEFAULT_N_HINTS - 1) {
                     hintQuadrant = this.getHintQuadrant(difference, hintQuadrant);
                 }
-                // hintSquare =
-                this.generateHintSquare(hintQuadrant);
+                hintSquare = this.generateHintSquare(hintQuadrant);
             }
             const replayEvent: ReplayEvent = {
                 action: ReplayActions.UseHint,
                 timestamp: Date.now(),
-                data: differenceIndex,
+                data: difference,
             };
             this.replayEventsSubject.next(replayEvent);
+            if (this.nAvailableHints !== 1) {
+                this.gameAreaService.flashCorrectPixels(hintSquare, replaySpeed);
+            }
             this.classicSystem.requestHint();
             this.nAvailableHints--;
         }
