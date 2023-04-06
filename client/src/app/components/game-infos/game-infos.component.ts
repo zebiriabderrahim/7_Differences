@@ -11,7 +11,6 @@ export class GameInfosComponent {
     @Input() differencesCount: number;
     @Input() isReplayAvailable: boolean;
     @Input() gameConstants: GameConfigConst;
-
     constructor(private readonly hintService: HintService) {}
 
     get nHints(): number {
