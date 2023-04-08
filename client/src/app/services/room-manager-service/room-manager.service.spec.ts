@@ -45,8 +45,12 @@ describe('RoomManagerService', () => {
         expect(service.isNameTaken$).toEqual(service['isPlayerNameTaken'].asObservable());
     });
 
-    it('roomId$ should return roomId asObservable', () => {
+    it('createdRoomId$ should return createdRoomId asObservable', () => {
         expect(service.createdRoomId$).toEqual(service['createdRoomId'].asObservable());
+    });
+
+    it('roomId$ should return isPlayerAccepted asObservable', () => {
+        expect(service.roomId$).toEqual(service['isPlayerAccepted'].asObservable());
     });
 
     it('deletedGameId$ should return deletedGameId asObservable', () => {
