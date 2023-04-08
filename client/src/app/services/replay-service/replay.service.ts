@@ -1,6 +1,6 @@
 /* eslint-disable max-params */
 import { Injectable } from '@angular/core';
-import { REPLAY_LIMITER, SPEED_X1, SPEED_X2, SPEED_X4 } from '@app/constants/replay';
+import { REPLAY_LIMITER, SPEED_X1 } from '@app/constants/replay';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
@@ -9,7 +9,7 @@ import { GameAreaService } from '@app/services/game-area-service/game-area.servi
 import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
-import { ChatMessage, Coordinate } from '@common/game-interfaces';
+import { ChatMessage, Coordinate, GameRoom } from '@common/game-interfaces';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -117,8 +117,10 @@ export class ReplayService {
     replaySwitcher(replayData: ReplayEvent): void {
         switch (replayData.action) {
             case ReplayActions.StartGame:
-                this.imageService.loadImage(this.gameAreaService.getOgContext(), (replayData.data as string[])[0]);
-                this.imageService.loadImage(this.gameAreaService.getMdContext(), (replayData.data as string[])[1]);
+                this.hintService.resetHints();
+                this.classicSystemService.differences = (replayData.data as GameRoom).originalDifferences;
+                this.imageService.loadImage(this.gameAreaService.getOgContext(), (replayData.data as GameRoom).clientGame.original);
+                this.imageService.loadImage(this.gameAreaService.getMdContext(), (replayData.data as GameRoom).clientGame.modified);
                 this.gameAreaService.setAllData();
                 break;
             case ReplayActions.ClickFound:
@@ -133,6 +135,7 @@ export class ReplayService {
                 this.gameAreaService.showError(
                     (replayData.data as ClickErrorData).isMainCanvas as boolean,
                     (replayData.data as ClickErrorData).pos as Coordinate,
+                    this.replaySpeed,
                 );
                 break;
             case ReplayActions.CaptureMessage:
@@ -157,7 +160,13 @@ export class ReplayService {
                 this.replayOpponentDifferenceFound.next(replayData.data as number);
                 break;
             case ReplayActions.UseHint:
-                this.gameAreaService.flashCorrectPixels(replayData.data as Coordinate[], this.replaySpeed);
+                this.hintService.requestHint(replayData.data as Coordinate[], this.replaySpeed);
+                break;
+            case ReplayActions.ActivateThirdHint:
+                this.hintService.switchProximity(replayData.data as number);
+                break;
+            case ReplayActions.DeactivateThirdHint:
+                this.hintService.clickDuringThirdHint();
                 break;
             default:
                 break;
@@ -182,6 +191,11 @@ export class ReplayService {
             () => this.getNextInterval(),
         );
         this.replayInterval.start();
+    }
+
+    restartReplay(): void {
+        this.currentReplayIndex = 0;
+        this.replayInterval.resume();
     }
 
     pauseReplay(): void {
@@ -209,16 +223,8 @@ export class ReplayService {
         this.currentReplayIndex = 0;
     }
 
-    upSpeedx1(): void {
-        this.replaySpeed = SPEED_X1;
-    }
-
-    upSpeedx2(): void {
-        this.replaySpeed = SPEED_X2;
-    }
-
-    upSpeedx4(): void {
-        this.replaySpeed = SPEED_X4;
+    upSpeed(speed: number): void {
+        this.replaySpeed = speed;
     }
 
     restartTimer(): void {
@@ -228,6 +234,7 @@ export class ReplayService {
     }
 
     resetReplay(): void {
+        this.replaySpeed = SPEED_X1;
         this.replayEvents = [];
         this.currentReplayIndex = 0;
         this.isReplaying = false;
