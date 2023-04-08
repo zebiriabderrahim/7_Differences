@@ -9,11 +9,15 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DEFAULT_BONUS_VALUE, DEFAULT_COUNTDOWN_VALUE, DEFAULT_PENALTY_VALUE } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { BehaviorSubject, Subscription, of } from 'rxjs';
+import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
+import { BehaviorSubject, Subscription, of } from 'rxjs';
 import { ConfigDialogComponent } from './config-dialog.component';
 
 describe('ConfigDialogComponent', () => {
     let component: ConfigDialogComponent;
     let fixture: ComponentFixture<ConfigDialogComponent>;
+    let roomManagerServiceSpy: jasmine.SpyObj<RoomManagerService>;
+    let isReloadNeeded: BehaviorSubject<boolean>;
     let roomManagerServiceSpy: jasmine.SpyObj<RoomManagerService>;
     let isReloadNeeded: BehaviorSubject<boolean>;
 
@@ -22,15 +26,23 @@ describe('ConfigDialogComponent', () => {
         roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['gameConstantsUpdated'], {
             isReloadNeeded$: isReloadNeeded,
         });
+        isReloadNeeded = new BehaviorSubject<boolean>(true);
+        roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['gameConstantsUpdated'], {
+            isReloadNeeded$: isReloadNeeded,
+        });
         await TestBed.configureTestingModule({
             declarations: [ConfigDialogComponent],
             imports: [MatDialogModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, HttpClientModule, NoopAnimationsModule],
+            providers: [{ provide: RoomManagerService, useValue: roomManagerServiceSpy }],
             providers: [{ provide: RoomManagerService, useValue: roomManagerServiceSpy }],
         }).compileComponents();
 
         fixture = TestBed.createComponent(ConfigDialogComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+    });
+    afterEach(() => {
+        component.ngOnDestroy();
     });
     afterEach(() => {
         component.ngOnDestroy();
@@ -51,7 +63,7 @@ describe('ConfigDialogComponent', () => {
         const countdownTimeControl = component.configForm.controls['countdownTime'];
         countdownTimeControl.setValue(10);
 
-        component.onSubmit();
+        component.saveGameConstants();
 
         expect(component.configConstants.countdownTime).toBe(10);
     });
@@ -60,7 +72,7 @@ describe('ConfigDialogComponent', () => {
         const penaltyTimeControl = component.configForm.controls['penaltyTime'];
         penaltyTimeControl.setValue(5);
 
-        component.onSubmit();
+        component.saveGameConstants();
 
         expect(component.configConstants.penaltyTime).toBe(5);
     });
@@ -69,7 +81,7 @@ describe('ConfigDialogComponent', () => {
         const bonusTimeControl = component.configForm.controls['bonusTime'];
         bonusTimeControl.setValue(2);
 
-        component.onSubmit();
+        component.saveGameConstants();
 
         expect(component.configConstants.bonusTime).toBe(2);
     });
@@ -78,7 +90,7 @@ describe('ConfigDialogComponent', () => {
         spyOn(component['communicationService'], 'updateGameConstants').and.returnValue(of(void 0));
 
         component.configConstants = { countdownTime: 10, penaltyTime: 6, bonusTime: 3 };
-        component.onSubmit();
+        component.saveGameConstants();
 
         expect(component['communicationService'].updateGameConstants).toHaveBeenCalledWith(component.configConstants);
         expect(component['roomManagerService'].gameConstantsUpdated).toHaveBeenCalled();
@@ -94,6 +106,11 @@ describe('ConfigDialogComponent', () => {
             countdownTime: DEFAULT_COUNTDOWN_VALUE,
             penaltyTime: DEFAULT_PENALTY_VALUE,
             bonusTime: DEFAULT_BONUS_VALUE,
+        };
+        component.configForm.setValue({
+            countdownTime: 10,
+            penaltyTime: 5,
+            bonusTime: 5,
         });
         expect(updateSpy).toHaveBeenCalledWith(component.configConstants);
         expect(component['roomManagerService'].gameConstantsUpdated).toHaveBeenCalled();
