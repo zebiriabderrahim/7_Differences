@@ -45,6 +45,30 @@ export enum GameCardEvents {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export enum RoomEvents {
     CreateClassicSoloRoom = 'CreateClassicSoloRoom',
     RoomSoloCreated = 'RoomSoloCreated',
@@ -62,7 +86,7 @@ export enum RoomEvents {
     JoinOneVsOneRoom = 'JoinOneVsOneRoom',
     CheckIfAnyCoopRoomExists = "CheckIfAnyCoopRoomExists",
     LimitedCoopRoomJoined = "LimitedCoopRoomJoined",
-    DeleteCreatedCoopRoom = "DeleteCreatedCoopRoom"
+    DeleteCreatedCoopRoom = "DeleteCreatedCoopRoom",
 }
 
 export enum GameModes {
