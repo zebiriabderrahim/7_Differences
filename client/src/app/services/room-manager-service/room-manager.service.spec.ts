@@ -2,7 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { SocketTestHelper } from '@app/services/client-socket-service/client-socket.service.spec';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { RoomEvents } from '@common/enums';
+import { GameModes, PlayerEvents, RoomEvents } from '@common/enums';
+import { LimitedGameDetails } from '@common/game-interfaces';
 import { Socket } from 'socket.io-client';
 
 class SocketClientServiceMock extends ClientSocketService {
@@ -18,6 +19,8 @@ describe('RoomManagerService', () => {
     let service: RoomManagerService;
     let mockGameId: string;
     let mockPlayerName: string;
+    let mockGameMode: GameModes;
+    let mockLimitedGameDetails: LimitedGameDetails;
     let socketHelper: SocketTestHelper;
     let socketServiceMock: SocketClientServiceMock;
 
@@ -25,6 +28,10 @@ describe('RoomManagerService', () => {
         socketHelper = new SocketTestHelper();
         socketServiceMock = new SocketClientServiceMock();
         socketServiceMock.socket = socketHelper as unknown as Socket;
+        mockLimitedGameDetails = {
+            playerName: mockPlayerName,
+            gameMode: mockGameMode,
+        };
 
         TestBed.configureTestingModule({
             providers: [{ provide: ClientSocketService, useValue: socketServiceMock }],
@@ -78,6 +85,12 @@ describe('RoomManagerService', () => {
         expect(sendSpy).toHaveBeenCalledWith(RoomEvents.CreateOneVsOneRoom, { gameId: mockGameId, playerName: mockPlayerName });
     });
 
+    it('createLimitedRoom should call clientSocket.send with CreateSoloLimitedRoom and gameId and playerName', () => {
+        const sendSpy = spyOn(socketServiceMock, 'send');
+        service.createLimitedRoom(mockLimitedGameDetails);
+        expect(sendSpy).toHaveBeenCalledWith(RoomEvents.CreateSoloLimitedRoom, { playerName: mockPlayerName, gameMode: mockGameMode });
+    });
+
     it('updateRoomOneVsOneAvailability should call clientSocket.send with UpdateRoomOneVsOneAvailability and gameId', () => {
         const sendSpy = spyOn(socketServiceMock, 'send');
         service.updateRoomOneVsOneAvailability(mockGameId);
@@ -90,74 +103,74 @@ describe('RoomManagerService', () => {
         expect(sendSpy).toHaveBeenCalledWith(RoomEvents.CheckRoomOneVsOneAvailability, mockGameId);
     });
 
-    // it('deleteCreatedOneVsOneRoom should call clientSocket.send with DeleteCreatedRoom and gameId', () => {
-    //     const sendSpy = spyOn(socketServiceMock, 'send');
-    //     service.deleteCreatedOneVsOneRoom(mockGameId);
-    //     expect(sendSpy).toHaveBeenCalledWith(GameEvents.DeleteCreatedOneVsOneRoom, mockGameId);
-    // });
+    it('deleteCreatedOneVsOneRoom should call clientSocket.send with DeleteCreatedRoom and gameId', () => {
+        const sendSpy = spyOn(socketServiceMock, 'send');
+        service.deleteCreatedOneVsOneRoom(mockGameId);
+        expect(sendSpy).toHaveBeenCalledWith(RoomEvents.DeleteCreatedOneVsOneRoom, mockGameId);
+    });
 
-    // it('updateWaitingPlayerNameList should call clientSocket.send with UpdateWaitingPlayerNameList and gameId and playerName', () => {
-    //     const sendSpy = spyOn(socketServiceMock, 'send');
-    //     service.updateWaitingPlayerNameList(mockGameId, mockPlayerName);
-    //     expect(sendSpy).toHaveBeenCalledWith(GameEvents.UpdateWaitingPlayerNameList, { gameId: mockGameId, playerName: mockPlayerName });
-    // });
+    it('updateWaitingPlayerNameList should call clientSocket.send with UpdateWaitingPlayerNameList and gameId and playerName', () => {
+        const sendSpy = spyOn(socketServiceMock, 'send');
+        service.updateWaitingPlayerNameList(mockGameId, mockPlayerName);
+        expect(sendSpy).toHaveBeenCalledWith(PlayerEvents.UpdateWaitingPlayerNameList, { gameId: mockGameId, playerName: mockPlayerName });
+    });
 
-    // it('isPlayerNameIsAlreadyTaken should call clientSocket.send with CheckIfPlayerNameIsAvailable and gameId and playerName', () => {
-    //     const sendSpy = spyOn(socketServiceMock, 'send');
-    //     service.isPlayerNameIsAlreadyTaken(mockGameId, mockPlayerName);
-    //     expect(sendSpy).toHaveBeenCalledWith(GameEvents.CheckIfPlayerNameIsAvailable, {
-    //         gameId: mockGameId,
-    //         playerName: mockPlayerName,
-    //     });
-    // });
+    it('isPlayerNameIsAlreadyTaken should call clientSocket.send with CheckIfPlayerNameIsAvailable and gameId and playerName', () => {
+        const sendSpy = spyOn(socketServiceMock, 'send');
+        service.isPlayerNameIsAlreadyTaken(mockGameId, mockPlayerName);
+        expect(sendSpy).toHaveBeenCalledWith(PlayerEvents.CheckIfPlayerNameIsAvailable, {
+            gameId: mockGameId,
+            playerName: mockPlayerName,
+        });
+    });
 
-    // it('refusePlayer should call clientSocket.send with RefusePlayer and gameId and playerName', () => {
-    //     const sendSpy = spyOn(socketServiceMock, 'send');
-    //     service.refusePlayer(mockGameId, mockPlayerName);
-    //     expect(sendSpy).toHaveBeenCalledWith(GameEvents.RefusePlayer, { gameId: mockGameId, playerName: mockPlayerName });
-    // });
+    it('refusePlayer should call clientSocket.send with RefusePlayer and gameId and playerName', () => {
+        const sendSpy = spyOn(socketServiceMock, 'send');
+        service.refusePlayer(mockGameId, mockPlayerName);
+        expect(sendSpy).toHaveBeenCalledWith(PlayerEvents.RefusePlayer, { gameId: mockGameId, playerName: mockPlayerName });
+    });
 
-    // it('acceptPlayer should call clientSocket.send with AcceptPlayer, gameId, roomId and playerName', () => {
-    //     const mockRoomId = 'super-id';
-    //     const sendSpy = spyOn(socketServiceMock, 'send');
-    //     service.acceptPlayer(mockGameId, mockRoomId, mockPlayerName);
-    //     expect(sendSpy).toHaveBeenCalledWith(GameEvents.AcceptPlayer, {
-    //         gameId: mockGameId,
-    //         roomId: mockRoomId,
-    //         playerName: mockPlayerName,
-    //     });
-    // });
+    it('acceptPlayer should call clientSocket.send with AcceptPlayer, gameId, roomId and playerName', () => {
+        const mockRoomId = 'super-id';
+        const sendSpy = spyOn(socketServiceMock, 'send');
+        service.acceptPlayer(mockGameId, mockRoomId, mockPlayerName);
+        expect(sendSpy).toHaveBeenCalledWith(PlayerEvents.AcceptPlayer, {
+            gameId: mockGameId,
+            roomId: mockRoomId,
+            playerName: mockPlayerName,
+        });
+    });
 
-    // it('cancelJoining should call clientSocket.send with CancelJoining and roomId and playerName', () => {
-    //     const sendSpy = spyOn(socketServiceMock, 'send');
-    //     service.cancelJoining(mockGameId);
-    //     expect(sendSpy).toHaveBeenCalledWith(GameEvents.CancelJoining, mockGameId);
-    // });
+    it('cancelJoining should call clientSocket.send with CancelJoining and roomId and playerName', () => {
+        const sendSpy = spyOn(socketServiceMock, 'send');
+        service.cancelJoining(mockGameId);
+        expect(sendSpy).toHaveBeenCalledWith(PlayerEvents.CancelJoining, mockGameId);
+    });
 
-    // it('disconnect should call clientSocket.disconnect', () => {
-    //     const disconnectSpy = spyOn(socketServiceMock, 'disconnect');
-    //     service.disconnect();
-    //     expect(disconnectSpy).toHaveBeenCalled();
-    // });
+    it('disconnect should call clientSocket.disconnect', () => {
+        const disconnectSpy = spyOn(socketServiceMock, 'disconnect');
+        service.disconnect();
+        expect(disconnectSpy).toHaveBeenCalled();
+    });
 
     // it('handleRoomEvents should connect socket and set on for GameEvents related to room', () => {
-    //     // const connectSpy = spyOn(socketServiceMock, 'connect');
+    //     const connectSpy = spyOn(socketServiceMock, 'connect');
     //     const onSpy = spyOn(socketServiceMock, 'on');
     //     service.handleRoomEvents();
-    //     // expect(connectSpy).toHaveBeenCalled();
-    //     expect(onSpy).toHaveBeenCalledWith(GameEvents.RoomSoloCreated, jasmine.any(Function));
-    //     expect(onSpy).toHaveBeenCalledWith(GameEvents.RoomOneVsOneAvailable, jasmine.any(Function));
-    //     expect(onSpy).toHaveBeenCalledWith(GameEvents.OneVsOneRoomDeleted, jasmine.any(Function));
-    //     expect(onSpy).toHaveBeenCalledWith(GameEvents.UpdateWaitingPlayerNameList, jasmine.any(Function));
-    //     expect(onSpy).toHaveBeenCalledWith(GameEvents.PlayerNameTaken, jasmine.any(Function));
-    //     expect(onSpy).toHaveBeenCalledWith(GameEvents.RoomOneVsOneCreated, jasmine.any(Function));
-    //     expect(onSpy).toHaveBeenCalledWith(GameEvents.PlayerAccepted, jasmine.any(Function));
+    //     expect(connectSpy).toHaveBeenCalled();
+    //     expect(onSpy).toHaveBeenCalledWith(RoomEvents.RoomSoloCreated, jasmine.any(Function));
+    //     expect(onSpy).toHaveBeenCalledWith(RoomEvents.RoomOneVsOneAvailable, jasmine.any(Function));
+    //     expect(onSpy).toHaveBeenCalledWith(RoomEvents.OneVsOneRoomDeleted, jasmine.any(Function));
+    //     expect(onSpy).toHaveBeenCalledWith(PlayerEvents.UpdateWaitingPlayerNameList, jasmine.any(Function));
+    //     expect(onSpy).toHaveBeenCalledWith(PlayerEvents.PlayerNameTaken, jasmine.any(Function));
+    //     expect(onSpy).toHaveBeenCalledWith(RoomEvents.RoomOneVsOneCreated, jasmine.any(Function));
+    //     expect(onSpy).toHaveBeenCalledWith(PlayerEvents.PlayerAccepted, jasmine.any(Function));
     // });
 
     // it('should call roomId.next when GameEvents.RoomSoloCreated is received', () => {
     //     service.handleRoomEvents();
     //     const roomIdSpy = spyOn(service['roomId'], 'next');
-    //     socketHelper.peerSideEmit(GameEvents.RoomSoloCreated, mockGameId);
+    //     socketHelper.peerSideEmit(RoomEvents.RoomSoloCreated, mockGameId);
     //     expect(roomIdSpy).toHaveBeenCalledOnceWith(mockGameId);
     // });
 
