@@ -1,8 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ComponentFixture, TestBed, tick } from '@angular/core/testing';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-// import { TEN_SECONDS } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { AcceptedPlayer, WaitingPlayerNameList } from '@common/game-interfaces';
 import { BehaviorSubject, of } from 'rxjs';
@@ -16,8 +15,8 @@ describe('JoinedPlayerDialogComponent', () => {
     let acceptPlayerNamesMock: BehaviorSubject<AcceptedPlayer>;
     let dialogRefSpy: jasmine.SpyObj<MatDialogRef<JoinedPlayerDialogComponent>>;
     let deletedGameIdMock: BehaviorSubject<string>;
+    let refusePlayerIdMock: BehaviorSubject<string>;
     let routerSpy: jasmine.SpyObj<Router>;
-    // const playerNameStub = 'playerNameTest';
 
     beforeEach(async () => {
         deletedGameIdMock = new BehaviorSubject<string>('idMock');
@@ -30,6 +29,7 @@ describe('JoinedPlayerDialogComponent', () => {
             roomId: 'test-room-id',
             playerName: 'Alice',
         });
+        refusePlayerIdMock = new BehaviorSubject<string>('refusedPlayerId');
         routerSpy = jasmine.createSpyObj('RouterTestingModule', ['navigate']);
         dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['close', 'afterClosed']);
         dialogRefSpy.afterClosed.and.returnValue(of('dialog closed'));
@@ -37,7 +37,7 @@ describe('JoinedPlayerDialogComponent', () => {
             joinedPlayerNamesByGameId$: joinedPlayerNamesMock,
             acceptedPlayerByRoom$: acceptPlayerNamesMock,
             deletedGameId$: deletedGameIdMock,
-            refusedPlayerId$: of('refusedPlayerId'),
+            refusedPlayerId$: refusePlayerIdMock,
             roomId$: of('roomId'),
         });
         await TestBed.configureTestingModule({
@@ -68,23 +68,17 @@ describe('JoinedPlayerDialogComponent', () => {
         expect(roomManagerServiceSpy.cancelJoining).toHaveBeenCalledWith('test-game-id');
     });
 
-    // it('should handle refused and accepted players when player names are received', () => {
-    //     spyOn(component, 'handleRefusedPlayer');
-    //     spyOn(component, 'handleAcceptedPlayer');
-
-    //     joinedPlayerNamesMock.next({
-    //         gameId: 'test-game-id',
-    //         playerNamesList: ['Alice', 'Bob', 'Charlie'],
-    //     });
-
-    //     expect(component.handleRefusedPlayer).toHaveBeenCalled();
-    //     expect(component.handleAcceptedPlayer).toHaveBeenCalled();
-    // });
+    it('should handle refused players when refuse player names are received', () => {
+        const countDownSpy = spyOn(component, 'countDownBeforeClosing');
+        component.handleRefusedPlayer();
+        roomManagerServiceSpy.getSocketId.and.callFake(() => 'refusedPlayerId');
+        refusePlayerIdMock.next('refusedPlayerId');
+        expect(countDownSpy).toHaveBeenCalled();
+    });
 
     // it('should start countdown and show message if player is not in playerNames', fakeAsync(() => {
     //     component['data'] = { gameId: 'Charlie', player: 'testPlayer' };
     //     roomManagerServiceSpy.getSocketId.and.callFake(() => 'Charlie');
-    //     // const playerNames = ['Alice', 'Charlie'];
     //     component.handleRefusedPlayer();
     //     expect(component.countdown).toBe(TEN_SECONDS);
     //     // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- needed for test
