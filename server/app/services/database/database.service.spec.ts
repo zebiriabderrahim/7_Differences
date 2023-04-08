@@ -80,6 +80,7 @@ describe('DatabaseService', () => {
         nDifference: 0,
         isHard: true,
     };
+
     const testGameCards: GameCard[] = [
         {
             _id: '1',
@@ -132,6 +133,14 @@ describe('DatabaseService', () => {
         expect(gameModel).toBeDefined();
         expect(gameCardModel).toBeDefined();
         expect(gameConstantsModel).toBeDefined();
+    });
+
+    it('onModuleInit should call the getAllGameIds and populateDbWithGameConstants method ', async () => {
+        const getAllGameIdsSpy = jest.spyOn(dataBaseService, 'getAllGameIds');
+        const populateDbWithGameConstantsSpy = jest.spyOn(dataBaseService, 'populateDbWithGameConstants');
+        await dataBaseService.onModuleInit();
+        expect(getAllGameIdsSpy).toBeCalled();
+        expect(populateDbWithGameConstantsSpy).toBeCalled();
     });
 
     it('getGamesCarrousel() should return the games carrousel as expected', async () => {
@@ -248,6 +257,7 @@ describe('DatabaseService', () => {
         gameCardModel.find().exec = jest.fn().mockResolvedValue(testGameCards);
         const id = (await gameModel.create(newGameInDB))._id.toString();
         testGameCards[0]._id = id;
+        dataBaseService['gameIds'] = [testGameCards[0]._id];
         await gameCardModel.create(testGameCards[0]);
         await dataBaseService.deleteGameById(id);
         expect(findByIdAndDeleteGameSpy).toBeCalledWith(id);
@@ -267,6 +277,26 @@ describe('DatabaseService', () => {
         dataBaseService.deleteGameAssetsByName(testGames[0].name);
         expect(unlinkSpy).toBeCalledTimes(3);
         expect(rmdirSpy).toBeCalledTimes(1);
+    });
+
+    it('deleteAllGames should delete all the games', async () => {
+        await gameModel.create(newGameInDB);
+        const deleteGameAssetsByNameSpy = jest.spyOn(dataBaseService, 'deleteGameAssetsByName').mockImplementation(() => {
+            return;
+        });
+        const deleteManySpy = jest.spyOn(gameModel, 'deleteMany');
+        const deleteManySpy2 = jest.spyOn(gameCardModel, 'deleteMany');
+        await dataBaseService.deleteAllGames();
+        expect(deleteManySpy).toBeCalled();
+        expect(deleteManySpy2).toBeCalled();
+        expect(deleteGameAssetsByNameSpy).toBeCalledTimes(1);
+    });
+
+    it('deleteAllGames should fail if mongo query failed', async () => {
+        jest.spyOn(gameCardModel, 'deleteMany').mockImplementation(() => {
+            throw new Error('Mock MongoDB error');
+        });
+        await expect(dataBaseService.deleteAllGames()).rejects.toBeTruthy();
     });
 
     it('updateTopTimesGameById() should update the top times of the game as expected (soloTopTime cas)', async () => {
@@ -365,6 +395,61 @@ describe('DatabaseService', () => {
             throw new Error('Mock MongoDB error');
         });
         await expect(dataBaseService.resetAllTopTimes()).rejects.toBeTruthy();
+    });
+
+    it('getAllGameIds should return all the game ids', async () => {
+        const findSpy = jest.spyOn(gameCardModel, 'find');
+        const id = (await gameModel.create(newGameInDB))._id.toString();
+        const id2 = (await gameModel.create(newGameInDB))._id.toString();
+        testGameCards[0]._id = id;
+        await gameCardModel.create(testGameCards[0]);
+        testGameCards[0]._id = id2;
+        await gameCardModel.create(testGameCards[0]);
+        await dataBaseService.getAllGameIds();
+        expect(dataBaseService['gameIds']).toEqual([id, id2]);
+        expect(findSpy).toBeCalledTimes(1);
+    });
+
+    it('getAllGameIds should fail if mongo query failed', async () => {
+        jest.spyOn(gameCardModel, 'find').mockImplementation(() => {
+            throw new Error('Mock MongoDB error');
+        });
+        await expect(dataBaseService.getAllGameIds()).rejects.toBeTruthy();
+    });
+
+    it('getRandomGame should return a random game', async () => {
+        const id = (await gameModel.create(newGameInDB))._id.toString();
+        const id2 = (await gameModel.create(newGameInDB))._id.toString();
+        testGameCards[0]._id = id;
+        dataBaseService['gameIds'] = [id, id2];
+        await gameCardModel.create(testGameCards[0]);
+        testGameCards[0]._id = id2;
+        await gameCardModel.create(testGameCards[0]);
+        const randomGame = await dataBaseService.getRandomGame([id2]);
+        expect(randomGame).toBeDefined();
+    });
+
+    it('getRandomGame should return undefined if there is no game to return', async () => {
+        const id = (await gameModel.create(newGameInDB))._id.toString();
+        const id2 = (await gameModel.create(newGameInDB))._id.toString();
+        testGameCards[0]._id = id;
+        dataBaseService['gameIds'] = [id, id2];
+        await gameCardModel.create(testGameCards[0]);
+        testGameCards[0]._id = id2;
+        await gameCardModel.create(testGameCards[0]);
+        const randomGame = await dataBaseService.getRandomGame([id, id2]);
+        expect(randomGame).toBeNull();
+    });
+
+    it('getRandomGame should fail if mongo query failed', async () => {
+        jest.spyOn(dataBaseService, 'getGameById').mockRejectedValue('');
+        await expect(dataBaseService.getRandomGame([])).rejects.toBeTruthy();
+    });
+
+    it('getGameById should return the game', async () => {
+        const id = (await gameModel.create(newGameInDB))._id.toString();
+        const game = await dataBaseService.getGameById(id);
+        expect(game).toBeDefined();
     });
 
     afterAll(() => {
