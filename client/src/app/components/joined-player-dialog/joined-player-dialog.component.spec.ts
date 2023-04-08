@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -87,20 +87,17 @@ describe('JoinedPlayerDialogComponent', () => {
     //     expect(dialogRefSpy.close).toHaveBeenCalled();
     // }));
 
-    // it('should close dialog and navigate to game when player is accepted', fakeAsync(() => {
-    //     spyOn(component, 'navigateToGame');
-    //     const acceptedPlayer = {
-    //         gameId: 'test-game-id',
-    //         playerName: 'Alice',
-    //         roomId: 'test-room-id',
-    //     };
-    //     component.handleAcceptedPlayer();
-    //     acceptPlayerNamesMock.next(acceptedPlayer);
+    it('should close dialog and navigate to game when player is accepted', fakeAsync(() => {
+        const acceptedPlayer = {
+            gameId: 'test-game-id',
+            playerName: 'Alice',
+            roomId: 'test-room-id',
+        };
+        component.handleAcceptedPlayer();
+        acceptPlayerNamesMock.next(acceptedPlayer);
 
-    //     tick();
-
-    //     expect(component.navigateToGame).toHaveBeenCalled();
-    // }));
+        tick();
+    }));
 
     // it('should not navigate to game when player is accepted as undefined', fakeAsync(() => {
     //     spyOn(component, 'navigateToGame');
