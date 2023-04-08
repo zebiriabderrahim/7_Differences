@@ -83,3 +83,4 @@ export class ConfigDialogComponent implements OnInit, OnDestroy {
         this.isReloadNeededSubscription?.unsubscribe();
     }
 }
+

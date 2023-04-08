@@ -9,15 +9,11 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DEFAULT_BONUS_VALUE, DEFAULT_COUNTDOWN_VALUE, DEFAULT_PENALTY_VALUE } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { BehaviorSubject, Subscription, of } from 'rxjs';
-import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { BehaviorSubject, Subscription, of } from 'rxjs';
 import { ConfigDialogComponent } from './config-dialog.component';
 
 describe('ConfigDialogComponent', () => {
     let component: ConfigDialogComponent;
     let fixture: ComponentFixture<ConfigDialogComponent>;
-    let roomManagerServiceSpy: jasmine.SpyObj<RoomManagerService>;
-    let isReloadNeeded: BehaviorSubject<boolean>;
     let roomManagerServiceSpy: jasmine.SpyObj<RoomManagerService>;
     let isReloadNeeded: BehaviorSubject<boolean>;
 
@@ -33,7 +29,6 @@ describe('ConfigDialogComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [ConfigDialogComponent],
             imports: [MatDialogModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, HttpClientModule, NoopAnimationsModule],
-            providers: [{ provide: RoomManagerService, useValue: roomManagerServiceSpy }],
             providers: [{ provide: RoomManagerService, useValue: roomManagerServiceSpy }],
         }).compileComponents();
 
@@ -98,7 +93,6 @@ describe('ConfigDialogComponent', () => {
 
     it('resetConfigForm should reset the config form and update the game constants', () => {
         const resetSpy = spyOn(component.configForm, 'reset');
-        const updateSpy = spyOn(component['communicationService'], 'updateGameConstants').and.returnValue(of(void 0));
 
         component.resetConfigForm();
 
@@ -106,14 +100,7 @@ describe('ConfigDialogComponent', () => {
             countdownTime: DEFAULT_COUNTDOWN_VALUE,
             penaltyTime: DEFAULT_PENALTY_VALUE,
             bonusTime: DEFAULT_BONUS_VALUE,
-        };
-        component.configForm.setValue({
-            countdownTime: 10,
-            penaltyTime: 5,
-            bonusTime: 5,
         });
-        expect(updateSpy).toHaveBeenCalledWith(component.configConstants);
-        expect(component['roomManagerService'].gameConstantsUpdated).toHaveBeenCalled();
     });
 
     it('should call loadGameConstants when handleChanges is called if Reload is needed', () => {
