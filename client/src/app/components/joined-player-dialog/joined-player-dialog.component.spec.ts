@@ -2,9 +2,10 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { ONE_SECOND, TEN_SECONDS } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { AcceptedPlayer, WaitingPlayerNameList } from '@common/game-interfaces';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, interval, of, takeWhile } from 'rxjs';
 import { JoinedPlayerDialogComponent } from './joined-player-dialog.component';
 
 describe('JoinedPlayerDialogComponent', () => {
@@ -76,42 +77,17 @@ describe('JoinedPlayerDialogComponent', () => {
         expect(countDownSpy).toHaveBeenCalled();
     });
 
-    // it('should start countdown and show message if player is not in playerNames', fakeAsync(() => {
-    //     component['data'] = { gameId: 'Charlie', player: 'testPlayer' };
-    //     roomManagerServiceSpy.getSocketId.and.callFake(() => 'Charlie');
-    //     component.handleRefusedPlayer();
-    //     expect(component.countdown).toBe(TEN_SECONDS);
-    //     // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- needed for test
-    //     tick(12000);
-    //     expect(component.refusedMessage).toBe(`Vous avez été refusé. Vous serez redirigé dans ${component.countdown} secondes`);
-    //     expect(dialogRefSpy.close).toHaveBeenCalled();
-    // }));
-
-    it('should close dialog and navigate to game when player is accepted', fakeAsync(() => {
-        const acceptedPlayer = {
-            gameId: 'test-game-id',
-            playerName: 'Alice',
-            roomId: 'test-room-id',
-        };
-        component.handleAcceptedPlayer();
-        acceptPlayerNamesMock.next(acceptedPlayer);
-
-        tick();
+    it('should start countdown and show message if player is refuse or if gameCard is delete', fakeAsync(() => {
+        component.countDownBeforeClosing('Test message');
+        expect(component.countdown).toBe(TEN_SECONDS);
+        interval(ONE_SECOND)
+            .pipe(takeWhile(() => component.countdown > 0))
+            .subscribe(() => {
+                component.countDownBeforeClosing('Test message');
+            });
+        // Needed to not have periodic timer(s) still in the queue.
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        tick(12000);
+        expect(dialogRefSpy.close).toHaveBeenCalled();
     }));
-
-    // it('should not navigate to game when player is accepted as undefined', fakeAsync(() => {
-    //     spyOn(component, 'navigateToGame');
-    //     component.handleAcceptedPlayer();
-    //     acceptPlayerNamesMock.next(undefined as unknown as AcceptedPlayer);
-
-    //     tick();
-
-    //     expect(component.navigateToGame).not.toHaveBeenCalled();
-    // }));
-
-    // it('NavigateTOGame should navigate to the room-id', () => {
-    //     fixture.detectChanges();
-    //     component.navigateToGame('test-room-id', playerNameStub);
-    //     expect(routerSpy.navigate).toHaveBeenCalledWith(['/game', 'test-room-id', playerNameStub]);
-    // });
 });

@@ -45,13 +45,13 @@ describe('RoomManagerService', () => {
         expect(service.isNameTaken$).toEqual(service['isPlayerNameTaken'].asObservable());
     });
 
-    // it('roomId$ should return roomId asObservable', () => {
-    //     expect(service.createdRoomId$).toEqual(service['roomId'].asObservable());
-    // });
+    it('roomId$ should return roomId asObservable', () => {
+        expect(service.createdRoomId$).toEqual(service['createdRoomId'].asObservable());
+    });
 
-    // it('deletedGameId$ should return deletedGameId asObservable', () => {
-    //     expect(service.isUpdated$).toEqual(service['deletedGameId'].asObservable());
-    // });
+    it('deletedGameId$ should return deletedGameId asObservable', () => {
+        expect(service.deletedGameId$).toEqual(service['deletedGameId'].asObservable());
+    });
 
     it('oneVsOneRoomsAvailabilityByRoomId$ should return oneVsOneRoomsAvailabilityByGameId asObservable', () => {
         expect(service.oneVsOneRoomsAvailabilityByRoomId$).toEqual(service['oneVsOneRoomsAvailabilityByGameId'].asObservable());
