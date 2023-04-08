@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { SocketTestHelper } from '@app/services/client-socket-service/client-socket.service.spec';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
+import { RoomEvents } from '@common/enums';
 import { Socket } from 'socket.io-client';
 
 class SocketClientServiceMock extends ClientSocketService {
@@ -15,8 +16,8 @@ class SocketClientServiceMock extends ClientSocketService {
 
 describe('RoomManagerService', () => {
     let service: RoomManagerService;
-    // let mockGameId: string;
-    // let mockPlayerName: string;
+    let mockGameId: string;
+    let mockPlayerName: string;
     let socketHelper: SocketTestHelper;
     let socketServiceMock: SocketClientServiceMock;
 
@@ -29,8 +30,8 @@ describe('RoomManagerService', () => {
             providers: [{ provide: ClientSocketService, useValue: socketServiceMock }],
         });
         service = TestBed.inject(RoomManagerService);
-        // mockGameId = 'mockGameId';
-        // mockPlayerName = 'mockPlayerName';
+        mockGameId = 'mockGameId';
+        mockPlayerName = 'mockPlayerName';
     });
 
     it('should be created', () => {
@@ -61,15 +62,15 @@ describe('RoomManagerService', () => {
         expect(service.oneVsOneRoomsAvailabilityByRoomId$).toEqual(service['oneVsOneRoomsAvailabilityByGameId'].asObservable());
     });
 
-    // it('acceptedPlayerByRoom$ should return acceptedPlayerByRoom asObservable', () => {
-    //     expect(service.createdRoomId$).toEqual(service['acceptedPlayerByRoom'].asObservable());
-    // });
+    it('refusedPlayerId$ should return refusedPlayerId asObservable', () => {
+        expect(service.refusedPlayerId$).toEqual(service['refusedPlayerId'].asObservable());
+    });
 
-    // it('createSoloRoom should call clientSocket.send with CreateSoloGame and gameId and playerName', () => {
-    //     const sendSpy = spyOn(socketServiceMock, 'send');
-    //     service.createSoloRoom(mockGameId, mockPlayerName);
-    //     expect(sendSpy).toHaveBeenCalledWith(GameEvents.CreateSoloGame, { gameId: mockGameId, playerName: mockPlayerName });
-    // });
+    it('createSoloRoom should call clientSocket.send with CreateSoloGame and gameId and playerName', () => {
+        const sendSpy = spyOn(socketServiceMock, 'send');
+        service.createSoloRoom(mockGameId, mockPlayerName);
+        expect(sendSpy).toHaveBeenCalledWith(RoomEvents.CreateClassicSoloRoom, { gameId: mockGameId, playerName: mockPlayerName });
+    });
 
     // it('createOneVsOneRoom should call clientSocket.send with CreateOneVsOneRoom and gameId', () => {
     //     const sendSpy = spyOn(socketServiceMock, 'send');
