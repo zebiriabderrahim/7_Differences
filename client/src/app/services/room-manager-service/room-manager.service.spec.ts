@@ -78,11 +78,11 @@ describe('RoomManagerService', () => {
         expect(sendSpy).toHaveBeenCalledWith(RoomEvents.CreateOneVsOneRoom, { gameId: mockGameId, playerName: mockPlayerName });
     });
 
-    // it('updateRoomOneVsOneAvailability should call clientSocket.send with UpdateRoomOneVsOneAvailability and gameId', () => {
-    //     const sendSpy = spyOn(socketServiceMock, 'send');
-    //     service.updateRoomOneVsOneAvailability(mockGameId);
-    //     expect(sendSpy).toHaveBeenCalledWith(GameEvents.UpdateRoomOneVsOneAvailability, mockGameId);
-    // });
+    it('updateRoomOneVsOneAvailability should call clientSocket.send with UpdateRoomOneVsOneAvailability and gameId', () => {
+        const sendSpy = spyOn(socketServiceMock, 'send');
+        service.updateRoomOneVsOneAvailability(mockGameId);
+        expect(sendSpy).toHaveBeenCalledWith(RoomEvents.UpdateRoomOneVsOneAvailability, mockGameId);
+    });
 
     // it('checkRoomOneVsOneAvailability should call clientSocket.send with CheckRoomOneVsOneAvailability and gameId', () => {
     //     const sendSpy = spyOn(socketServiceMock, 'send');
