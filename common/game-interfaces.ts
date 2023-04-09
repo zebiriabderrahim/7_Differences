@@ -59,14 +59,9 @@ export interface Player {
     diffData: Differences;
 }
 
-export interface playerData {
+export interface PlayerData {
     playerName: string;
     gameId: string;
-    gameMode: GameModes;
-}
-
-export interface LimitedGameDetails {
-    playerName: string;
     gameMode: GameModes;
 }
 
