@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ONE_SECOND, TEN_SECONDS } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { GameCardActions } from '@common/game-interfaces';
+import { GameCardActions, PlayerData } from '@common/game-interfaces';
 import { filter, interval, Subscription, takeWhile } from 'rxjs';
 
 @Component({
@@ -47,7 +47,8 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
     }
 
     refusePlayer(playerName: string) {
-        this.roomManagerService.refusePlayer(this.data.gameId, playerName);
+        const playerPayLoad = { gameId: this.data.gameId, playerName } as PlayerData;
+        this.roomManagerService.refusePlayer(playerPayLoad);
     }
 
     acceptPlayer(playerName: string) {

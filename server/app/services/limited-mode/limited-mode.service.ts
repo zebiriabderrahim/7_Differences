@@ -1,8 +1,8 @@
 import { GameService } from '@app/services/game/game.service';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { NOT_FOUND } from '@common/constants';
-import { GameEvents, RoomEvents, GameModes } from '@common/enums';
-import { GameRoom, LimitedGameDetails } from '@common/game-interfaces';
+import { GameEvents, GameModes, RoomEvents } from '@common/enums';
+import { GameRoom, PlayerData } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
 
@@ -13,14 +13,14 @@ export class LimitedModeService {
         this.availableGameByRoomId = new Map<string, string[]>();
     }
 
-    async createLimitedRoom(socket: io.Socket, gameDetails: LimitedGameDetails, server: io.Server): Promise<void> {
-        const limitedRoom = await this.roomsManagerService.createRoom(gameDetails.playerName, '', gameDetails.gameMode);
+    async createLimitedRoom(socket: io.Socket, playerPayLoad: PlayerData, server: io.Server): Promise<void> {
+        const limitedRoom = await this.roomsManagerService.createRoom(playerPayLoad);
         if (!limitedRoom) return;
         this.availableGameByRoomId.set(limitedRoom.roomId, [limitedRoom.clientGame.id]);
         if (limitedRoom) {
             socket.join(limitedRoom.roomId);
             server.to(limitedRoom.roomId).emit(RoomEvents.RoomLimitedCreated, limitedRoom.roomId);
-            limitedRoom.clientGame.mode = gameDetails.gameMode;
+            limitedRoom.clientGame.mode = playerPayLoad.gameMode;
             limitedRoom.player1.playerId = socket.id;
             limitedRoom.timer = limitedRoom.gameConstants.countdownTime;
             this.roomsManagerService.updateRoom(limitedRoom);
@@ -39,12 +39,12 @@ export class LimitedModeService {
         this.roomsManagerService.startGame(socket, server);
     }
 
-    joinLimitedCoopRoom(socket: io.Socket, gameDetails: LimitedGameDetails, server: io.Server): void {
+    joinLimitedCoopRoom(socket: io.Socket, playerPayLoad: PlayerData, server: io.Server): void {
         const room = this.roomsManagerService.getLimitedRoom();
         if (room) {
             socket.join(room.roomId);
             room.player2 = {
-                name: gameDetails.playerName,
+                name: playerPayLoad.playerName,
                 playerId: socket.id,
                 diffData: room.player1.diffData,
             };
@@ -53,12 +53,12 @@ export class LimitedModeService {
         }
     }
 
-    checkIfAnyCoopRoomExists(socket: io.Socket, gameDetails: LimitedGameDetails, server: io.Server) {
+    checkIfAnyCoopRoomExists(socket: io.Socket, playerPayLoad: PlayerData, server: io.Server) {
         const roomId = this.roomsManagerService.getLimitedRoom()?.roomId;
         if (roomId) {
-            this.joinLimitedCoopRoom(socket, gameDetails, server);
+            this.joinLimitedCoopRoom(socket, playerPayLoad, server);
         } else {
-            this.createLimitedRoom(socket, gameDetails, server);
+            this.createLimitedRoom(socket, playerPayLoad, server);
         }
     }
 
@@ -90,7 +90,7 @@ export class LimitedModeService {
         }
     }
 
-    handleDeleteAllGame(): void {
+    handleDeleteAllGames(): void {
         this.availableGameByRoomId.clear();
     }
 
