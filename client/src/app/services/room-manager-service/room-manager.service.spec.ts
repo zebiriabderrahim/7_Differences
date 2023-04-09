@@ -3,7 +3,7 @@ import { ClientSocketService } from '@app/services/client-socket-service/client-
 import { SocketTestHelper } from '@app/services/client-socket-service/client-socket.service.spec';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameCardEvents, GameModes, PlayerEvents, RoomEvents } from '@common/enums';
-import { LimitedGameDetails } from '@common/game-interfaces';
+import { LimitedGameDetails, RoomAvailability } from '@common/game-interfaces';
 import { Socket } from 'socket.io-client';
 
 class SocketClientServiceMock extends ClientSocketService {
@@ -226,28 +226,28 @@ describe('RoomManagerService', () => {
     //     expect(onSpy).toHaveBeenCalledWith(PlayerEvents.PlayerAccepted, jasmine.any(Function));
     // });
 
-    it('should call createdRoomId.next when GameEvents.RoomSoloCreated is received', () => {
+    it('should call createdRoomId.next when RoomEvents.RoomSoloCreated is received', () => {
         service.handleRoomEvents();
         const roomIdSpy = spyOn(service['createdRoomId'], 'next');
         socketHelper.peerSideEmit(RoomEvents.RoomSoloCreated, mockGameId);
         expect(roomIdSpy).toHaveBeenCalledOnceWith(mockGameId);
     });
 
-    // it('should call oneVsOneRoomsAvailabilityByGameId.next when GameEvents.RoomOneVsOneAvailable is received', () => {
-    //     service.handleRoomEvents();
-    //     const mockAvailability = { gameId: mockGameId, isAvailableToJoin: true };
-    //     const availabilitySpy = spyOn(service['oneVsOneRoomsAvailabilityByGameId'], 'next');
-    //     socketHelper.peerSideEmit(GameEvents.RoomOneVsOneAvailable, mockAvailability);
-    //     expect(availabilitySpy).toHaveBeenCalledOnceWith(mockAvailability);
-    // });
+    it('should call oneVsOneRoomsAvailabilityByGameId.next when RoomEvents.RoomOneVsOneAvailable is received', () => {
+        service.handleRoomEvents();
+        const mockAvailability = { gameId: mockGameId, isAvailableToJoin: true } as RoomAvailability;
+        const availabilitySpy = spyOn(service['oneVsOneRoomsAvailabilityByGameId'], 'next');
+        socketHelper.peerSideEmit(RoomEvents.RoomOneVsOneAvailable, mockAvailability);
+        expect(availabilitySpy).toHaveBeenCalledOnceWith(mockAvailability);
+    });
 
-    // it('should call oneVsOneRoomsAvailabilityByGameId.next when GameEvents.OneVsOneRoomDeleted is received', () => {
-    //     service.handleRoomEvents();
-    //     const mockAvailability = { gameId: mockGameId, isAvailableToJoin: true };
-    //     const availabilitySpy = spyOn(service['oneVsOneRoomsAvailabilityByGameId'], 'next');
-    //     socketHelper.peerSideEmit(GameEvents.OneVsOneRoomDeleted, mockAvailability);
-    //     expect(availabilitySpy).toHaveBeenCalledOnceWith(mockAvailability);
-    // });
+    it('should call oneVsOneRoomsAvailabilityByGameId.next when RoomEvents.OneVsOneRoomDeleted is received', () => {
+        service.handleRoomEvents();
+        const mockAvailability = { gameId: mockGameId, isAvailableToJoin: true } as RoomAvailability;
+        const availabilitySpy = spyOn(service['oneVsOneRoomsAvailabilityByGameId'], 'next');
+        socketHelper.peerSideEmit(RoomEvents.OneVsOneRoomDeleted, mockAvailability);
+        expect(availabilitySpy).toHaveBeenCalledOnceWith(mockAvailability);
+    });
 
     // it('should call joinedPlayerNames.next when GameEvents.UpdateWaitingPlayerNameList is received', () => {
     //     service.handleRoomEvents();
@@ -257,50 +257,40 @@ describe('RoomManagerService', () => {
     //     };
     //     const mockPlayerNamesList: [] = [];
     //     const joinedNextSpy = spyOn(service['joinedPlayerNames'], 'next');
-    //     socketHelper.peerSideEmit(GameEvents.UpdateWaitingPlayerNameList, mockNameList);
+    //     socketHelper.peerSideEmit(PlayerEvents.UpdateWaitingPlayerNameList, mockNameList);
     //     expect(joinedNextSpy).toHaveBeenCalledOnceWith(mockPlayerNamesList);
     // });
 
-    // it('should call isPlayerNameTaken.next when GameEvents.PlayerNameTaken is received', () => {
-    //     service.handleRoomEvents();
-    //     const mockNameList = {
-    //         gameId: mockGameId,
-    //         isNameAvailable: true,
-    //     };
-    //     const isPlayerNextSpy = spyOn(service['isPlayerNameTaken'], 'next');
-    //     socketHelper.peerSideEmit(GameEvents.PlayerNameTaken, mockNameList);
-    //     expect(isPlayerNextSpy).toHaveBeenCalledOnceWith(mockNameList);
-    // });
+    it('should call isPlayerNameTaken.next when PlayerEvents.PlayerNameTaken is received', () => {
+        service.handleRoomEvents();
+        const mockNameList = {
+            gameId: mockGameId,
+            isNameAvailable: true,
+        };
+        const isPlayerNextSpy = spyOn(service['isPlayerNameTaken'], 'next');
+        socketHelper.peerSideEmit(PlayerEvents.PlayerNameTaken, mockNameList);
+        expect(isPlayerNextSpy).toHaveBeenCalledOnceWith(mockNameList);
+    });
 
-    // it('should call roomId.next when GameEvents.RoomOneVsOneCreated is received', () => {
-    //     service.handleRoomEvents();
-    //     const roomIdSpy = spyOn(service['roomId'], 'next');
-    //     socketHelper.peerSideEmit(GameEvents.RoomOneVsOneCreated, mockGameId);
-    //     expect(roomIdSpy).toHaveBeenCalledOnceWith(mockGameId);
-    // });
+    it('should call createdRoomId.next when RoomEvents.RoomOneVsOneCreated is received', () => {
+        service.handleRoomEvents();
+        const roomIdSpy = spyOn(service['createdRoomId'], 'next');
+        socketHelper.peerSideEmit(RoomEvents.RoomOneVsOneCreated, mockGameId);
+        expect(roomIdSpy).toHaveBeenCalledOnceWith(mockGameId);
+    });
 
-    // it('should call roomId.next when GameEvents.PlayerAccepted is received', () => {
-    //     service.handleRoomEvents();
-    //     const mockAcceptedPlayer = {
-    //         gameId: mockGameId,
-    //         roomId: mockGameId,
-    //         playerName: mockPlayerName,
-    //     };
+    it('should call roomId.next when RoomEvents.RoomLimitedCreated is received', () => {
+        service.handleRoomEvents();
+        const roomIdSpy = spyOn(service['createdRoomId'], 'next');
+        socketHelper.peerSideEmit(RoomEvents.RoomLimitedCreated, mockGameId);
+        expect(roomIdSpy).toHaveBeenCalledOnceWith(mockGameId);
+    });
 
-    //     const acceptedPlayerNextSpy = spyOn(service['acceptedPlayerByRoom'], 'next');
-    //     socketHelper.peerSideEmit(GameEvents.PlayerAccepted, mockAcceptedPlayer);
-    //     expect(acceptedPlayerNextSpy).toHaveBeenCalledOnceWith(mockAcceptedPlayer);
-    // });
-
-    // it('ngOnDestroy should call disconnect', () => {
-    //     const disconnectSpy = spyOn(socketServiceMock, 'disconnect');
-    //     service.ngOnDestroy();
-    //     expect(disconnectSpy).toHaveBeenCalled();
-    // });
-
-    // it('gameIdOfRoomToBeDeleted$ should return gameIdOfRoomToBeDeleted as observable', () => {
-    //     expect(service.gameIdOfRoomToBeDeleted$).toEqual(service['gameIdOfRoomToBeDeleted'].asObservable());
-    // });
+    it('ngOnDestroy should call disconnect', () => {
+        const disconnectSpy = spyOn(socketServiceMock, 'disconnect');
+        service.ngOnDestroy();
+        expect(disconnectSpy).toHaveBeenCalled();
+    });
 
     // it('gameCardDeleted should call clientSocket.send with DeleteGameCard and gameId', () => {
     //     const sendSpy = spyOn(socketServiceMock, 'send');
@@ -321,4 +311,25 @@ describe('RoomManagerService', () => {
     //     socketHelper.peerSideEmit(GameEvents.GameCardDeleted, mockGameId);
     //     expect(deletedGameIdSpy).toHaveBeenCalledOnceWith(mockGameId);
     // });
+
+    it('should call isLimitedCoopRoomAvailable.next when RoomEvents.LimitedCoopRoomJoined is received', () => {
+        service.handleRoomEvents();
+        const isLimitedCoopRoomAvailableSpy = spyOn(service['isLimitedCoopRoomAvailable'], 'next');
+        socketHelper.peerSideEmit(RoomEvents.LimitedCoopRoomJoined, true);
+        expect(isLimitedCoopRoomAvailableSpy).toHaveBeenCalledOnceWith(true);
+    });
+
+    it('should call isPlayerAccepted.next when PlayerEvents.isAccepted is received', () => {
+        service.handleRoomEvents();
+        const isPlayerAcceptedSpy = spyOn(service['isPlayerAccepted'], 'next');
+        socketHelper.peerSideEmit(PlayerEvents.PlayerAccepted, true);
+        expect(isPlayerAcceptedSpy).toHaveBeenCalledOnceWith(true);
+    });
+
+    it('should call refusedPlayerId.next when PlayerEvents.PlayerRefused is received', () => {
+        service.handleRoomEvents();
+        const refusedPlayerIdSpy = spyOn(service['refusedPlayerId'], 'next');
+        socketHelper.peerSideEmit(PlayerEvents.PlayerRefused, mockPlayerName);
+        expect(refusedPlayerIdSpy).toHaveBeenCalledOnceWith(mockPlayerName);
+    });
 });
