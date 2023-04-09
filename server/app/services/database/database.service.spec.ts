@@ -39,7 +39,7 @@ describe('DatabaseService', () => {
     ];
 
     const gameConfigConstTest: GameConstantsDto = {
-        countdownTime: 5,
+        countdownTime: 30,
         penaltyTime: 5,
         bonusTime: 5,
     };
@@ -137,10 +137,8 @@ describe('DatabaseService', () => {
 
     it('onModuleInit should call the getAllGameIds and populateDbWithGameConstants method ', async () => {
         const getAllGameIdsSpy = jest.spyOn(dataBaseService, 'getAllGameIds');
-        const populateDbWithGameConstantsSpy = jest.spyOn(dataBaseService, 'populateDbWithGameConstants');
         await dataBaseService.onModuleInit();
         expect(getAllGameIdsSpy).toBeCalled();
-        expect(populateDbWithGameConstantsSpy).toBeCalled();
     });
 
     it('getGamesCarrousel() should return the games carrousel as expected', async () => {
@@ -190,11 +188,22 @@ describe('DatabaseService', () => {
         expect(JSON.stringify(topTime)).toEqual(JSON.stringify(testGameCards[0].oneVsOneTopTime));
     });
     it('getGameConstants() should return the constants as expected', async () => {
+        const populateDbWithGameConstantsSpy = jest.spyOn(dataBaseService, 'populateDbWithGameConstants');
         await gameConstantsModel.create(gameConfigConstTest);
         const findOneId = jest.spyOn(gameConstantsModel, 'findOne');
         const gameConstants = await dataBaseService.getGameConstants();
         expect(JSON.stringify(gameConstants)).toEqual(JSON.stringify(gameConfigConstTest));
         expect(findOneId).toBeCalled();
+        expect(populateDbWithGameConstantsSpy).not.toBeCalled();
+    });
+
+    it('getGameConstants() should call the populateDbWithGameConstants method if the constants are not in the db', async () => {
+        const populateDbWithGameConstantsSpy = jest.spyOn(dataBaseService, 'populateDbWithGameConstants');
+        const findOneId = jest.spyOn(gameConstantsModel, 'findOne');
+        const gameConstants = await dataBaseService.getGameConstants();
+        expect(JSON.stringify(gameConstants)).toEqual(JSON.stringify(gameConfigConstTest));
+        expect(findOneId).toBeCalled();
+        expect(populateDbWithGameConstantsSpy).toBeCalled();
     });
 
     it('verifyIfGameExists() should return true if the game exists', async () => {

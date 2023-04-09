@@ -32,7 +32,6 @@ export class DatabaseService implements OnModuleInit {
     ) {}
 
     async onModuleInit() {
-        await this.populateDbWithGameConstants();
         await this.getAllGameIds();
     }
 
@@ -43,6 +42,7 @@ export class DatabaseService implements OnModuleInit {
         }
         return this.gameListManager.getCarouselGames();
     }
+
     async getTopTimesGameById(gameId: string, gameMode: string): Promise<PlayerTime[]> {
         const mode = gameMode === GameModes.ClassicSolo ? 'soloTopTime' : 'oneVsOneTopTime';
         const topTimes = await this.gameCardModel
@@ -56,6 +56,7 @@ export class DatabaseService implements OnModuleInit {
     }
 
     async getGameConstants(): Promise<GameConstants> {
+        if (!(await this.gameConstantsModel.exists({}))) await this.populateDbWithGameConstants();
         return await this.gameConstantsModel.findOne().select('-__v -_id').exec();
     }
 
