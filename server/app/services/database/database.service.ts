@@ -119,10 +119,13 @@ export class DatabaseService implements OnModuleInit {
     async deleteAllGames() {
         try {
             this.gameIds = [];
-            const games = await this.gameModel.find().exec();
-            for (const game of games) {
-                await this.deleteGameById(game._id.toString());
+            this.gameListManager.buildGameCarousel([]);
+            const gamesName = (await this.gameModel.find().select('-_id name').exec()).map((game) => game.name);
+            for (const gameName of gamesName) {
+                this.deleteGameAssetsByName(gameName);
             }
+            await this.gameModel.deleteMany({}).exec();
+            await this.gameCardModel.deleteMany({}).exec();
         } catch (error) {
             return Promise.reject(`Failed to delete all games --> ${error}`);
         }

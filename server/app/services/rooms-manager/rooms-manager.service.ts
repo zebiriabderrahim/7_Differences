@@ -5,28 +5,34 @@ import { GameService } from '@app/services/game/game.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { CHARACTERS, KEY_SIZE, MAX_BONUS_TIME_ALLOWED, NOT_FOUND } from '@common/constants';
 import { GameEvents, GameModes, MessageEvents } from '@common/enums';
-import { ClientSideGame, Coordinate, Differences, GameRoom, Player } from '@common/game-interfaces';
-import { Injectable } from '@nestjs/common';
+import { ChatMessage, ClientSideGame, Coordinate, Differences, GameConfigConst, GameRoom, Player, PlayerData } from '@common/game-interfaces';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as fs from 'fs';
 import * as io from 'socket.io';
 
 @Injectable()
-export class RoomsManagerService {
+export class RoomsManagerService implements OnModuleInit {
+    private gameConstants: GameConfigConst;
     private rooms: Map<string, GameRoom>;
 
     constructor(private readonly gameService: GameService, private readonly messageManager: MessageManagerService) {
         this.rooms = new Map<string, GameRoom>();
     }
+    async onModuleInit() {
+        await this.getGameConstants();
+    }
 
-    async createRoom(playerName: string, gameId: string, gameMode: GameModes): Promise<GameRoom> {
-        const game =
-            gameMode === GameModes.LimitedSolo || gameMode === GameModes.LimitedCoop
-                ? await this.gameService.getRandomGame([])
-                : await this.gameService.getGameById(gameId);
+    async createRoom(playerPayLoad: PlayerData): Promise<GameRoom> {
+        const game = !playerPayLoad.gameId ? await this.gameService.getRandomGame([]) : await this.gameService.getGameById(playerPayLoad.gameId);
         if (!game) return;
-        const gameConstants = await this.gameService.getGameConstants();
+        const room = this.buildGameRoom(game, playerPayLoad);
+        return room;
+    }
+
+    buildGameRoom(game: Game, playerPayLoad: PlayerData): GameRoom {
+        const gameConstants = this.gameConstants;
         const diffData = { currentDifference: [], differencesFound: 0 } as Differences;
-        const player = { name: playerName, diffData } as Player;
+        const player = { name: playerPayLoad.playerName, diffData } as Player;
         const room: GameRoom = {
             roomId: this.generateRoomId(),
             clientGame: this.buildClientGameVersion(game),
@@ -36,8 +42,12 @@ export class RoomsManagerService {
             player1: player,
             gameConstants,
         };
-        room.clientGame.mode = gameMode;
+        room.clientGame.mode = playerPayLoad.gameMode;
         return room;
+    }
+
+    async getGameConstants(): Promise<void> {
+        this.gameConstants = await this.gameService.getGameConstants();
     }
 
     getRoomById(roomId: string): GameRoom {
@@ -112,36 +122,34 @@ export class RoomsManagerService {
         server.to(roomId).emit(GameEvents.GameStarted, room);
     }
 
+    async loadNextGame(room: GameRoom, playedGameIds: string[]): Promise<string> {
+        const game = await this.gameService.getRandomGame(playedGameIds);
+        if (!game) return;
+        const gameMode = room.clientGame.mode;
+        room.clientGame = this.buildClientGameVersion(game);
+        room.clientGame.mode = gameMode;
+        room.originalDifferences = structuredClone(JSON.parse(fs.readFileSync(`assets/${game.name}/differences.json`, 'utf-8')));
+        this.updateRoom(room);
+        return game._id.toString();
+    }
+
     verifyCoords(socket: io.Socket, coords: Coordinate, server: io.Server): void {
         const roomId = this.getRoomIdFromSocket(socket);
         const room = this.rooms.get(roomId);
+
         if (!room) return;
 
         const player = room.player1.playerId === socket.id ? room.player1 : room.player2;
-        const { originalDifferences } = room;
-        const { diffData, name } = player;
-
-        const index = originalDifferences.findIndex((difference) =>
+        const index = room.originalDifferences.findIndex((difference) =>
             difference.some((coord: Coordinate) => coord.x === coords.x && coord.y === coords.y),
         );
-        if (index !== NOT_FOUND) {
-            diffData.differencesFound++;
-            this.addBonusTime(room);
-            diffData.currentDifference = originalDifferences[index];
-            originalDifferences.splice(index, 1);
-            const localMessage = this.messageManager.getLocalMessage(room.clientGame.mode, true, name);
-            server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
-        } else {
-            diffData.currentDifference = [];
-            const localMessage = this.messageManager.getLocalMessage(room.clientGame.mode, false, name);
-            server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
-        }
-
-        this.rooms.set(roomId, room);
-
-        const differencesData = { currentDifference: diffData.currentDifference, differencesFound: diffData.differencesFound } as Differences;
-        const cheatDifferences = room.originalDifferences;
-        server.to(room.roomId).emit(GameEvents.RemoveDiff, { differencesData, playerId: socket.id, cheatDifferences });
+        const localMessage = index !== NOT_FOUND ? this.differenceFound(room, player, index) : this.differenceNotFound(room, player);
+        const differencesData = {
+            currentDifference: player.diffData.currentDifference,
+            differencesFound: player.diffData.differencesFound,
+        } as Differences;
+        server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
+        server.to(room.roomId).emit(GameEvents.RemoveDiff, { differencesData, playerId: socket.id, cheatDifferences: room.originalDifferences });
     }
 
     updateTimers(server: io.Server) {
@@ -170,17 +178,6 @@ export class RoomsManagerService {
             this.rooms.set(room.roomId, room);
             server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
         }
-    }
-
-    async loadNextGame(room: GameRoom, playedGameIds: string[]): Promise<string> {
-        const game = await this.gameService.getRandomGame(playedGameIds);
-        if (!game) return;
-        const gameMode = room.clientGame.mode;
-        room.clientGame = this.buildClientGameVersion(game);
-        room.clientGame.mode = gameMode;
-        room.originalDifferences = structuredClone(JSON.parse(fs.readFileSync(`assets/${game.name}/differences.json`, 'utf-8')));
-        this.updateRoom(room);
-        return game._id.toString();
     }
 
     isLimitedMode(clientGame: ClientSideGame): boolean {
@@ -217,6 +214,21 @@ export class RoomsManagerService {
 
     handelDisconnect(room: GameRoom): void {
         if (room && !room.player2) this.deleteRoom(room.roomId);
+    }
+
+    private differenceFound(room: GameRoom, player: Player, index: number): ChatMessage {
+        this.addBonusTime(room);
+        player.diffData.differencesFound++;
+        player.diffData.currentDifference = room.originalDifferences[index];
+        room.originalDifferences.splice(index, 1);
+        this.updateRoom(room);
+        return this.messageManager.getLocalMessage(room.clientGame.mode, true, player.name);
+    }
+
+    private differenceNotFound(room: GameRoom, player: Player): ChatMessage {
+        player.diffData.currentDifference = [];
+        this.updateRoom(room);
+        return this.messageManager.getLocalMessage(room.clientGame.mode, false, player.name);
     }
 
     private abandonMessage(room: GameRoom, player: Player, server: io.Server): void {
@@ -259,10 +271,7 @@ export class RoomsManagerService {
         room.endMessage = 'Temps écoulé !';
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
         this.deleteRoom(room.roomId);
-        server.sockets.sockets.get(room.player1.playerId)?.rooms.delete(roomId);
-        if (room.player2) {
-            server.sockets.sockets.get(room.player2.playerId)?.rooms.delete(roomId);
-        }
+        this.leaveRoom(room, server);
     }
 
     private generateRoomId(): string {
