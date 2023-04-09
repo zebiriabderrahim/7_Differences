@@ -136,9 +136,8 @@ describe('DatabaseService', () => {
     });
 
     it('onModuleInit should call the getAllGameIds and populateDbWithGameConstants method ', async () => {
-        const getAllGameIdsSpy = jest.spyOn(dataBaseService, 'getAllGameIds');
         await dataBaseService.onModuleInit();
-        expect(getAllGameIdsSpy).toBeCalled();
+        expect(dataBaseService['gameIds']).toEqual([]);
     });
 
     it('getGamesCarrousel() should return the games carrousel as expected', async () => {
@@ -188,22 +187,11 @@ describe('DatabaseService', () => {
         expect(JSON.stringify(topTime)).toEqual(JSON.stringify(testGameCards[0].oneVsOneTopTime));
     });
     it('getGameConstants() should return the constants as expected', async () => {
-        const populateDbWithGameConstantsSpy = jest.spyOn(dataBaseService, 'populateDbWithGameConstants');
         await gameConstantsModel.create(gameConfigConstTest);
         const findOneId = jest.spyOn(gameConstantsModel, 'findOne');
         const gameConstants = await dataBaseService.getGameConstants();
         expect(JSON.stringify(gameConstants)).toEqual(JSON.stringify(gameConfigConstTest));
         expect(findOneId).toBeCalled();
-        expect(populateDbWithGameConstantsSpy).not.toBeCalled();
-    });
-
-    it('getGameConstants() should call the populateDbWithGameConstants method if the constants are not in the db', async () => {
-        const populateDbWithGameConstantsSpy = jest.spyOn(dataBaseService, 'populateDbWithGameConstants');
-        const findOneId = jest.spyOn(gameConstantsModel, 'findOne');
-        const gameConstants = await dataBaseService.getGameConstants();
-        expect(JSON.stringify(gameConstants)).toEqual(JSON.stringify(gameConfigConstTest));
-        expect(findOneId).toBeCalled();
-        expect(populateDbWithGameConstantsSpy).toBeCalled();
     });
 
     it('verifyIfGameExists() should return true if the game exists', async () => {
@@ -342,19 +330,19 @@ describe('DatabaseService', () => {
 
     it('populateDbWithGameConstants should populate the db with the game constants', async () => {
         const gameConstantsModelCreateSpy = jest.spyOn(gameConstantsModel, 'create');
-        await dataBaseService.populateDbWithGameConstants();
+        await dataBaseService['populateDbWithGameConstants']();
         expect(gameConstantsModelCreateSpy).toBeCalled();
     });
 
     it('populateDbWithGameConstants should fail if mongo query failed', async () => {
         gameConstantsModel.exists = jest.fn().mockRejectedValue('');
-        await expect(dataBaseService.populateDbWithGameConstants()).rejects.toBeTruthy();
+        await expect(dataBaseService['populateDbWithGameConstants']()).rejects.toBeTruthy();
     });
 
     it('populateDbWithGameConstants should not populate the db with the game constants if they already exist', async () => {
         const gameConstantsModelCreateSpy = jest.spyOn(gameConstantsModel, 'create');
         gameConstantsModel.exists = jest.fn().mockResolvedValue(true);
-        await dataBaseService.populateDbWithGameConstants();
+        await dataBaseService['populateDbWithGameConstants']();
         expect(gameConstantsModelCreateSpy).toBeCalledTimes(0);
     });
     it('updateGameConstants should fail if mongo query failed', async () => {
@@ -414,7 +402,7 @@ describe('DatabaseService', () => {
         await gameCardModel.create(testGameCards[0]);
         testGameCards[0]._id = id2;
         await gameCardModel.create(testGameCards[0]);
-        await dataBaseService.getAllGameIds();
+        await dataBaseService['getAllGameIds']();
         expect(dataBaseService['gameIds']).toEqual([id, id2]);
         expect(findSpy).toBeCalledTimes(1);
     });
@@ -423,7 +411,7 @@ describe('DatabaseService', () => {
         jest.spyOn(gameCardModel, 'find').mockImplementation(() => {
             throw new Error('Mock MongoDB error');
         });
-        await expect(dataBaseService.getAllGameIds()).rejects.toBeTruthy();
+        await expect(dataBaseService['getAllGameIds']()).rejects.toBeTruthy();
     });
 
     it('getRandomGame should return a random game', async () => {

@@ -56,7 +56,7 @@ export class DatabaseService implements OnModuleInit {
     }
 
     async getGameConstants(): Promise<GameConstants> {
-        if (!(await this.gameConstantsModel.exists({}))) await this.populateDbWithGameConstants();
+        await this.populateDbWithGameConstants();
         return await this.gameConstantsModel.findOne().select('-__v -_id').exec();
     }
 
@@ -147,16 +147,6 @@ export class DatabaseService implements OnModuleInit {
         this.gameListManager.buildGameCarousel(gameCardsList);
     }
 
-    async populateDbWithGameConstants(): Promise<void> {
-        try {
-            if (!(await this.gameConstantsModel.exists({}))) {
-                await this.gameConstantsModel.create(this.defaultConstants);
-            }
-        } catch (error) {
-            return Promise.reject(`Failed to populate game constants --> ${error}`);
-        }
-    }
-
     async updateGameConstants(gameConstantsDto: GameConstantsDto): Promise<void> {
         try {
             await this.gameConstantsModel.replaceOne({}, gameConstantsDto).exec();
@@ -183,15 +173,6 @@ export class DatabaseService implements OnModuleInit {
         }
     }
 
-    async getAllGameIds(): Promise<void> {
-        try {
-            const gameCardsIds = await this.gameCardModel.find().select('_id').exec();
-            this.gameIds = gameCardsIds.map((gameCard) => gameCard._id.toString());
-        } catch (error) {
-            return Promise.reject(`Failed to get all game ids --> ${error}`);
-        }
-    }
-
     async getRandomGame(playedGameIds: string[]): Promise<Game> {
         try {
             const gameIdsToPlay = this.gameIds.filter((id) => !playedGameIds.includes(id));
@@ -199,6 +180,25 @@ export class DatabaseService implements OnModuleInit {
             return await this.getGameById(randomGameId);
         } catch (error) {
             return Promise.reject(`Failed to get random game --> ${error}`);
+        }
+    }
+
+    private async populateDbWithGameConstants(): Promise<void> {
+        try {
+            if (!(await this.gameConstantsModel.exists({}))) {
+                await this.gameConstantsModel.create(this.defaultConstants);
+            }
+        } catch (error) {
+            return Promise.reject(`Failed to populate game constants --> ${error}`);
+        }
+    }
+
+    private async getAllGameIds(): Promise<void> {
+        try {
+            const gameCardsIds = await this.gameCardModel.find().select('_id').exec();
+            this.gameIds = gameCardsIds.map((gameCard) => gameCard._id.toString());
+        } catch (error) {
+            return Promise.reject(`Failed to get all game ids --> ${error}`);
         }
     }
 }
