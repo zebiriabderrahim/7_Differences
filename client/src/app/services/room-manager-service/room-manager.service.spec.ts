@@ -207,6 +207,11 @@ describe('RoomManagerService', () => {
         expect(sendSpy).toHaveBeenCalledWith(GameCardEvents.GameConstantsUpdated);
     });
 
+    it('getSocketId should return ', () => {
+        const socketId = service.getSocketId();
+        expect(socketServiceMock.socket.id).toEqual(socketId);
+    });
+
     // it('handleRoomEvents should connect socket and set on for GameEvents related to room', () => {
     //     const connectSpy = spyOn(socketServiceMock, 'connect');
     //     const onSpy = spyOn(socketServiceMock, 'on');
@@ -221,12 +226,12 @@ describe('RoomManagerService', () => {
     //     expect(onSpy).toHaveBeenCalledWith(PlayerEvents.PlayerAccepted, jasmine.any(Function));
     // });
 
-    // it('should call roomId.next when GameEvents.RoomSoloCreated is received', () => {
-    //     service.handleRoomEvents();
-    //     const roomIdSpy = spyOn(service['roomId'], 'next');
-    //     socketHelper.peerSideEmit(RoomEvents.RoomSoloCreated, mockGameId);
-    //     expect(roomIdSpy).toHaveBeenCalledOnceWith(mockGameId);
-    // });
+    it('should call createdRoomId.next when GameEvents.RoomSoloCreated is received', () => {
+        service.handleRoomEvents();
+        const roomIdSpy = spyOn(service['createdRoomId'], 'next');
+        socketHelper.peerSideEmit(RoomEvents.RoomSoloCreated, mockGameId);
+        expect(roomIdSpy).toHaveBeenCalledOnceWith(mockGameId);
+    });
 
     // it('should call oneVsOneRoomsAvailabilityByGameId.next when GameEvents.RoomOneVsOneAvailable is received', () => {
     //     service.handleRoomEvents();
