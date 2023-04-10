@@ -14,7 +14,7 @@ import { ReplayService } from '@app/services/replay-service/replay.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { Coordinate } from '@common/coordinate';
 import { GameModes, MessageTag } from '@common/enums';
-import { ChatMessage, ClientSideGame, GameConfigConst, Players } from '@common/game-interfaces';
+import { ChatMessage, ClientSideGame, GameConfigConst, Player, Players } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -97,7 +97,8 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         const eventHTMLElement = event.target as HTMLElement;
         if (eventHTMLElement.tagName !== INPUT_TAG_NAME) {
             if (event.key === 't') {
-                this.gameAreaService.toggleCheatMode(this.differences.flat());
+                const differencesCoordinates = ([] as Coordinate[]).concat(...this.differences);
+                this.gameAreaService.toggleCheatMode(differencesCoordinates);
             } else if (event.key === 'i' && this.game.mode.includes(SOLO_GAME_ID)) {
                 this.hintService.requestHint();
             }
@@ -109,11 +110,9 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.hintService.resetHints();
         this.classicService.players$.subscribe((players) => {
             this.players = players;
-            if (players.player1.playerId === this.classicService.getSocketId()) {
-                this.player = players.player1.name;
-            } else if (players.player2 && players.player2.playerId === this.classicService.getSocketId()) {
-                this.player = players.player2.name;
-            }
+            const { player1, player2 } = players;
+            const isMatch = (player: Player) => player.playerId === this.classicService.getSocketId();
+            this.player = (isMatch(player1) ? player1.name : isMatch(player2 as Player) ? player2?.name : undefined) as string;
         });
 
         this.gameSub = this.classicService.currentGame$.subscribe((game) => {
