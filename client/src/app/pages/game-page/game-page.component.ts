@@ -97,8 +97,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         const eventHTMLElement = event.target as HTMLElement;
         if (eventHTMLElement.tagName !== INPUT_TAG_NAME) {
             if (event.key === 't') {
-                const differencesCoordinates = ([] as Coordinate[]).concat(...this.differences);
-                this.gameAreaService.toggleCheatMode(differencesCoordinates);
+                this.gameAreaService.toggleCheatMode(this.differences.flat());
             } else if (event.key === 'i' && this.game.mode.includes(SOLO_GAME_ID)) {
                 this.hintService.requestHint();
             }
