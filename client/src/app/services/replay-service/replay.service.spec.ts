@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 // Need to mock functions
 import { TestBed } from '@angular/core/testing';
-import { SPEED_X1, SPEED_X2, SPEED_X4 } from '@app/constants/replay';
+import { REPLAY_LIMITER, SPEED_X1, SPEED_X2, SPEED_X4 } from '@app/constants/replay';
+import { HintProximity } from '@app/enum/hint-proximity';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
@@ -50,7 +51,7 @@ describe('ReplayService', () => {
         cancel: jasmine.createSpy('cancel'),
     };
 
-    beforeEach(async () => {
+    beforeEach(() => {
         gameAreaServiceSpy = jasmine.createSpyObj(
             'GameAreaService',
             ['getOgContext', 'getMdContext', 'setAllData', 'replaceDifference', 'showError', 'toggleCheatMode', 'flashCorrectPixels'],
@@ -63,7 +64,7 @@ describe('ReplayService', () => {
         });
         soundServiceSpy = jasmine.createSpyObj('SoundService', ['playCorrectSound', 'playErrorSound']);
         imageServiceSpy = jasmine.createSpyObj('ImageService', ['loadImage']);
-        hintServiceSpy = jasmine.createSpyObj('HintService', ['requestHint', 'resetHints'], {
+        hintServiceSpy = jasmine.createSpyObj('HintService', ['requestHint', 'resetHints', 'clickDuringThirdHint', 'switchProximity'], {
             replayEventsSubject: replayEventHintServiceSubTest,
         });
 
@@ -110,6 +111,16 @@ describe('ReplayService', () => {
         expect(service.isReplaying).toBe(true);
         expect(createReplayIntervalSpy).toHaveBeenCalled();
         expect(replaySwitcherSpy).toHaveBeenCalled();
+    });
+
+    it('should call cancelReplay when replayEvents is empty', (done) => {
+        const cancelReplaySpy = spyOn(service, 'cancelReplay').and.callThrough();
+        service['replayEvents'] = [];
+        service.startReplay();
+        setTimeout(() => {
+            expect(cancelReplaySpy).toHaveBeenCalled();
+            done();
+        }, REPLAY_LIMITER);
     });
 
     it('should stop the replay when there are no more events to process', () => {
@@ -283,6 +294,25 @@ describe('ReplayService', () => {
         expect(hintServiceSpy.requestHint).toHaveBeenCalledWith(replayEvent.data as Coordinate[], service['replaySpeed']);
     });
 
+    it('should handle ActivateThirdHint action', () => {
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.ActivateThirdHint,
+            data: HintProximity.OnIt as number,
+            timestamp: 0,
+        };
+        service.replaySwitcher(replayEvent);
+        expect(hintServiceSpy.switchProximity).toHaveBeenCalledWith(replayEvent.data as number);
+    });
+
+    it('should handle DeactivateThirdHint action', () => {
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.DeactivateThirdHint,
+            timestamp: 0,
+        };
+        service.replaySwitcher(replayEvent);
+        expect(hintServiceSpy.clickDuringThirdHint).toHaveBeenCalled();
+    });
+
     it('should call toggleCheatMode and flashCorrectPixels when isCheatMode and isDifferenceFound are true', () => {
         service['replayInterval'] = replayIntervalMock;
         service['isCheatMode'] = true;
@@ -330,5 +360,13 @@ describe('ReplayService', () => {
         expect(service['replayEvents']).toEqual([]);
         expect(service['currentReplayIndex']).toBe(0);
         expect(service['isReplaying']).toBe(false);
+    });
+
+    it('should reset the currentReplayIndex and resume the replay', () => {
+        service['currentReplayIndex'] = 5;
+        service['replayInterval'] = replayIntervalMock;
+        service.restartReplay();
+        expect(service['currentReplayIndex']).toBe(0);
+        expect(replayIntervalMock.resume).toHaveBeenCalled();
     });
 });
