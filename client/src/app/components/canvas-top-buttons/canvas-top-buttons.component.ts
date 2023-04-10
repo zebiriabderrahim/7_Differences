@@ -34,10 +34,6 @@ export class CanvasTopButtonsComponent implements AfterViewInit {
     }
 
     ngAfterViewInit(): void {
-        this.pencilDiameter = DEFAULT_WIDTH;
-        this.eraserLength = DEFAULT_WIDTH;
-        this.canvasAction = CanvasAction;
-        this.selectedCanvasAction = CanvasAction.Pencil;
         this.setCanvasAction(this.selectedCanvasAction);
         this.setDrawingColor(this.drawColor);
         this.setPencilWidth(this.pencilDiameter);
