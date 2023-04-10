@@ -7,7 +7,6 @@ import { Component } from '@angular/core';
 })
 export class MainPageComponent {
     readonly gameTitle: string;
-    readonly gameRoute: string;
     readonly selectionRoute: string;
     readonly limitedRoute: string;
     readonly configRoute: string;
@@ -15,7 +14,6 @@ export class MainPageComponent {
     readonly teammateNameList: string[];
     constructor() {
         this.gameTitle = '7 Différences';
-        this.gameRoute = '/game';
         this.selectionRoute = '/selection';
         this.configRoute = '/config';
         this.limitedRoute = '/limited';
