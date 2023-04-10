@@ -6,34 +6,6 @@ import { Injectable } from '@nestjs/common';
 export class MessageManagerService {
     private time: Date;
 
-    getFormatTime(): string {
-        this.time = new Date();
-        return `${this.time.getHours()} : ${this.time.getMinutes()} : ${this.time.getSeconds()}`;
-    }
-
-    appendPlayerName(localMessage: ChatMessage, playerName?: string): ChatMessage {
-        if (playerName) {
-            localMessage.message += ` par ${playerName}`;
-        }
-        return localMessage;
-    }
-
-    getDifferenceMessage(playerName?: string): ChatMessage {
-        const localMessage: ChatMessage = {
-            tag: MessageTag.common,
-            message: this.getFormatTime() + ' - Différence trouvée',
-        };
-        return this.appendPlayerName(localMessage, playerName);
-    }
-
-    getErrorMessage(playerName?: string): ChatMessage {
-        const localMessage: ChatMessage = {
-            tag: MessageTag.common,
-            message: this.getFormatTime() + ' - Erreur',
-        };
-        return this.appendPlayerName(localMessage, playerName);
-    }
-
     getQuitMessage(playerName: string): ChatMessage {
         const localMessage: ChatMessage = {
             tag: MessageTag.common,
@@ -59,5 +31,33 @@ export class MessageManagerService {
         } else {
             return gameMode === GameModes.ClassicSolo ? this.getErrorMessage() : this.getErrorMessage(playerName);
         }
+    }
+
+    private getFormatTime(): string {
+        this.time = new Date();
+        return `${this.time.getHours()} : ${this.time.getMinutes()} : ${this.time.getSeconds()}`;
+    }
+
+    private appendPlayerName(localMessage: ChatMessage, playerName?: string): ChatMessage {
+        if (playerName) {
+            localMessage.message += ` par ${playerName}`;
+        }
+        return localMessage;
+    }
+
+    private getDifferenceMessage(playerName?: string): ChatMessage {
+        const localMessage: ChatMessage = {
+            tag: MessageTag.common,
+            message: this.getFormatTime() + ' - Différence trouvée',
+        };
+        return this.appendPlayerName(localMessage, playerName);
+    }
+
+    private getErrorMessage(playerName?: string): ChatMessage {
+        const localMessage: ChatMessage = {
+            tag: MessageTag.common,
+            message: this.getFormatTime() + ' - Erreur',
+        };
+        return this.appendPlayerName(localMessage, playerName);
     }
 }
