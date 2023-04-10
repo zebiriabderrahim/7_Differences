@@ -17,9 +17,9 @@ import {
     FORWARD_BUTTON,
     LEFT_BUTTON,
     MIDDLE_BUTTON,
-    ONE_SECOND,
     RED_FLASH_TIME,
     RIGHT_BUTTON,
+    WAITING_TIME,
     YELLOW_FLASH_TIME,
 } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
@@ -154,10 +154,10 @@ describe('GameAreaService', () => {
         gameAreaService['mousePosition'] = { x: 100, y: 150 };
         setTimeout(() => {
             timerCallback();
-        }, ONE_SECOND);
+        }, WAITING_TIME);
         gameAreaService.showError(true, { x: 1, y: 1 });
         expect(timerCallback).not.toHaveBeenCalled();
-        jasmine.clock().tick(ONE_SECOND + 1);
+        jasmine.clock().tick(WAITING_TIME + 1);
         expect(timerCallback).toHaveBeenCalled();
         expect(context.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT)).toEqual(initialImageData);
         expect(methodSpy).toHaveBeenCalled();
@@ -173,10 +173,10 @@ describe('GameAreaService', () => {
         gameAreaService['mousePosition'] = { x: 100, y: 150 };
         setTimeout(() => {
             timerCallback();
-        }, ONE_SECOND);
+        }, WAITING_TIME);
         gameAreaService.showError(false, { x: 1, y: 1 });
         expect(timerCallback).not.toHaveBeenCalled();
-        jasmine.clock().tick(ONE_SECOND + 1);
+        jasmine.clock().tick(WAITING_TIME + 1);
         expect(timerCallback).toHaveBeenCalled();
         expect(context.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT)).toEqual(initialImageData);
         expect(methodSpy).toHaveBeenCalled();
