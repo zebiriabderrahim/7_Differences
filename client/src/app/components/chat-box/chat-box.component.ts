@@ -11,7 +11,7 @@ export class ChatBoxComponent {
     @Input() messages: ChatMessage[];
     @Input() gameMode: string;
     @Input() isReplaying: boolean;
-    @Output() add: EventEmitter<string>;
+    @Output() private add: EventEmitter<string>;
     oneVsOneGameMode: string;
 
     constructor() {
