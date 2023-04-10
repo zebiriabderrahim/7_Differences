@@ -13,11 +13,9 @@ import { filter, interval, Subscription, takeWhile } from 'rxjs';
 export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
     countdown: number;
     refusedMessage: string;
-    private playerNamesSubscription: Subscription;
     private countdownSubscription: Subscription;
     private acceptedPlayerSubscription: Subscription;
     private deletedGameIdSubscription: Subscription;
-    private roomAvailabilitySubscription: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
@@ -75,10 +73,8 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.playerNamesSubscription?.unsubscribe();
         this.countdownSubscription?.unsubscribe();
         this.acceptedPlayerSubscription?.unsubscribe();
         this.deletedGameIdSubscription?.unsubscribe();
-        this.roomAvailabilitySubscription?.unsubscribe();
     }
 }
