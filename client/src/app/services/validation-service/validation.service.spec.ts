@@ -18,6 +18,15 @@ describe('ValidationService', () => {
         expect(service).toBeTruthy();
     });
 
+    it('isImageValid should validate a correct image', async () => {
+        const image = await fetch('assets/gros-ratata.bmp');
+        const blob = await image.blob();
+        const imageFile = new File([blob], 'image.bmp', blob);
+
+        const result = await service.isImageValid(imageFile);
+        expect(result).toBe(true);
+    });
+
     it('isImageValid should return false if the file type is not a BMP', async () => {
         testFile = new File([''], 'test.jpg', { type: 'image/jpeg' });
         const result = await service.isImageValid(testFile);
