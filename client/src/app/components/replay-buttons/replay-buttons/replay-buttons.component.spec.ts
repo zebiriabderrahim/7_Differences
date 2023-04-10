@@ -16,6 +16,7 @@ describe('ReplayButtonsComponent', () => {
             'pauseReplay',
             'resumeReplay',
             'resetReplay',
+            'restartReplay',
             'isReplaying',
             'upSpeed',
         ]);
@@ -56,6 +57,11 @@ describe('ReplayButtonsComponent', () => {
         jasmine.clock().uninstall();
     });
 
+    it('replay() should restart the replay when replay button is called while replaying', () => {
+        component.replay(true);
+        expect(replayServiceSpy.restartReplay).toHaveBeenCalled();
+    });
+
     it('pause() should pause the replay and toggle button UI', () => {
         component.pause();
         expect(replayServiceSpy.pauseReplay).toHaveBeenCalled();
@@ -75,9 +81,9 @@ describe('ReplayButtonsComponent', () => {
     });
 
     it('isReplaying() should return the state of the replay', () => {
-        const isReplayingSpy = spyOn(component, 'isReplaying');
+        replayServiceSpy.isReplaying = true;
         component.isReplaying();
-        expect(isReplayingSpy).toHaveBeenCalled();
+        expect(replayServiceSpy.isReplaying).toBeTruthy();
     });
 
     it('upSpeedX1() should call speedX1', () => {
