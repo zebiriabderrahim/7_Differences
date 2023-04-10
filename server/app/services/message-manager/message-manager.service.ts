@@ -1,5 +1,5 @@
-import { ChatMessage, NewRecord } from '@common/game-interfaces';
 import { GameModes, MessageTag } from '@common/enums';
+import { ChatMessage, NewRecord } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -11,36 +11,27 @@ export class MessageManagerService {
         return `${this.time.getHours()} : ${this.time.getMinutes()} : ${this.time.getSeconds()}`;
     }
 
-    getSoloDifferenceMessage(): ChatMessage {
+    appendPlayerName(localMessage: ChatMessage, playerName?: string): ChatMessage {
+        if (playerName) {
+            localMessage.message += ` par ${playerName}`;
+        }
+        return localMessage;
+    }
+
+    getDifferenceMessage(playerName?: string): ChatMessage {
         const localMessage: ChatMessage = {
             tag: MessageTag.common,
             message: this.getFormatTime() + ' - Différence trouvée',
         };
-        return localMessage;
+        return this.appendPlayerName(localMessage, playerName);
     }
 
-    getOneVsOneDifferenceMessage(playerName: string): ChatMessage {
-        const localMessage: ChatMessage = {
-            tag: MessageTag.common,
-            message: this.getFormatTime() + ` - Différence trouvée par ${playerName}`,
-        };
-        return localMessage;
-    }
-
-    getSoloErrorMessage(): ChatMessage {
+    getErrorMessage(playerName?: string): ChatMessage {
         const localMessage: ChatMessage = {
             tag: MessageTag.common,
             message: this.getFormatTime() + ' - Erreur',
         };
-        return localMessage;
-    }
-
-    getOneVsOneErrorMessage(playerName: string): ChatMessage {
-        const localMessage: ChatMessage = {
-            tag: MessageTag.common,
-            message: this.getFormatTime() + ` - Erreur par ${playerName}`,
-        };
-        return localMessage;
+        return this.appendPlayerName(localMessage, playerName);
     }
 
     getQuitMessage(playerName: string): ChatMessage {
@@ -64,9 +55,9 @@ export class MessageManagerService {
 
     getLocalMessage(gameMode: string, isFound: boolean, playerName: string): ChatMessage {
         if (isFound) {
-            return gameMode === GameModes.ClassicSolo ? this.getSoloDifferenceMessage() : this.getOneVsOneDifferenceMessage(playerName);
+            return gameMode === GameModes.ClassicSolo ? this.getDifferenceMessage() : this.getDifferenceMessage(playerName);
         } else {
-            return gameMode === GameModes.ClassicSolo ? this.getSoloErrorMessage() : this.getOneVsOneErrorMessage(playerName);
+            return gameMode === GameModes.ClassicSolo ? this.getErrorMessage() : this.getErrorMessage(playerName);
         }
     }
 }
