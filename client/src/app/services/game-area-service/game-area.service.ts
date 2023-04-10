@@ -4,8 +4,8 @@ import {
     FLASH_WAIT_TIME,
     GREEN_FLASH_TIME,
     LEFT_BUTTON,
-    ONE_SECOND,
     RED_FLASH_TIME,
+    WAITING_TIME,
     X_CENTERING_DISTANCE,
     YELLOW_FLASH_TIME,
 } from '@app/constants/constants';
@@ -67,7 +67,7 @@ export class GameAreaService {
         setTimeout(() => {
             frontContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
             this.clickDisabled = false;
-        }, ONE_SECOND / speed);
+        }, WAITING_TIME / speed);
         const replayEvent: ReplayEvent = {
             action: ReplayActions.ClickError,
             timestamp: Date.now(),
