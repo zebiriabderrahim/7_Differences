@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { GameModes } from '@common/enums';
 import { ChatMessage } from '@common/game-interfaces';
 
 @Component({
@@ -12,11 +11,9 @@ export class ChatBoxComponent {
     @Input() gameMode: string;
     @Input() isReplaying: boolean;
     @Output() private add: EventEmitter<string>;
-    oneVsOneGameMode: string;
 
     constructor() {
         this.messages = [];
-        this.oneVsOneGameMode = GameModes.ClassicOneVsOne;
         this.add = new EventEmitter<string>();
     }
 
