@@ -1,8 +1,6 @@
-import { AfterViewInit, Component, Input } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { COLORS, DEFAULT_COLOR, DEFAULT_WIDTH, DRAW_VALUES } from '@app/constants/drawing';
 import { CanvasAction } from '@app/enum/canvas-action';
-import { CanvasPosition } from '@app/enum/canvas-position';
-import { CanvasOperation } from '@app/interfaces/canvas-operation';
 import { DrawService } from '@app/services/draw-service/draw.service';
 
 @Component({
@@ -11,8 +9,6 @@ import { DrawService } from '@app/services/draw-service/draw.service';
     styleUrls: ['./canvas-top-buttons.component.scss'],
 })
 export class CanvasTopButtonsComponent implements AfterViewInit {
-    @Input() position: CanvasPosition;
-    operationDetails: CanvasOperation;
     selectedCanvasAction: CanvasAction;
     isColorSelected: boolean;
     canvasAction: typeof CanvasAction;
