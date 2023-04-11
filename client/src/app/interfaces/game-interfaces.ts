@@ -1,5 +1,6 @@
 import { Coordinate } from '@common/coordinate';
-import { PlayerTime } from '@common/game-interfaces';
+import { GameModes } from '@common/enums';
+import { ChatMessage, ClientSideGame, PlayerTime } from '@common/game-interfaces';
 
 export interface GameDetails {
     name: string;
@@ -26,4 +27,16 @@ export interface Game {
 export interface CanvasMeasurements {
     width: number;
     height: number;
+}
+
+export interface GamePageData {
+    game: ClientSideGame;
+    differencesFound: number;
+    opponentDifferencesFound: number;
+    messages: ChatMessage[];
+    player: string;
+    showThirdHintHelp: boolean;
+    hintsAssets: string[];
+    isReplayAvailable: boolean;
+    gameMode: typeof GameModes;
 }
