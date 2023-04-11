@@ -42,25 +42,25 @@ describe('ClassicSystemService', () => {
         differencesFound: 0,
     };
 
-    // const mockPlayer1 = {
-    //     playerId: 'Bob',
-    //     name: 'Jackob',
-    //     diffData: mockDifferences,
-    // };
+    const mockPlayer1 = {
+        playerId: 'Bob',
+        name: 'Jackob',
+        diffData: mockDifferences,
+    };
 
-    // const mockPlayer2 = {
-    //     playerId: 'Boby',
-    //     name: 'Michel',
-    //     diffData: mockDifferences,
-    // };
+    const mockPlayer2 = {
+        playerId: 'Boby',
+        name: 'Michel',
+        diffData: mockDifferences,
+    };
 
-    // const mockData = {
-    //     clientGame: mockClientSideGame,
-    //     players: {
-    //         player1: mockPlayer1,
-    //         player2: mockPlayer2,
-    //     },
-    // };
+    const mockData = {
+        clientGame: mockClientSideGame,
+        players: {
+            player1: mockPlayer1,
+            player2: mockPlayer2,
+        },
+    };
 
     let mockDataDifference = {
         differencesData: mockDifferences,
@@ -158,12 +158,6 @@ describe('ClassicSystemService', () => {
         expect(service.players$).toEqual(mockPlayersSubject.asObservable());
     });
 
-    // it('cheatDifferences$ should return cheatDifferences as Observable', () => {
-    //     const mockCheatDifferencesSubject = new Subject<Coordinate[]>();
-    //     service['cheatDifferences'] = mockCheatDifferencesSubject;
-    //     expect(service.cheatDifferences$).toEqual(mockCheatDifferencesSubject.asObservable());
-    // });
-
     it('should not emit game when game is falsy', () => {
         spyOn(service['currentGame'], 'next');
         service['currentGame'].subscribe();
@@ -225,12 +219,6 @@ describe('ClassicSystemService', () => {
         expect(gameAreaService.setAllData).toHaveBeenCalled();
     });
 
-    // it('manageSocket should connect the client socket', () => {
-    //     const socketConnectSpy = spyOn(socketServiceMock, 'connect');
-    //     service.manageSocket();
-    //     expect(socketConnectSpy).toHaveBeenCalled();
-    // });
-
     it('should return the socket id', () => {
         const socketId = '1234';
         socketServiceMock.socket.id = socketId;
@@ -239,11 +227,6 @@ describe('ClassicSystemService', () => {
 
     it('should send a "StartGameByRoomId" message to the server', () => {
         socketServiceMock.send = jasmine.createSpy('send');
-        // const mockId = '1234';
-        // const roomId = {
-        //     roomId: mockId,
-        //     playerName: playerNameStub,
-        // };
         service.startGame();
         expect(socketServiceMock.send).toHaveBeenCalledWith(GameEvents.StartGameByRoomId);
     });
@@ -266,28 +249,24 @@ describe('ClassicSystemService', () => {
         expect(socketServiceMock.send).toHaveBeenCalledWith(MessageEvents.LocalMessage, { tag: MessageTag.received, message: 'Hello world' });
     });
 
-    // it('manageSocket should add the events listeners to CreateSoloGame, RemoveDiff and TimerStarted events', () => {
-    //     const socketOnSpy = spyOn(socketServiceMock, 'on');
-    //     service.manageSocket();
-    //     expect(socketOnSpy).toHaveBeenCalledWith(RoomEvents.CreateClassicSoloRoom, jasmine.any(Function));
-    //     expect(socketOnSpy).toHaveBeenCalledWith(GameEvents.RemoveDiff, jasmine.any(Function));
-    //     expect(socketOnSpy).toHaveBeenCalledWith(GameEvents.TimerUpdate, jasmine.any(Function));
-    //     expect(socketOnSpy).toHaveBeenCalledWith(GameEvents.EndGame, jasmine.any(Function));
-    // });
+    it('manageSocket should add the events listeners to CreateClassicSoloRoom event', () => {
+        const socketOnSpy = spyOn(socketServiceMock, 'on');
+        service.manageSocket();
+        expect(socketOnSpy).toHaveBeenCalledWith(GameEvents.GameStarted, jasmine.any(Function));
+        expect(socketOnSpy).toHaveBeenCalledWith(GameEvents.RemoveDiff, jasmine.any(Function));
+        expect(socketOnSpy).toHaveBeenCalledWith(GameEvents.TimerUpdate, jasmine.any(Function));
+        expect(socketOnSpy).toHaveBeenCalledWith(GameEvents.EndGame, jasmine.any(Function));
+        expect(socketOnSpy).toHaveBeenCalledWith(MessageEvents.LocalMessage, jasmine.any(Function));
+        expect(socketOnSpy).toHaveBeenCalledWith(GameEvents.UpdateDifferencesFound, jasmine.any(Function));
+        expect(socketOnSpy).toHaveBeenCalledWith(GameEvents.GameModeChanged, jasmine.any(Function));
+    });
 
-    // it('manageSocket should update client game when CreateSoloGame linked event is sent from server', () => {
-    //     service.manageSocket();
-    //     const currentGameSubjectNextSpy = spyOn(service['currentGame'], 'next');
-    //     socketHelper.peerSideEmit(RoomEvents.CreateClassicSoloRoom, mockClientSideGame);
-    //     expect(currentGameSubjectNextSpy).toHaveBeenCalledWith(mockClientSideGame);
-    // });
-
-    // it('manageSocket should update client game when GameStarted linked event is sent from server', () => {
-    //     service.manageSocket();
-    //     const currentGameSubjectNextSpy = spyOn(service['players'], 'next');
-    //     socketHelper.peerSideEmit(GameEvents.GameStarted, mockData);
-    //     expect(currentGameSubjectNextSpy).toHaveBeenCalledWith(mockData.players);
-    // });
+    it('manageSocket should update client game when GameStarted linked event is sent from server', () => {
+        service.manageSocket();
+        const currentGameSubjectNextSpy = spyOn(service['players'], 'next');
+        socketHelper.peerSideEmit(GameEvents.GameStarted, mockData);
+        expect(currentGameSubjectNextSpy).toHaveBeenCalled();
+    });
 
     it('manageSocket should update client game when RemoveDiff linked event is sent from server', () => {
         const checkStatusSpy = spyOn(service, 'checkStatus');
