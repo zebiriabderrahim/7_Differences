@@ -94,6 +94,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
                     this.dialog.open(JoinedPlayerDialogComponent, {
                         data: { gameId: this.game._id, player: player2Name },
                         disableClose: true,
+                        panelClass: 'dialog',
                     });
                 }
             });
@@ -109,6 +110,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
                 this.dialog.open(WaitingForPlayerToJoinComponent, {
                     data: { roomId, player: playerName, gameId: this.game._id },
                     disableClose: true,
+                    panelClass: 'dialog',
                 });
             });
     }
