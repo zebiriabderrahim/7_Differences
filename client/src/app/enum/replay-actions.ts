@@ -10,4 +10,6 @@ export enum ReplayActions {
     DifferenceFoundUpdate = 'DifferenceFoundUpdate',
     OpponentDifferencesFoundUpdate = 'OpponentDifferencesFoundUpdate',
     EndGame = 'EndGame',
+    ActivateThirdHint = 'ActivateThirdHint',
+    DeactivateThirdHint = 'DeactivateThirdHint',
 }
