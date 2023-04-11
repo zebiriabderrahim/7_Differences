@@ -118,28 +118,28 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.gameSub = this.classicService.currentGame$.subscribe((game) => {
             this.game = game;
             if (this.game) {
-                this.gameAreaService.setOgContext(
+                this.gameAreaService.setOriginalContext(
                     this.originalCanvas.nativeElement.getContext('2d', {
                         willReadFrequently: true,
                     }) as CanvasRenderingContext2D,
                 );
-                this.gameAreaService.setMdContext(
+                this.gameAreaService.setModifiedContext(
                     this.modifiedCanvas.nativeElement.getContext('2d', {
                         willReadFrequently: true,
                     }) as CanvasRenderingContext2D,
                 );
-                this.gameAreaService.setOgFrontContext(
+                this.gameAreaService.setOriginalFrontContext(
                     this.originalCanvasForeground.nativeElement.getContext('2d', {
                         willReadFrequently: true,
                     }) as CanvasRenderingContext2D,
                 );
-                this.gameAreaService.setMdFrontContext(
+                this.gameAreaService.setModifiedFrontContext(
                     this.modifiedCanvasForeground.nativeElement.getContext('2d', {
                         willReadFrequently: true,
                     }) as CanvasRenderingContext2D,
                 );
-                this.imageService.loadImage(this.gameAreaService.getOgContext(), this.game.original);
-                this.imageService.loadImage(this.gameAreaService.getMdContext(), this.game.modified);
+                this.imageService.loadImage(this.gameAreaService.getOriginalContext(), this.game.original);
+                this.imageService.loadImage(this.gameAreaService.getModifiedContext(), this.game.modified);
                 this.gameAreaService.setAllData();
             }
         });

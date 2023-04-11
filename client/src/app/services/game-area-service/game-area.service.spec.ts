@@ -300,35 +300,35 @@ describe('GameAreaService', () => {
         expect(gameAreaService['clickDisabled']).toEqual(false);
     });
 
-    it('getOgContext should return originalContext', () => {
+    it('getOriginalContext should return originalContext', () => {
         const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService['originalContext'] = context;
-        const returnedContext = gameAreaService.getOgContext();
+        const returnedContext = gameAreaService.getOriginalContext();
         expect(returnedContext).toEqual(context);
     });
 
-    it('getMdContext should return modifiedContext', () => {
+    it('getModifiedContext should return modifiedContext', () => {
         const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService['modifiedContext'] = context;
-        const returnedContext = gameAreaService.getMdContext();
+        const returnedContext = gameAreaService.getModifiedContext();
         expect(returnedContext).toEqual(context);
     });
 
-    it('getOgFrontContext should return originalContextFrontLayer', () => {
+    it('getOriginalFrontContext should return originalContextFrontLayer', () => {
         const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService['originalContextFrontLayer'] = context;
-        const returnedContext = gameAreaService.getOgFrontContext();
+        const returnedContext = gameAreaService.getOriginalFrontContext();
         expect(returnedContext).toEqual(context);
     });
 
-    it('getMdFrontContext should return modifiedContextFrontLayer', () => {
+    it('getModifiedFrontContext should return modifiedContextFrontLayer', () => {
         const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService['modifiedContextFrontLayer'] = context;
-        const returnedContext = gameAreaService.getMdFrontContext();
+        const returnedContext = gameAreaService.getModifiedFrontContext();
         expect(returnedContext).toEqual(context);
     });
 
@@ -338,31 +338,31 @@ describe('GameAreaService', () => {
         expect(returnedMousePosition).toEqual(gameAreaService['mousePosition']);
     });
 
-    it('setOgContext should set originalContext', () => {
+    it('setOriginalContext should set originalContext', () => {
         const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
-        gameAreaService.setOgContext(context);
+        gameAreaService.setOriginalContext(context);
         expect(gameAreaService['originalContext']).toEqual(context);
     });
 
-    it('setOgFrontContext should set originalContextFrontLayer', () => {
+    it('setOriginalFrontContext should set originalContextFrontLayer', () => {
         const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
-        gameAreaService.setOgFrontContext(context);
+        gameAreaService.setOriginalFrontContext(context);
         expect(gameAreaService['originalContextFrontLayer']).toEqual(context);
     });
 
-    it('setMdContext should set modifiedContext', () => {
+    it('setModifiedContext should set modifiedContext', () => {
         const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
-        gameAreaService.setMdContext(context);
+        gameAreaService.setModifiedContext(context);
         expect(gameAreaService['modifiedContext']).toEqual(context);
     });
 
-    it('setMdFrontContext should set modifiedContextFrontLayer', () => {
+    it('setModifiedFrontContext should set modifiedContextFrontLayer', () => {
         const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
-        gameAreaService.setMdFrontContext(context);
+        gameAreaService.setModifiedFrontContext(context);
         expect(gameAreaService['modifiedContextFrontLayer']).toEqual(context);
     });
 });

@@ -119,8 +119,8 @@ export class ReplayService {
             case ReplayActions.StartGame:
                 this.hintService.resetHints();
                 this.classicSystemService.differences = (replayData.data as GameRoom).originalDifferences;
-                this.imageService.loadImage(this.gameAreaService.getOgContext(), (replayData.data as GameRoom).clientGame.original);
-                this.imageService.loadImage(this.gameAreaService.getMdContext(), (replayData.data as GameRoom).clientGame.modified);
+                this.imageService.loadImage(this.gameAreaService.getOriginalContext(), (replayData.data as GameRoom).clientGame.original);
+                this.imageService.loadImage(this.gameAreaService.getModifiedContext(), (replayData.data as GameRoom).clientGame.modified);
                 this.gameAreaService.setAllData();
                 break;
             case ReplayActions.ClickFound:
