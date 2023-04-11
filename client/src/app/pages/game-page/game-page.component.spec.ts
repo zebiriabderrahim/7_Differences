@@ -51,6 +51,7 @@ describe('GamePageComponent', () => {
     // const cheatDifferencesSubjectTest = new Subject<Coordinate[]>();
     const paramsSubjectTest = new Subject<{ roomId: string }>();
     const isFirstDifferencesFoundTest = new Subject<boolean>();
+    const isGameModeChangedTest = new Subject<boolean>();
     const replayTimerSubjectTest = new BehaviorSubject<number>(0);
     const replayDifferenceFoundSubjectTest = new BehaviorSubject<number>(0);
     const replayOpponentDifferenceFoundSubjectTest = new BehaviorSubject<number>(0);
@@ -74,6 +75,7 @@ describe('GamePageComponent', () => {
                 opponentDifferencesFound$: opponentDifferencesFoundSubjectTest,
                 // cheatDifferences$: cheatDifferencesSubjectTest,
                 isFirstDifferencesFound$: isFirstDifferencesFoundTest,
+                isGameModeChanged$: isGameModeChangedTest,
             },
         );
         routeSpy = jasmine.createSpyObj('ActivatedRoute', ['navigate'], { params: paramsSubjectTest });

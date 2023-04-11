@@ -7,6 +7,7 @@ import {
     MAX_BONUS_TIME,
     MAX_COUNTDOWN_TIME,
     MAX_PENALTY_TIME,
+    MIN_COUNTDOWN_TIME,
     MIN_TIME,
 } from '@app/constants/constants';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
@@ -31,7 +32,7 @@ export class ConfigDialogComponent implements OnInit, OnDestroy {
     ) {
         this.configConstants = { countdownTime: DEFAULT_COUNTDOWN_VALUE, penaltyTime: DEFAULT_PENALTY_VALUE, bonusTime: DEFAULT_BONUS_VALUE };
         this.configForm = this.formBuilder.group({
-            countdownTime: ['', [Validators.required, Validators.min(MIN_TIME), Validators.max(MAX_COUNTDOWN_TIME)]],
+            countdownTime: ['', [Validators.required, Validators.min(MIN_COUNTDOWN_TIME), Validators.max(MAX_COUNTDOWN_TIME)]],
             penaltyTime: ['', [Validators.required, Validators.min(MIN_TIME), Validators.max(MAX_PENALTY_TIME)]],
             bonusTime: ['', [Validators.required, Validators.min(MIN_TIME), Validators.max(MAX_BONUS_TIME)]],
         });
@@ -43,7 +44,7 @@ export class ConfigDialogComponent implements OnInit, OnDestroy {
         this.handleChanges();
     }
 
-    onSubmit() {
+    saveGameConstants() {
         this.configConstants = this.configForm.value.valueOf();
         this.communicationService.updateGameConstants(this.configConstants).subscribe(() => {
             this.roomManagerService.gameConstantsUpdated();
@@ -75,9 +76,6 @@ export class ConfigDialogComponent implements OnInit, OnDestroy {
 
     resetConfigForm() {
         this.configForm.reset({ countdownTime: DEFAULT_COUNTDOWN_VALUE, penaltyTime: DEFAULT_PENALTY_VALUE, bonusTime: DEFAULT_BONUS_VALUE });
-        this.communicationSubscription = this.communicationService.updateGameConstants(this.configConstants).subscribe(() => {
-            this.roomManagerService.gameConstantsUpdated();
-        });
     }
 
     ngOnDestroy() {

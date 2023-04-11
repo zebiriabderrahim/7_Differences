@@ -11,6 +11,8 @@
     text-align: center;
 }
 
+
+
 #game-page {
     background-color: #67a28b;
     width: 100%;
@@ -63,7 +65,7 @@ canvas {
     z-index: 2;
 }
 
-img {
+.background {
     width: 100%;
 }
 
@@ -81,6 +83,7 @@ img {
     border: solid none;
     z-index: 1;
 }
+
 .information-header h1{
     margin-top: 40px;
     font-size: 40px;

@@ -9,6 +9,8 @@ export enum GameEvents {
     StartGameByRoomId = 'CreateOneVsOneGame',
     StartNextGame = 'StartNextGame',
     RequestHint = 'RequestHint',
+    UpdateDifferencesFound = "UpdateDifferencesFound",
+    GameModeChanged = "GameModeChanged"
 }
 
 export enum PlayerEvents {
