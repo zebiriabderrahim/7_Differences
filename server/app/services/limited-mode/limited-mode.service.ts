@@ -1,7 +1,7 @@
 import { GameService } from '@app/services/game/game.service';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { NOT_FOUND } from '@common/constants';
-import { GameEvents, RoomEvents, GameModes } from '@common/enums';
+import { GameEvents, GameModes, RoomEvents } from '@common/enums';
 import { GameRoom, LimitedGameDetails } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
@@ -46,7 +46,7 @@ export class LimitedModeService {
             room.player2 = {
                 name: gameDetails.playerName,
                 playerId: socket.id,
-                diffData: room.player1.diffData,
+                differenceData: room.player1.differenceData,
             };
             this.roomsManagerService.updateRoom(room);
             server.to(room.roomId).emit(RoomEvents.LimitedCoopRoomJoined);
@@ -100,13 +100,13 @@ export class LimitedModeService {
 
     private equalizeDiffFound(room: GameRoom, server: io.Server): void {
         if (room.clientGame.mode === GameModes.LimitedCoop) {
-            server.to(room.roomId).emit(GameEvents.UpdateDifferencesFound, room.player1.diffData.differencesFound);
+            server.to(room.roomId).emit(GameEvents.UpdateDifferencesFound, room.player1.differenceData.differencesFound);
         }
     }
 
     private sendEndMessage(roomId: string, server: io.Server): void {
         const room = this.roomsManagerService.getRoomById(roomId);
-        room.endMessage = `Vous avez trouvé les ${room.player1.diffData.differencesFound} différences! Bravo!`;
+        room.endMessage = `Vous avez trouvé les ${room.player1.differenceData.differencesFound} différences! Bravo!`;
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
     }
 }

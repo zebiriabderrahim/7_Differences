@@ -56,7 +56,7 @@ export interface GameRoom {
 export interface Player {
     playerId?: string;
     name: string;
-    diffData: Differences;
+    differenceData: Differences;
 }
 
 export interface playerData {
@@ -114,3 +114,4 @@ export enum GameCardActions {
     Join = 'join',
 }
 export { Coordinate };
+

@@ -184,9 +184,12 @@ export class ClassicSystemService {
             this.replayEventsSubject.next(replayEvent);
         });
 
-        this.clientSocket.on(GameEvents.RemoveDifference, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
-            this.handleRemoveDifference(data);
-        });
+        this.clientSocket.on(
+            GameEvents.RemoveDifference,
+            (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
+                this.handleRemoveDifference(data);
+            },
+        );
 
         this.clientSocket.on(GameEvents.TimerUpdate, (timer: number) => {
             this.timer.next(timer);

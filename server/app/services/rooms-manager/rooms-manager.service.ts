@@ -25,8 +25,8 @@ export class RoomsManagerService {
                 : await this.gameService.getGameById(gameId);
         if (!game) return;
         const gameConstants = await this.gameService.getGameConstants();
-        const diffData = { currentDifference: [], differencesFound: 0 } as Differences;
-        const player = { name: playerName, diffData } as Player;
+        const differenceData = { currentDifference: [], differencesFound: 0 } as Differences;
+        const player = { name: playerName, differenceData } as Player;
         const room: GameRoom = {
             roomId: this.generateRoomId(),
             clientGame: this.buildClientGameVersion(game),
@@ -119,27 +119,30 @@ export class RoomsManagerService {
 
         const player = room.player1.playerId === socket.id ? room.player1 : room.player2;
         const { originalDifferences } = room;
-        const { diffData, name } = player;
+        const { differenceData: differenceData, name } = player;
 
         const index = originalDifferences.findIndex((difference) =>
             difference.some((coord: Coordinate) => coord.x === coords.x && coord.y === coords.y),
         );
         if (index !== NOT_FOUND) {
-            diffData.differencesFound++;
+            differenceData.differencesFound++;
             this.addBonusTime(room);
-            diffData.currentDifference = originalDifferences[index];
+            differenceData.currentDifference = originalDifferences[index];
             originalDifferences.splice(index, 1);
             const localMessage = this.messageManager.getLocalMessage(room.clientGame.mode, true, name);
             server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
         } else {
-            diffData.currentDifference = [];
+            differenceData.currentDifference = [];
             const localMessage = this.messageManager.getLocalMessage(room.clientGame.mode, false, name);
             server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
         }
 
         this.rooms.set(roomId, room);
 
-        const differencesData = { currentDifference: diffData.currentDifference, differencesFound: diffData.differencesFound } as Differences;
+        const differencesData = {
+            currentDifference: differenceData.currentDifference,
+            differencesFound: differenceData.differencesFound,
+        } as Differences;
         const cheatDifferences = room.originalDifferences;
         server.to(room.roomId).emit(GameEvents.RemoveDifference, { differencesData, playerId: socket.id, cheatDifferences });
     }

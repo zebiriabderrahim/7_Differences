@@ -36,7 +36,7 @@ describe('ClassicModeService', () => {
     //     differencesCount: 1,
     //     mode: '',
     // };
-    // const diffData: Differences = {
+    // const differenceData: Differences = {
     //     currentDifference: [],
     //     differencesFound: 0,
     // };
@@ -59,7 +59,7 @@ describe('ClassicModeService', () => {
     // const fakePlayer: Player = {
     //     playerId: 'testPlayer',
     //     name: 'testPlayer',
-    //     diffData: fakeDiff,
+    //     differenceData: fakeDiff,
     // };
 
     // const fakeRoom: ClassicPlayRoom = {
@@ -73,7 +73,7 @@ describe('ClassicModeService', () => {
     // const fakePlayer2: Player = {
     //     playerId: 'testPlayer2',
     //     name: 'testPlayer2',
-    //     diffData: { currentDifference: [], differencesFound: 1 },
+    //     differenceData: { currentDifference: [], differencesFound: 1 },
     // };
 
     // const fakeRoom2: ClassicPlayRoom = {
@@ -186,7 +186,7 @@ describe('ClassicModeService', () => {
     //     fakeRoom.player2 = {
     //         playerId: 'testPlayer',
     //         name: 'testPlayer',
-    //         diffData,
+    //         differenceData,
     //     };
     //     service['rooms'].set(fakeRoom.roomId, fakeRoom);
     //     const getRoomIdFromSocketSpy = jest.spyOn(service, 'getRoomIdFromSocket').mockReturnValue(fakeRoom.roomId);
