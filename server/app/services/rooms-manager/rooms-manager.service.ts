@@ -141,7 +141,7 @@ export class RoomsManagerService {
 
         const differencesData = { currentDifference: diffData.currentDifference, differencesFound: diffData.differencesFound } as Differences;
         const cheatDifferences = room.originalDifferences;
-        server.to(room.roomId).emit(GameEvents.RemoveDiff, { differencesData, playerId: socket.id, cheatDifferences });
+        server.to(room.roomId).emit(GameEvents.RemoveDifference, { differencesData, playerId: socket.id, cheatDifferences });
     }
 
     updateTimers(server: io.Server) {

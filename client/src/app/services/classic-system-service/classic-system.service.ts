@@ -99,7 +99,7 @@ export class ClassicSystemService {
     }
 
     requestVerification(coords: Coordinate): void {
-        this.clientSocket.send(GameEvents.RemoveDiff, coords);
+        this.clientSocket.send(GameEvents.RemoveDifference, coords);
     }
 
     replaceDifference(differences: Coordinate[]): void {
@@ -114,7 +114,7 @@ export class ClassicSystemService {
         }
     }
 
-    handleRemoveDiff(data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }): void {
+    handleRemoveDifference(data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }): void {
         if (data.playerId === this.getSocketId()) {
             this.replaceDifference(data.differencesData.currentDifference);
             this.differencesFound.next(data.differencesData.differencesFound);
@@ -184,8 +184,8 @@ export class ClassicSystemService {
             this.replayEventsSubject.next(replayEvent);
         });
 
-        this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
-            this.handleRemoveDiff(data);
+        this.clientSocket.on(GameEvents.RemoveDifference, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
+            this.handleRemoveDifference(data);
         });
 
         this.clientSocket.on(GameEvents.TimerUpdate, (timer: number) => {
