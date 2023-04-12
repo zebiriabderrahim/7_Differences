@@ -38,7 +38,7 @@ describe('ClassicModeService', () => {
         differencesCount: 1,
         mode: '',
     };
-    const diffData: Differences = {
+    const differenceData: Differences = {
         currentDifference: [],
         differencesFound: 0,
     };
@@ -420,6 +420,35 @@ describe('ClassicModeService', () => {
         await service['createClassicRoom'](socket, fakeData);
         expect(createRoomSpy).toBeCalled();
         expect(updateRoomSpy).toBeCalled();
+    });
+
+    it('checkStatus should call getRoomIdFromSocket and getRoomById', async () => {
+        fakeRoom.clientGame.mode = GameModes.ClassicSolo;
+        fakeRoom.player1.differenceData.differencesFound = 1;
+        const getRoomIdFromSocketSpy = jest.spyOn(roomsManagerService, 'getRoomIdFromSocket').mockReturnValue(fakeRoom.roomId);
+        const getRoomByIdSpy = jest.spyOn(roomsManagerService, 'getRoomById').mockReturnValue(fakeRoom);
+        const endGameSpy = jest.spyOn(service, 'endGame').mockImplementationOnce(async (_fakeRoom, _fakePlayer, _server) => {
+            return;
+        });
+        await service.checkStatus(socket, server);
+        expect(getRoomIdFromSocketSpy).toBeCalled();
+        expect(getRoomByIdSpy).toBeCalled();
+        expect(endGameSpy).toBeCalled();
+    });
+
+    it('checkStatus should call getRoomIdFromSocket and getRoomById', async () => {
+        fakeRoom.player1.playerId = undefined;
+        fakeRoom.clientGame.mode = GameModes.ClassicOneVsOne;
+        fakeRoom.player1.differenceData.differencesFound = 1;
+        const getRoomIdFromSocketSpy = jest.spyOn(roomsManagerService, 'getRoomIdFromSocket').mockReturnValue(fakeRoom.roomId);
+        const getRoomByIdSpy = jest.spyOn(roomsManagerService, 'getRoomById').mockReturnValue(fakeRoom);
+        const endGameSpy = jest.spyOn(service, 'endGame').mockImplementationOnce(async (_fakeRoom, _fakePlayer, _server) => {
+            return;
+        });
+        await service.checkStatus(socket, server);
+        expect(getRoomIdFromSocketSpy).toBeCalled();
+        expect(getRoomByIdSpy).toBeCalled();
+        expect(endGameSpy).toBeCalled();
     });
 
     afterEach(() => {
