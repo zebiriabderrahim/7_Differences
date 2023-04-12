@@ -45,13 +45,13 @@ describe('ClassicSystemService', () => {
     // const mockPlayer1 = {
     //     playerId: 'Bob',
     //     name: 'Jackob',
-    //     diffData: mockDifferences,
+    //     differenceData: mockDifferences,
     // };
 
     // const mockPlayer2 = {
     //     playerId: 'Boby',
     //     name: 'Michel',
-    //     diffData: mockDifferences,
+    //     differenceData: mockDifferences,
     // };
 
     // const mockData = {
