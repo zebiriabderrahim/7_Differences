@@ -14,10 +14,6 @@ export class HistoryService {
         this.pendingGames = new Map<string, GameHistory>();
     }
 
-    getHistory(): GameHistory[] {
-        return this.history;
-    }
-
     createEntry(room: GameRoom) {
         const date = new Date();
         const gameHistory: GameHistory = {
@@ -72,7 +68,7 @@ export class HistoryService {
         this.pendingGames.set(roomId, gameHistory);
     }
 
-    getFormattedDate(date: Date): string {
+    private getFormattedDate(date: Date): string {
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const day = date.getDate().toString().padStart(2, '0');
         const year = date.getFullYear();
@@ -80,7 +76,7 @@ export class HistoryService {
         return `${year}-${month}-${day}`;
     }
 
-    getFormattedTime(date: Date): string {
+    private getFormattedTime(date: Date): string {
         return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
     }
 }
