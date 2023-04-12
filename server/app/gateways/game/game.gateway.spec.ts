@@ -121,7 +121,7 @@ describe('GameGateway', () => {
     });
 
     it('validateCoords() should call verifyCoords in roomsManagerService', () => {
-        const verifyCoordsSpy = jest.spyOn(roomsManagerService, 'verifyCoords');
+        const verifyCoordsSpy = jest.spyOn(roomsManagerService, 'validateCoords');
         gateway.validateCoords(socket, { x: 0, y: 0 } as Coordinate);
         expect(verifyCoordsSpy).toHaveBeenCalled();
     });
