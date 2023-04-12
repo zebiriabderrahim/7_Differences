@@ -221,6 +221,8 @@ export class RoomsManagerService {
             server.to(opponent?.playerId)?.emit(GameEvents.GameModeChanged);
             room.clientGame.mode = GameModes.LimitedSolo;
             this.updateRoom(room);
+        } else {
+            this.deleteRoom(roomId);
         }
         socket.leave(roomId);
     }
