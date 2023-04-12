@@ -179,13 +179,16 @@ export class RoomsManagerService implements OnModuleInit {
         if (!room) return;
         const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
         const opponent: Player = room.player1.playerId === socket.id ? room.player2 : room.player1;
+        this.historyService.markPlayer(room.roomId, player.name, PlayerStatus.Quitter);
         if (this.isMultiplayerGame(room.clientGame) && opponent) {
+            if (room.clientGame.mode === GameModes.ClassicOneVsOne) this.historyService.markPlayer(room.roomId, opponent.name, PlayerStatus.Winner);
             const localMessage =
                 room.clientGame.mode === GameModes.ClassicOneVsOne
                     ? this.handleOneVsOneAbandon(player, room, server)
                     : this.handleCoopAbandon(opponent, room, server);
             server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
         } else {
+            this.historyService.closeEntry(room.roomId, server);
             this.deleteRoom(room.roomId);
         }
         socket.leave(room.roomId);
@@ -256,6 +259,7 @@ export class RoomsManagerService implements OnModuleInit {
         room.endMessage = "L'adversaire a abandonné la partie!";
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
         this.leaveRoom(room, server);
+        this.historyService.closeEntry(room.roomId, server);
         this.deleteRoom(room.roomId);
         return this.messageManager.getQuitMessage(player.name);
     }
