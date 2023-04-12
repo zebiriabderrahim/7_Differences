@@ -157,20 +157,20 @@ describe('ClassicModeService', () => {
     //     expect(valuesSpy).toBeCalled();
     // });
 
-    // it('verifyCoords should emit the removeDiff event with coord if the coordinates are correct', () => {
+    // it('verifyCoords should emit the removeDifference event with coord if the coordinates are correct', () => {
     //     service['rooms'].set(fakeRoom.roomId, fakeRoom);
     //     const getRoomIdFromSocketSpy = jest.spyOn(service, 'getRoomIdFromSocket').mockReturnValue(fakeRoom.roomId);
     //     let localMessageEmitted = false;
-    //     let removeDiffEmitted = false;
+    //     let removeDifferenceEmitted = false;
 
     //     server.to.returns({
     //         emit: (event: string) => {
     //             if (event === MessageEvents.LocalMessage && !localMessageEmitted) {
     //                 expect(event).toEqual(MessageEvents.LocalMessage);
     //                 localMessageEmitted = true;
-    //             } else if (event === GameEvents.RemoveDiff && !removeDiffEmitted) {
-    //                 expect(event).toEqual(GameEvents.RemoveDiff);
-    //                 removeDiffEmitted = true;
+    //             } else if (event === GameEvents.RemoveDifference && !removeDifferenceEmitted) {
+    //                 expect(event).toEqual(GameEvents.RemoveDifference);
+    //                 removeDifferenceEmitted = true;
     //             }
     //         },
     //     } as BroadcastOperator<unknown, unknown>);
@@ -197,9 +197,9 @@ describe('ClassicModeService', () => {
     //             if (event === MessageEvents.LocalMessage && !localMessageEmitted) {
     //                 expect(event).toEqual(MessageEvents.LocalMessage);
     //                 localMessageEmitted = true;
-    //             } else if (event === GameEvents.RemoveDiff && !removeDiffEmitted) {
-    //                 expect(event).toEqual(GameEvents.RemoveDiff);
-    //                 removeDiffEmitted = true;
+    //             } else if (event === GameEvents.RemoveDifference && !removeDifferenceEmitted) {
+    //                 expect(event).toEqual(GameEvents.RemoveDifference);
+    //                 removeDifferenceEmitted = true;
     //             }
     //         },
     //     } as BroadcastOperator<unknown, unknown>);
