@@ -31,6 +31,7 @@ export class CreationGameDialogComponent implements OnInit {
         private readonly dialogRef: MatDialogRef<CreationPageComponent>,
         @Inject(MAT_DIALOG_DATA) public radius: number,
     ) {
+        this.gameName = '';
         this.gameNameForm = new FormGroup({
             name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)], [this.validateGameName.bind(this)]),
         });
@@ -41,7 +42,6 @@ export class CreationGameDialogComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.gameName = '';
         this.differenceCanvas.nativeElement.width = IMG_WIDTH;
         this.differenceCanvas.nativeElement.height = IMG_HEIGHT;
         const differences = this.differenceService.generateDifferences(this.imageService.generateGamePixels(), this.radius);
