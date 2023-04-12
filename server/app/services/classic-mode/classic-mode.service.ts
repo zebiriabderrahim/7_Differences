@@ -3,11 +3,10 @@
 // Id comes from database to allow _id
 /* eslint-disable no-underscore-dangle */
 import { HistoryService } from '@app/services/history/history.service';
-import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { GameEvents, GameModes, PlayerEvents, PlayerStatus, RoomEvents } from '@common/enums';
-import { GameRoom, Player, RoomAvailability, playerData } from '@common/game-interfaces';
+import { GameRoom, Player, RoomAvailability, PlayerData } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
 
@@ -15,32 +14,30 @@ import * as io from 'socket.io';
 export class ClassicModeService {
     private roomAvailability: Map<string, RoomAvailability>;
 
-    // Services are needed to communicate in service
-    // eslint-disable-next-line max-params
     constructor(
         private readonly roomsManagerService: RoomsManagerService,
-        private readonly messageManager: MessageManagerService,
         private readonly historyService: HistoryService,
         private readonly playersListManagerService: PlayersListManagerService,
     ) {
         this.roomAvailability = new Map<string, RoomAvailability>();
     }
 
-    async createSoloRoom(socket: io.Socket, playerPayLoad: playerData, server: io.Server): Promise<void> {
-        const soloRoomId = await this.createClassicRoom(socket, playerPayLoad, GameModes.ClassicSolo);
+    async createSoloRoom(socket: io.Socket, playerPayLoad: PlayerData, server: io.Server): Promise<void> {
+        const soloRoomId = await this.createClassicRoom(socket, playerPayLoad);
         if (!soloRoomId) return;
         server.to(socket.id).emit(RoomEvents.RoomSoloCreated, soloRoomId);
     }
 
-    async createOneVsOneRoom(socket: io.Socket, playerPayLoad: playerData, server: io.Server) {
-        const oneVsOneRoomId = await this.createClassicRoom(socket, playerPayLoad, GameModes.ClassicOneVsOne);
+    async createOneVsOneRoom(socket: io.Socket, playerPayLoad: PlayerData, server: io.Server) {
+        const oneVsOneRoomId = await this.createClassicRoom(socket, playerPayLoad);
         if (!oneVsOneRoomId) return;
         server.to(socket.id).emit(RoomEvents.RoomOneVsOneCreated, oneVsOneRoomId);
     }
 
     deleteCreatedRoom(hostId: string, roomId: string, server: io.Server): void {
-        const gameId = this.roomsManagerService.getRoomById(roomId)?.clientGame.id;
-        this.updateRoomOneVsOneAvailability(hostId, gameId, server);
+        const room = this.roomsManagerService.getRoomById(roomId);
+        if (!room) return;
+        this.updateRoomOneVsOneAvailability(hostId, room.clientGame.id, server);
         this.roomsManagerService.deleteRoom(roomId);
     }
 
@@ -110,15 +107,14 @@ export class ClassicModeService {
     }
 
     handleSocketDisconnect(socket: io.Socket, server: io.Server): void {
-        const roomId = this.roomsManagerService.getRoomIdByPlayerId(socket.id);
-        const room = this.roomsManagerService.getRoomById(roomId);
-        this.roomsManagerService.handleDisconnect(room);
+        const room = this.roomsManagerService.getRoomByPlayerId(socket.id);
         const createdGameId = this.playersListManagerService.getGameIdByPlayerId(socket.id);
+        this.roomsManagerService.handleDisconnect(room);
         const joinable = this.roomAvailability.get(room?.clientGame.id)?.isAvailableToJoin;
         if (room && !room.player2 && joinable && room.clientGame.mode === GameModes.ClassicOneVsOne) {
             this.updateRoomOneVsOneAvailability(socket.id, room.clientGame.id, server);
             this.playersListManagerService.cancelAllJoining(room.clientGame.id, server);
-            this.roomsManagerService.deleteRoom(roomId);
+            this.roomsManagerService.deleteRoom(room.roomId);
         } else if (room && room.timer !== 0 && !joinable) {
             this.roomsManagerService.abandonGame(socket, server);
         } else if (!createdGameId) {
@@ -130,8 +126,8 @@ export class ClassicModeService {
         }
     }
 
-    private async createClassicRoom(socket: io.Socket, playerPayLoad: playerData, gameMode: GameModes): Promise<string> {
-        const classicRoom = await this.roomsManagerService.createRoom(playerPayLoad.playerName, playerPayLoad.gameId, gameMode);
+    private async createClassicRoom(socket: io.Socket, playerPayLoad: PlayerData): Promise<string> {
+        const classicRoom = await this.roomsManagerService.createRoom(playerPayLoad);
         if (!classicRoom) return;
         classicRoom.player1.playerId = socket.id;
         this.roomsManagerService.updateRoom(classicRoom);

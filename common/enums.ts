@@ -9,8 +9,9 @@ export enum GameEvents {
     StartGameByRoomId = 'CreateOneVsOneGame',
     StartNextGame = 'StartNextGame',
     RequestHint = 'RequestHint',
-    UpdateDifferencesFound = "UpdateDifferencesFound",
-    GameModeChanged = "GameModeChanged"
+    UpdateDifferencesFound = 'UpdateDifferencesFound',
+    GameModeChanged = 'GameModeChanged',
+    GamePageRefreshed = 'Refresh',
 }
 
 export enum PlayerEvents {
@@ -47,7 +48,7 @@ export enum RoomEvents {
     CreateClassicSoloRoom = 'CreateClassicSoloRoom',
     RoomSoloCreated = 'RoomSoloCreated',
     RoomLimitedCreated = 'RoomLimitedCreated',
-    CreateSoloLimitedRoom = 'CreateSoloLimitedRoom',
+    CreateLimitedRoom = 'CreateSoloLimitedRoom',
     RoomOneVsOneCreated = 'RoomOneVsOneCreated',
     RoomOneVsOneAvailable = 'RoomOneVsOneAvailable',
     CreateOneVsOneRoom = 'CreateOneVsOneRoom',
@@ -58,9 +59,14 @@ export enum RoomEvents {
     UndoRoomCreation = 'UndoRoomCreation',
     DeleteCreatedOneVsOneRoom = 'DeleteCreatedOneVsOneRoom',
     JoinOneVsOneRoom = 'JoinOneVsOneRoom',
-    CheckIfAnyCoopRoomExists = "CheckIfAnyCoopRoomExists",
-    LimitedCoopRoomJoined = "LimitedCoopRoomJoined",
-    DeleteCreatedCoopRoom = "DeleteCreatedCoopRoom"
+    CheckIfAnyCoopRoomExists = 'CheckIfAnyCoopRoomExists',
+    LimitedCoopRoomJoined = 'LimitedCoopRoomJoined',
+    DeleteCreatedCoopRoom = 'DeleteCreatedCoopRoom',
+}
+
+export enum PlayerStatus {
+    Winner = 'Winner',
+    Quitter = 'Quitter',
 }
 
 export enum PlayerStatus {
