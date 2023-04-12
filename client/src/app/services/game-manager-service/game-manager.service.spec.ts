@@ -15,7 +15,7 @@ import { GameEvents, MessageEvents, MessageTag } from '@common/enums';
 import { ChatMessage, Differences, Players } from '@common/game-interfaces';
 import { Subject } from 'rxjs';
 import { Socket } from 'socket.io-client';
-import { ClassicSystemService } from './classic-system.service';
+import { GameManagerService } from './game-manager.service';
 
 class SocketClientServiceMock extends ClientSocketService {
     override connect() {
@@ -25,7 +25,7 @@ class SocketClientServiceMock extends ClientSocketService {
         return;
     }
 }
-describe('ClassicSystemService', () => {
+describe('GameManagerService', () => {
     const mockClientSideGame = {
         id: 'JackGame',
         name: 'le Jeu de Jack',
@@ -72,7 +72,7 @@ describe('ClassicSystemService', () => {
     const mockEndMessage = 'Fin de partie';
 
     let mockChatMessage: ChatMessage;
-    let service: ClassicSystemService;
+    let service: GameManagerService;
     let gameAreaService: GameAreaService;
     let socketHelper: SocketTestHelper;
     let socketServiceMock: SocketClientServiceMock;
@@ -103,8 +103,8 @@ describe('ClassicSystemService', () => {
     });
 
     beforeEach(() => {
-        service = TestBed.inject(ClassicSystemService);
-        service = new ClassicSystemService(socketServiceMock, TestBed.inject(GameAreaService), TestBed.inject(SoundService));
+        service = TestBed.inject(GameManagerService);
+        service = new GameManagerService(socketServiceMock, TestBed.inject(GameAreaService), TestBed.inject(SoundService));
         gameAreaService = TestBed.inject(GameAreaService);
         service['currentGame'].next(mockClientSideGame);
     });
