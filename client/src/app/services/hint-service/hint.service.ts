@@ -52,7 +52,7 @@ export class HintService {
         this.isThirdHintActive = false;
     }
 
-    clickDuringThirdHint(): void {
+    deactivateThirdHint(): void {
         this.isThirdHintActive = false;
         const replayEvent: ReplayEvent = {
             action: ReplayActions.DeactivateThirdHint,
