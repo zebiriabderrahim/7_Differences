@@ -28,15 +28,3 @@ export interface CanvasMeasurements {
     width: number;
     height: number;
 }
-
-export interface GamePageData {
-    game: ClientSideGame;
-    differencesFound: number;
-    opponentDifferencesFound: number;
-    messages: ChatMessage[];
-    player: string;
-    showThirdHintHelp: boolean;
-    hintsAssets: string[];
-    isReplayAvailable: boolean;
-    gameMode: typeof GameModes;
-}
