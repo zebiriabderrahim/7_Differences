@@ -3,7 +3,7 @@ import { GameService } from '@app/services/game/game.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { MAX_TIMES_INDEX, NOT_FOUND } from '@common/constants';
 import { GameCardEvents, MessageEvents, PlayerEvents, RoomEvents } from '@common/enums';
-import { Differences, GameRoom, NewRecord, Player, playerData, PlayerNameAvailability, PlayerTime } from '@common/game-interfaces';
+import { Differences, GameRoom, NewRecord, Player, PlayerData, PlayerNameAvailability, PlayerTime } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
 
@@ -15,7 +15,7 @@ export class PlayersListManagerService {
         this.joinedPlayersByGameId = new Map<string, Player[]>();
     }
 
-    updateWaitingPlayerNameList(playerPayLoad: playerData, socket: io.Socket): void {
+    updateWaitingPlayerNameList(playerPayLoad: PlayerData, socket: io.Socket): void {
         const playerNames = this.joinedPlayersByGameId.get(playerPayLoad.gameId) ?? [];
         const diffData = { currentDifference: [], differencesFound: 0 } as Differences;
         const playerGuest = { name: playerPayLoad.playerName, diffData, playerId: socket.id } as Player;
@@ -28,7 +28,7 @@ export class PlayersListManagerService {
         server.to(hostId).emit(PlayerEvents.WaitingPlayerNameListUpdated, playerNamesList);
     }
 
-    refusePlayer(playerPayLoad: playerData, server: io.Server): void {
+    refusePlayer(playerPayLoad: PlayerData, server: io.Server): void {
         this.cancelJoiningByPlayerName(playerPayLoad.playerName, playerPayLoad.gameId, server);
     }
 
@@ -43,20 +43,11 @@ export class PlayersListManagerService {
         return acceptedPlayer;
     }
 
-    checkIfPlayerNameIsAvailable(playerPayLoad: playerData, server: io.Server): void {
+    checkIfPlayerNameIsAvailable(playerPayLoad: PlayerData, server: io.Server): void {
         const joinedPlayerNames = this.joinedPlayersByGameId.get(playerPayLoad.gameId);
         const playerNameAvailability = { gameId: playerPayLoad.gameId, isNameAvailable: true } as PlayerNameAvailability;
         playerNameAvailability.isNameAvailable = !joinedPlayerNames?.some((player) => player.name === playerPayLoad.playerName);
         server.emit(PlayerEvents.PlayerNameTaken, playerNameAvailability);
-    }
-
-    cancelJoiningByPlayerName(playerName: string, gameId: string, server: io.Server): void {
-        const playerId = this.getPlayerIdByPlayerName(gameId, playerName);
-        if (playerId) {
-            this.cancelJoiningByPlayerId(playerId, gameId);
-            server.to(playerId).emit(PlayerEvents.PlayerRefused, playerId);
-            server.emit(RoomEvents.UndoRoomCreation, gameId);
-        }
     }
 
     cancelJoiningByPlayerId(playerId: string, gameId: string): void {
@@ -76,10 +67,6 @@ export class PlayersListManagerService {
         });
     }
 
-    getPlayerIdByPlayerName(gameId: string, playerName: string): string {
-        return this.joinedPlayersByGameId.get(gameId)?.find((player) => player.name === playerName)?.playerId;
-    }
-
     getGameIdByPlayerId(playerId: string): string {
         return Array.from(this.joinedPlayersByGameId.keys()).find((gameId) =>
             this.joinedPlayersByGameId.get(gameId).some((player) => player.playerId === playerId),
@@ -94,8 +81,18 @@ export class PlayersListManagerService {
         this.joinedPlayersByGameId.set(gameId, playerNames);
     }
 
+    async resetAllTopTime(server: io.Server): Promise<void> {
+        await this.gameService.resetAllTopTimes();
+        server.emit(GameCardEvents.RequestReload);
+    }
+
     deleteJoinedPlayersByGameId(gameId: string): void {
         this.joinedPlayersByGameId.delete(gameId);
+    }
+
+    async resetTopTime(gameId: string, server: io.Server): Promise<void> {
+        await this.gameService.resetTopTimesGameById(gameId);
+        server.emit(GameCardEvents.RequestReload);
     }
 
     async updateTopBestTime(room: GameRoom, playerName: string, server: io.Server): Promise<number> {
@@ -111,25 +108,28 @@ export class PlayersListManagerService {
         }
     }
 
-    insertNewTopTime(playerName: string, timer: number, topTimes: PlayerTime[]): number {
+    private cancelJoiningByPlayerName(playerName: string, gameId: string, server: io.Server): void {
+        const playerId = this.getPlayerIdByPlayerName(gameId, playerName);
+        if (playerId) {
+            this.cancelJoiningByPlayerId(playerId, gameId);
+            server.to(playerId).emit(PlayerEvents.PlayerRefused, playerId);
+            server.emit(RoomEvents.UndoRoomCreation, gameId);
+        }
+    }
+
+    private getPlayerIdByPlayerName(gameId: string, playerName: string): string {
+        return this.joinedPlayersByGameId.get(gameId)?.find((player) => player.name === playerName)?.playerId;
+    }
+
+    private insertNewTopTime(playerName: string, timer: number, topTimes: PlayerTime[]): number {
         const newTopTime = { name: playerName, time: timer } as PlayerTime;
         topTimes.splice(MAX_TIMES_INDEX, 1, newTopTime);
         topTimes.sort((a, b) => a.time - b.time);
         return topTimes.findIndex((topTime) => topTime.name === playerName) + 1;
     }
 
-    sendNewTopTimeMessage(newRecord: NewRecord, server: io.Server): void {
+    private sendNewTopTimeMessage(newRecord: NewRecord, server: io.Server): void {
         const newRecordMessage = this.messageManagerService.getNewRecordMessage(newRecord);
         server.emit(MessageEvents.LocalMessage, newRecordMessage);
-    }
-
-    async resetTopTime(gameId: string, server: io.Server): Promise<void> {
-        await this.gameService.resetTopTimesGameById(gameId);
-        server.emit(GameCardEvents.RequestReload);
-    }
-
-    async resetAllTopTime(server: io.Server): Promise<void> {
-        await this.gameService.resetAllTopTimes();
-        server.emit(GameCardEvents.RequestReload);
     }
 }
