@@ -1,6 +1,8 @@
 import { GAME_HISTORY } from '@common/constants';
+import { HistoryEvents } from '@common/enums';
 import { GameHistory, GameRoom } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
+import * as io from 'socket.io';
 
 @Injectable()
 export class HistoryService {
@@ -44,7 +46,7 @@ export class HistoryService {
         this.pendingGames.set(room.roomId, gameHistory);
     }
 
-    closeEntry(roomId: string) {
+    closeEntry(roomId: string, server: io.Server) {
         console.log('closing entry');
         console.log('room id');
         console.log(roomId);
@@ -55,6 +57,8 @@ export class HistoryService {
         console.log('history added');
         console.log(this.getHistory());
         this.pendingGames.delete(roomId);
+        server.emit(HistoryEvents.EntryAdded, this.history);
+        console.log('emitted - closeEntry history.service.ts');
     }
 
     markPlayerAsWinner(roomId: string, playerName: string) {

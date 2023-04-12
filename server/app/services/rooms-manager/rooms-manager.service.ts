@@ -206,10 +206,13 @@ export class RoomsManagerService {
         if (!room) return;
         const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
         const opponent: Player = room.player1.playerId === socket.id ? room.player2 : room.player1;
+        console.log(`${player.name} has left the room ${roomId}`);
+        this.historyService.markPlayerAsQuitter(roomId, player.name);
         if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
             room.endMessage = "L'adversaire a abandonné la partie!";
             this.abandonMessage(room, player, server);
             server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
+            this.historyService.closeEntry(roomId, server);
             this.deleteRoom(roomId);
         }
         if (room.clientGame.mode === GameModes.LimitedCoop) {

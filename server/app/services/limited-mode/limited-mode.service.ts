@@ -73,7 +73,7 @@ export class LimitedModeService {
         this.sendEndMessage(roomId, server);
         this.roomsManagerService.leaveRoom(room, server);
         console.log('game ended limited ');
-        this.historyService.closeEntry(roomId);
+        this.historyService.closeEntry(roomId, server);
         server.emit(HistoryEvents.EntryAdded, this.historyService.getHistory());
         this.roomsManagerService.deleteRoom(roomId);
         this.deleteAvailableGame(roomId);
