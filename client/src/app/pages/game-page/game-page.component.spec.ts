@@ -122,8 +122,8 @@ describe('GamePageComponent', () => {
     it('should set players and playerName and player1 as player when id matches', () => {
         const mockId = '1';
         const playersTest = {
-            player1: { playerId: mockId, name: 'player1', diffData: mockDifferenceData },
-            player2: { playerId: 'not', name: 'player2', diffData: mockDifferenceData },
+            player1: { playerId: mockId, name: 'player1', differenceData: mockDifferenceData },
+            player2: { playerId: 'not', name: 'player2', differenceData: mockDifferenceData },
         };
 
         classicServiceSpy.getSocketId.and.returnValue(mockId);
@@ -137,8 +137,8 @@ describe('GamePageComponent', () => {
 
     it('should set players that are id matches', () => {
         const playersTest = {
-            player1: { playerId: '1', name: 'player1', diffData: mockDifferenceData },
-            player2: { playerId: '2', name: 'player2', diffData: mockDifferenceData },
+            player1: { playerId: '1', name: 'player1', differenceData: mockDifferenceData },
+            player2: { playerId: '2', name: 'player2', differenceData: mockDifferenceData },
         };
         classicServiceSpy.getSocketId.and.returnValue('0');
         expect(component.players).toEqual(DEFAULT_PLAYERS);
@@ -150,8 +150,8 @@ describe('GamePageComponent', () => {
     it('should set players and player of second player if id matches', () => {
         const mockId = '1';
         const playersTest = {
-            player1: { playerId: 'not', name: 'player1', diffData: mockDifferenceData },
-            player2: { playerId: mockId, name: 'player2', diffData: mockDifferenceData },
+            player1: { playerId: 'not', name: 'player1', differenceData: mockDifferenceData },
+            player2: { playerId: mockId, name: 'player2', differenceData: mockDifferenceData },
         };
 
         classicServiceSpy.getSocketId.and.returnValue(mockId);
@@ -165,7 +165,7 @@ describe('GamePageComponent', () => {
 
     it('should set players and player of second player if the 2nd player is defined', () => {
         const playersTest = {
-            player1: { playerId: 'gdfgd', name: 'player1', diffData: mockDifferenceData },
+            player1: { playerId: 'gdfgd', name: 'player1', differenceData: mockDifferenceData },
         };
 
         expect(component.players).toEqual(DEFAULT_PLAYERS);
