@@ -1,6 +1,6 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { CanvasPosition } from '@app/enum/canvas-position';
 import { GameDetails } from '@app/interfaces/game-interfaces';
@@ -10,7 +10,7 @@ import { CommunicationService } from '@app/services/communication-service/commun
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { Coordinate } from '@common/coordinate';
-import { map, Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 @Component({
     selector: 'app-creation-game-dialog',
@@ -34,6 +34,9 @@ export class CreationGameDialogComponent implements OnInit {
         this.gameNameForm = new FormGroup({
             name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)], [this.validateGameName.bind(this)]),
         });
+        this.gameName = '';
+        this.differenceCanvas.nativeElement.width = IMG_WIDTH;
+        this.differenceCanvas.nativeElement.height = IMG_HEIGHT;
     }
 
     get displayDifferences(): number {
@@ -41,9 +44,6 @@ export class CreationGameDialogComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.gameName = '';
-        this.differenceCanvas.nativeElement.width = IMG_WIDTH;
-        this.differenceCanvas.nativeElement.height = IMG_HEIGHT;
         const differences = this.differenceService.generateDifferences(this.imageService.generateGamePixels(), this.radius);
         const differenceContext = this.differenceCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.imageService.drawDifferences(differenceContext, differences);
