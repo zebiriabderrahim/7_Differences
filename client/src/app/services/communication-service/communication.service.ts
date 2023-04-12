@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Game, GameDetails } from '@app/interfaces/game-interfaces';
-import { CarouselPaginator, GameConfigConst } from '@common/game-interfaces';
+import { CarouselPaginator, GameConfigConst, GameHistory } from '@common/game-interfaces';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -32,6 +32,10 @@ export class CommunicationService {
 
     loadConfigConstants(): Observable<GameConfigConst> {
         return this.http.get<GameConfigConst>(`${this.gameUrl}/constants`).pipe(catchError(this.handleError<GameConfigConst>('loadConfigConstants')));
+    }
+
+    loadGameHistory(): Observable<GameHistory[]> {
+        return this.http.get<GameHistory[]>(`${this.gameUrl}/history`).pipe(catchError(this.handleError<GameHistory[]>('loadGameHistory')));
     }
 
     deleteGameById(id: string): Observable<void> {
