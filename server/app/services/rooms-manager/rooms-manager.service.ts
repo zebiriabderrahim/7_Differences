@@ -6,13 +6,25 @@ import { HistoryService } from '@app/services/history/history.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { CHARACTERS, KEY_SIZE, MAX_BONUS_TIME_ALLOWED, NOT_FOUND } from '@common/constants';
 import { GameEvents, GameModes, MessageEvents, PlayerStatus } from '@common/enums';
-import { ClientSideGame, Coordinate, Differences, GameRoom, Player } from '@common/game-interfaces';
-import { Injectable } from '@nestjs/common';
+import {
+    ChatMessage,
+    ClientSideGame,
+    Coordinate,
+    Differences,
+    GameConfigConst,
+    GameRoom,
+    Player,
+    PlayerData,
+    TimerMode,
+} from '@common/game-interfaces';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as fs from 'fs';
 import * as io from 'socket.io';
 
 @Injectable()
-export class RoomsManagerService {
+export class RoomsManagerService implements OnModuleInit {
+    private gameConstants: GameConfigConst;
+    private modeTimerMap: { [key: string]: TimerMode };
     private rooms: Map<string, GameRoom>;
 
     constructor(
@@ -21,49 +33,39 @@ export class RoomsManagerService {
         private readonly historyService: HistoryService,
     ) {
         this.rooms = new Map<string, GameRoom>();
+        this.modeTimerMap = {
+            [GameModes.ClassicSolo]: { isCountdown: false },
+            [GameModes.ClassicOneVsOne]: { isCountdown: false, requiresPlayer2: true },
+            [GameModes.LimitedSolo]: { isCountdown: true },
+            [GameModes.LimitedCoop]: { isCountdown: true, requiresPlayer2: true },
+        };
     }
 
-    async createRoom(playerName: string, gameId: string, gameMode: GameModes): Promise<GameRoom> {
-        const game =
-            gameMode === GameModes.LimitedSolo || gameMode === GameModes.LimitedCoop
-                ? await this.gameService.getRandomGame([])
-                : await this.gameService.getGameById(gameId);
+    async onModuleInit() {
+        await this.getGameConstants();
+    }
+
+    async createRoom(playerPayLoad: PlayerData): Promise<GameRoom> {
+        const game = !playerPayLoad.gameId ? await this.gameService.getRandomGame([]) : await this.gameService.getGameById(playerPayLoad.gameId);
         if (!game) return;
-        const gameConstants = await this.gameService.getGameConstants();
-        const diffData = { currentDifference: [], differencesFound: 0 } as Differences;
-        const player = { name: playerName, diffData } as Player;
-        const room: GameRoom = {
-            roomId: this.generateRoomId(),
-            clientGame: this.buildClientGameVersion(game),
-            timer: 0,
-            endMessage: '',
-            originalDifferences: structuredClone(JSON.parse(fs.readFileSync(`assets/${game.name}/differences.json`, 'utf-8'))),
-            player1: player,
-            gameConstants,
-        };
-        room.clientGame.mode = gameMode;
+        const room = this.buildGameRoom(game, playerPayLoad);
         return room;
     }
 
+    async getGameConstants(): Promise<void> {
+        this.gameConstants = await this.gameService.getGameConstants();
+    }
+
     getRoomById(roomId: string): GameRoom {
-        if (this.rooms.has(roomId)) {
-            return this.rooms.get(roomId);
-        }
+        if (this.rooms.has(roomId)) return this.rooms.get(roomId);
     }
 
     getRoomIdFromSocket(socket: io.Socket): string {
         return Array.from(socket.rooms.values())[1];
     }
 
-    getRoomIdByPlayerId(playerId: string): string {
-        return Array.from(this.rooms.keys()).find((roomId) => {
-            const room = this.rooms.get(roomId);
-            return room.player1?.playerId === playerId || room.player2?.playerId === playerId;
-        });
-    }
-
-    getOneVsOneRoomByGameId(gameId: string): GameRoom {
-        return Array.from(this.rooms.values()).find((room) => room.clientGame.id === gameId && room.clientGame.mode === GameModes.ClassicOneVsOne);
+    getRoomByPlayerId(playerId: string): GameRoom {
+        return Array.from(this.rooms.values()).find((room) => room.player1.playerId === playerId || room.player2.playerId === playerId);
     }
 
     getHostIdByGameId(gameId: string): string {
@@ -71,14 +73,8 @@ export class RoomsManagerService {
         return roomTarget?.player1.playerId;
     }
 
-    getLimitedRoom(): GameRoom {
+    getCreatedCoopRoom(): GameRoom {
         return Array.from(this.rooms.values()).find((room) => room.clientGame.mode === GameModes.LimitedCoop && !room.player2);
-    }
-
-    getAllLimitedRoomIds(): string[] {
-        return Array.from(this.rooms.values())
-            .filter((room) => room.clientGame.mode.startsWith('Limited'))
-            .map((room) => room.roomId);
     }
 
     addAcceptedPlayer(roomId: string, player: Player): void {
@@ -95,87 +91,20 @@ export class RoomsManagerService {
         this.rooms.delete(roomId);
     }
 
-    buildClientGameVersion(game: Game): ClientSideGame {
-        const clientGame: ClientSideGame = {
-            id: game._id.toString(),
-            name: game.name,
-            mode: '',
-            original: 'data:image/png;base64,'.concat(fs.readFileSync(`assets/${game.name}/original.bmp`, 'base64')),
-            modified: 'data:image/png;base64,'.concat(fs.readFileSync(`assets/${game.name}/modified.bmp`, 'base64')),
-            isHard: game.isHard,
-            differencesCount: game.nDifference,
-        };
-        return clientGame;
+    isMultiplayerGame(clientGame: ClientSideGame): boolean {
+        return clientGame.mode === GameModes.ClassicOneVsOne || clientGame.mode === GameModes.LimitedCoop;
     }
 
     startGame(socket: io.Socket, server: io.Server): void {
-        const roomId = this.getRoomIdByPlayerId(socket.id);
-        const room = this.getRoomById(roomId);
+        const room = this.getRoomByPlayerId(socket.id);
         this.historyService.createEntry(room);
-        if (!room && room?.player1.playerId !== socket.id && room?.player2.playerId !== socket.id) return;
-        socket.join(roomId);
+        if (!room || ![room.player1.playerId, room.player2?.playerId].includes(socket.id)) {
+            this.handleGamePageRefresh(socket, server);
+            return;
+        }
+        socket.join(room.roomId);
         this.updateRoom(room);
-        server.to(roomId).emit(GameEvents.GameStarted, room);
-    }
-
-    verifyCoords(socket: io.Socket, coords: Coordinate, server: io.Server): void {
-        const roomId = this.getRoomIdFromSocket(socket);
-        const room = this.rooms.get(roomId);
-        if (!room) return;
-
-        const player = room.player1.playerId === socket.id ? room.player1 : room.player2;
-        const { originalDifferences } = room;
-        const { diffData, name } = player;
-
-        const index = originalDifferences.findIndex((difference) =>
-            difference.some((coord: Coordinate) => coord.x === coords.x && coord.y === coords.y),
-        );
-        if (index !== NOT_FOUND) {
-            diffData.differencesFound++;
-            this.addBonusTime(room);
-            diffData.currentDifference = originalDifferences[index];
-            originalDifferences.splice(index, 1);
-            const localMessage = this.messageManager.getLocalMessage(room.clientGame.mode, true, name);
-            server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
-        } else {
-            diffData.currentDifference = [];
-            const localMessage = this.messageManager.getLocalMessage(room.clientGame.mode, false, name);
-            server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
-        }
-
-        this.rooms.set(roomId, room);
-
-        const differencesData = { currentDifference: diffData.currentDifference, differencesFound: diffData.differencesFound } as Differences;
-        const cheatDifferences = room.originalDifferences;
-        server.to(room.roomId).emit(GameEvents.RemoveDiff, { differencesData, playerId: socket.id, cheatDifferences });
-    }
-
-    updateTimers(server: io.Server) {
-        for (const [roomId, room] of this.rooms) {
-            if (room.clientGame.mode === GameModes.ClassicSolo || (room.player2 && room.clientGame.mode === GameModes.ClassicOneVsOne)) {
-                this.updateTimer(roomId, server);
-            } else if (room.clientGame.mode === GameModes.LimitedSolo || (room.player2 && room.clientGame.mode === GameModes.LimitedCoop)) {
-                this.countdown(roomId, server);
-            }
-        }
-    }
-
-    addHintPenalty(socket: io.Socket, server: io.Server): void {
-        const roomId = this.getRoomIdFromSocket(socket);
-        const room = this.getRoomById(roomId);
-        if (!room) return;
-        const { clientGame, gameConstants, timer } = room;
-        let penaltyTime = gameConstants.penaltyTime;
-
-        if (this.isLimitedMode(clientGame)) penaltyTime = -penaltyTime;
-
-        if (timer + penaltyTime < 0) {
-            this.countdownIsOver(roomId, server);
-        } else {
-            room.timer += penaltyTime;
-            this.rooms.set(room.roomId, room);
-            server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
-        }
+        server.to(room.roomId).emit(GameEvents.GameStarted, room);
     }
 
     async loadNextGame(room: GameRoom, playedGameIds: string[]): Promise<string> {
@@ -189,99 +118,175 @@ export class RoomsManagerService {
         return game._id.toString();
     }
 
-    isLimitedMode(clientGame: ClientSideGame): boolean {
+    validateCoords(socket: io.Socket, coords: Coordinate, server: io.Server): void {
+        const roomId = this.getRoomIdFromSocket(socket);
+        const room = this.rooms.get(roomId);
+
+        if (!room) return;
+
+        const player = room.player1.playerId === socket.id ? room.player1 : room.player2;
+        const index = room.originalDifferences.findIndex((difference) =>
+            difference.some((coord: Coordinate) => coord.x === coords.x && coord.y === coords.y),
+        );
+        const localMessage = index !== NOT_FOUND ? this.differenceFound(room, player, index) : this.differenceNotFound(room, player);
+        const differencesData = {
+            currentDifference: player.diffData.currentDifference,
+            differencesFound: player.diffData.differencesFound,
+        } as Differences;
+        server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
+        server.to(room.roomId).emit(GameEvents.RemoveDiff, { differencesData, playerId: socket.id, cheatDifferences: room.originalDifferences });
+    }
+
+    updateTimers(server: io.Server) {
+        for (const room of this.rooms.values()) {
+            const modeInfo = this.modeTimerMap[room?.clientGame?.mode];
+            if (!modeInfo || (modeInfo.requiresPlayer2 && !room.player2)) continue;
+
+            this.updateTimer(room, server, modeInfo.isCountdown);
+        }
+    }
+
+    addHintPenalty(socket: io.Socket, server: io.Server): void {
+        const roomId = this.getRoomIdFromSocket(socket);
+        const room = this.getRoomById(roomId);
+        if (!room) return;
+        const { clientGame, gameConstants, timer } = room;
+        let penaltyTime = gameConstants.penaltyTime;
+
+        if (this.isLimitedModeGame(clientGame)) penaltyTime = -penaltyTime;
+
+        if (timer + penaltyTime < 0) {
+            this.countdownOver(room, server);
+        } else {
+            room.timer += penaltyTime;
+            this.rooms.set(room.roomId, room);
+            server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
+        }
+    }
+
+    isLimitedModeGame(clientGame: ClientSideGame): boolean {
         return clientGame.mode === GameModes.LimitedSolo || clientGame.mode === GameModes.LimitedCoop;
     }
 
     leaveRoom(room: GameRoom, server: io.Server): void {
-        server.sockets.sockets.get(room.player1.playerId)?.rooms.delete(room.roomId);
-        if (room.player2) {
-            server.sockets.sockets.get(room.player2.playerId)?.rooms.delete(room.roomId);
-        }
+        [room.player1, room.player2].forEach((player) => {
+            const socket = server.sockets.sockets.get(player?.playerId);
+            if (socket) socket.rooms.delete(room.roomId);
+        });
     }
-
     abandonGame(socket: io.Socket, server: io.Server): void {
-        const roomId = this.getRoomIdByPlayerId(socket.id);
-        const room = this.getRoomById(roomId);
+        const room = this.getRoomByPlayerId(socket.id);
         if (!room) return;
         const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
         const opponent: Player = room.player1.playerId === socket.id ? room.player2 : room.player1;
-        this.historyService.markPlayer(roomId, player.name, PlayerStatus.Quitter);
-        if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
-            room.endMessage = "L'adversaire a abandonné la partie!";
-            this.abandonMessage(room, player, server);
-            server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
-            this.historyService.markPlayer(roomId, opponent.name, PlayerStatus.Winner);
-            this.historyService.closeEntry(roomId, server);
-            this.deleteRoom(roomId);
-        }
-        if (room.clientGame.mode === GameModes.LimitedCoop) {
-            this.abandonMessage(room, player, server);
-            server.to(opponent?.playerId)?.emit(GameEvents.GameModeChanged);
-            room.clientGame.mode = GameModes.LimitedSolo;
-            this.updateRoom(room);
+        if (this.isMultiplayerGame(room.clientGame) && opponent) {
+            const localMessage =
+                room.clientGame.mode === GameModes.ClassicOneVsOne
+                    ? this.handleOneVsOneAbandon(player, room, server)
+                    : this.handleCoopAbandon(opponent, room, server);
+            server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
         } else {
-            this.historyService.closeEntry(roomId, server);
-            this.deleteRoom(roomId);
+            this.deleteRoom(room.roomId);
         }
-        socket.leave(roomId);
+        socket.leave(room.roomId);
     }
 
     handleDisconnect(room: GameRoom): void {
         if (room && !room.player2) this.deleteRoom(room.roomId);
     }
 
-    private abandonMessage(room: GameRoom, player: Player, server: io.Server): void {
-        const localMessage = this.messageManager.getQuitMessage(player.name);
-        server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
+    private differenceFound(room: GameRoom, player: Player, index: number): ChatMessage {
+        this.addBonusTime(room);
+        player.diffData.differencesFound++;
+        player.diffData.currentDifference = room.originalDifferences[index];
+        room.originalDifferences.splice(index, 1);
+        this.updateRoom(room);
+        return this.messageManager.getLocalMessage(room.clientGame.mode, true, player.name);
+    }
+
+    private differenceNotFound(room: GameRoom, player: Player): ChatMessage {
+        player.diffData.currentDifference = [];
+        this.updateRoom(room);
+        return this.messageManager.getLocalMessage(room.clientGame.mode, false, player.name);
+    }
+
+    private handleCoopAbandon(opponent: Player, room: GameRoom, server: io.Server): ChatMessage {
+        server.to(opponent.playerId).emit(GameEvents.GameModeChanged);
+        room.clientGame.mode = GameModes.LimitedSolo;
+        this.updateRoom(room);
+        return this.messageManager.getQuitMessage(opponent.name);
     }
 
     private addBonusTime(room: GameRoom): void {
-        if (!this.isLimitedMode(room.clientGame)) return;
+        if (!this.isLimitedModeGame(room.clientGame)) return;
         room.timer += room.gameConstants.bonusTime;
 
         if (room.timer > MAX_BONUS_TIME_ALLOWED) {
             room.timer = MAX_BONUS_TIME_ALLOWED;
         }
-        this.rooms.set(room.roomId, room);
+        this.updateRoom(room);
     }
 
-    private updateTimer(roomId: string, server: io.Server): void {
-        const room = this.rooms.get(roomId);
-        if (!room) return;
-        room.timer++;
-        this.rooms.set(room.roomId, room);
+    private updateTimer(room: GameRoom, server: io.Server, isCountdown: boolean): void {
+        if (isCountdown) room.timer--;
+        else room.timer++;
+        this.updateRoom(room);
         server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
+        if (room.timer === 0) this.countdownOver(room, server);
     }
 
-    private countdown(roomId: string, server: io.Server): void {
-        const room = this.rooms.get(roomId);
-        if (!room || room.timer === 0) return;
-
-        room.timer--;
-        this.rooms.set(room.roomId, room);
-        server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
-
-        if (room.timer === 0) this.countdownIsOver(roomId, server);
-    }
-
-    private countdownIsOver(roomId: string, server: io.Server): void {
-        const room = this.rooms.get(roomId);
-        if (!room) return;
+    private countdownOver(room: GameRoom, server: io.Server): void {
         room.endMessage = 'Temps écoulé !';
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
         this.deleteRoom(room.roomId);
-        server.sockets.sockets.get(room.player1.playerId)?.rooms.delete(roomId);
-        if (room.player2) {
-            server.sockets.sockets.get(room.player2.playerId)?.rooms.delete(roomId);
-        }
+        this.leaveRoom(room, server);
     }
 
     private generateRoomId(): string {
         let id = '';
-        for (let i = 0; i < KEY_SIZE; i++) {
-            id += CHARACTERS.charAt(Math.floor(Math.random() * CHARACTERS.length));
-        }
+        for (let i = 0; i < KEY_SIZE; i++) id += CHARACTERS.charAt(Math.floor(Math.random() * CHARACTERS.length));
         return id;
+    }
+
+    private handleGamePageRefresh(socket: io.Socket, server: io.Server): void {
+        server.to(socket.id).emit(GameEvents.GamePageRefreshed);
+    }
+
+    private handleOneVsOneAbandon(player: Player, room: GameRoom, server: io.Server): ChatMessage {
+        room.endMessage = "L'adversaire a abandonné la partie!";
+        server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
+        this.leaveRoom(room, server);
+        this.deleteRoom(room.roomId);
+        return this.messageManager.getQuitMessage(player.name);
+    }
+
+    private buildClientGameVersion(game: Game): ClientSideGame {
+        const clientGame: ClientSideGame = {
+            id: game._id.toString(),
+            name: game.name,
+            mode: '',
+            original: 'data:image/png;base64,'.concat(fs.readFileSync(`assets/${game.name}/original.bmp`, 'base64')),
+            modified: 'data:image/png;base64,'.concat(fs.readFileSync(`assets/${game.name}/modified.bmp`, 'base64')),
+            isHard: game.isHard,
+            differencesCount: game.nDifference,
+        };
+        return clientGame;
+    }
+
+    private buildGameRoom(game: Game, playerPayLoad: PlayerData): GameRoom {
+        const gameConstants = this.gameConstants;
+        const diffData = { currentDifference: [], differencesFound: 0 } as Differences;
+        const player = { name: playerPayLoad.playerName, diffData } as Player;
+        const room: GameRoom = {
+            roomId: this.generateRoomId(),
+            clientGame: this.buildClientGameVersion(game),
+            timer: 0,
+            endMessage: '',
+            originalDifferences: structuredClone(JSON.parse(fs.readFileSync(`assets/${game.name}/differences.json`, 'utf-8'))),
+            player1: player,
+            gameConstants,
+        };
+        room.clientGame.mode = playerPayLoad.gameMode;
+        return room;
     }
 }

@@ -18,8 +18,6 @@
         <app-game-infos
             [isReplayAvailable]="isReplayAvailable"
             [game]="game"
-            [differencesCount]="game.differencesCount"
-            [gameConstants]="gameConstants"
         ></app-game-infos>
         <div *ngIf="isThirdHintActive">
             <img  id="raccoon" [src]="hintsAssets[proximity]" />
