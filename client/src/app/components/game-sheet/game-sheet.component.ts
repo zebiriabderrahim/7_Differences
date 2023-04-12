@@ -9,9 +9,10 @@ import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog
 import { WaitingForPlayerToJoinComponent } from '@app/components/waiting-player-to-join/waiting-player-to-join.component';
 import { Actions } from '@app/enum/delete-reset-actions';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { GameCard } from '@common/game-interfaces';
+import { GameCard, PlayerData } from '@common/game-interfaces';
 import { filter, Subscription, take } from 'rxjs';
 import { DeleteResetConfirmationDialogComponent } from '@app/components/delete-reset-confirmation-dialog/delete-reset-confirmation-dialog.component';
+import { GameModes } from '@common/enums';
 
 @Component({
     selector: 'app-game-sheet',
@@ -59,7 +60,8 @@ export class GameSheetComponent implements OnDestroy, OnInit {
             .afterClosed()
             .pipe(filter((playerName) => !!playerName))
             .subscribe((playerName) => {
-                this.roomManagerService.createSoloRoom(this.game._id, playerName);
+                const playerPayLoad = { gameId: this.game._id, playerName, gameMode: GameModes.ClassicSolo } as PlayerData;
+                this.roomManagerService.createSoloRoom(playerPayLoad);
             });
     }
 
@@ -76,7 +78,8 @@ export class GameSheetComponent implements OnDestroy, OnInit {
             .afterClosed()
             .subscribe((playerName: string) => {
                 if (playerName) {
-                    this.roomManagerService.createOneVsOneRoom(this.game._id, playerName);
+                    const playerPayLoad = { gameId: this.game._id, playerName, gameMode: GameModes.ClassicOneVsOne } as PlayerData;
+                    this.roomManagerService.createOneVsOneRoom(playerPayLoad);
                     this.openWaitingDialog(playerName);
                 } else {
                     this.roomManagerService.updateRoomOneVsOneAvailability(this.game._id);
@@ -89,7 +92,8 @@ export class GameSheetComponent implements OnDestroy, OnInit {
             .afterClosed()
             .subscribe((player2Name: string) => {
                 if (player2Name) {
-                    this.roomManagerService.updateWaitingPlayerNameList(this.game._id, player2Name);
+                    const playerPayLoad = { gameId: this.game._id, playerName: player2Name } as PlayerData;
+                    this.roomManagerService.updateWaitingPlayerNameList(playerPayLoad);
                     this.dialog.open(JoinedPlayerDialogComponent, {
                         data: { gameId: this.game._id, player: player2Name },
                         disableClose: true,

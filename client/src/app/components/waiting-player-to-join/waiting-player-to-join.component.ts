@@ -3,8 +3,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { COUNTDOWN_TIME, WAITING_TIME } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { GameCardActions } from '@common/game-interfaces';
-import { Subscription, filter, interval, takeWhile } from 'rxjs';
+import { GameCardActions, PlayerData } from '@common/game-interfaces';
+import { filter, interval, Subscription, takeWhile } from 'rxjs';
 
 @Component({
     selector: 'app-waiting-player-to-join',
@@ -47,7 +47,8 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
     }
 
     refusePlayer(playerName: string) {
-        this.roomManagerService.refusePlayer(this.data.gameId, playerName);
+        const playerPayLoad = { gameId: this.data.gameId, playerName } as PlayerData;
+        this.roomManagerService.refusePlayer(playerPayLoad);
     }
 
     acceptPlayer(playerName: string) {
