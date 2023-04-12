@@ -3,7 +3,7 @@ import { GameService } from '@app/services/game/game.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { MAX_TIMES_INDEX, NOT_FOUND } from '@common/constants';
 import { GameCardEvents, MessageEvents, PlayerEvents, RoomEvents } from '@common/enums';
-import { Differences, GameRoom, NewRecord, Player, playerData, PlayerNameAvailability, PlayerTime } from '@common/game-interfaces';
+import { Differences, GameRoom, NewRecord, Player, PlayerNameAvailability, PlayerTime, playerData } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
 
@@ -17,8 +17,8 @@ export class PlayersListManagerService {
 
     updateWaitingPlayerNameList(playerPayLoad: playerData, socket: io.Socket): void {
         const playerNames = this.joinedPlayersByGameId.get(playerPayLoad.gameId) ?? [];
-        const diffData = { currentDifference: [], differencesFound: 0 } as Differences;
-        const playerGuest = { name: playerPayLoad.playerName, diffData, playerId: socket.id } as Player;
+        const differenceData = { currentDifference: [], differencesFound: 0 } as Differences;
+        const playerGuest = { name: playerPayLoad.playerName, differenceData, playerId: socket.id } as Player;
         playerNames.push(playerGuest);
         this.joinedPlayersByGameId.set(playerPayLoad.gameId, playerNames);
     }

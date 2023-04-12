@@ -35,12 +35,12 @@ describe('GameGateway', () => {
     //     player1: {
     //         playerId: 'fakePlayerId1',
     //         name: 'fakePlayerName',
-    //         diffData: {} as Differences,
+    //         differenceData: {} as Differences,
     //     },
     //     player2: {
     //         playerId: 'fakePlayerId2',
     //         name: 'fakePlayerName',
-    //         diffData: {} as Differences,
+    //         differenceData: {} as Differences,
     //     },
     // };
 
