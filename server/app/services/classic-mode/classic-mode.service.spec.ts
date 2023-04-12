@@ -347,8 +347,7 @@ describe('ClassicModeService', () => {
     it('handleSocketDisconnect should call abandonGame ', () => {
         fakeRoom.clientGame.mode = GameModes.ClassicOneVsOne;
         fakeRoom.player1 = fakePlayer;
-        const getGameIdByPlayerIdSpy = jest.spyOn(roomsManagerService, 'getRoomIdByPlayerId').mockReturnValue(fakeRoom.roomId);
-        const getRoomByRoomIdSpy = jest.spyOn(roomsManagerService, 'getRoomById').mockReturnValueOnce(fakeRoom);
+        const getGameIdByPlayerIdSpy = jest.spyOn(roomsManagerService, 'getRoomByPlayerId').mockReturnValue(fakeRoom);
         const deleteRoomSpy = jest.spyOn(roomsManagerService, 'deleteRoom');
         const updateRoomOneVsOneAvailabilitySpy = jest.spyOn(service, 'updateRoomOneVsOneAvailability');
         const getSpy = jest.spyOn(service['roomAvailability'], 'get').mockReturnValue({
@@ -359,7 +358,6 @@ describe('ClassicModeService', () => {
         const deleteJoinedPlayerByIdSpy = jest.spyOn(playersListManagerService, 'cancelAllJoining');
         service.handleSocketDisconnect(socket, server);
         expect(getGameIdByPlayerIdSpy).toBeCalled();
-        expect(getRoomByRoomIdSpy).toBeCalled();
         expect(getSpy).toBeCalled();
         expect(deleteJoinedPlayerByIdSpy).toBeCalled();
         expect(updateRoomOneVsOneAvailabilitySpy).toBeCalled();
@@ -370,8 +368,7 @@ describe('ClassicModeService', () => {
         fakeRoom.timer = 0;
         fakeRoom.player1 = fakePlayer;
         fakeRoom.player2 = undefined;
-        const getGameIdByPlayerIdSpy = jest.spyOn(roomsManagerService, 'getRoomIdByPlayerId').mockReturnValue(fakeRoom.roomId);
-        const getRoomByRoomIdSpy = jest.spyOn(roomsManagerService, 'getRoomById').mockReturnValueOnce(fakeRoom);
+        const getGameIdByPlayerIdSpy = jest.spyOn(roomsManagerService, 'getRoomByPlayerId').mockReturnValue(fakeRoom);
         const abandonGameSpy = jest.spyOn(roomsManagerService, 'abandonGame');
         const deleteOneVsOneAvailabilitySpy = jest.spyOn(service, 'deleteOneVsOneAvailability');
         const getSpy = jest.spyOn(service['roomAvailability'], 'get').mockReturnValue({
@@ -381,7 +378,6 @@ describe('ClassicModeService', () => {
         });
         service.handleSocketDisconnect(socket, server);
         expect(getGameIdByPlayerIdSpy).toBeCalled();
-        expect(getRoomByRoomIdSpy).toBeCalled();
         expect(getSpy).toBeCalled();
         expect(deleteOneVsOneAvailabilitySpy).toBeCalled();
     });
@@ -389,8 +385,7 @@ describe('ClassicModeService', () => {
     it('handleSocketDisconnect should call deleteOneVsOneRoomAvailability and cancelAllJoining ', () => {
         fakeRoom.timer = 3;
         fakeRoom.player1 = fakePlayer;
-        const getGameIdByPlayerIdSpy = jest.spyOn(roomsManagerService, 'getRoomIdByPlayerId').mockReturnValue(fakeRoom.roomId);
-        const getRoomByRoomIdSpy = jest.spyOn(roomsManagerService, 'getRoomById').mockReturnValueOnce(fakeRoom);
+        const getGameIdByPlayerIdSpy = jest.spyOn(roomsManagerService, 'getRoomByPlayerId').mockReturnValue(fakeRoom);
         const abandonGameSpy = jest.spyOn(roomsManagerService, 'abandonGame');
         const getSpy = jest.spyOn(service['roomAvailability'], 'get').mockReturnValue({
             gameId: fakeRoom.clientGame.id,
@@ -400,14 +395,13 @@ describe('ClassicModeService', () => {
         const getGameIdByPlayerIdSpy2 = jest.spyOn(playersListManagerService, 'getGameIdByPlayerId').mockReturnValue('id');
         service.handleSocketDisconnect(socket, server);
         expect(getGameIdByPlayerIdSpy).toBeCalled();
-        expect(getRoomByRoomIdSpy).toBeCalled();
         expect(getSpy).toBeCalled();
         expect(abandonGameSpy).toBeCalled();
         expect(getGameIdByPlayerIdSpy2).toBeCalled();
     });
 
     it('handleSocketDisconnect should call getWaitingPlayerNameList and deleteJoinedPlayerByPlayerId (room undefined) ', () => {
-        const getRoomByRoomIdSpy = jest.spyOn(roomsManagerService, 'getRoomById').mockReturnValue(undefined);
+        const getRoomByRoomIdSpy = jest.spyOn(roomsManagerService, 'getRoomByPlayerId').mockReturnValue(undefined);
         const getGameIdByPlayerIdSpy2 = jest.spyOn(playersListManagerService, 'getGameIdByPlayerId').mockReturnValue('id');
         const getHostIdByGameIdSpy = jest.spyOn(roomsManagerService, 'getHostIdByGameId');
         const deleteJoinedPlayerByPlayerIdSpy = jest.spyOn(playersListManagerService, 'deleteJoinedPlayerByPlayerId');
