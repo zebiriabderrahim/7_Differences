@@ -18,19 +18,20 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
-    private gameIds: string[] = [];
     private defaultConstants: GameConstants = {
         countdownTime: DEFAULT_COUNTDOWN_VALUE,
         penaltyTime: DEFAULT_HINT_PENALTY,
         bonusTime: DEFAULT_BONUS_TIME,
     };
+    private gameIds: string[];
     constructor(
         @InjectModel(Game.name) private readonly gameModel: Model<GameDocument>,
         @InjectModel(GameCard.name) private readonly gameCardModel: Model<GameCardDocument>,
         @InjectModel(GameConstants.name) private readonly gameConstantsModel: Model<GameConstantsDocument>,
         private readonly gameListManager: GameListsManagerService,
-    ) {}
-
+    ) {
+        this.gameIds = [];
+    }
     async onModuleInit() {
         await this.getAllGameIds();
     }
