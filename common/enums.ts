@@ -11,6 +11,7 @@ export enum GameEvents {
     RequestHint = 'RequestHint',
     UpdateDifferencesFound = 'UpdateDifferencesFound',
     GameModeChanged = 'GameModeChanged',
+    GamePageRefreshed = 'Refresh',
 }
 
 export enum PlayerEvents {

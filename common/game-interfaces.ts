@@ -104,6 +104,11 @@ export interface NewRecord {
     gameMode: string;
 }
 
+export interface TimerMode {
+    isCountdown: boolean;
+    requiresPlayer2?: boolean;
+}
+
 export enum GameCardActions {
     Create = 'create',
     Join = 'join',
