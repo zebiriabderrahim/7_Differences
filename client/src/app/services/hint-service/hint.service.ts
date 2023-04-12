@@ -9,7 +9,6 @@ import {
 } from '@app/constants/hint';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { HintProximity } from '@app/enum/hint-proximity';
-import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { QuadrantPosition } from '@app/enum/quadrant-position';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { Quadrant } from '@app/interfaces/quadrant';

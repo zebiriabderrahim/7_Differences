@@ -12,7 +12,6 @@ import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ReplayService } from '@app/services/replay-service/replay.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { Coordinate } from '@common/coordinate';
 import { GameModes, MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, GameConfigConst, Players } from '@common/game-interfaces';
@@ -61,7 +60,6 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         private readonly hintService: HintService,
         private readonly matDialog: MatDialog,
         private readonly replayService: ReplayService,
-        private readonly roomManagerService: RoomManagerService,
         private readonly roomManagerService: RoomManagerService,
     ) {
         this.classicService.manageSocket();
