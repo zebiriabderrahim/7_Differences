@@ -34,9 +34,6 @@ export class CreationGameDialogComponent implements OnInit {
         this.gameNameForm = new FormGroup({
             name: new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)], [this.validateGameName.bind(this)]),
         });
-        this.gameName = '';
-        this.differenceCanvas.nativeElement.width = IMG_WIDTH;
-        this.differenceCanvas.nativeElement.height = IMG_HEIGHT;
     }
 
     get displayDifferences(): number {
@@ -44,6 +41,9 @@ export class CreationGameDialogComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.gameName = '';
+        this.differenceCanvas.nativeElement.width = IMG_WIDTH;
+        this.differenceCanvas.nativeElement.height = IMG_HEIGHT;
         const differences = this.differenceService.generateDifferences(this.imageService.generateGamePixels(), this.radius);
         const differenceContext = this.differenceCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.imageService.drawDifferences(differenceContext, differences);

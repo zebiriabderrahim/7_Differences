@@ -53,7 +53,7 @@ describe('ReplayService', () => {
     beforeEach(async () => {
         gameAreaServiceSpy = jasmine.createSpyObj(
             'GameAreaService',
-            ['getOgContext', 'getMdContext', 'setAllData', 'replaceDifference', 'showError', 'toggleCheatMode', 'flashCorrectPixels'],
+            ['getOriginalContext', 'getModifiedContext', 'setAllData', 'replaceDifference', 'showError', 'toggleCheatMode', 'flashCorrectPixels'],
             {
                 replayEventsSubject: replayEventGameAreaServiceSubTest,
             },
