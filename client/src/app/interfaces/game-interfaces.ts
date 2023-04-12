@@ -1,6 +1,5 @@
 import { Coordinate } from '@common/coordinate';
-import { GameModes } from '@common/enums';
-import { ChatMessage, ClientSideGame, PlayerTime } from '@common/game-interfaces';
+import { PlayerTime } from '@common/game-interfaces';
 
 export interface GameDetails {
     name: string;
