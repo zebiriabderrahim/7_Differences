@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameCardEvents, HistoryEvents, PlayerEvents, RoomEvents } from '@common/enums';
-import { GameHistory, LimitedGameDetails, PlayerNameAvailability, RoomAvailability, playerData } from '@common/game-interfaces';
+import { GameHistory, PlayerNameAvailability, RoomAvailability, PlayerData } from '@common/game-interfaces';
 import { Subject } from 'rxjs';
 
 @Injectable({

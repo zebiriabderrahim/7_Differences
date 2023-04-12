@@ -69,11 +69,6 @@ export enum PlayerStatus {
     Quitter = 'Quitter',
 }
 
-export enum PlayerStatus {
-    Winner = 'Winner',
-    Quitter = 'Quitter',
-}
-
 export enum GameModes {
     ClassicSolo = 'Classic->Solo',
     ClassicOneVsOne = 'Classic->OneVsOne',
