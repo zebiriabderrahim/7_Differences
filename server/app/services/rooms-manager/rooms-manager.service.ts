@@ -225,7 +225,7 @@ export class RoomsManagerService {
         socket.leave(roomId);
     }
 
-    handelDisconnect(room: GameRoom): void {
+    handleDisconnect(room: GameRoom): void {
         if (room && !room.player2) this.deleteRoom(room.roomId);
     }
 

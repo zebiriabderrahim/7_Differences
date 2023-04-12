@@ -116,7 +116,7 @@ export class ClassicModeService {
     handleSocketDisconnect(socket: io.Socket, server: io.Server): void {
         const roomId = this.roomsManagerService.getRoomIdByPlayerId(socket.id);
         const room = this.roomsManagerService.getRoomById(roomId);
-        this.roomsManagerService.handelDisconnect(room);
+        this.roomsManagerService.handleDisconnect(room);
         const createdGameId = this.playersListManagerService.getGameIdByPlayerId(socket.id);
         const joinable = this.roomAvailability.get(room?.clientGame.id)?.isAvailableToJoin;
         if (room && !room.player2 && joinable && room.clientGame.mode === GameModes.ClassicOneVsOne) {
