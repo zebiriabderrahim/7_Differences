@@ -72,10 +72,6 @@ export class PlayerNameDialogBoxComponent implements OnInit, OnDestroy {
         const isNameTaken = await firstValueFrom(this.roomManagerService.playerNameAvailability$, {
             defaultValue: { gameId: this.data.gameId, isNameAvailable: true },
         });
-        if (isNameTaken.gameId === this.data.gameId && !isNameTaken.isNameAvailable) {
-            return { nameTaken: true };
-        } else {
-            return null;
-        }
+        return isNameTaken.gameId === this.data.gameId && !isNameTaken.isNameAvailable ? { nameTaken: true } : null;
     }
 }
