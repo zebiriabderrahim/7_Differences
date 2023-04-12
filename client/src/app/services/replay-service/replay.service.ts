@@ -166,7 +166,7 @@ export class ReplayService {
                 this.hintService.switchProximity(replayData.data as number);
                 break;
             case ReplayActions.DeactivateThirdHint:
-                this.hintService.clickDuringThirdHint();
+                this.hintService.deactivateThirdHint();
                 break;
             default:
                 break;

@@ -1,6 +1,6 @@
 import { GAME_HISTORY } from '@common/constants';
 import { HistoryEvents, PlayerStatus } from '@common/enums';
-import { GameHistory, GameRoom } from '@common/game-interfaces';
+import { GameHistory, GameRoom, PlayerInfo } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
 
@@ -49,19 +49,19 @@ export class HistoryService {
     markPlayer(roomId: string, playerName: string, status: PlayerStatus) {
         const gameHistory = this.pendingGames.get(roomId);
         if (!gameHistory) return;
-        let playerToMark;
+        let playerInfoToChange: PlayerInfo;
         if (gameHistory.player1.name === playerName) {
-            playerToMark = gameHistory.player1;
+            playerInfoToChange = gameHistory.player1;
         } else if (gameHistory.player2 && gameHistory.player2.name === playerName) {
-            playerToMark = gameHistory.player2;
+            playerInfoToChange = gameHistory.player2;
         }
-        if (playerToMark) {
+        if (playerInfoToChange) {
             switch (status) {
                 case PlayerStatus.Winner:
-                    playerToMark.isWinner = true;
+                    playerInfoToChange.isWinner = true;
                     break;
                 case PlayerStatus.Quitter:
-                    playerToMark.isQuitter = true;
+                    playerInfoToChange.isQuitter = true;
                     break;
             }
         }
