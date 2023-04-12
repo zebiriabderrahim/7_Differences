@@ -11,7 +11,7 @@ import { filter, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
-export class ClassicSystemService {
+export class GameManagerService {
     replayEventsSubject: Subject<ReplayEvent>;
     differences: Coordinate[][];
     gameConstants: GameConfigConst;
