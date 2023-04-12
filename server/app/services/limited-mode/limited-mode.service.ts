@@ -1,8 +1,8 @@
 import { GameService } from '@app/services/game/game.service';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { NOT_FOUND } from '@common/constants';
-import { GameEvents, HistoryEvents, RoomEvents } from '@common/enums';
-import { LimitedGameDetails } from '@common/game-interfaces';
+import { GameEvents, HistoryEvents, RoomEvents, GameModes } from '@common/enums';
+import { GameRoom, LimitedGameDetails } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
 import { HistoryService } from '@app/services/history/history.service';
@@ -40,6 +40,7 @@ export class LimitedModeService {
         const nextGameId = await this.roomsManagerService.loadNextGame(room, playedGameIds);
         if (!nextGameId) this.endGame(roomId, server);
         if (playedGameIds) this.availableGameByRoomId.set(roomId, [...playedGameIds, nextGameId]);
+        this.equalizeDiffFound(room, server);
         this.roomsManagerService.startGame(socket, server);
     }
 
@@ -70,10 +71,7 @@ export class LimitedModeService {
         const room = this.roomsManagerService.getRoomById(roomId);
         if (!room) return;
         this.sendEndMessage(roomId, server);
-        server.sockets.sockets.get(room.player1.playerId)?.rooms.delete(roomId);
-        if (room.player2) {
-            server.sockets.sockets.get(room.player2.playerId)?.rooms.delete(roomId);
-        }
+        this.roomsManagerService.leaveRoom(room, server);
         console.log('game ended limited ');
         this.historyService.closeEntry(roomId);
         server.emit(HistoryEvents.EntryAdded, this.historyService.getHistory());
@@ -96,10 +94,7 @@ export class LimitedModeService {
 
     handleDeleteGame(gameId: string): void {
         for (const gameIds of this.availableGameByRoomId.values()) {
-            const index = gameIds.indexOf(gameId);
-            if (index !== NOT_FOUND) {
-                gameIds.splice(index, 1);
-            }
+            gameIds.push(gameId);
         }
     }
 
@@ -107,28 +102,19 @@ export class LimitedModeService {
         this.availableGameByRoomId.clear();
     }
 
-    async handleCreateGame(): Promise<void> {
-        const gameIds = await this.getAllGameIdsFromDb();
-        for (const roomId of this.roomsManagerService.getAllLimitedRoomIds()) {
-            this.availableGameByRoomId.set(roomId, gameIds);
-        }
-    }
     getGameIds(roomId: string): string[] {
         return this.availableGameByRoomId.get(roomId);
     }
 
+    private equalizeDiffFound(room: GameRoom, server: io.Server): void {
+        if (room.clientGame.mode === GameModes.LimitedCoop) {
+            server.to(room.roomId).emit(GameEvents.UpdateDifferencesFound, room.player1.diffData.differencesFound);
+        }
+    }
+
     private sendEndMessage(roomId: string, server: io.Server): void {
         const room = this.roomsManagerService.getRoomById(roomId);
-        room.endMessage = `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo ${room?.player1.name}!`;
+        room.endMessage = `Vous avez trouvé les ${room.player1.diffData.differencesFound} différences! Bravo!`;
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
-    }
-
-    private async getAllGameIdsFromDb(): Promise<string[]> {
-        const gameIds = await this.gameService.getAllGameIds();
-        return gameIds;
-    }
-
-    private generateRandomIndex(max: number): number {
-        return Math.floor(Math.random() * max);
     }
 }
