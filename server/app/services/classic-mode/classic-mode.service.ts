@@ -6,7 +6,7 @@ import { HistoryService } from '@app/services/history/history.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
-import { GameEvents, GameModes, PlayerEvents, RoomEvents } from '@common/enums';
+import { GameEvents, GameModes, PlayerEvents, PlayerStatus, RoomEvents } from '@common/enums';
 import { GameRoom, Player, RoomAvailability, playerData } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
@@ -62,7 +62,7 @@ export class ClassicModeService {
         if (room.clientGame.differencesCount === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicSolo) {
             this.endGame(room, player, server);
         } else if (halfDifferences === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicOneVsOne) {
-            this.historyService.markPlayerAsWinner(room.roomId, player.name);
+            this.historyService.markPlayer(room.roomId, player.name, PlayerStatus.Winner);
             this.endGame(room, player, server);
         }
     }

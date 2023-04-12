@@ -1,5 +1,5 @@
 import { GAME_HISTORY } from '@common/constants';
-import { HistoryEvents } from '@common/enums';
+import { HistoryEvents, PlayerStatus } from '@common/enums';
 import { GameHistory, GameRoom } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
@@ -50,24 +50,24 @@ export class HistoryService {
         server.emit(HistoryEvents.EntryAdded, this.history);
     }
 
-    markPlayerAsWinner(roomId: string, playerName: string) {
+    markPlayer(roomId: string, playerName: string, status: PlayerStatus) {
         const gameHistory = this.pendingGames.get(roomId);
         if (!gameHistory) return;
+        let playerToMark;
         if (gameHistory.player1.name === playerName) {
-            gameHistory.player1.isWinner = true;
+            playerToMark = gameHistory.player1;
         } else if (gameHistory.player2 && gameHistory.player2.name === playerName) {
-            gameHistory.player2.isWinner = true;
+            playerToMark = gameHistory.player2;
         }
-        this.pendingGames.set(roomId, gameHistory);
-    }
-
-    markPlayerAsQuitter(roomId: string, playerName: string) {
-        const gameHistory = this.pendingGames.get(roomId);
-        if (!gameHistory) return;
-        if (gameHistory.player1.name === playerName) {
-            gameHistory.player1.isQuitter = true;
-        } else if (gameHistory.player2 && gameHistory.player2.name === playerName) {
-            gameHistory.player2.isQuitter = true;
+        if (playerToMark) {
+            switch (status) {
+                case PlayerStatus.Winner:
+                    playerToMark.isWinner = true;
+                    break;
+                case PlayerStatus.Quitter:
+                    playerToMark.isQuitter = true;
+                    break;
+            }
         }
         this.pendingGames.set(roomId, gameHistory);
     }

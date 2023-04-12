@@ -63,6 +63,11 @@ export enum RoomEvents {
     DeleteCreatedCoopRoom = "DeleteCreatedCoopRoom"
 }
 
+export enum PlayerStatus {
+    Winner = 'Winner',
+    Quitter = 'Quitter',
+}
+
 export enum GameModes {
     ClassicSolo = 'Classic->Solo',
     ClassicOneVsOne = 'Classic->OneVsOne',
