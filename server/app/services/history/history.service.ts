@@ -19,7 +19,6 @@ export class HistoryService {
     }
 
     createEntry(room: GameRoom) {
-        console.log('creating entry');
         const date = new Date();
         const gameHistory: GameHistory = {
             date: this.getFormattedDate(date),
@@ -32,8 +31,6 @@ export class HistoryService {
                 isQuitter: false,
             },
         };
-        console.log('player1 added');
-        console.log(gameHistory.player1.name);
         if (room.player2) {
             gameHistory.player2 = {
                 name: room.player2.name,
@@ -41,29 +38,19 @@ export class HistoryService {
                 isQuitter: false,
             };
         }
-        console.log('create id');
-        console.log(room.roomId);
         this.pendingGames.set(room.roomId, gameHistory);
     }
 
     closeEntry(roomId: string, server: io.Server) {
-        console.log('closing entry');
-        console.log('room id');
-        console.log(roomId);
         const gameHistory = this.pendingGames.get(roomId);
         if (!gameHistory) return;
         gameHistory.duration = new Date().getTime() - gameHistory.duration;
         this.history.push(gameHistory);
-        console.log('history added');
-        console.log(this.getHistory());
         this.pendingGames.delete(roomId);
         server.emit(HistoryEvents.EntryAdded, this.history);
-        console.log('emitted - closeEntry history.service.ts');
     }
 
     markPlayerAsWinner(roomId: string, playerName: string) {
-        console.log('marking player as winner');
-        console.log('room id');
         const gameHistory = this.pendingGames.get(roomId);
         if (!gameHistory) return;
         if (gameHistory.player1.name === playerName) {
