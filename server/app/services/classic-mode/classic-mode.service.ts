@@ -75,11 +75,7 @@ export class ClassicModeService {
                 ? ` remporte la partie avec ${player.diffData.differencesFound} différences trouvées! ${playerRankMessage}`
                 : `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo ${playerRankMessage}!`;
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
-        console.log('game ended classic');
         this.historyService.closeEntry(room.roomId, server);
-        console.log('after close Entry');
-        console.log('history service');
-        console.log(this.historyService.getHistory());
         this.playersListManagerService.deleteJoinedPlayersByGameId(room.clientGame.id);
         this.roomsManagerService.leaveRoom(room, server);
         this.roomsManagerService.deleteRoom(room.roomId);
