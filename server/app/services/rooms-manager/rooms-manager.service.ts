@@ -5,7 +5,7 @@ import { GameService } from '@app/services/game/game.service';
 import { HistoryService } from '@app/services/history/history.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { CHARACTERS, KEY_SIZE, MAX_BONUS_TIME_ALLOWED, NOT_FOUND } from '@common/constants';
-import { GameEvents, GameModes, MessageEvents } from '@common/enums';
+import { GameEvents, GameModes, MessageEvents, PlayerStatus } from '@common/enums';
 import { ClientSideGame, Coordinate, Differences, GameRoom, Player } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
@@ -206,12 +206,12 @@ export class RoomsManagerService {
         if (!room) return;
         const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
         const opponent: Player = room.player1.playerId === socket.id ? room.player2 : room.player1;
-        this.historyService.markPlayerAsQuitter(roomId, player.name);
+        this.historyService.markPlayer(roomId, player.name, PlayerStatus.Quitter);
         if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
             room.endMessage = "L'adversaire a abandonné la partie!";
             this.abandonMessage(room, player, server);
             server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
-            this.historyService.markPlayerAsWinner(roomId, opponent.name);
+            this.historyService.markPlayer(roomId, opponent.name, PlayerStatus.Winner);
             this.historyService.closeEntry(roomId, server);
             this.deleteRoom(roomId);
         }
