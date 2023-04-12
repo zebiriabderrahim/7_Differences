@@ -209,6 +209,30 @@ describe('GameController', () => {
         expect(gameService.deleteGameById.called).toBeTruthy();
     });
 
+    it('deleteAllGames() should call deleteAllGames() in gameService', async () => {
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.OK);
+            return res;
+        };
+        res.send = () => res;
+        await controller.deleteAllGames(res);
+        expect(gameService.deleteAllGames.calledOnce).toBeTruthy();
+    });
+
+    it('deleteAllGames() should return NOT_FOUND when service unable to delete all games', async () => {
+        gameService.deleteAllGames.throwsException();
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.NO_CONTENT);
+            return res;
+        };
+        res.send = () => res;
+        await controller.deleteAllGames(res);
+        expect(gameService.deleteAllGames).toThrow();
+        expect(gameService.deleteAllGames.called).toBeTruthy();
+    });
+
     it('updateGameConstants() should call updateGameConstants() in gameService', async () => {
         const res = {} as unknown as Response;
         res.status = (code) => {

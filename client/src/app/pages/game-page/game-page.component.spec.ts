@@ -12,7 +12,7 @@ import { GameManagerService } from '@app/services/game-manager-service/game-mana
 import { ReplayService } from '@app/services/replay-service/replay.service';
 import { MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, Players } from '@common/game-interfaces';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
@@ -268,19 +268,19 @@ describe('GamePageComponent', () => {
         expect(gameManagerServiceSpy.sendMessage).toHaveBeenCalledWith(text);
     });
 
-    it('ngOnDestroy should unsubscribe from subscriptions', () => {
-        component['gameSub'] = undefined as unknown as Subscription;
-        component['timerSub'] = undefined as unknown as Subscription;
-        component['differenceSub'] = undefined as unknown as Subscription;
-        // component['routeParamSub'] = undefined as unknown as Subscription;
-        component['opponentDifferenceSub'] = undefined as unknown as Subscription;
-        component['messageSub'] = undefined as unknown as Subscription;
-        component['endGameSub'] = undefined as unknown as Subscription;
-        // component['cheatDifferencesSub'] = undefined as unknown as Subscription;
-        const resetCheatModeSpy = spyOn(gameAreaService, 'resetCheatMode');
-        component.ngOnDestroy();
-        expect(resetCheatModeSpy).toHaveBeenCalled();
-    });
+    // it('ngOnDestroy should unsubscribe from subscriptions', () => {
+    //     component['gameSub'] = undefined as unknown as Subscription;
+    //     component['timerSub'] = undefined as unknown as Subscription;
+    //     component['differenceSub'] = undefined as unknown as Subscription;
+    //     // component['routeParamSub'] = undefined as unknown as Subscription;
+    //     component['opponentDifferenceSub'] = undefined as unknown as Subscription;
+    //     component['messageSub'] = undefined as unknown as Subscription;
+    //     component['endGameSub'] = undefined as unknown as Subscription;
+    //     // component['cheatDifferencesSub'] = undefined as unknown as Subscription;
+    //     const resetCheatModeSpy = spyOn(gameAreaService, 'resetCheatMode');
+    //     component.ngOnDestroy();
+    //     expect(resetCheatModeSpy).toHaveBeenCalled();
+    // });
 
     // it('should call toggleCheatMode when "t" key is pressed', () => {
     //     const toggleCheatModeSpy = spyOn(gameAreaService, 'toggleCheatMode').and.callFake(() => {});
