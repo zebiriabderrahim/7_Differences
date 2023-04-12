@@ -7,8 +7,8 @@ import {
     QUADRANT_POSITIONS,
     SMALL_HINT_ENLARGEMENT,
 } from '@app/constants/hint';
-import { HintProximity } from '@app/enum/hint-proximity';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
+import { HintProximity } from '@app/enum/hint-proximity';
 import { QuadrantPosition } from '@app/enum/quadrant-position';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { Quadrant } from '@app/interfaces/quadrant';
@@ -36,10 +36,7 @@ export class HintService {
         private readonly differenceService: DifferenceService,
     ) {
         this.resetHints();
-        this.proximity = HintProximity.TooFar;
-        this.thirdHintDifference = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
-        this.thirdHintDifferenceSlightlyEnlarged = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
-        this.thirdHintDifferenceEnlarged = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        this.resetThirdHint();
         this.replayEventsSubject = new Subject<ReplayEvent>();
     }
 
@@ -50,6 +47,13 @@ export class HintService {
     resetHints(): void {
         this.nAvailableHints = DEFAULT_N_HINTS;
         this.isThirdHintActive = false;
+    }
+
+    resetThirdHint(): void {
+        this.proximity = HintProximity.TooFar;
+        this.thirdHintDifference = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        this.thirdHintDifferenceSlightlyEnlarged = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        this.thirdHintDifferenceEnlarged = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
     }
 
     clickDuringThirdHint(): void {
@@ -97,6 +101,7 @@ export class HintService {
     }
 
     private generateLastHintDifferences(difference: Coordinate[]): void {
+        this.resetThirdHint();
         for (const coord of difference) {
             this.thirdHintDifference[coord.x][coord.y] = true;
         }
