@@ -62,6 +62,7 @@ export class ClassicModeService {
         if (room.clientGame.differencesCount === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicSolo) {
             this.endGame(room, player, server);
         } else if (halfDifferences === player.diffData.differencesFound && room.clientGame.mode === GameModes.ClassicOneVsOne) {
+            this.historyService.markPlayerAsWinner(room.roomId, player.name);
             this.endGame(room, player, server);
         }
     }

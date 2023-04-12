@@ -212,6 +212,7 @@ export class RoomsManagerService {
             room.endMessage = "L'adversaire a abandonné la partie!";
             this.abandonMessage(room, player, server);
             server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
+            this.historyService.markPlayerAsWinner(roomId, opponent.name);
             this.historyService.closeEntry(roomId, server);
             this.deleteRoom(roomId);
         }
