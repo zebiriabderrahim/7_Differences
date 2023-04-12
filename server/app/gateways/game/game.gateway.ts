@@ -140,7 +140,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     @SubscribeMessage(GameEvents.AbandonGame)
     abandonGame(@ConnectedSocket() socket: Socket) {
-        this.classicModeService.abandonGame(socket, this.server);
+        this.roomsManagerService.abandonGame(socket, this.server);
     }
 
     @SubscribeMessage(RoomEvents.CheckIfAnyCoopRoomExists)
@@ -164,7 +164,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage(GameCardEvents.GameCardCreated)
     gameCardCreated() {
         this.server.emit(GameCardEvents.RequestReload);
-        this.limitedModeService.handleCreateGame();
     }
 
     @SubscribeMessage(GameCardEvents.ResetTopTime)

@@ -1,18 +1,47 @@
 import { Injectable } from '@angular/core';
-import { DEFAULT_N_HINTS, HINT_SQUARE_PADDING, INITIAL_QUADRANT, QUADRANT_POSITIONS } from '@app/constants/hint';
+import {
+    DEFAULT_N_HINTS,
+    HINT_SQUARE_PADDING,
+    INITIAL_QUADRANT,
+    LARGE_HINT_ENLARGEMENT,
+    QUADRANT_POSITIONS,
+    SMALL_HINT_ENLARGEMENT,
+} from '@app/constants/hint';
+import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
+import { HintProximity } from '@app/enum/hint-proximity';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { QuadrantPosition } from '@app/enum/quadrant-position';
+import { ReplayActions } from '@app/enum/replay-actions';
 import { Quadrant } from '@app/interfaces/quadrant';
+import { ReplayEvent } from '@app/interfaces/replay-actions';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
+import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { Coordinate } from '@common/coordinate';
+import { Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class HintService {
     nAvailableHints: number;
-    constructor(private readonly classicSystem: ClassicSystemService, private readonly gameAreaService: GameAreaService) {
-        this.nAvailableHints = DEFAULT_N_HINTS;
+    replayEventsSubject: Subject<ReplayEvent>;
+    proximity: HintProximity;
+    isThirdHintActive: boolean;
+    private thirdHintDifference: boolean[][];
+    private thirdHintDifferenceSlightlyEnlarged: boolean[][];
+    private thirdHintDifferenceEnlarged: boolean[][];
+
+    constructor(
+        private readonly classicSystem: ClassicSystemService,
+        private readonly gameAreaService: GameAreaService,
+        private readonly differenceService: DifferenceService,
+    ) {
+        this.resetHints();
+        this.proximity = HintProximity.TooFar;
+        this.thirdHintDifference = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        this.thirdHintDifferenceSlightlyEnlarged = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        this.thirdHintDifferenceEnlarged = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        this.replayEventsSubject = new Subject<ReplayEvent>();
     }
 
     get differences(): Coordinate[][] {
@@ -21,15 +50,31 @@ export class HintService {
 
     resetHints(): void {
         this.nAvailableHints = DEFAULT_N_HINTS;
+        this.isThirdHintActive = false;
     }
 
-    requestHint(): void {
+    clickDuringThirdHint(): void {
+        this.isThirdHintActive = false;
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.DeactivateThirdHint,
+            timestamp: Date.now(),
+        };
+        this.replayEventsSubject.next(replayEvent);
+    }
+
+    requestHint(replayDifference?: Coordinate[], replaySpeed?: number): void {
+        const speed = replaySpeed ? replaySpeed : 1;
         if (this.nAvailableHints > 0 && this.differences.length > 0) {
             let hintSquare: Coordinate[] = [];
             const differenceIndex: number = this.differences.length > 1 ? this.generateRandomNumber(0, this.differences.length - 1) : 0;
-            const difference: Coordinate[] = this.differences[differenceIndex];
+            let difference: Coordinate[] = this.differences[differenceIndex];
+            if (replayDifference !== undefined) {
+                difference = replayDifference;
+            }
             if (this.nAvailableHints === 1) {
+                this.isThirdHintActive = true;
                 hintSquare = this.generateAdjustedHintSquare(difference);
+                this.generateLastHintDifferences(difference);
             } else {
                 let hintQuadrant = this.getHintQuadrant(difference, INITIAL_QUADRANT);
                 if (this.nAvailableHints === DEFAULT_N_HINTS - 1) {
@@ -37,9 +82,59 @@ export class HintService {
                 }
                 hintSquare = this.generateHintSquare(hintQuadrant);
             }
-            this.gameAreaService.flashCorrectPixels(hintSquare);
+            const replayEvent: ReplayEvent = {
+                action: ReplayActions.UseHint,
+                timestamp: Date.now(),
+                data: difference,
+            };
+            this.replayEventsSubject.next(replayEvent);
+            if (this.nAvailableHints !== 1) {
+                this.gameAreaService.flashCorrectPixels(hintSquare, speed);
+            }
             this.classicSystem.requestHint();
             this.nAvailableHints--;
+        }
+    }
+
+    checkThirdHint(coordinate: Coordinate): void {
+        if (this.thirdHintDifferenceEnlarged[coordinate.x][coordinate.y]) {
+            this.switchProximity(HintProximity.Far);
+        } else if (this.thirdHintDifferenceSlightlyEnlarged[coordinate.x][coordinate.y]) {
+            this.switchProximity(HintProximity.Close);
+        } else if (this.thirdHintDifference[coordinate.x][coordinate.y]) {
+            this.switchProximity(HintProximity.OnIt);
+        } else {
+            this.switchProximity(HintProximity.TooFar);
+        }
+    }
+
+    switchProximity(nextProximity: HintProximity): void {
+        if (nextProximity !== this.proximity) {
+            this.proximity = nextProximity;
+            const replayEvent: ReplayEvent = {
+                action: ReplayActions.ActivateThirdHint,
+                timestamp: Date.now(),
+                data: nextProximity,
+            };
+            this.replayEventsSubject.next(replayEvent);
+        }
+    }
+
+    private generateLastHintDifferences(difference: Coordinate[]): void {
+        for (const coord of difference) {
+            this.thirdHintDifference[coord.x][coord.y] = true;
+        }
+        const littleEnlarge = this.differenceService.enlargeDifferences(difference, SMALL_HINT_ENLARGEMENT);
+        for (const coord of littleEnlarge) {
+            if (!this.thirdHintDifference[coord.x][coord.y]) {
+                this.thirdHintDifferenceSlightlyEnlarged[coord.x][coord.y] = true;
+            }
+        }
+        const bigEnlarge = this.differenceService.enlargeDifferences(difference, LARGE_HINT_ENLARGEMENT);
+        for (const coord of bigEnlarge) {
+            if (!this.thirdHintDifference[coord.x][coord.y] && !this.thirdHintDifferenceSlightlyEnlarged[coord.x][coord.y]) {
+                this.thirdHintDifferenceEnlarged[coord.x][coord.y] = true;
+            }
         }
     }
 
@@ -74,11 +169,7 @@ export class HintService {
             maxY = Math.max(maxY, coord.y);
         }
 
-        const adjustedQuadrant = {
-            bottomCorner: { x: minX, y: minY },
-            topCorner: { x: maxX, y: maxY },
-        };
-        return this.generateHintSquare(adjustedQuadrant);
+        return this.generateHintSquare({ bottomCorner: { x: minX, y: minY }, topCorner: { x: maxX, y: maxY } });
     }
 
     private generateHintSquare(quadrant: Quadrant): Coordinate[] {

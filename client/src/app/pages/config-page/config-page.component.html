@@ -4,20 +4,35 @@
     </div>
     <div class="under-game-list">
         <app-history-box></app-history-box>
-        <mat-grid-list cols="2" rows="1" rowHeight="420px">
+        <mat-grid-list cols="2" rows="2" rowHeight="225px">
             <mat-grid-tile>
-                <button mat-raised-button [routerLink]="createRoute" class="create_button">Création de jeu</button>
-                <button mat-raised-button class="create_button" (click)="openConfirmationDialog(actions.ResetAllTopTimes)">Tout réinitialiser</button>
-                <button mat-raised-button class="create_button" (click)="openConfirmationDialog(actions.DeleteAllGames)">Tout supprimer</button>
+                <div class="button-container">
+                    <button class="create_button" mat-button [routerLink]="createRoute">
+                    </button>
+                    <img src="./assets/icon/CreationPageButton.png">
+                    <div class="centered-create">Création de jeu</div>
+                </div>
+                <div class="button-container">
+                    <button mat-raised-button class="reset_button" (click)="openConfirmationDialog(actions.ResetAllTopTimes)"></button>
+                    <img src="./assets/icon/ResetButton.png">
+                    <div class="centered-reset">Réinitialiser les meilleurs temps</div>
+                </div>
             </mat-grid-tile>
             <mat-grid-tile
                 ><div class="game-constants">
                     <div class="button-container">
                         <button mat-raised-button class="config_button" (click)="openConfigDialog()">Configurer les constantes de jeu</button>
-                        <img src="./assets/icon/CreationPageButton.png">
+                        <img src="./assets/icon/ConfigButton.png">
                         <div class="centered-reset">Configurer les constantes de jeu</div>
                     </div>
                 </div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+              <div class="button-container">
+                <button mat-raised-button class="delete_button" (click)="openConfirmationDialog(actions.DeleteAllGames)"></button>
+                <img src="./assets/icon/DeleteAll.png">
+                <div class="centered-delete">Supprimer tous les jeux</div>
+              </div>
             </mat-grid-tile>
         </mat-grid-list>
     </div>

@@ -5,6 +5,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -13,7 +14,7 @@ import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { BehaviorSubject, of, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription, of } from 'rxjs';
 
 describe('GameSheetComponent', () => {
     let component: GameSheetComponent;
@@ -48,7 +49,7 @@ describe('GameSheetComponent', () => {
             },
         );
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule.withRoutes(routes), BrowserAnimationsModule, MatDialogModule, HttpClientTestingModule],
+            imports: [RouterTestingModule.withRoutes(routes), BrowserAnimationsModule, MatDialogModule, HttpClientTestingModule, MatFormFieldModule],
             declarations: [GameSheetComponent],
             providers: [
                 CommunicationService,
