@@ -1,6 +1,7 @@
 <p id = "waiting2" *ngIf="refusedMessage"> {{refusedMessage}}</p>
+<p id = "waiting2" *ngIf="!refusedMessage && isLimited"> En attente d’un deuxième joueur....</p>
 <div class="infos-container" >
-    <p id = "waiting" *ngIf="!refusedMessage"> En attente d’un deuxième joueur....</p>
+    <p id = "waiting" *ngIf="!refusedMessage && !isLimited"> En attente d’un deuxième joueur....</p>
 </div>
 <div class = "players-list">
     <div *ngIf="playerNames && !refusedMessage ">
@@ -14,7 +15,14 @@
         </div>
     </div>
 </div>
-<div *ngIf="!refusedMessage" class = "button1">
+<div *ngIf="!refusedMessage && !isLimited" class = "button1">
+    <div class="button-container">
+        <button class = "cancel" mat-button  mat-dialog-close (click)="undoCreateOneVsOneRoom()"></button>
+        <img src="./assets/icon/CreateButton.png" alt="cancelButton">
+        <div class="centered-yes">Annuler</div>
+    </div>
+</div>
+<div *ngIf="!refusedMessage && isLimited" class = "button2">
     <div class="button-container">
         <button class = "cancel" mat-button  mat-dialog-close (click)="undoCreateOneVsOneRoom()"></button>
         <img src="./assets/icon/CreateButton.png" alt="cancelButton">
@@ -28,5 +36,6 @@
         <div class="centered-yes">Annuler</div>
     </div>
 </div>
-<img *ngIf="!refusedMessage" src="./assets/gameSheet.png" class="dialog-image" alt="popup">
+<img *ngIf="!refusedMessage && !isLimited" src="./assets/gameSheet.png" class="dialog-image" alt="popup">
 <img *ngIf="refusedMessage" src="./assets/gameSheet.png" class="dialog-image2" alt="popup">
+<img *ngIf="!refusedMessage && isLimited" src="./assets/gameSheet.png" class="dialog-image2" alt="popup">
