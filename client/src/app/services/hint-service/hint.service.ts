@@ -71,7 +71,7 @@ export class HintService {
             let hintSquare: Coordinate[] = [];
             const differenceIndex: number = this.differences.length > 1 ? this.generateRandomNumber(0, this.differences.length - 1) : 0;
             let difference: Coordinate[] = this.differences[differenceIndex];
-            if (replayDifference !== undefined) {
+            if (replayDifference) {
                 difference = replayDifference;
             }
             if (this.nAvailableHints === 1) {
