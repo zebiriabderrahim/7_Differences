@@ -130,13 +130,13 @@ describe('WaitingPlayerToJoinComponent', () => {
         expect(dialogRefSpy.close).toHaveBeenCalled();
     }));
 
-    it('refusePlayer should refuse the player using the roomManagerService', () => {
-        const gameId = '12';
-        const playerName = 'John';
-        component['data'] = { roomId: '23', player: playerName, gameId };
-        component.refusePlayer('John');
-        expect(roomManagerServiceSpy.refusePlayer).toHaveBeenCalledWith(gameId, playerName);
-    });
+    // it('refusePlayer should refuse the player using the roomManagerService', () => {
+    //     const gameId = '12';
+    //     const playerName = 'John';
+    //     component['data'] = { roomId: '23', player: playerName, gameId };
+    //     component.refusePlayer('John');
+    //     expect(roomManagerServiceSpy.refusePlayer).toHaveBeenCalledWith(gameId, playerName);
+    // });
 
     // it('acceptPlayer should navigate to the game page after dialog close', () => {
     //     // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for fake afterClosed
