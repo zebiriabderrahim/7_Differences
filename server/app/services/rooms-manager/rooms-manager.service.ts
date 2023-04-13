@@ -59,7 +59,7 @@ export class RoomsManagerService implements OnModuleInit {
     }
 
     getRoomByPlayerId(playerId: string): GameRoom {
-        return Array.from(this.rooms.values()).find((room) => room.player1.playerId === playerId || room.player2.playerId === playerId);
+        return Array.from(this.rooms.values()).find((room) => room.player1.playerId === playerId || room.player2?.playerId === playerId);
     }
 
     getHostIdByGameId(gameId: string): string {
