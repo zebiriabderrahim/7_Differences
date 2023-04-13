@@ -1,13 +1,32 @@
-<div mat-dialog-actions class="infos-container" >
-    <h1 *ngIf="refusedMessage"> {{refusedMessage}}</h1>
-    <h1 *ngIf="!refusedMessage"> En attente d’un deuxième joueur....</h1>
+<p id = "waiting2" *ngIf="refusedMessage"> {{refusedMessage}}</p>
+<div class="infos-container" >
+    <p id = "waiting" *ngIf="!refusedMessage"> En attente d’un deuxième joueur....</p>
+</div>
+<div class = "players-list">
     <div *ngIf="playerNames && !refusedMessage ">
-        <h2> Joueur(s) en attente : </h2>
-        <div *ngFor="let playerName of playerNames">
-            <h1>Joueur: {{ playerName }}</h1>
-            <button mat-button (click)="refusePlayer(playerName)">Refuser</button>
-            <button mat-button mat-dialog-close (click)="acceptPlayer(playerName)">Accepter</button>
+        <p class = "waiting-text"> Joueur(s) en attente : </p>
+        <div class = "player-container">
+            <div class = "players" *ngFor="let playerName of playerNames">
+                <p class = "player">Joueur: <span class = "player-name">{{ playerName }}</span></p>
+                <button class = "choice2" mat-button mat-dialog-close (click)="acceptPlayer(playerName)">Accepter</button>
+                <button class = "choice1" mat-button (click)="refusePlayer(playerName)">Refuser</button>
+            </div>
         </div>
     </div>
-    <button mat-button mat-dialog-close (click)="undoCreateOneVsOneRoom()">Annuler</button>
 </div>
+<div *ngIf="!refusedMessage" class = "button1">
+    <div class="button-container">
+        <button class = "cancel" mat-button  mat-dialog-close (click)="undoCreateOneVsOneRoom()"></button>
+        <img src="./assets/icon/CreateButton.png" alt="cancelButton">
+        <div class="centered-yes">Annuler</div>
+    </div>
+</div>
+<div *ngIf="refusedMessage" class = "button2">
+    <div class="button-container">
+        <button class = "cancel" mat-button  mat-dialog-close (click)="undoCreateOneVsOneRoom()"></button>
+        <img src="./assets/icon/CreateButton.png" alt="cancelButton">
+        <div class="centered-yes">Annuler</div>
+    </div>
+</div>
+<img *ngIf="!refusedMessage" src="./assets/gameSheet.png" class="dialog-image" alt="popup">
+<img *ngIf="refusedMessage" src="./assets/gameSheet.png" class="dialog-image2" alt="popup">
