@@ -187,6 +187,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         await this.roomsManagerService.getGameConstants();
     }
 
+    @SubscribeMessage(GameCardEvents.GamesHistoryDeleted)
+    gamesHistoryDeleted() {
+        this.server.emit(GameCardEvents.RequestReload);
+    }
+
     @SubscribeMessage(GameEvents.RequestHint)
     requestHint(@ConnectedSocket() socket: Socket) {
         this.roomsManagerService.addHintPenalty(socket, this.server);

@@ -153,6 +153,10 @@ export class RoomManagerService {
         this.clientSocket.send(GameCardEvents.GameConstantsUpdated);
     }
 
+    gamesHistoryDeleted() {
+        this.clientSocket.send(GameCardEvents.GamesHistoryDeleted);
+    }
+
     connect(): void {
         this.clientSocket.connect();
     }

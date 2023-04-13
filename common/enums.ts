@@ -27,6 +27,7 @@ export enum PlayerEvents {
     WaitingPlayerNameListUpdated = 'WaitingPlayerNameListUpdated',
 }
 
+
 export enum GameCardEvents {
     ResetTopTime = 'ResetTopTime',
     ResetAllTopTimes = 'ResetAllTopTimes',
@@ -37,6 +38,7 @@ export enum GameCardEvents {
     GameDeleted = 'GameDeleted',
     GameConstantsUpdated = 'GameConstantsUpdated',
     GetGameCards = 'GetGameCards',
+    GamesHistoryDeleted = "GamesHistoryDeleted"
 }
 
 
