@@ -71,6 +71,7 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
         this.dialog.open(WaitingForPlayerToJoinComponent, {
             data: { roomId },
             disableClose: true,
+            panelClass: 'dialog',
         });
     }
 
