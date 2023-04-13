@@ -24,3 +24,18 @@ button {
 .field {
     width: 80px
 }
+
+#pencil-svg {
+    width: 20px;
+    height: 20px;
+}
+
+#eraser-svg {
+    width: 40px;
+    height: 40px;
+}
+
+#rectangle {
+    fill-rule: evenodd;
+    fill: black;
+}
