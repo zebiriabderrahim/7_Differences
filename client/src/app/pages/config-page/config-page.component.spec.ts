@@ -66,6 +66,7 @@ describe('ConfigPageComponent', () => {
         expect(dialogSpy.open).toHaveBeenCalledWith(DeleteResetConfirmationDialogComponent, {
             data: { actions: action },
             disableClose: true,
+            panelClass: 'dialog',
         });
     });
 
