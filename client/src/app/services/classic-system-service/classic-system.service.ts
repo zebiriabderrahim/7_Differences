@@ -155,8 +155,8 @@ export class ClassicSystemService {
     }
 
     sendMessage(textMessage: string): void {
-        const newMessage = { tag: MessageTag.received, message: textMessage };
-        this.saveEvent(ReplayActions.CaptureMessage, { tag: MessageTag.sent, message: textMessage } as ChatMessage);
+        const newMessage = { tag: MessageTag.Received, message: textMessage };
+        this.saveEvent(ReplayActions.CaptureMessage, { tag: MessageTag.Sent, message: textMessage } as ChatMessage);
         this.clientSocket.send(MessageEvents.LocalMessage, newMessage);
     }
 
