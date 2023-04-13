@@ -28,17 +28,13 @@ export class HintService {
     replayEventsSubject: Subject<ReplayEvent>;
     proximity: HintProximity;
     isThirdHintActive: boolean;
-    private thirdHintDifference: boolean[][];
-    private thirdHintDifferenceSlightlyEnlarged: boolean[][];
-    private thirdHintDifferenceEnlarged: boolean[][];
-
+    private thirdHintProximity: HintProximity[][];
     constructor(
         private readonly classicSystem: ClassicSystemService,
         private readonly gameAreaService: GameAreaService,
         private readonly differenceService: DifferenceService,
     ) {
         this.resetHints();
-        this.resetThirdHint();
         this.replayEventsSubject = new Subject<ReplayEvent>();
     }
 
@@ -49,13 +45,10 @@ export class HintService {
     resetHints(): void {
         this.nAvailableHints = DEFAULT_N_HINTS;
         this.isThirdHintActive = false;
-    }
-
-    resetThirdHint(): void {
         this.proximity = HintProximity.TooFar;
-        this.thirdHintDifference = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
-        this.thirdHintDifferenceSlightlyEnlarged = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
-        this.thirdHintDifferenceEnlarged = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
+        this.thirdHintProximity = new Array(IMG_WIDTH)
+            .fill(HintProximity.TooFar)
+            .map(() => new Array(IMG_HEIGHT).fill(HintProximity.TooFar)) as HintProximity[][];
     }
 
     clickDuringThirdHint(): void {
@@ -94,15 +87,7 @@ export class HintService {
     }
 
     checkThirdHint(coordinate: Coordinate): void {
-        if (this.thirdHintDifferenceEnlarged[coordinate.x][coordinate.y]) {
-            this.switchProximity(HintProximity.Far);
-        } else if (this.thirdHintDifferenceSlightlyEnlarged[coordinate.x][coordinate.y]) {
-            this.switchProximity(HintProximity.Close);
-        } else if (this.thirdHintDifference[coordinate.x][coordinate.y]) {
-            this.switchProximity(HintProximity.OnIt);
-        } else {
-            this.switchProximity(HintProximity.TooFar);
-        }
+        this.switchProximity(this.thirdHintProximity[coordinate.x][coordinate.y]);
     }
 
     switchProximity(nextProximity: HintProximity): void {
@@ -118,20 +103,19 @@ export class HintService {
     }
 
     private generateLastHintDifferences(difference: Coordinate[]): void {
-        this.resetThirdHint();
         for (const coord of difference) {
-            this.thirdHintDifference[coord.x][coord.y] = true;
+            this.thirdHintProximity[coord.x][coord.y] = HintProximity.OnIt;
         }
         const littleEnlarge = this.differenceService.enlargeDifferences(difference, SMALL_HINT_ENLARGEMENT);
         for (const coord of littleEnlarge) {
-            if (!this.thirdHintDifference[coord.x][coord.y]) {
-                this.thirdHintDifferenceSlightlyEnlarged[coord.x][coord.y] = true;
+            if (this.thirdHintProximity[coord.x][coord.y] > HintProximity.OnIt) {
+                this.thirdHintProximity[coord.x][coord.y] = HintProximity.Close;
             }
         }
         const bigEnlarge = this.differenceService.enlargeDifferences(difference, LARGE_HINT_ENLARGEMENT);
         for (const coord of bigEnlarge) {
-            if (!this.thirdHintDifference[coord.x][coord.y] && !this.thirdHintDifferenceSlightlyEnlarged[coord.x][coord.y]) {
-                this.thirdHintDifferenceEnlarged[coord.x][coord.y] = true;
+            if (this.thirdHintProximity[coord.x][coord.y] > HintProximity.Close) {
+                this.thirdHintProximity[coord.x][coord.y] = HintProximity.Far;
             }
         }
     }
