@@ -6,7 +6,7 @@
     <div *ngIf="playerNames && !refusedMessage ">
         <p class = "waiting-text"> Joueur(s) en attente : </p>
         <div class = "player-container">
-            <div *ngFor="let playerName of playerNames">
+            <div class = "players" *ngFor="let playerName of playerNames">
                 <p class = "player">Joueur: <span class = "player-name">{{ playerName }}</span></p>
                 <button class = "choice2" mat-button mat-dialog-close (click)="acceptPlayer(playerName)">Accepter</button>
                 <button class = "choice1" mat-button (click)="refusePlayer(playerName)">Refuser</button>
