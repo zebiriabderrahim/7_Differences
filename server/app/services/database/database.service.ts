@@ -194,7 +194,7 @@ export class DatabaseService implements OnModuleInit {
         }
     }
 
-    async saveGameHistory(gameHistory: GameHistory[]): Promise<void> {
+    async saveGameHistory(gameHistory: GameHistory): Promise<void> {
         try {
             await this.gameHistoryModel.create(gameHistory);
         } catch (error) {

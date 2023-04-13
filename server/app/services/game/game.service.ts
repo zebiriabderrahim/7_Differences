@@ -90,7 +90,7 @@ export class GameService {
         throw new NotFoundException('No games history found');
     }
 
-    async saveGameHistory(gameHistory: GameHistory[]): Promise<void> {
+    async saveGameHistory(gameHistory: GameHistory): Promise<void> {
         await this.databaseService.saveGameHistory(gameHistory);
     }
     async deleteAllGamesHistory() {

@@ -34,7 +34,7 @@ export class HistoryBoxComponent implements OnInit {
     deleteAllGamesHistory(): void {
         this.communicationService.deleteAllGamesHistory().subscribe(() => {
             this.gameHistory = [];
-            this.roomManager.
+            this.roomManager.gamesHistoryDeleted();
         });
     }
 }

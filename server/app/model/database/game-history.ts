@@ -11,6 +11,14 @@ export class GameHistory {
     @Prop({ required: true })
     gameMode: string;
     @ApiProperty()
+    @Prop({
+        required: true,
+        type: () => ({
+            name: String,
+            isWinner: Boolean,
+            isQuitter: Boolean,
+        }),
+    })
     player2?: PlayerInfo;
 
     @ApiProperty()
