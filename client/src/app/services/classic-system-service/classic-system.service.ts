@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ReplayActions } from '@app/enum/replay-actions';
-import { ReplayEvent } from '@app/interfaces/replay-actions';
+import { Payload, ReplayEvent } from '@app/interfaces/replay-actions';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
@@ -25,6 +25,7 @@ export class ClassicSystemService {
     private players: Subject<Players>;
     private isFirstDifferencesFound: Subject<boolean>;
     private isGameModeChanged: Subject<boolean>;
+    private isGamePageRefreshed: Subject<boolean>;
 
     // eslint-disable-next-line max-params
     constructor(
@@ -42,6 +43,7 @@ export class ClassicSystemService {
         this.replayEventsSubject = new Subject<ReplayEvent>();
         this.isFirstDifferencesFound = new Subject<boolean>();
         this.isGameModeChanged = new Subject<boolean>();
+        this.isGamePageRefreshed = new Subject<boolean>();
     }
 
     get currentGame$() {
@@ -49,25 +51,25 @@ export class ClassicSystemService {
     }
 
     get timer$() {
-        return this.timer.asObservable();
+        return this.timer.asObservable().pipe(filter((timer) => !!timer));
     }
     get differencesFound$() {
-        return this.differencesFound.asObservable();
+        return this.differencesFound.asObservable().pipe(filter((differencesFound) => !!differencesFound));
     }
     get message$() {
-        return this.message.asObservable();
+        return this.message.asObservable().pipe(filter((message) => !!message));
     }
 
     get endMessage$() {
-        return this.endMessage.asObservable();
+        return this.endMessage.asObservable().pipe(filter((message) => !!message));
     }
 
     get opponentDifferencesFound$() {
-        return this.opponentDifferencesFound.asObservable();
+        return this.opponentDifferencesFound.asObservable().pipe(filter((differencesFound) => !!differencesFound));
     }
 
     get players$() {
-        return this.players.asObservable();
+        return this.players.asObservable().pipe(filter((players) => !!players));
     }
 
     get isFirstDifferencesFound$() {
@@ -76,6 +78,10 @@ export class ClassicSystemService {
 
     get isGameModeChanged$() {
         return this.isGameModeChanged.asObservable();
+    }
+
+    get isGamePageRefreshed$() {
+        return this.isGamePageRefreshed.asObservable();
     }
 
     setMessage(message: ChatMessage) {
@@ -114,28 +120,22 @@ export class ClassicSystemService {
         }
     }
 
+    saveEvent(action: ReplayActions, data: Payload): void {
+        const replayEvent: ReplayEvent = { action, timestamp: Date.now(), data };
+        this.replayEventsSubject.next(replayEvent);
+    }
+
     handleRemoveDiff(data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }): void {
         if (data.playerId === this.getSocketId()) {
             this.replaceDifference(data.differencesData.currentDifference);
             this.differencesFound.next(data.differencesData.differencesFound);
-            const replayEvent: ReplayEvent = {
-                action: ReplayActions.DifferenceFoundUpdate,
-                timestamp: Date.now(),
-                data: data.differencesData.differencesFound,
-            };
-            this.replayEventsSubject.next(replayEvent);
             this.checkStatus();
         } else if (data.differencesData.currentDifference.length !== 0) {
             this.replaceDifference(data.differencesData.currentDifference);
             this.opponentDifferencesFound.next(data.differencesData.differencesFound);
-            const replayEvent: ReplayEvent = {
-                action: ReplayActions.DifferenceFoundUpdate,
-                timestamp: Date.now(),
-                data: data.differencesData.differencesFound,
-            };
-            this.replayEventsSubject.next(replayEvent);
         }
         this.differences = data.cheatDifferences;
+        this.saveEvent(ReplayActions.DifferenceFoundUpdate, data.differencesData.differencesFound);
     }
 
     abandonGame(): void {
@@ -155,13 +155,8 @@ export class ClassicSystemService {
     }
 
     sendMessage(textMessage: string): void {
-        const newMessage = { tag: MessageTag.received, message: textMessage };
-        const replayEvent: ReplayEvent = {
-            action: ReplayActions.CaptureMessage,
-            timestamp: Date.now(),
-            data: { tag: MessageTag.sent, message: textMessage } as ChatMessage,
-        };
-        this.replayEventsSubject.next(replayEvent);
+        const newMessage = { tag: MessageTag.Received, message: textMessage };
+        this.saveEvent(ReplayActions.CaptureMessage, { tag: MessageTag.Sent, message: textMessage } as ChatMessage);
         this.clientSocket.send(MessageEvents.LocalMessage, newMessage);
     }
 
@@ -175,13 +170,7 @@ export class ClassicSystemService {
             this.gameConstants = room.gameConstants;
             this.players.next({ player1: room.player1, player2: room.player2 });
             this.differences = room.originalDifferences;
-            const replayEvent: ReplayEvent = {
-                action: ReplayActions.StartGame,
-                timestamp: Date.now(),
-                data: [room.clientGame.original, room.clientGame.modified],
-            };
-
-            this.replayEventsSubject.next(replayEvent);
+            this.saveEvent(ReplayActions.StartGame, room);
         });
 
         this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
@@ -190,13 +179,7 @@ export class ClassicSystemService {
 
         this.clientSocket.on(GameEvents.TimerUpdate, (timer: number) => {
             this.timer.next(timer);
-            const replayEvent: ReplayEvent = {
-                action: ReplayActions.TimerUpdate,
-                timestamp: Date.now(),
-                data: timer,
-            };
-
-            this.replayEventsSubject.next(replayEvent);
+            this.saveEvent(ReplayActions.TimerUpdate, timer);
         });
 
         this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {
@@ -205,12 +188,7 @@ export class ClassicSystemService {
 
         this.clientSocket.on(MessageEvents.LocalMessage, (receivedMessage: ChatMessage) => {
             this.message.next(receivedMessage);
-            const replayEvent: ReplayEvent = {
-                action: ReplayActions.CaptureMessage,
-                timestamp: Date.now(),
-                data: receivedMessage,
-            };
-            this.replayEventsSubject.next(replayEvent);
+            this.saveEvent(ReplayActions.CaptureMessage, receivedMessage);
         });
 
         this.clientSocket.on(GameEvents.UpdateDifferencesFound, (differencesFound: number) => {
@@ -219,6 +197,10 @@ export class ClassicSystemService {
 
         this.clientSocket.on(GameEvents.GameModeChanged, () => {
             this.isGameModeChanged.next(true);
+        });
+
+        this.clientSocket.on(GameEvents.GamePageRefreshed, () => {
+            this.isGamePageRefreshed.next(true);
         });
     }
 }

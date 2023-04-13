@@ -117,6 +117,12 @@ describe('GameService', () => {
         expect(databaseService.deleteGameById.calledWith('1')).toBe(true);
     });
 
+    it('deleteAllGames () should call deleteAllGames() ', async () => {
+        databaseService.deleteAllGames.resolves();
+        await gameService.deleteAllGames();
+        expect(databaseService.deleteAllGames.calledOnce).toBe(true);
+    });
+
     it('getTopTimesGameById () should call with the right arg getTopTimesGameById() and return testGame as expected', async () => {
         databaseService.getTopTimesGameById.resolves(defaultBestTimes);
         expect(await gameService.getTopTimesGameById('1', GameModes.ClassicOneVsOne)).toEqual(defaultBestTimes);
@@ -155,5 +161,17 @@ describe('GameService', () => {
         databaseService.resetAllTopTimes.resolves();
         await gameService.resetAllTopTimes();
         expect(databaseService.resetAllTopTimes.calledOnce).toBe(true);
+    });
+
+    it('getRandomGame() should call getRandomGame() and return testGame as expected ', async () => {
+        databaseService.getRandomGame.resolves(testGame);
+        expect(await gameService.getRandomGame([])).toEqual(testGame);
+        expect(databaseService.getRandomGame.calledOnce).toBe(true);
+    });
+
+    it('getRandomGame() should call getRandomGame() and return null as expected', async () => {
+        databaseService.getRandomGame.resolves(null);
+        expect(await gameService.getRandomGame([])).toEqual(null);
+        expect(databaseService.getRandomGame.calledOnce).toBe(true);
     });
 });

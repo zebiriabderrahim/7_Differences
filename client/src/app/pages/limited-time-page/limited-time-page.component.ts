@@ -5,8 +5,8 @@ import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog
 import { WaitingForPlayerToJoinComponent } from '@app/components/waiting-player-to-join/waiting-player-to-join.component';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameModes } from '@common/enums';
-import { LimitedGameDetails } from '@common/game-interfaces';
-import { filter, Subscription } from 'rxjs';
+import { PlayerData } from '@common/game-interfaces';
+import { Subscription, filter } from 'rxjs';
 
 @Component({
     selector: 'app-limited-time-page',
@@ -31,7 +31,7 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
 
     openDialog() {
         this.dialog
-            .open(PlayerNameDialogBoxComponent, { disableClose: true })
+            .open(PlayerNameDialogBoxComponent, { disableClose: true, panelClass: 'dialog' })
             .afterClosed()
             .subscribe((playerName) => {
                 if (playerName) {
@@ -45,12 +45,12 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
     playLimited(gameMode: GameModes) {
         if (this.isStartingGame) return;
         this.isStartingGame = true;
-        const gameDetails = { playerName: this.playerName, gameMode } as LimitedGameDetails;
+        const playerPayLoad = { playerName: this.playerName, gameMode } as PlayerData;
         if (gameMode === GameModes.LimitedSolo) {
-            this.roomManagerService.createLimitedRoom(gameDetails);
+            this.roomManagerService.createLimitedRoom(playerPayLoad);
             this.redirectToGamePage(gameMode);
         } else if (gameMode === GameModes.LimitedCoop) {
-            this.roomManagerService.checkIfAnyCoopRoomExists(gameDetails);
+            this.roomManagerService.checkIfAnyCoopRoomExists(playerPayLoad);
             this.redirectToGamePage(gameMode);
         }
     }
@@ -71,6 +71,7 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
         this.dialog.open(WaitingForPlayerToJoinComponent, {
             data: { roomId },
             disableClose: true,
+            panelClass: 'dialog',
         });
     }
 

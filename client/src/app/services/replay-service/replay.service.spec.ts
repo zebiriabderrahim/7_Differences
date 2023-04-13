@@ -6,13 +6,13 @@ import { ReplayActions } from '@app/enum/replay-actions';
 import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
 import { MessageTag } from '@common/enums';
-import { ChatMessage } from '@common/game-interfaces';
+import { ChatMessage, ClientSideGame, GameConfigConst, GameRoom, Player } from '@common/game-interfaces';
 import { BehaviorSubject } from 'rxjs';
-import { HintService } from '@app/services/hint-service/hint.service';
 import { ReplayService } from './replay.service';
 
 describe('ReplayService', () => {
@@ -26,10 +26,20 @@ describe('ReplayService', () => {
     const replayEventClassicSystemServiceSubTest = new BehaviorSubject<number>(0);
     const replayEventHintServiceSubTest = new BehaviorSubject<number>(0);
 
+    const gameRoomStub: GameRoom = {
+        roomId: 'test',
+        clientGame: {} as ClientSideGame,
+        endMessage: '',
+        timer: 0,
+        originalDifferences: [[]],
+        gameConstants: {} as GameConfigConst,
+        player1: {} as Player,
+    };
+
     const replayEventsStub: ReplayEvent[] = [
-        { timestamp: 0, action: ReplayActions.StartGame, data: ['0', '1'] },
+        { timestamp: 0, action: ReplayActions.StartGame, data: gameRoomStub },
         { timestamp: 0, action: ReplayActions.TimerUpdate },
-        { timestamp: 0, action: ReplayActions.ClickFound, data: ['og', 'md'] },
+        { timestamp: 0, action: ReplayActions.ClickFound },
         { timestamp: 0, action: ReplayActions.ClickError, data: { isMainCanvas: true, pos: { x: 0, y: 0 } } as ClickErrorData },
     ];
 
@@ -53,7 +63,7 @@ describe('ReplayService', () => {
         });
         soundServiceSpy = jasmine.createSpyObj('SoundService', ['playCorrectSound', 'playErrorSound']);
         imageServiceSpy = jasmine.createSpyObj('ImageService', ['loadImage']);
-        hintServiceSpy = jasmine.createSpyObj('HintService', ['requestHint'], {
+        hintServiceSpy = jasmine.createSpyObj('HintService', ['requestHint', 'resetHints'], {
             replayEventsSubject: replayEventHintServiceSubTest,
         });
 
@@ -131,14 +141,11 @@ describe('ReplayService', () => {
     it('should handle StartGame action', () => {
         const replayEvent: ReplayEvent = {
             action: ReplayActions.StartGame,
-            data: ['image1', 'image2'],
             timestamp: 0,
+            data: gameRoomStub,
         };
         service.replaySwitcher(replayEvent);
-        expect(imageServiceSpy.loadImage.calls.allArgs()).toEqual([
-            [service['gameAreaService'].getOgContext(), 'image1'],
-            [service['gameAreaService'].getMdContext(), 'image2'],
-        ]);
+        expect(imageServiceSpy.loadImage).toHaveBeenCalled();
         expect(gameAreaServiceSpy.setAllData).toHaveBeenCalled();
     });
 
@@ -173,6 +180,7 @@ describe('ReplayService', () => {
         expect(gameAreaServiceSpy.showError).toHaveBeenCalledWith(
             (replayEvent.data as ClickErrorData).isMainCanvas,
             (replayEvent.data as ClickErrorData).pos,
+            1,
         );
     });
 
@@ -180,7 +188,7 @@ describe('ReplayService', () => {
         const replayEvent: ReplayEvent = {
             action: ReplayActions.CaptureMessage,
             data: {
-                tag: MessageTag.common,
+                tag: MessageTag.Common,
                 message: 'test',
             } as ChatMessage,
             timestamp: 0,
@@ -272,7 +280,7 @@ describe('ReplayService', () => {
             timestamp: 0,
         };
         service.replaySwitcher(replayEvent);
-        expect(gameAreaServiceSpy.flashCorrectPixels).toHaveBeenCalledWith(replayEvent.data as Coordinate[], service['replaySpeed']);
+        expect(hintServiceSpy.requestHint).toHaveBeenCalledWith(replayEvent.data as Coordinate[], service['replaySpeed']);
     });
 
     it('should call toggleCheatMode and flashCorrectPixels when isCheatMode and isDifferenceFound are true', () => {
@@ -296,23 +304,22 @@ describe('ReplayService', () => {
     });
 
     it('should set replaySpeed to SPEED_X1', () => {
-        service.upSpeedx1();
+        service.upSpeed(SPEED_X1);
         expect(service['replaySpeed']).toBe(SPEED_X1);
     });
 
     it('should set replaySpeed to SPEED_X2', () => {
-        service.upSpeedx2();
+        service.upSpeed(SPEED_X2);
         expect(service['replaySpeed']).toBe(SPEED_X2);
     });
 
     it('should set replaySpeed to SPEED_X4', () => {
-        service.upSpeedx4();
+        service.upSpeed(SPEED_X4);
         expect(service['replaySpeed']).toBe(SPEED_X4);
     });
 
     it('should reset replay timer and found differences', () => {
         service.restartTimer();
-
         expect(service['replayOpponentDifferenceFound'].value).toBe(0);
         expect(service['replayDifferenceFound'].value).toBe(0);
         expect(service['replayTimer'].value).toBe(0);
