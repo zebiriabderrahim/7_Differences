@@ -1,3 +1,4 @@
+import { SCORE_POSITION } from '@common/constants';
 import { GameModes, MessageTag } from '@common/enums';
 import { ChatMessage, NewRecord } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
@@ -19,8 +20,8 @@ export class MessageManagerService {
             tag: MessageTag.Global,
             message:
                 this.getFormatTime() +
-                `– ${newRecord.playerName} obtient la ${newRecord.rank} e` +
-                `place dans les meilleurs temps du jeu ${newRecord.gameName} \n en ${newRecord.gameMode}`,
+                ` – ${newRecord.playerName} est maintenant ${SCORE_POSITION[newRecord.rank]}` +
+                ` dans les meilleurs temps du jeu ${newRecord.gameName} \n en ${newRecord.gameMode}`,
         };
         return localMessage;
     }
