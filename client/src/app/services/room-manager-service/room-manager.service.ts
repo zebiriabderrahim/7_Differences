@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameCardEvents, HistoryEvents, PlayerEvents, RoomEvents } from '@common/enums';
-import { GameHistory, PlayerNameAvailability, RoomAvailability, PlayerData } from '@common/game-interfaces';
+import { PlayerNameAvailability, RoomAvailability, PlayerData } from '@common/game-interfaces';
 import { Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class RoomManagerService {
-    gameHistory: GameHistory[];
     private joinedPlayerNames: Subject<string[]>;
     private playerNameAvailability: Subject<PlayerNameAvailability>;
     private oneVsOneRoomsAvailabilityByGameId: Subject<RoomAvailability>;
@@ -16,8 +15,9 @@ export class RoomManagerService {
     private refusedPlayerId: Subject<string>;
     private createdRoomId: Subject<string>;
     private deletedGameId: Subject<string>;
-    private isReloadNeeded: Subject<boolean>;
+    private isGameCardsReloadNeeded: Subject<boolean>;
     private isLimitedCoopRoomAvailable: Subject<boolean>;
+    private isGameHistoryReloadNeeded: Subject<boolean>;
 
     constructor(private readonly clientSocket: ClientSocketService) {
         this.playerNameAvailability = new Subject<PlayerNameAvailability>();
@@ -27,8 +27,9 @@ export class RoomManagerService {
         this.oneVsOneRoomsAvailabilityByGameId = new Subject<RoomAvailability>();
         this.deletedGameId = new Subject<string>();
         this.refusedPlayerId = new Subject<string>();
-        this.isReloadNeeded = new Subject<boolean>();
+        this.isGameCardsReloadNeeded = new Subject<boolean>();
         this.isLimitedCoopRoomAvailable = new Subject<boolean>();
+        this.isGameHistoryReloadNeeded = new Subject<boolean>();
         this.connect();
     }
 
@@ -61,11 +62,15 @@ export class RoomManagerService {
     }
 
     get isReloadNeeded$() {
-        return this.isReloadNeeded.asObservable();
+        return this.isGameCardsReloadNeeded.asObservable();
     }
 
     get isLimitedCoopRoomAvailable$() {
         return this.isLimitedCoopRoomAvailable.asObservable();
+    }
+
+    get isGameHistoryReloadNeeded$() {
+        return this.isGameHistoryReloadNeeded.asObservable();
     }
 
     createSoloRoom(playerPayLoad: PlayerData) {
@@ -209,13 +214,11 @@ export class RoomManagerService {
             this.deletedGameId.next(gameId);
         });
         this.clientSocket.on(GameCardEvents.RequestReload, () => {
-            this.isReloadNeeded.next(true);
+            this.isGameCardsReloadNeeded.next(true);
         });
 
-        this.clientSocket.on(HistoryEvents.EntryAdded, (gameHistory: GameHistory[]) => {
-            console.log('Entry Added on Room Manager');
-            console.log(gameHistory);
-            this.gameHistory = gameHistory;
+        this.clientSocket.on(HistoryEvents.RequestReload, () => {
+            this.isGameHistoryReloadNeeded.next(true);
         });
     }
 }

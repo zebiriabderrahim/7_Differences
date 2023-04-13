@@ -39,9 +39,11 @@ export enum GameCardEvents {
     GetGameCards = 'GetGameCards',
 }
 
+
 export enum HistoryEvents {
     EntryAdded = 'entryAdded',
     EntriesCleared = 'entriesCleared',
+    RequestReload = "RequestReload"
 }
 
 export enum RoomEvents {

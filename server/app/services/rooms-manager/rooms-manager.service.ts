@@ -65,7 +65,7 @@ export class RoomsManagerService implements OnModuleInit {
     }
 
     getRoomByPlayerId(playerId: string): GameRoom {
-        return Array.from(this.rooms.values()).find((room) => room.player1.playerId === playerId || room.player2.playerId === playerId);
+        return Array.from(this.rooms.values()).find((room) => room.player1.playerId === playerId || room.player2?.playerId === playerId);
     }
 
     getHostIdByGameId(gameId: string): string {
@@ -97,11 +97,11 @@ export class RoomsManagerService implements OnModuleInit {
 
     startGame(socket: io.Socket, server: io.Server): void {
         const room = this.getRoomByPlayerId(socket.id);
-        this.historyService.createEntry(room);
         if (!room || ![room.player1.playerId, room.player2?.playerId].includes(socket.id)) {
             this.handleGamePageRefresh(socket, server);
             return;
         }
+        this.historyService.createEntry(room);
         socket.join(room.roomId);
         this.updateRoom(room);
         server.to(room.roomId).emit(GameEvents.GameStarted, room);

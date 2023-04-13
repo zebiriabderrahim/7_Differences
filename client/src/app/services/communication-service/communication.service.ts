@@ -46,6 +46,10 @@ export class CommunicationService {
         return this.http.delete<void>(`${this.gameUrl}`).pipe(catchError(this.handleError<void>('deleteAllGames')));
     }
 
+    deleteAllGamesHistory(): Observable<void> {
+        return this.http.delete<void>(`${this.gameUrl}/history`).pipe(catchError(this.handleError<void>('deleteAllGamesHistory')));
+    }
+
     verifyIfGameExists(name: string): Observable<boolean> {
         return this.http.get<boolean>(`${this.gameUrl}/?name=${name}`).pipe(catchError(this.handleError<boolean>('verifyIfGameExists')));
     }

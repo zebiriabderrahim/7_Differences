@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameHistory } from '@common/game-interfaces';
 
@@ -7,10 +8,33 @@ import { GameHistory } from '@common/game-interfaces';
     templateUrl: './history-box.component.html',
     styleUrls: ['./history-box.component.scss'],
 })
-export class HistoryBoxComponent {
-    constructor(private readonly roomManager: RoomManagerService) {}
+export class HistoryBoxComponent implements OnInit {
+    gameHistory: GameHistory[];
+    constructor(private readonly roomManager: RoomManagerService, private readonly communicationService: CommunicationService) {
+        this.gameHistory = [];
+    }
 
-    get gameHistory(): GameHistory[] {
-        return this.roomManager.gameHistory;
+    ngOnInit(): void {
+        this.loadHistory();
+        this.handHistoryUpdate();
+    }
+
+    loadHistory(): void {
+        this.communicationService.loadGameHistory().subscribe((history: GameHistory[]) => {
+            this.gameHistory = history;
+        });
+    }
+
+    handHistoryUpdate(): void {
+        this.roomManager.isGameHistoryReloadNeeded$.subscribe((isGameHistoryReloadNeeded: boolean) => {
+            if (isGameHistoryReloadNeeded) this.loadHistory();
+        });
+    }
+
+    deleteAllGamesHistory(): void {
+        this.communicationService.deleteAllGamesHistory().subscribe(() => {
+            this.gameHistory = [];
+            this.roomManager.
+        });
     }
 }

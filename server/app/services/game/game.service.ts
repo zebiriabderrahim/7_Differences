@@ -1,4 +1,5 @@
 import { Game } from '@app/model/database/game';
+import { GameHistory } from '@app/model/database/game-history';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameConstantsDto } from '@app/model/dto/game/game-constants.dto';
 import { DatabaseService } from '@app/services/database/database.service';
@@ -79,5 +80,20 @@ export class GameService {
             return game;
         }
         return null;
+    }
+
+    async getGamesHistory(): Promise<GameHistory[]> {
+        const gamesHistory = await this.databaseService.getGamesHistory();
+        if (gamesHistory) {
+            return gamesHistory;
+        }
+        throw new NotFoundException('No games history found');
+    }
+
+    async saveGameHistory(gameHistory: GameHistory[]): Promise<void> {
+        await this.databaseService.saveGameHistory(gameHistory);
+    }
+    async deleteAllGamesHistory() {
+        await this.databaseService.deleteAllGamesHistory();
     }
 }
