@@ -71,8 +71,8 @@ export enum MessageEvents {
 }
 
 export enum MessageTag {
-    sent = 'sent',
-    received = 'received',
-    common = 'common',
-    global = 'global',
+    Sent = 'Sent',
+    Received = 'Received',
+    Common = 'Common',
+    Global = 'Global',
 }

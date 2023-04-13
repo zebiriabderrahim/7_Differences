@@ -51,6 +51,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent, {
             data: { gameId: this.game._id },
             disableClose: true,
+            panelClass: 'dialog',
         });
         return dialogRef;
     }
@@ -97,6 +98,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
                     this.dialog.open(JoinedPlayerDialogComponent, {
                         data: { gameId: this.game._id, player: player2Name },
                         disableClose: true,
+                        panelClass: 'dialog',
                     });
                 }
             });
@@ -112,6 +114,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
                 this.dialog.open(WaitingForPlayerToJoinComponent, {
                     data: { roomId, player: playerName, gameId: this.game._id },
                     disableClose: true,
+                    panelClass: 'dialog',
                 });
             });
     }
@@ -124,6 +127,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         this.dialog.open(DeleteResetConfirmationDialogComponent, {
             data: { actions, gameId: this.game._id },
             disableClose: true,
+            panelClass: 'dialog',
         });
     }
 
