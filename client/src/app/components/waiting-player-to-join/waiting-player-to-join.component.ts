@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { COUNTDOWN_TIME, WAITING_TIME } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameCardActions, PlayerData } from '@common/game-interfaces';
-import { filter, interval, Subscription, takeWhile } from 'rxjs';
+import { Subscription, filter, interval, takeWhile } from 'rxjs';
 
 @Component({
     selector: 'app-waiting-player-to-join',
@@ -23,7 +23,7 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
     constructor(
-        @Inject(MAT_DIALOG_DATA) private data: { roomId: string; player: string; gameId: string },
+        @Inject(MAT_DIALOG_DATA) private data: { roomId: string; player: string; gameId: string; isLimited: boolean },
         private readonly roomManagerService: RoomManagerService,
         private dialogRef: MatDialogRef<WaitingForPlayerToJoinComponent>,
         private readonly router: Router,
@@ -31,6 +31,11 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         this.playerNames = [];
         this.actions = GameCardActions;
     }
+
+    get isLimited(): boolean {
+        return this.data.isLimited;
+    }
+
     ngOnInit(): void {
         if (!this.data?.gameId) return;
         this.roomManagerService.getJoinedPlayerNames(this.data.gameId);
