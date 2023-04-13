@@ -14,7 +14,7 @@ import { ReplayService } from '@app/services/replay-service/replay.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { Coordinate } from '@common/coordinate';
 import { GameModes, MessageTag } from '@common/enums';
-import { ChatMessage, ClientSideGame, Player, Players } from '@common/game-interfaces';
+import { ChatMessage, ClientSideGame, Players } from '@common/game-interfaces';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -119,9 +119,11 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     getPlayers(): void {
         this.classicService.players$.pipe(takeUntil(this.onDestroy$)).subscribe((players) => {
             this.players = players;
-            const { player1, player2 } = players;
-            const isMatch = (player: Player) => player.playerId === this.classicService.getSocketId();
-            this.player = (isMatch(player1) ? player1.name : isMatch(player2 as Player) ? player2?.name : undefined) as string;
+            if (players.player1.playerId === this.classicService.getSocketId()) {
+                this.player = players.player1.name;
+            } else if (players.player2 && players.player2.playerId === this.classicService.getSocketId()) {
+                this.player = players.player2.name;
+            }
         });
     }
 
