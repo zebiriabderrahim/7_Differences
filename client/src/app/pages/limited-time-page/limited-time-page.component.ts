@@ -31,7 +31,7 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
 
     openDialog() {
         this.dialog
-            .open(PlayerNameDialogBoxComponent, { disableClose: true })
+            .open(PlayerNameDialogBoxComponent, { disableClose: true, panelClass: 'dialog' })
             .afterClosed()
             .subscribe((playerName) => {
                 if (playerName) {
@@ -71,6 +71,7 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
         this.dialog.open(WaitingForPlayerToJoinComponent, {
             data: { roomId },
             disableClose: true,
+            panelClass: 'dialog',
         });
     }
 
