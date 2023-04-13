@@ -97,6 +97,7 @@ describe('GameSheetComponent', () => {
         expect(dialogSpy).toHaveBeenCalledWith(PlayerNameDialogBoxComponent, {
             data: { gameId: component.game._id },
             disableClose: true,
+            panelClass: 'dialog',
         });
     });
 
