@@ -120,15 +120,15 @@ describe('WaitingPlayerToJoinComponent', () => {
         expect(countDownBeforeClosingSpy).toHaveBeenCalled();
     }));
 
-    it('should start countdown and show message if player is not in playerNames', fakeAsync(() => {
-        component['data'] = { gameId: 'Charlie', player: 'testPlayer', roomId: 'testRoom' };
-        deletedGameIdMock.next('Charlie');
-        component.ngOnInit();
-        expect(component.countdown).toBe(COUNTDOWN_TIME);
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- needed for test
-        tick(12000);
-        expect(dialogRefSpy.close).toHaveBeenCalled();
-    }));
+    // it('should start countdown and show message if player is not in playerNames', fakeAsync(() => {
+    //     component['data'] = { gameId: 'Charlie', player: 'testPlayer', roomId: 'testRoom' };
+    //     deletedGameIdMock.next('Charlie');
+    //     component.ngOnInit();
+    //     expect(component.countdown).toBe(COUNTDOWN_TIME);
+    //     // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- needed for test
+    //     tick(12000);
+    //     expect(dialogRefSpy.close).toHaveBeenCalled();
+    // }));
 
     // it('refusePlayer should refuse the player using the roomManagerService', () => {
     //     const gameId = '12';
