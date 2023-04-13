@@ -264,7 +264,7 @@ describe('GameManagerService', () => {
     it('should send a message to the client socket', () => {
         socketServiceMock.send = jasmine.createSpy('send');
         service.sendMessage('Hello world');
-        expect(socketServiceMock.send).toHaveBeenCalledWith(MessageEvents.LocalMessage, { tag: MessageTag.received, message: 'Hello world' });
+        expect(socketServiceMock.send).toHaveBeenCalledWith(MessageEvents.LocalMessage, { tag: MessageTag.Received, message: 'Hello world' });
     });
 
     // it('manageSocket should add the events listeners to CreateSoloGame, RemoveDifference and TimerStarted events', () => {

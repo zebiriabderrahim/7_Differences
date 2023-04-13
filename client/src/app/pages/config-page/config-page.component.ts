@@ -26,6 +26,7 @@ export class ConfigPageComponent {
         this.dialog.open(DeleteResetConfirmationDialogComponent, {
             data: { actions: action },
             disableClose: true,
+            panelClass: 'dialog',
         });
     }
 
