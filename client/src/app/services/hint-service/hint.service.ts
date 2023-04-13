@@ -4,7 +4,9 @@ import {
     HINT_SQUARE_PADDING,
     INITIAL_QUADRANT,
     LARGE_HINT_ENLARGEMENT,
+    LAST_HINT_NUMBER,
     QUADRANT_POSITIONS,
+    SECOND_TO_LAST_HINT_NUMBER,
     SMALL_HINT_ENLARGEMENT,
 } from '@app/constants/hint';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
@@ -68,22 +70,17 @@ export class HintService {
     requestHint(replayDifference?: Coordinate[], replaySpeed?: number): void {
         const speed = replaySpeed ? replaySpeed : 1;
         if (this.nAvailableHints > 0 && this.differences.length > 0) {
-            let hintSquare: Coordinate[] = [];
             const differenceIndex: number = this.differences.length > 1 ? this.generateRandomNumber(0, this.differences.length - 1) : 0;
-            let difference: Coordinate[] = this.differences[differenceIndex];
-            if (replayDifference) {
-                difference = replayDifference;
-            }
-            if (this.nAvailableHints === 1) {
+            const difference: Coordinate[] = replayDifference ? replayDifference : this.differences[differenceIndex];
+            if (this.nAvailableHints === LAST_HINT_NUMBER) {
                 this.isThirdHintActive = true;
-                hintSquare = this.generateAdjustedHintSquare(difference);
                 this.generateLastHintDifferences(difference);
             } else {
                 let hintQuadrant = this.getHintQuadrant(difference, INITIAL_QUADRANT);
-                if (this.nAvailableHints === DEFAULT_N_HINTS - 1) {
+                if (this.nAvailableHints === SECOND_TO_LAST_HINT_NUMBER) {
                     hintQuadrant = this.getHintQuadrant(difference, hintQuadrant);
                 }
-                hintSquare = this.generateHintSquare(hintQuadrant);
+                this.gameAreaService.flashCorrectPixels(this.generateHintSquare(hintQuadrant), speed);
             }
             const replayEvent: ReplayEvent = {
                 action: ReplayActions.UseHint,
@@ -91,9 +88,6 @@ export class HintService {
                 data: difference,
             };
             this.replayEventsSubject.next(replayEvent);
-            if (this.nAvailableHints !== 1) {
-                this.gameAreaService.flashCorrectPixels(hintSquare, speed);
-            }
             this.classicSystem.requestHint();
             this.nAvailableHints--;
         }
@@ -160,22 +154,6 @@ export class HintService {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
 
-    private generateAdjustedHintSquare(difference: Coordinate[]): Coordinate[] {
-        let minX = difference[0].x;
-        let minY = difference[0].y;
-        let maxX = difference[0].x;
-        let maxY = difference[0].y;
-
-        for (const coord of difference) {
-            minX = Math.min(minX, coord.x);
-            minY = Math.min(minY, coord.y);
-            maxX = Math.max(maxX, coord.x);
-            maxY = Math.max(maxY, coord.y);
-        }
-
-        return this.generateHintSquare({ bottomCorner: { x: minX, y: minY }, topCorner: { x: maxX, y: maxY } });
-    }
-
     private generateHintSquare(quadrant: Quadrant): Coordinate[] {
         const hintSquare: Coordinate[] = [];
         const { topCorner, bottomCorner } = quadrant;
@@ -199,10 +177,9 @@ export class HintService {
     private isCoordinateInHintSquare(coordinate: Coordinate, quadrant: Quadrant): boolean {
         const { topCorner, bottomCorner } = quadrant;
         const { x, y } = coordinate;
-        return (
-            this.isCoordinateValid(coordinate) &&
-            (x <= bottomCorner.x + HINT_SQUARE_PADDING || x >= topCorner.x || y <= bottomCorner.y + HINT_SQUARE_PADDING || y >= topCorner.y)
-        );
+        const isCoordinateInXValidRange: boolean = x <= bottomCorner.x + HINT_SQUARE_PADDING || x >= topCorner.x;
+        const isCoordinateInYValidRange: boolean = y <= bottomCorner.y + HINT_SQUARE_PADDING || y >= topCorner.y;
+        return this.isCoordinateValid(coordinate) && (isCoordinateInXValidRange || isCoordinateInYValidRange);
     }
 
     private isPointInQuadrant(point: Coordinate, quadrant: Quadrant): boolean {
