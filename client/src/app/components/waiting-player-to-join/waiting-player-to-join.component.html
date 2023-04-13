@@ -4,7 +4,7 @@
     <p id = "waiting" *ngIf="!refusedMessage && !isLimited"> En attente d’un deuxième joueur....</p>
 </div>
 <div class = "players-list">
-    <div *ngIf="playerNames && !refusedMessage ">
+    <div *ngIf="playerNames && !refusedMessage && !isLimited">
         <p class = "waiting-text"> Joueur(s) en attente : </p>
         <div class = "player-container">
             <div class = "players" *ngFor="let playerName of playerNames">
