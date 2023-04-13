@@ -4,6 +4,7 @@
 /* eslint-disable no-underscore-dangle */
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
+import { SCORE_POSITION } from '@common/constants';
 import { GameEvents, GameModes, PlayerEvents, RoomEvents } from '@common/enums';
 import { GameRoom, Player, PlayerData, RoomAvailability } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
@@ -60,10 +61,10 @@ export class ClassicModeService {
 
     async endGame(room: GameRoom, player: Player, server: io.Server): Promise<void> {
         const playerRank = await this.playersListManagerService.updateTopBestTime(room, player.name, server);
-        const playerRankMessage = playerRank ? `${player.name} classé ${playerRank}!` : '';
+        const playerRankMessage = playerRank ? `${player.name} est maintenant classé ${SCORE_POSITION[playerRank]}!` : '';
         room.endMessage =
             room.clientGame.mode === GameModes.ClassicOneVsOne
-                ? ` remporte la partie avec ${player.differenceData.differencesFound} différences trouvées! ${playerRankMessage}`
+                ? `${player.name} remporte la partie avec ${player.differenceData.differencesFound} différences trouvées! ${playerRankMessage}`
                 : `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo ${playerRankMessage}!`;
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
         this.playersListManagerService.deleteJoinedPlayersByGameId(room.clientGame.id);
