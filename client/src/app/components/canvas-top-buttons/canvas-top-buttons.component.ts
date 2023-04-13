@@ -26,7 +26,6 @@ export class CanvasTopButtonsComponent implements AfterViewInit {
         this.drawValues = DRAW_VALUES;
         this.drawColor = DEFAULT_COLOR;
         this.colors = COLORS;
-        this.isColorSelected = false;
     }
 
     ngAfterViewInit(): void {
