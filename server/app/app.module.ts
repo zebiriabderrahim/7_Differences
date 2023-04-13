@@ -15,6 +15,7 @@ import { PlayersListManagerService } from './services/players-list-manager/playe
 import { GameConstants, gameConstantsSchema } from './model/database/game-config-constants';
 import { RoomsManagerService } from './services/rooms-manager/rooms-manager.service';
 import { LimitedModeService } from './services/limited-mode/limited-mode.service';
+import { GameHistory, gameHistorySchema } from './model/database/game-history';
 
 @Module({
     imports: [
@@ -30,6 +31,7 @@ import { LimitedModeService } from './services/limited-mode/limited-mode.service
             { name: Game.name, schema: gameSchema },
             { name: GameCard.name, schema: gameCardSchema },
             { name: GameConstants.name, schema: gameConstantsSchema },
+            { name: GameHistory.name, schema: gameHistorySchema },
         ]),
     ],
     controllers: [GameController],

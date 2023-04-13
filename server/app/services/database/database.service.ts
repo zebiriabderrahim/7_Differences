@@ -5,12 +5,13 @@
 import { Game, GameDocument } from '@app/model/database/game';
 import { GameCard, GameCardDocument } from '@app/model/database/game-card';
 import { GameConstants, GameConstantsDocument } from '@app/model/database/game-config-constants';
+import { GameHistory, GameHistoryDocument } from '@app/model/database/game-history';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameConstantsDto } from '@app/model/dto/game/game-constants.dto';
 import { GameListsManagerService } from '@app/services/game-lists-manager/game-lists-manager.service';
 import { DEFAULT_BEST_TIMES, DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
-import { CarouselPaginator, PlayerTime } from '@common/game-interfaces';
 import { GameModes } from '@common/enums';
+import { CarouselPaginator, PlayerTime } from '@common/game-interfaces';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as fs from 'fs';
@@ -28,6 +29,7 @@ export class DatabaseService implements OnModuleInit {
         @InjectModel(Game.name) private readonly gameModel: Model<GameDocument>,
         @InjectModel(GameCard.name) private readonly gameCardModel: Model<GameCardDocument>,
         @InjectModel(GameConstants.name) private readonly gameConstantsModel: Model<GameConstantsDocument>,
+        @InjectModel(GameHistory.name) private readonly gameHistoryModel: Model<GameHistoryDocument>,
         private readonly gameListManager: GameListsManagerService,
     ) {
         this.gameIds = [];
@@ -181,6 +183,30 @@ export class DatabaseService implements OnModuleInit {
             return await this.getGameById(randomGameId);
         } catch (error) {
             return Promise.reject(`Failed to get random game --> ${error}`);
+        }
+    }
+
+    async getGamesHistory(): Promise<GameHistory[]> {
+        try {
+            return await this.gameHistoryModel.find().select('-__v -_id').exec();
+        } catch (error) {
+            return Promise.reject(`Failed to get games history --> ${error}`);
+        }
+    }
+
+    async saveGameHistory(gameHistory: GameHistory[]): Promise<void> {
+        try {
+            await this.gameHistoryModel.create(gameHistory);
+        } catch (error) {
+            return Promise.reject(`Failed to add game history --> ${error}`);
+        }
+    }
+
+    async deleteAllGamesHistory() {
+        try {
+            await this.gameHistoryModel.deleteMany({}).exec();
+        } catch (error) {
+            return Promise.reject(`Failed to delete all games history --> ${error}`);
         }
     }
 

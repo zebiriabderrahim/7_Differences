@@ -1,6 +1,7 @@
+import { GameService } from '@app/services/game/game.service';
 import { GAME_HISTORY } from '@common/constants';
 import { HistoryEvents, PlayerStatus } from '@common/enums';
-import { GameHistory, GameRoom, PlayerInfo } from '@common/game-interfaces';
+import { GameHistory, GameRoom } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
 
@@ -9,7 +10,7 @@ export class HistoryService {
     private history: GameHistory[];
     private pendingGames: Map<string, GameHistory>;
 
-    constructor() {
+    constructor(private readonly gameService: GameService) {
         this.history = GAME_HISTORY;
         this.pendingGames = new Map<string, GameHistory>();
     }
@@ -43,31 +44,30 @@ export class HistoryService {
         gameHistory.duration = new Date().getTime() - gameHistory.duration;
         this.history.push(gameHistory);
         this.pendingGames.delete(roomId);
-        server.emit(HistoryEvents.EntryAdded, this.history);
+        this.gameService.saveGameHistory(this.history);
+        server.emit(HistoryEvents.RequestReload);
     }
 
     markPlayer(roomId: string, playerName: string, status: PlayerStatus) {
         const gameHistory = this.pendingGames.get(roomId);
         if (!gameHistory) return;
-        let playerInfoToChange: PlayerInfo;
-        if (gameHistory.player1.name === playerName) {
-            playerInfoToChange = gameHistory.player1;
-        } else if (gameHistory.player2 && gameHistory.player2.name === playerName) {
-            playerInfoToChange = gameHistory.player2;
-        }
-        if (playerInfoToChange) {
-            switch (status) {
-                case PlayerStatus.Winner:
-                    playerInfoToChange.isWinner = true;
-                    break;
-                case PlayerStatus.Quitter:
-                    playerInfoToChange.isQuitter = true;
-                    break;
-            }
-        }
-        this.pendingGames.set(roomId, gameHistory);
-    }
 
+        let playerInfoToChange =
+            gameHistory.player1.name === playerName ? gameHistory.player1 : gameHistory.player2?.name === playerName ? gameHistory.player2 : null;
+
+        if (playerInfoToChange) {
+            playerInfoToChange = {
+                ...playerInfoToChange,
+                ...{
+                    isWinner: status === PlayerStatus.Winner,
+                    isQuitter: status === PlayerStatus.Quitter,
+                },
+            };
+        }
+
+        this.pendingGames.set(roomId, { ...gameHistory, ...playerInfoToChange });
+        return gameHistory;
+    }
     private getFormattedDate(date: Date): string {
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const day = date.getDate().toString().padStart(2, '0');
