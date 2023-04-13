@@ -43,6 +43,17 @@
     color: black;
 }
 
+.ending {
+    position: absolute;
+    z-index: 2;
+    left: 32%;
+    font-family: 'Troika', sans-serif;
+    font-size: 30px;
+    color: black;
+    width: 650px;
+    line-height: 40px;
+}
+
 .button1 {
     position: absolute;
     left: 32%;

@@ -13,7 +13,7 @@
             <div class="centered-no">Non</div>
         </div>
     </div>
-    <p class = "abandon" *ngIf="data.action === 'endGame'">{{ data.message }}</p>
+    <p class = "ending" *ngIf="data.action === 'endGame'">{{ data.message }}</p>
     <div class = "button1" *ngIf="data.action === 'endGame'">
         <div class="button-container">
             <button class = "yesButton" mat-button *ngIf="data.action === 'endGame'" mat-dialog-close (click)="leaveGame()" routerLink="/home"></button>
