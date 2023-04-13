@@ -59,14 +59,9 @@ export interface Player {
     diffData: Differences;
 }
 
-export interface playerData {
+export interface PlayerData {
     playerName: string;
     gameId: string;
-    gameMode: GameModes;
-}
-
-export interface LimitedGameDetails {
-    playerName: string;
     gameMode: GameModes;
 }
 
@@ -107,6 +102,11 @@ export interface NewRecord {
     playerName: string;
     rank: number;
     gameMode: string;
+}
+
+export interface TimerMode {
+    isCountdown: boolean;
+    requiresPlayer2?: boolean;
 }
 
 export enum GameCardActions {

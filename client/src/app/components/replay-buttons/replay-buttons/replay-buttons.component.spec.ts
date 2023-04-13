@@ -17,9 +17,7 @@ describe('ReplayButtonsComponent', () => {
             'resumeReplay',
             'resetReplay',
             'isReplaying',
-            'upSpeedx1',
-            'upSpeedx2',
-            'upSpeedx4',
+            'upSpeed',
         ]);
         await TestBed.configureTestingModule({
             declarations: [ReplayButtonsComponent],
@@ -49,7 +47,7 @@ describe('ReplayButtonsComponent', () => {
 
     it('replay() should start the replay and disable the button for one second', () => {
         jasmine.clock().install();
-        component.replay();
+        component.replay(false);
         expect(replayServiceSpy.startReplay).toHaveBeenCalled();
         expect(replayServiceSpy.restartTimer).toHaveBeenCalled();
         expect(component.isReplayButtonDisabled).toBeTruthy();
@@ -84,17 +82,17 @@ describe('ReplayButtonsComponent', () => {
 
     it('upSpeedX1() should call speedX1', () => {
         component.speedX1();
-        expect(replayServiceSpy.upSpeedx1).toHaveBeenCalled();
+        expect(replayServiceSpy.upSpeed).toHaveBeenCalled();
     });
 
     it('upSpeedX2() should call speedX2', () => {
         component.speedX2();
-        expect(replayServiceSpy.upSpeedx2).toHaveBeenCalled();
+        expect(replayServiceSpy.upSpeed).toHaveBeenCalled();
     });
 
     it('upSpeedX4() should call speedX4', () => {
         component.speedX4();
-        expect(replayServiceSpy.upSpeedx4).toHaveBeenCalled();
+        expect(replayServiceSpy.upSpeed).toHaveBeenCalled();
     });
 
     it('should call resetReplay when component is destroyed', () => {
