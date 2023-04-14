@@ -51,9 +51,9 @@ describe('RoomManagerService', () => {
         expect(service.joinedPlayerNamesByGameId$).toEqual(service['joinedPlayerNames'].asObservable());
     });
 
-    // it('isNameTaken$ should return isPlayerNameTaken asObservable', () => {
-    //     expect(service.playerNameAvailability$).toEqual(service['isPlayerNameTaken'].asObservable());
-    // });
+    it('playerNameAvailability$ should return playerNameAvailability asObservable', () => {
+        expect(service.playerNameAvailability$).toEqual(service['playerNameAvailability'].asObservable());
+    });
 
     it('createdRoomId$ should return createdRoomId asObservable', () => {
         expect(service.createdRoomId$).toEqual(service['createdRoomId'].asObservable());
@@ -203,6 +203,12 @@ describe('RoomManagerService', () => {
         const sendSpy = spyOn(socketServiceMock, 'send');
         service.gameConstantsUpdated();
         expect(sendSpy).toHaveBeenCalledWith(GameCardEvents.GameConstantsUpdated);
+    });
+
+    it('gameHistoryDeleted should call clientSocket.send with GamesHistoryDeleted', () => {
+        const sendSpy = spyOn(socketServiceMock, 'send');
+        service.gamesHistoryDeleted();
+        expect(sendSpy).toHaveBeenCalledWith(GameCardEvents.GamesHistoryDeleted);
     });
 
     it('getSocketId should return ', () => {
