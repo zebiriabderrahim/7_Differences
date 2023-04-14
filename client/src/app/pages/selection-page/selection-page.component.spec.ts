@@ -9,7 +9,7 @@ import { NavBarComponent } from '@app/components/nav-bar/nav-bar.component';
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { BehaviorSubject, Subscription, Subscription, of } from 'rxjs';
+import { BehaviorSubject, Subscription, of } from 'rxjs';
 import { SelectionPageComponent } from './selection-page.component';
 
 describe('SelectionPageComponent', () => {

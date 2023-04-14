@@ -54,7 +54,7 @@ describe('GamePageDialogComponent', () => {
 
     it('abandonGame should call abandonGame on classicSystem', () => {
         component.abandonGame();
-        expect(classicServiceSpy.abandonGame).toHaveBeenCalled();
+        expect(gameManagerServiceSpy.abandonGame).toHaveBeenCalled();
     });
 
     it('should call resetReplay on replayService', () => {
