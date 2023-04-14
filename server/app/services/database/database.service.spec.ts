@@ -4,17 +4,18 @@
 import { Game, GameDocument, gameSchema } from '@app/model/database/game';
 import { GameCard, GameCardDocument, gameCardSchema } from '@app/model/database/game-card';
 import { GameConstants, GameConstantsDocument, gameConstantsSchema } from '@app/model/database/game-config-constants';
+import { GameHistory, gameHistorySchema } from '@app/model/database/game-history';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameConstantsDto } from '@app/model/dto/game/game-constants.dto';
 import { GameListsManagerService } from '@app/services/game-lists-manager/game-lists-manager.service';
 import { GameModes } from '@common/enums';
 import { CarouselPaginator, PlayerTime } from '@common/game-interfaces';
-import { getConnectionToken, getModelToken, MongooseModule } from '@nestjs/mongoose';
+import { MongooseModule, getConnectionToken, getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as fs from 'fs';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Connection, Model } from 'mongoose';
-import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { SinonStubbedInstance, createStubInstance } from 'sinon';
 import { DatabaseService } from './database.service';
 
 describe('DatabaseService', () => {
@@ -23,6 +24,7 @@ describe('DatabaseService', () => {
     let gameModel: Model<GameDocument>;
     let gameCardModel: Model<GameCardDocument>;
     let gameConstantsModel: Model<GameConstantsDocument>;
+    let gameHistoryModel: Model<GameHistory>;
     let mongoServer: MongoMemoryServer;
     let connection: Connection;
 
@@ -107,6 +109,7 @@ describe('DatabaseService', () => {
                     { name: Game.name, schema: gameSchema },
                     { name: GameCard.name, schema: gameCardSchema },
                     { name: GameConstants.name, schema: gameConstantsSchema },
+                    { name: GameHistory.name, schema: gameHistorySchema },
                 ]),
             ],
             providers: [DatabaseService, { provide: GameListsManagerService, useValue: listsManagerService }],
@@ -116,6 +119,7 @@ describe('DatabaseService', () => {
         gameModel = module.get<Model<GameDocument>>(getModelToken(Game.name));
         gameCardModel = module.get<Model<GameCardDocument>>(getModelToken(GameCard.name));
         gameConstantsModel = module.get<Model<GameConstantsDocument>>(getModelToken(GameConstants.name));
+        gameHistoryModel = module.get<Model<GameHistory>>(getModelToken(GameHistory.name));
         connection = await module.get(getConnectionToken());
     });
 
@@ -133,6 +137,7 @@ describe('DatabaseService', () => {
         expect(gameModel).toBeDefined();
         expect(gameCardModel).toBeDefined();
         expect(gameConstantsModel).toBeDefined();
+        expect(gameHistoryModel).toBeDefined();
     });
 
     it('onModuleInit should call the getAllGameIds and populateDbWithGameConstants method ', async () => {
