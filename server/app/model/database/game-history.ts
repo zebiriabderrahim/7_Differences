@@ -10,26 +10,13 @@ export class GameHistory {
     @ApiProperty()
     @Prop({ required: true })
     gameMode: string;
+
     @ApiProperty()
-    @Prop({
-        required: true,
-        type: () => ({
-            name: String,
-            isWinner: Boolean,
-            isQuitter: Boolean,
-        }),
-    })
+    @Prop({ required: false, type: () => ({ name: String, isWinner: Boolean, isQuitter: Boolean }) })
     player2?: PlayerInfo;
 
     @ApiProperty()
-    @Prop({
-        required: true,
-        type: () => ({
-            name: String,
-            isWinner: Boolean,
-            isQuitter: Boolean,
-        }),
-    })
+    @Prop({ required: true, type: () => ({ name: String, isWinner: Boolean, isQuitter: Boolean }) })
     player1: PlayerInfo;
 
     @ApiProperty()
@@ -43,9 +30,6 @@ export class GameHistory {
     @ApiProperty()
     @Prop({ required: true })
     date: string;
-
-    @ApiProperty()
-    _id?: string;
 }
 
 export const gameHistorySchema = SchemaFactory.createForClass(GameHistory);

@@ -174,7 +174,7 @@ export class RoomsManagerService implements OnModuleInit {
             if (socket) socket.rooms.delete(room.roomId);
         });
     }
-    abandonGame(socket: io.Socket, server: io.Server): void {
+    async abandonGame(socket: io.Socket, server: io.Server): Promise<void> {
         const room = this.getRoomByPlayerId(socket.id);
         if (!room) return;
         const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
@@ -188,7 +188,7 @@ export class RoomsManagerService implements OnModuleInit {
                     : this.handleCoopAbandon(opponent, room, server);
             server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
         } else {
-            this.historyService.closeEntry(room.roomId, server);
+            await this.historyService.closeEntry(room.roomId, server);
             this.deleteRoom(room.roomId);
         }
         socket.leave(room.roomId);
@@ -255,11 +255,11 @@ export class RoomsManagerService implements OnModuleInit {
         server.to(socket.id).emit(GameEvents.GamePageRefreshed);
     }
 
-    private handleOneVsOneAbandon(player: Player, room: GameRoom, server: io.Server): ChatMessage {
+    private async handleOneVsOneAbandon(player: Player, room: GameRoom, server: io.Server): Promise<ChatMessage> {
         room.endMessage = "L'adversaire a abandonné la partie!";
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
         this.leaveRoom(room, server);
-        this.historyService.closeEntry(room.roomId, server);
+        await this.historyService.closeEntry(room.roomId, server);
         this.deleteRoom(room.roomId);
         return this.messageManager.getQuitMessage(player.name);
     }
