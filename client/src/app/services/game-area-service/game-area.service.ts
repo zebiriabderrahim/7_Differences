@@ -11,6 +11,7 @@ import {
 } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { GREEN_PIXEL, N_PIXEL_ATTRIBUTE, RED_PIXEL, YELLOW_PIXEL } from '@app/constants/pixels';
+import { SPEED_X1 } from '@app/constants/replay';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { ReplayEvent } from '@app/interfaces/replay-actions';
 import { Coordinate } from '@common/coordinate';
@@ -57,8 +58,7 @@ export class GameAreaService {
         return event.button === LEFT_BUTTON && !this.clickDisabled ? (this.saveCoord(event), true) : false;
     }
 
-    showError(isMainCanvas: boolean, errorCoordinate: Coordinate, replaySpeed?: number): void {
-        const speed = replaySpeed ? replaySpeed : 1;
+    showError(isMainCanvas: boolean, errorCoordinate: Coordinate, flashingSpeed: number = SPEED_X1): void {
         const frontContext: CanvasRenderingContext2D = isMainCanvas ? this.originalContextFrontLayer : this.modifiedContextFrontLayer;
         frontContext.fillStyle = 'red';
         this.clickDisabled = true;
@@ -67,7 +67,7 @@ export class GameAreaService {
         setTimeout(() => {
             frontContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
             this.clickDisabled = false;
-        }, WAITING_TIME / speed);
+        }, WAITING_TIME / flashingSpeed);
         const replayEvent: ReplayEvent = {
             action: ReplayActions.ClickError,
             timestamp: Date.now(),
@@ -94,19 +94,13 @@ export class GameAreaService {
         this.flashPixels(differenceCoord, replaySpeed, isPaused);
     }
 
-    // flashCorrectPixels(differenceCoord: Coordinate[], replaySpeed?: number, isPaused: boolean = false): void {
-    //     const imageDataIndexes = this.convert2DCoordToPixelIndex(differenceCoord);
-    //     this.flashPixels(imageDataIndexes, replaySpeed, isPaused);
-    // }
-
-    flashPixels(differenceCoord: Coordinate[], replaySpeed?: number, isPaused: boolean = false): void {
+    flashPixels(differenceCoord: Coordinate[], flashingSpeed: number = SPEED_X1, isPaused: boolean = false): void {
         const imageDataIndexes = this.convert2DCoordToPixelIndex(differenceCoord);
-        const speed = replaySpeed ? replaySpeed : 1;
         const firstInterval = setInterval(() => {
             const secondInterval = setInterval(() => {
                 this.setPixelData(imageDataIndexes, this.modifiedFrontPixelData, this.originalFrontPixelData);
                 this.putImageDataToContexts();
-            }, GREEN_FLASH_TIME / speed);
+            }, GREEN_FLASH_TIME / flashingSpeed);
 
             const color = [YELLOW_PIXEL.red, YELLOW_PIXEL.green, YELLOW_PIXEL.blue, YELLOW_PIXEL.alpha];
             for (const index of imageDataIndexes) {
@@ -118,18 +112,17 @@ export class GameAreaService {
             setTimeout(() => {
                 clearInterval(secondInterval);
                 this.clearFlashing(isPaused);
-            }, FLASH_WAIT_TIME / speed);
-        }, YELLOW_FLASH_TIME / speed);
+            }, FLASH_WAIT_TIME / flashingSpeed);
+        }, YELLOW_FLASH_TIME / flashingSpeed);
 
         setTimeout(() => {
             clearInterval(firstInterval);
             this.clearFlashing(isPaused);
-        }, FLASH_WAIT_TIME / speed);
+        }, FLASH_WAIT_TIME / flashingSpeed);
     }
 
-    toggleCheatMode(startDifferences: Coordinate[], replaySpeed?: number): void {
+    toggleCheatMode(startDifferences: Coordinate[], flashingSpeed: number = SPEED_X1): void {
         let replayEvent: ReplayEvent;
-        const speed = replaySpeed ? replaySpeed : 1;
         const imageDataIndexes: number[] = this.convert2DCoordToPixelIndex(startDifferences);
         if (!this.isCheatMode) {
             this.cheatModeInterval = setInterval(() => {
@@ -142,8 +135,8 @@ export class GameAreaService {
 
                 setTimeout(() => {
                     this.clearFlashing();
-                }, RED_FLASH_TIME / speed);
-            }, CHEAT_MODE_WAIT_TIME / speed) as unknown as number;
+                }, RED_FLASH_TIME / flashingSpeed);
+            }, CHEAT_MODE_WAIT_TIME / flashingSpeed) as unknown as number;
             replayEvent = {
                 action: ReplayActions.ActivateCheat,
                 timestamp: Date.now(),
