@@ -1,9 +1,9 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ONE_SECOND, TEN_SECONDS } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { filter, interval, Subscription, takeWhile } from 'rxjs';
+import { Subscription, filter, interval, takeWhile } from 'rxjs';
 
 @Component({
     selector: 'app-joined-player-dialog',
@@ -45,8 +45,8 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
     }
 
     handleAcceptedPlayer() {
-        this.acceptedPlayerSubscription = this.roomManagerService.roomId$.subscribe((roomId) => {
-            if (roomId) {
+        this.acceptedPlayerSubscription = this.roomManagerService.isPlayerAccepted$.subscribe((isPlayerAccepted) => {
+            if (isPlayerAccepted) {
                 this.dialogRef.close();
                 this.router.navigate(['/game']);
             }

@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { NoGameAvailibleDialogComponent } from '@app/components/no-game-availible-dialog/no-game-availible-dialog.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { WaitingForPlayerToJoinComponent } from '@app/components/waiting-player-to-join/waiting-player-to-join.component';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
@@ -15,18 +16,22 @@ import { Subscription, filter } from 'rxjs';
 })
 export class LimitedTimePageComponent implements OnDestroy, OnInit {
     gameModes: typeof GameModes;
+    private hasNoGameAvailableSubscription: Subscription;
     private roomIdSubscription: Subscription;
     private isLimitedCoopRoomAvailableSubscription: Subscription;
     private playerName: string;
-    private isLimitedCoopRoomAvailable = false;
-    private isStartingGame = false;
+    private isLimitedCoopRoomAvailable: boolean;
+    private isStartingGame: boolean;
     constructor(public router: Router, private readonly roomManagerService: RoomManagerService, private readonly dialog: MatDialog) {
+        this.gameModes = GameModes;
+        this.isStartingGame = false;
+        this.isLimitedCoopRoomAvailable = false;
         this.roomManagerService.handleRoomEvents();
         this.openDialog();
-        this.gameModes = GameModes;
     }
     ngOnInit(): void {
         this.handleJoinCoopRoom();
+        this.handleNoGameAvailable();
     }
 
     openDialog() {
@@ -57,7 +62,7 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
 
     redirectToGamePage(gameMode: GameModes) {
         this.roomIdSubscription?.unsubscribe();
-        this.roomIdSubscription = this.roomManagerService.createdRoomId$.pipe(filter((roomId) => !!roomId)).subscribe((roomId) => {
+        this.roomIdSubscription = this.roomManagerService.roomLimitedId$.pipe(filter((roomId) => !!roomId)).subscribe((roomId) => {
             if (gameMode === GameModes.LimitedSolo) {
                 this.router.navigate(['/game']);
             } else if (gameMode === GameModes.LimitedCoop && !this.isLimitedCoopRoomAvailable) {
@@ -84,9 +89,16 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
             });
     }
 
+    handleNoGameAvailable() {
+        this.hasNoGameAvailableSubscription = this.roomManagerService.hasNoGameAvailable$.subscribe((hasNoGameAvailable) => {
+            if (hasNoGameAvailable) this.dialog.open(NoGameAvailibleDialogComponent, { disableClose: true });
+        });
+    }
+
     ngOnDestroy(): void {
         this.roomIdSubscription?.unsubscribe();
         this.isLimitedCoopRoomAvailableSubscription?.unsubscribe();
+        this.hasNoGameAvailableSubscription?.unsubscribe();
         this.roomManagerService.removeAllListeners();
     }
 }
