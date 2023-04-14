@@ -1,6 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { Actions } from '@app/enum/delete-reset-actions';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { of } from 'rxjs';
@@ -11,15 +12,11 @@ describe('DeleteResetConfirmationDialogComponent', () => {
     let fixture: ComponentFixture<DeleteResetConfirmationDialogComponent>;
     let roomManagerServiceSpy: jasmine.SpyObj<RoomManagerService>;
     let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
+    const gameId = '123';
 
     beforeEach(async () => {
-        roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', [
-            'resetAllTopTimes',
-            'allGamesDeleted',
-            'gameCardDeleted',
-            'resetTopTime',
-        ]);
-        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['deleteAllGames', 'deleteGameById']);
+        roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['resetAllTopTimes', 'allGamesDeleted', 'resetTopTime']);
+        communicationServiceSpy = jasmine.createSpyObj('communicationService', ['deleteAllGames', 'deleteGameById ']);
         await TestBed.configureTestingModule({
             declarations: [DeleteResetConfirmationDialogComponent],
             imports: [MatDialogModule, HttpClientModule],
@@ -40,27 +37,21 @@ describe('DeleteResetConfirmationDialogComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('resetAllTopTimes should call the resetAllTopTimes method of roomManagerService', () => {
+    it('resetAllTopTimes should call resetAllTopTimes on roomManagerService', () => {
         component.resetAllTopTimes();
         expect(roomManagerServiceSpy.resetAllTopTimes).toHaveBeenCalled();
     });
 
-    it('deleteAllGames should call deleteAllGames on CommunicationService and allGamesDeleted on RoomManagerService', () => {
+    it('should call communicationService.deleteAllGames and roomManagerService.allGamesDeleted() when deleteAllGames() is called', () => {
         communicationServiceSpy.deleteAllGames.and.returnValue(of(void 0));
         component.deleteAllGames();
         expect(communicationServiceSpy.deleteAllGames).toHaveBeenCalled();
         expect(roomManagerServiceSpy.allGamesDeleted).toHaveBeenCalled();
     });
 
-    it('deleteGameCard should call deleteGameById on communicationService and gameCardDeleted on roomManagerService', () => {
-        communicationServiceSpy.deleteGameById.and.returnValue(of(void 0));
-        component.deleteGameCard();
-        expect(communicationServiceSpy.deleteGameById).toHaveBeenCalled();
-        expect(roomManagerServiceSpy.gameCardDeleted).toHaveBeenCalled();
-    });
-
-    it('resetTopTime should call resetTopTime on roomManagerService with gameId', () => {
+    it('resetTopTime should call resetTopTime with the correct gameId', () => {
+        component.data = { actions: Actions.DeleteGame, gameId };
         component.resetTopTime();
-        expect(roomManagerServiceSpy.resetTopTime).toHaveBeenCalled();
+        expect(roomManagerServiceSpy.resetTopTime).toHaveBeenCalledWith(gameId);
     });
 });
