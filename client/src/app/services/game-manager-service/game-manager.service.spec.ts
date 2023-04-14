@@ -74,6 +74,7 @@ describe('GameManagerService', () => {
     };
 
     const mockTimer = 0;
+    const mockNDifferences = 0;
     const mockEndMessage = 'Fin de partie';
 
     let mockChatMessage: ChatMessage;
@@ -111,20 +112,10 @@ describe('GameManagerService', () => {
         service = TestBed.inject(GameManagerService);
         service = new GameManagerService(socketServiceMock, TestBed.inject(GameAreaService), TestBed.inject(SoundService));
         gameAreaService = TestBed.inject(GameAreaService);
-        service['currentGame'].next(mockClientSideGame);
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
-    });
-
-    it('should emit game when game is truthy', (done) => {
-        service['currentGame'].subscribe((emittedGame) => {
-            expect(emittedGame).toEqual(mockClientSideGame);
-            done();
-        });
-
-        service['currentGame'].next(mockClientSideGame);
     });
 
     it('timer$ should return timer as Observable', () => {
@@ -135,6 +126,7 @@ describe('GameManagerService', () => {
             .pipe(filter((timer) => !!timer))
             .toString();
         expect(service.timer$.toString()).toEqual(expectedTimer);
+        mockTimerSubject.next(mockTimer);
     });
 
     it('differenceFound$ should return differencesFound as Observable', () => {
@@ -242,6 +234,106 @@ describe('GameManagerService', () => {
 
         service['currentGame'].next(mockClientSideGame);
         service['currentGame'].next(mockClientSideGame);
+    });
+
+    it('should not emit timer when timer is falsy', () => {
+        spyOn(service['timer'], 'next');
+        service['timer'].subscribe();
+        expect(service['timer'].next).not.toHaveBeenCalled();
+    });
+
+    it('should only emit timer when it is truthy', () => {
+        service.timer$.subscribe((emittedTimer) => {
+            expect(emittedTimer).toEqual(mockTimer);
+        });
+
+        service['timer'].next(mockTimer);
+        service['timer'].next(mockTimer);
+    });
+
+    it('should not emit differencesFound when differencesFound is falsy', () => {
+        spyOn(service['differencesFound'], 'next');
+        service['differencesFound'].subscribe();
+        expect(service['differencesFound'].next).not.toHaveBeenCalled();
+    });
+
+    it('should only emit differencesFound when it is truthy', () => {
+        service.differencesFound$.subscribe((emittedDifferences) => {
+            expect(emittedDifferences).toEqual(mockNDifferences);
+        });
+
+        service['differencesFound'].next(mockNDifferences);
+        service['differencesFound'].next(mockNDifferences);
+    });
+
+    it('should not emit message when message is falsy', () => {
+        spyOn(service['message'], 'next');
+        service['message'].subscribe();
+        expect(service['message'].next).not.toHaveBeenCalled();
+    });
+
+    it('should only emit message when it is truthy', () => {
+        const mockMessage: ChatMessage = {
+            message: 'test',
+            tag: MessageTag.Sent,
+        };
+
+        service.message$.subscribe((emittedMessage) => {
+            expect(emittedMessage).toEqual(mockMessage);
+        });
+
+        service['message'].next(mockMessage);
+        service['message'].next(mockMessage);
+    });
+
+    it('should not emit endMessage when endMessage is falsy', () => {
+        spyOn(service['endMessage'], 'next');
+        service['endMessage'].subscribe();
+        expect(service['endMessage'].next).not.toHaveBeenCalled();
+    });
+
+    it('should only emit endMessage when it is truthy', () => {
+        service.endMessage$.subscribe((emittedMessage) => {
+            expect(emittedMessage).toEqual(mockEndMessage);
+        });
+
+        service['endMessage'].next(mockEndMessage);
+        service['endMessage'].next(mockEndMessage);
+    });
+
+    it('should not emit opponentDifferencesFound when opponentDifferencesFound is falsy', () => {
+        spyOn(service['opponentDifferencesFound'], 'next');
+        service['opponentDifferencesFound'].subscribe();
+        expect(service['opponentDifferencesFound'].next).not.toHaveBeenCalled();
+    });
+
+    it('should only emit opponentDifferencesFound when it is truthy', () => {
+        const mockOpponentDifferenceFound = 0;
+        service.opponentDifferencesFound$.subscribe((emittedMockOpponentDifferenceFound) => {
+            expect(emittedMockOpponentDifferenceFound).toEqual(mockOpponentDifferenceFound);
+        });
+
+        service['opponentDifferencesFound'].next(mockOpponentDifferenceFound);
+        service['opponentDifferencesFound'].next(mockOpponentDifferenceFound);
+    });
+
+    it('should not emit players when players is falsy', () => {
+        spyOn(service['players'], 'next');
+        service['players'].subscribe();
+        expect(service['players'].next).not.toHaveBeenCalled();
+    });
+
+    it('should only emit players when it is truthy', () => {
+        const mockPlayers: Players = {
+            player1: mockPlayer1,
+            player2: mockPlayer2,
+        };
+        service.players$.subscribe((emittedPlayers) => {
+            expect(emittedPlayers).toEqual(mockPlayers);
+        });
+
+        service['players'].next(mockPlayers);
+        service['players'].next(mockPlayers);
     });
 
     it('connectPlayer should call connect if socket is not alive', () => {
