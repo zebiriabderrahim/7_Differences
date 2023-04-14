@@ -9,6 +9,7 @@
 // import { Game } from '@app/model/database/game';
 import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
+import { HistoryService } from '@app/services/history/history.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
@@ -26,6 +27,7 @@ describe('ClassicModeService', () => {
     let gameService: SinonStubbedInstance<GameService>;
     let playersListManagerService: SinonStubbedInstance<PlayersListManagerService>;
     let roomsManagerService: SinonStubbedInstance<RoomsManagerService>;
+    let historyService: SinonStubbedInstance<HistoryService>;
     let socket: SinonStubbedInstance<Socket>;
     let server: SinonStubbedInstance<Server>;
 
@@ -88,6 +90,7 @@ describe('ClassicModeService', () => {
         messageManagerService = createStubInstance(MessageManagerService);
         playersListManagerService = createStubInstance(PlayersListManagerService);
         roomsManagerService = createStubInstance(RoomsManagerService);
+        historyService = createStubInstance(HistoryService);
         socket = createStubInstance<Socket>(Socket);
         server = createStubInstance<Server>(Server);
         const module: TestingModule = await Test.createTestingModule({
@@ -108,6 +111,10 @@ describe('ClassicModeService', () => {
                 {
                     provide: RoomsManagerService,
                     useValue: roomsManagerService,
+                },
+                {
+                    provide: HistoryService,
+                    useValue: historyService,
                 },
             ],
         }).compile();
