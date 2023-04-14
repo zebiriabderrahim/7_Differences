@@ -35,12 +35,12 @@ export class HistoryService {
         this.pendingGames.set(room.roomId, gameHistory);
     }
 
-    closeEntry(roomId: string, server: io.Server) {
+    async closeEntry(roomId: string, server: io.Server) {
         const gameHistory = this.pendingGames.get(roomId);
         if (!gameHistory) return;
         gameHistory.duration = new Date().getTime() - gameHistory.duration;
         this.pendingGames.delete(roomId);
-        this.gameService.saveGameHistory(gameHistory);
+        await this.gameService.saveGameHistory(gameHistory);
         server.emit(HistoryEvents.RequestReload);
     }
 

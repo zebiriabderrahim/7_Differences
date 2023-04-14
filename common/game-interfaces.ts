@@ -7,7 +7,6 @@ export interface Players {
 }
 
 export interface GameHistory {
-    id?: string,
     date: string,
     startingHour: string,
     duration: number,

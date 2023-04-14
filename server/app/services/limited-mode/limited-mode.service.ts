@@ -1,7 +1,7 @@
 import { GameService } from '@app/services/game/game.service';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { NOT_FOUND } from '@common/constants';
-import { GameEvents, HistoryEvents, RoomEvents, GameModes } from '@common/enums';
+import { GameEvents, RoomEvents, GameModes } from '@common/enums';
 import { GameRoom, PlayerData } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
