@@ -1,5 +1,5 @@
-export const ONE_SECOND = 1000;
-export const TEN_SECONDS = 10;
+export const WAITING_TIME = 1000;
+export const COUNTDOWN_TIME = 10;
 export const MINUTE_CONVERSION = 60;
 export const TWO_DIGIT_LIMIT = 10;
 export const START_TIME = 0;
@@ -22,6 +22,7 @@ export const MAX_NAME_LENGTH = 10;
 export const MIN_NAME_LENGTH = 3;
 
 export const MAX_COUNTDOWN_TIME = 60;
+export const MIN_COUNTDOWN_TIME = 10;
 export const MAX_PENALTY_TIME = 10;
 export const MAX_BONUS_TIME = 10;
 export const MIN_TIME = 0;
@@ -30,8 +31,9 @@ export const DEFAULT_PENALTY_VALUE = 5;
 export const DEFAULT_BONUS_VALUE = 5;
 
 export const INPUT_TAG_NAME = 'INPUT';
+export const SOLO_GAME_ID = 'Solo';
 
 export const DEFAULT_PLAYERS = {
-    player1: { name: '', diffData: { currentDifference: [], differencesFound: 0 } },
-    player2: { name: '', diffData: { currentDifference: [], differencesFound: 0 } },
+    player1: { name: '', differenceData: { currentDifference: [], differencesFound: 0 } },
+    player2: { name: '', differenceData: { currentDifference: [], differencesFound: 0 } },
 };

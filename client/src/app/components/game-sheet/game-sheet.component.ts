@@ -7,10 +7,12 @@ import { Router } from '@angular/router';
 import { JoinedPlayerDialogComponent } from '@app/components/joined-player-dialog/joined-player-dialog.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { WaitingForPlayerToJoinComponent } from '@app/components/waiting-player-to-join/waiting-player-to-join.component';
-import { CommunicationService } from '@app/services/communication-service/communication.service';
+import { Actions } from '@app/enum/delete-reset-actions';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { GameCard } from '@common/game-interfaces';
+import { GameCard, PlayerData } from '@common/game-interfaces';
 import { filter, Subscription, take } from 'rxjs';
+import { DeleteResetConfirmationDialogComponent } from '@app/components/delete-reset-confirmation-dialog/delete-reset-confirmation-dialog.component';
+import { GameModes } from '@common/enums';
 
 @Component({
     selector: 'app-game-sheet',
@@ -20,6 +22,7 @@ import { filter, Subscription, take } from 'rxjs';
 export class GameSheetComponent implements OnDestroy, OnInit {
     @Input() game: GameCard;
     url: SafeResourceUrl;
+    actions: typeof Actions;
     private isAvailable: boolean;
     private roomIdSubscription: Subscription;
     private roomAvailabilitySubscription: Subscription;
@@ -30,9 +33,10 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         private readonly dialog: MatDialog,
         public router: Router,
         private readonly roomManagerService: RoomManagerService,
-        private readonly communicationService: CommunicationService,
         private sanitizer: DomSanitizer,
-    ) {}
+    ) {
+        this.actions = Actions;
+    }
     ngOnInit(): void {
         this.url = this.sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + this.game.thumbnail);
         this.roomManagerService.checkRoomOneVsOneAvailability(this.game._id);
@@ -47,6 +51,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent, {
             data: { gameId: this.game._id },
             disableClose: true,
+            panelClass: 'dialog',
         });
         return dialogRef;
     }
@@ -56,7 +61,8 @@ export class GameSheetComponent implements OnDestroy, OnInit {
             .afterClosed()
             .pipe(filter((playerName) => !!playerName))
             .subscribe((playerName) => {
-                this.roomManagerService.createSoloRoom(this.game._id, playerName);
+                const playerPayLoad = { gameId: this.game._id, playerName, gameMode: GameModes.ClassicSolo } as PlayerData;
+                this.roomManagerService.createSoloRoom(playerPayLoad);
             });
     }
 
@@ -73,7 +79,8 @@ export class GameSheetComponent implements OnDestroy, OnInit {
             .afterClosed()
             .subscribe((playerName: string) => {
                 if (playerName) {
-                    this.roomManagerService.createOneVsOneRoom(this.game._id, playerName);
+                    const playerPayLoad = { gameId: this.game._id, playerName, gameMode: GameModes.ClassicOneVsOne } as PlayerData;
+                    this.roomManagerService.createOneVsOneRoom(playerPayLoad);
                     this.openWaitingDialog(playerName);
                 } else {
                     this.roomManagerService.updateRoomOneVsOneAvailability(this.game._id);
@@ -86,10 +93,12 @@ export class GameSheetComponent implements OnDestroy, OnInit {
             .afterClosed()
             .subscribe((player2Name: string) => {
                 if (player2Name) {
-                    this.roomManagerService.updateWaitingPlayerNameList(this.game._id, player2Name);
+                    const playerPayLoad = { gameId: this.game._id, playerName: player2Name } as PlayerData;
+                    this.roomManagerService.updateWaitingPlayerNameList(playerPayLoad);
                     this.dialog.open(JoinedPlayerDialogComponent, {
                         data: { gameId: this.game._id, player: player2Name },
                         disableClose: true,
+                        panelClass: 'dialog',
                     });
                 }
             });
@@ -105,6 +114,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
                 this.dialog.open(WaitingForPlayerToJoinComponent, {
                     data: { roomId, player: playerName, gameId: this.game._id },
                     disableClose: true,
+                    panelClass: 'dialog',
                 });
             });
     }
@@ -113,15 +123,12 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         return this.isAvailable;
     }
 
-    deleteGameCard() {
-        this.communicationService.deleteGameById(this.game._id).subscribe(() => {
-            this.router.navigate(['/config']);
-            this.roomManagerService.gameCardDeleted(this.game._id);
+    openConfirmationDialog(actions: Actions): void {
+        this.dialog.open(DeleteResetConfirmationDialogComponent, {
+            data: { actions, gameId: this.game._id },
+            disableClose: true,
+            panelClass: 'dialog',
         });
-    }
-
-    resetTopTime() {
-        this.roomManagerService.resetTopTime(this.game._id);
     }
 
     ngOnDestroy(): void {

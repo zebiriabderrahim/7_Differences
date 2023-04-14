@@ -2,7 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -21,6 +21,7 @@ import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { ForegroundService } from '@app/services/foreground-service/foreground.service';
 import { CreationPageComponent } from './creation-page.component';
+import { of } from 'rxjs';
 
 describe('CreationPageComponent', () => {
     let component: CreationPageComponent;
@@ -158,16 +159,24 @@ describe('CreationPageComponent', () => {
         expect(validateDifferencesSpy).toHaveBeenCalled();
     });
 
-    // it('validateDifferences should open dialog', () => {
-    //     const data = 42;
-    //     const game = { id: 1, name: 'testGame' };
-    //     matDialogSpy.open.and.returnValue({
-    //         afterClosed: () => of(game),
-    //     } as MatDialogRef<unknown, unknown>);
-    //     communicationServiceSpy.postGame.and.returnValue(of(void 0));
-    //     component.radius = data;
-    //     component.validateDifferences();
+    it('should call validateDifferences method on click', () => {
+        const validateButton = fixture.debugElement.query(By.css("button[name='validateButton']")).nativeElement;
+        const validateDifferencesSpy = spyOn(component, 'validateDifferences');
+        validateButton.click();
+        fixture.detectChanges();
+        expect(validateDifferencesSpy).toHaveBeenCalled();
+    });
 
-    //     expect(matDialogSpy.open).toHaveBeenCalled();
-    // });
+    it('validateDifferences should open dialog', () => {
+        const data = 42;
+        const game = { id: 1, name: 'testGame' };
+        matDialogSpy.open.and.returnValue({
+            afterClosed: () => of(game),
+        } as MatDialogRef<unknown, unknown>);
+        communicationServiceSpy.postGame.and.returnValue(of(void 0));
+        component.radius = data;
+        component.validateDifferences();
+
+        expect(matDialogSpy.open).toHaveBeenCalled();
+    });
 });

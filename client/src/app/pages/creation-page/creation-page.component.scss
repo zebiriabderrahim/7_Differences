@@ -76,3 +76,46 @@ p {
     height: 100%;
     object-fit: cover;
 }
+
+
+#run {
+    width: 16%;
+    height: 16%;
+    position: absolute;
+    top: 70%;
+    animation-name: slide-right;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-direction: normal;
+    transform-style: preserve-3d;
+  }
+  
+  @keyframes slide-right {
+    0% {
+      left: 0%;
+      transform: scaleX(1);
+    }
+    49% {
+      left: 83%;
+      transform: scaleX(1);
+    }
+    50% {
+      left: 83%;
+      transform: scaleX(-1);
+      top: 80%
+    }
+    99% {
+      left: 0%;
+      transform: scaleX(-1);
+    }
+    100% {
+      left: 0%;
+      transform: scaleX(1);
+    }
+  }
+  
+  
+  
+ 
+  

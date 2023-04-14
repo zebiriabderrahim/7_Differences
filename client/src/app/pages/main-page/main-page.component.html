@@ -1,16 +1,15 @@
 <div class="container flex-column">
     <header class="header">
         <h1 class="header-item flex-column">{{ gameTitle }}</h1>
-        <img class="project-logo flex-column" src="./assets/Raccoon.png" alt="Logo Projet" />
     </header> 
-    <img id = "background" src = "./assets/MenuBackground.jpg"/>   
+    <img id = "background" src = "./assets/background/MenuBackground.jpg" alt="background"/>   
     <section id="server-message" class="flex-column section">
         <h2>Choisis ton mode de jeu :</h2>
         <div class="flex-row">
             <button class="button" [routerLink]="selectionRoute">
                 <span id = "classic">Classique</span>
             </button>
-            <button class="button">
+            <button class="button" [routerLink]="limitedRoute">
                 <span id = "limited">Temps Limité</span>
             </button>
             <button class="button" [routerLink]="configRoute">

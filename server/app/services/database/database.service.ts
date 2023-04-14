@@ -9,25 +9,32 @@ import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameConstantsDto } from '@app/model/dto/game/game-constants.dto';
 import { GameListsManagerService } from '@app/services/game-lists-manager/game-lists-manager.service';
 import { DEFAULT_BEST_TIMES, DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
-import { CarouselPaginator, GameModes, PlayerTime } from '@common/game-interfaces';
-import { Injectable } from '@nestjs/common';
+import { CarouselPaginator, PlayerTime } from '@common/game-interfaces';
+import { GameModes } from '@common/enums';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as fs from 'fs';
 import { Model } from 'mongoose';
 
 @Injectable()
-export class DatabaseService {
+export class DatabaseService implements OnModuleInit {
     private defaultConstants: GameConstants = {
         countdownTime: DEFAULT_COUNTDOWN_VALUE,
         penaltyTime: DEFAULT_HINT_PENALTY,
         bonusTime: DEFAULT_BONUS_TIME,
     };
+    private gameIds: string[];
     constructor(
         @InjectModel(Game.name) private readonly gameModel: Model<GameDocument>,
         @InjectModel(GameCard.name) private readonly gameCardModel: Model<GameCardDocument>,
         @InjectModel(GameConstants.name) private readonly gameConstantsModel: Model<GameConstantsDocument>,
         private readonly gameListManager: GameListsManagerService,
-    ) {}
+    ) {
+        this.gameIds = [];
+    }
+    async onModuleInit() {
+        await this.getAllGameIds();
+    }
 
     async getGamesCarrousel(): Promise<CarouselPaginator[]> {
         if (this.gameListManager['carouselGames'].length === 0) {
@@ -36,6 +43,7 @@ export class DatabaseService {
         }
         return this.gameListManager.getCarouselGames();
     }
+
     async getTopTimesGameById(gameId: string, gameMode: string): Promise<PlayerTime[]> {
         const mode = gameMode === GameModes.ClassicSolo ? 'soloTopTime' : 'oneVsOneTopTime';
         const topTimes = await this.gameCardModel
@@ -81,6 +89,7 @@ export class DatabaseService {
             };
             this.saveFiles(newGame);
             const id = (await this.gameModel.create(newGameInDB))._id.toString();
+            this.gameIds.push(id);
             newGameInDB._id = id;
             const gameCard = this.gameListManager.buildGameCardFromGame(newGameInDB);
             await this.gameCardModel.create(gameCard);
@@ -99,12 +108,28 @@ export class DatabaseService {
 
     async deleteGameById(id: string): Promise<void> {
         try {
+            this.gameIds = this.gameIds.filter((gameId) => gameId !== id);
             await this.gameModel.findByIdAndDelete(id).exec();
             const gameName = (await this.gameCardModel.findByIdAndDelete(id).exec()).name;
             this.deleteGameAssetsByName(gameName);
             await this.rebuildGameCarousel();
         } catch (error) {
             return Promise.reject(`Failed to delete game with id : ${id} --> ${error}`);
+        }
+    }
+
+    async deleteAllGames() {
+        try {
+            this.gameIds = [];
+            this.gameListManager.buildGameCarousel([]);
+            const gamesName = (await this.gameModel.find().select('-_id name').exec()).map((game) => game.name);
+            for (const gameName of gamesName) {
+                this.deleteGameAssetsByName(gameName);
+            }
+            await this.gameModel.deleteMany({}).exec();
+            await this.gameCardModel.deleteMany({}).exec();
+        } catch (error) {
+            return Promise.reject(`Failed to delete all games --> ${error}`);
         }
     }
 
@@ -121,16 +146,6 @@ export class DatabaseService {
     async rebuildGameCarousel(): Promise<void> {
         const gameCardsList: GameCard[] = await this.gameCardModel.find().exec();
         this.gameListManager.buildGameCarousel(gameCardsList);
-    }
-
-    async populateDbWithGameConstants(): Promise<void> {
-        try {
-            if (!(await this.gameConstantsModel.exists({}))) {
-                await this.gameConstantsModel.create(this.defaultConstants);
-            }
-        } catch (error) {
-            return Promise.reject(`Failed to populate game constants --> ${error}`);
-        }
     }
 
     async updateGameConstants(gameConstantsDto: GameConstantsDto): Promise<void> {
@@ -156,6 +171,35 @@ export class DatabaseService {
             await this.rebuildGameCarousel();
         } catch (error) {
             return Promise.reject(`Failed to reset all top times --> ${error}`);
+        }
+    }
+
+    async getRandomGame(playedGameIds: string[]): Promise<Game> {
+        try {
+            const gameIdsToPlay = this.gameIds.filter((id) => !playedGameIds.includes(id));
+            const randomGameId = gameIdsToPlay[Math.floor(Math.random() * gameIdsToPlay.length)];
+            return await this.getGameById(randomGameId);
+        } catch (error) {
+            return Promise.reject(`Failed to get random game --> ${error}`);
+        }
+    }
+
+    private async populateDbWithGameConstants(): Promise<void> {
+        try {
+            if (!(await this.gameConstantsModel.exists({}))) {
+                await this.gameConstantsModel.create(this.defaultConstants);
+            }
+        } catch (error) {
+            return Promise.reject(`Failed to populate game constants --> ${error}`);
+        }
+    }
+
+    private async getAllGameIds(): Promise<void> {
+        try {
+            const gameCardsIds = await this.gameCardModel.find().select('_id').exec();
+            this.gameIds = gameCardsIds.map((gameCard) => gameCard._id.toString());
+        } catch (error) {
+            return Promise.reject(`Failed to get all game ids --> ${error}`);
         }
     }
 }

@@ -1,0 +1,17 @@
+<div class="container flex-column">
+    <div class="header">
+        <app-nav-bar id ="nav-bar"></app-nav-bar>
+    </div>
+    <img id = "background" src = "./assets/LimitedTimeBackground.jpg" alt="background"/>   
+    <section id="server-message" class="flex-column section">
+        <h2>Choisis ton mode de jeu en temps limité :</h2>
+        <div class="flex-row">
+            <button mat-raised-button class="button" (click)="playLimited(gameModes.LimitedSolo)">
+                <span id = "solo">Solo</span>
+            </button>
+            <button mat-raised-button class="button" (click)="playLimited(gameModes.LimitedCoop)">
+                <span id = "coop">Coopérative</span>
+            </button>
+        </div>
+    </section>
+</div>
