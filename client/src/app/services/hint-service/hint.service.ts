@@ -27,9 +27,9 @@ import { Subject } from 'rxjs';
 export class HintService {
     nAvailableHints: number;
     replayEventsSubject: Subject<ReplayEvent>;
-    proximity: HintProximity;
+    thirdHintProximity: HintProximity;
     isThirdHintActive: boolean;
-    private thirdHintProximity: HintProximity[][];
+    private thirdHintProximityMatrix: HintProximity[][];
     constructor(
         private readonly gameManager: GameManagerService,
         private readonly gameAreaService: GameAreaService,
@@ -46,8 +46,8 @@ export class HintService {
     resetHints(): void {
         this.nAvailableHints = DEFAULT_N_HINTS;
         this.isThirdHintActive = false;
-        this.proximity = HintProximity.TooFar;
-        this.thirdHintProximity = new Array(IMG_WIDTH)
+        this.thirdHintProximity = HintProximity.TooFar;
+        this.thirdHintProximityMatrix = new Array(IMG_WIDTH)
             .fill(HintProximity.TooFar)
             .map(() => new Array(IMG_HEIGHT).fill(HintProximity.TooFar)) as HintProximity[][];
     }
@@ -70,9 +70,9 @@ export class HintService {
                 this.isThirdHintActive = true;
                 this.generateLastHintDifferences(difference);
             } else {
-                let hintQuadrant = this.getHintQuadrant(difference, INITIAL_QUADRANT);
+                let hintQuadrant = this.generateHintQuadrant(difference, INITIAL_QUADRANT);
                 if (this.nAvailableHints === SECOND_TO_LAST_HINT_NUMBER) {
-                    hintQuadrant = this.getHintQuadrant(difference, hintQuadrant);
+                    hintQuadrant = this.generateHintQuadrant(difference, hintQuadrant);
                 }
                 this.gameAreaService.flashCorrectPixels(this.generateHintSquare(hintQuadrant), flashingSpeed);
             }
@@ -88,12 +88,12 @@ export class HintService {
     }
 
     checkThirdHintProximity(coordinate: Coordinate): void {
-        this.switchProximity(this.thirdHintProximity[coordinate.x][coordinate.y]);
+        this.switchProximity(this.thirdHintProximityMatrix[coordinate.x][coordinate.y]);
     }
 
     switchProximity(nextProximity: HintProximity): void {
-        if (nextProximity !== this.proximity) {
-            this.proximity = nextProximity;
+        if (nextProximity !== this.thirdHintProximity) {
+            this.thirdHintProximity = nextProximity;
             const replayEvent: ReplayEvent = {
                 action: ReplayActions.ActivateThirdHint,
                 timestamp: Date.now(),
@@ -111,13 +111,13 @@ export class HintService {
 
     private fillThirdHintProximityMatrix(difference: Coordinate[], hintProximity: HintProximity): void {
         for (const coord of difference) {
-            if (this.thirdHintProximity[coord.x][coord.y] === HintProximity.TooFar) {
-                this.thirdHintProximity[coord.x][coord.y] = hintProximity;
+            if (this.thirdHintProximityMatrix[coord.x][coord.y] === HintProximity.TooFar) {
+                this.thirdHintProximityMatrix[coord.x][coord.y] = hintProximity;
             }
         }
     }
 
-    private getHintQuadrant(differencesCoordinates: Coordinate[], quadrant: Quadrant): Quadrant {
+    private generateHintQuadrant(differencesCoordinates: Coordinate[], quadrant: Quadrant): Quadrant {
         const subQuadrants: Quadrant[] = this.generateSubQuadrants(quadrant);
         const quadrants: QuadrantPosition[] = [];
         for (const coord of differencesCoordinates) {

@@ -72,7 +72,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     }
 
     get proximity(): HintProximity {
-        return this.hintService.proximity;
+        return this.hintService.thirdHintProximity;
     }
 
     get isThirdHintActive(): boolean {
