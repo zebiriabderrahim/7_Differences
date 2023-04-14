@@ -14,6 +14,8 @@ import { DifferenceService } from '@app/services/difference-service/difference.s
 import { ImageService } from '@app/services/image-service/image.service';
 import { of } from 'rxjs';
 import { CreationGameDialogComponent } from './creation-game-dialog.component';
+// import { ElementRef } from '@angular/core';
+// import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 
 describe('CreationGameDialogComponent', () => {
     let component: CreationGameDialogComponent;
@@ -24,6 +26,9 @@ describe('CreationGameDialogComponent', () => {
     let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
 
     beforeEach(async () => {
+        // component.differenceCanvas = CanvasTestHelper.createCanvas(0, 0) as unknown as ElementRef<HTMLCanvasElement>;
+        // // component.differenceCanvas.nativeElement.width = IMG_WIDTH;
+        // // component.differenceCanvas.nativeElement.height = IMG_HEIGHT;
         imageServiceSpy = jasmine.createSpyObj('ImageService', [
             'generateDifferences',
             'resetBackground',

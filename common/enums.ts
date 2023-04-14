@@ -3,7 +3,7 @@ export enum GameEvents {
     CheckStatus = 'CheckStatus',
     EndGame = 'EndGame',
     TimerUpdate = 'TimerUpdate',
-    RemoveDiff = 'removeDiff',
+    RemoveDifference = 'removeDifference',
     GameStarted = 'GameStarted',
     AbandonGame = 'AbandonGame',
     StartGameByRoomId = 'CreateOneVsOneGame',

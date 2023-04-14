@@ -18,3 +18,5 @@ export const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0
 
 export const MAX_TIMES_INDEX = 2;
 export const NOT_FOUND = -1;
+
+export const SCORE_POSITION = {1:'premier', 2: 'deuxième', 3: 'troisième'};

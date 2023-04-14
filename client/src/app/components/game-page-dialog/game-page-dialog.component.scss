@@ -1,6 +1,6 @@
 @import url('https://fonts.cdnfonts.com/css/troika-2');
 
-::ng-deep .dialog .mat-dialog-container{
+::ng-deep .dialog .mat-dialog-container {
     height: 0px;
     width: 0px;
     background: none;
@@ -47,6 +47,7 @@
     position: absolute;
     z-index: 2;
     left: 32%;
+    bottom: 45%;
     font-family: 'Troika', sans-serif;
     font-size: 30px;
     color: black;

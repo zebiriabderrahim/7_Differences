@@ -1,11 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { IMG_HEIGHT, IMG_TYPE, IMG_WIDTH, VALID_BMP_SIZE } from '@app/constants/image';
+import { IMG_HEIGHT, IMG_TYPE, IMG_WIDTH } from '@app/constants/image';
 import { ValidationService } from './validation.service';
 
 describe('ValidationService', () => {
     let service: ValidationService;
+    let testFile: File;
 
     beforeEach(() => {
+        testFile = new File([''], 'test.bmp', { type: IMG_TYPE });
         TestBed.configureTestingModule({
             providers: [],
         }).compileComponents();
@@ -16,34 +18,25 @@ describe('ValidationService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('isImageValid should return true when given a valid image', async () => {
-        spyOn(service, 'isImageTypeValid').and.returnValue(true);
-        spyOn(service, 'isImageSizeValid').and.callFake(async () => {
-            return true;
-        });
-        spyOn(service, 'isImageFormatValid').and.returnValue(true);
-        const file = new File([''], 'filename', { type: IMG_TYPE });
-        expect(await service.isImageValid(file)).toBeTruthy();
+    it('isImageValid should validate a correct image', async () => {
+        const image = await fetch('assets/gros-ratata.bmp');
+        const blob = await image.blob();
+        const imageFile = new File([blob], 'image.bmp', blob);
+
+        const result = await service.isImageValid(imageFile);
+        expect(result).toBe(true);
     });
 
-    it('isImageValid should return false when given a invalid image', async () => {
-        spyOn(service, 'isImageTypeValid').and.returnValue(true);
-        spyOn(service, 'isImageSizeValid').and.callFake(async () => {
-            return false;
-        });
-        spyOn(service, 'isImageFormatValid').and.returnValue(false);
-        const file = new File([''], 'filename', { type: IMG_TYPE });
-        expect(await service.isImageValid(file)).toBeFalsy();
+    it('isImageValid should return false if the file type is not a BMP', async () => {
+        testFile = new File([''], 'test.jpg', { type: 'image/jpeg' });
+        const result = await service.isImageValid(testFile);
+        expect(result).toBeFalse();
     });
 
-    it('isImageTypeValid should return false when given the wrong image type', () => {
-        const file = new File([''], 'filename', { type: 'image/png' });
-        expect(service.isImageTypeValid(file)).toBeFalsy();
-    });
-
-    it('isImageTypeValid should return true when given the right image type', () => {
-        const file = new File([''], 'filename', { type: IMG_TYPE });
-        expect(service.isImageTypeValid(file)).toBeTruthy();
+    it('isImageValid should return false if the image size is not valid', async () => {
+        spyOn(service, 'isImageSizeValid').and.returnValue(Promise.resolve(false));
+        const result = await service.isImageValid(testFile);
+        expect(result).toBeFalse();
     });
 
     it('isImageSizeValid should return true when given the right image size', async () => {
@@ -62,15 +55,5 @@ describe('ValidationService', () => {
         });
         const file = new File([''], 'filename', { type: IMG_TYPE });
         expect(await service.isImageSizeValid(file)).toBeFalsy();
-    });
-
-    it('isImageFormatValid should return true when given an valid image', () => {
-        const file = new File([new Uint8Array(VALID_BMP_SIZE)], 'example.bmp');
-        expect(service.isImageFormatValid(file)).toBeTruthy();
-    });
-
-    it('isImageFormatValid should return false when given an invalid image', () => {
-        const file = new File([], 'filename.png', { type: 'image/png' });
-        expect(service.isImageFormatValid(file)).toBeFalsy();
     });
 });

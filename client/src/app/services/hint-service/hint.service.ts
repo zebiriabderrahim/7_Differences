@@ -13,9 +13,9 @@ import { QuadrantPosition } from '@app/enum/quadrant-position';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { Quadrant } from '@app/interfaces/quadrant';
 import { ReplayEvent } from '@app/interfaces/replay-actions';
-import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { GameManagerService } from '@app/services/game-manager-service/game-manager.service';
 import { Coordinate } from '@common/coordinate';
 import { Subject } from 'rxjs';
 @Injectable({
@@ -31,7 +31,7 @@ export class HintService {
     private thirdHintDifferenceEnlarged: boolean[][];
 
     constructor(
-        private readonly classicSystem: ClassicSystemService,
+        private readonly gameManager: GameManagerService,
         private readonly gameAreaService: GameAreaService,
         private readonly differenceService: DifferenceService,
     ) {
@@ -44,7 +44,7 @@ export class HintService {
     }
 
     get differences(): Coordinate[][] {
-        return this.classicSystem.differences;
+        return this.gameManager.differences;
     }
 
     resetHints(): void {
@@ -90,7 +90,7 @@ export class HintService {
             if (this.nAvailableHints !== 1) {
                 this.gameAreaService.flashCorrectPixels(hintSquare, speed);
             }
-            this.classicSystem.requestHint();
+            this.gameManager.requestHint();
             this.nAvailableHints--;
         }
     }
