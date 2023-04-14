@@ -69,7 +69,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     }
 
     get proximity(): HintProximity {
-        return this.hintService.proximity;
+        return this.hintService.thirdHintProximity;
     }
 
     get isThirdHintActive(): boolean {
@@ -242,7 +242,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
 
     checkThirdHint(event: MouseEvent) {
         if (this.hintService.nAvailableHints === 0 && !this.isReplayAvailable) {
-            this.hintService.checkThirdHint({ x: event.offsetX, y: event.offsetY });
+            this.hintService.checkThirdHintProximity({ x: event.offsetX, y: event.offsetY });
         }
     }
 
