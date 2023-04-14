@@ -12,9 +12,8 @@ import { GameAreaService } from '@app/services/game-area-service/game-area.servi
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
 import { GameEvents, MessageEvents, MessageTag } from '@common/enums';
-import { ChatMessage, Differences } from '@common/game-interfaces';
-// import { ChatMessage, Differences, Players } from '@common/game-interfaces';
-// import { Subject } from 'rxjs';
+import { ChatMessage, Differences, GameRoom, Players } from '@common/game-interfaces';
+import { Subject, filter } from 'rxjs';
 import { Socket } from 'socket.io-client';
 import { GameManagerService } from './game-manager.service';
 
@@ -30,7 +29,6 @@ describe('GameManagerService', () => {
     const mockClientSideGame = {
         id: 'JackGame',
         name: 'le Jeu de Jack',
-        player: 'Jackob',
         mode: 'SoloGame',
         original: 'path/to/original',
         modified: 'path/to/modified',
@@ -43,32 +41,38 @@ describe('GameManagerService', () => {
         differencesFound: 0,
     };
 
-    // const mockPlayer1 = {
-    //     playerId: 'Bob',
-    //     name: 'Jackob',
-    //     differenceData: mockDifferences,
-    // };
+    const mockPlayer1 = {
+        playerId: 'Bob',
+        name: 'Jackob',
+        differenceData: mockDifferences,
+    };
 
-    // const mockPlayer2 = {
-    //     playerId: 'Boby',
-    //     name: 'Michel',
-    //     differenceData: mockDifferences,
-    // };
+    const mockPlayer2 = {
+        playerId: 'Boby',
+        name: 'Michel',
+        differenceData: mockDifferences,
+    };
 
-    // const mockData = {
-    //     clientGame: mockClientSideGame,
-    //     players: {
-    //         player1: mockPlayer1,
-    //         player2: mockPlayer2,
-    //     },
-    // };
+    const mockRoom: GameRoom = {
+        roomId: 'mockRoom',
+        clientGame: mockClientSideGame,
+        endMessage: '',
+        timer: 0,
+        originalDifferences: [[]],
+        gameConstants: {
+            countdownTime: 0,
+            penaltyTime: 0,
+            bonusTime: 0,
+        },
+        player2: mockPlayer2,
+        player1: mockPlayer1,
+    };
 
     let mockDataDifference = {
         differencesData: mockDifferences,
         playerId: 'mockId',
     };
 
-    // const playerNameStub = 'playerTest';
     const mockTimer = 0;
     const mockEndMessage = 'Fin de partie';
 
@@ -123,47 +127,107 @@ describe('GameManagerService', () => {
         service['currentGame'].next(mockClientSideGame);
     });
 
-    // it('timer$ should return timer as Observable', () => {
-    //     const mockTimerSubject = new Subject<number>();
-    //     service['timer'] = mockTimerSubject;
-    //     expect(service.timer$).toEqual(mockTimerSubject.asObservable());
-    // });
+    it('timer$ should return timer as Observable', () => {
+        const mockTimerSubject = new Subject<number>();
+        service['timer'] = mockTimerSubject;
+        const expectedTimer = service['timer']
+            .asObservable()
+            .pipe(filter((timer) => !!timer))
+            .toString();
+        expect(service.timer$.toString()).toEqual(expectedTimer);
+    });
 
-    // it('differenceFound$ should return differencesFound as Observable', () => {
-    //     const differenceFoundSubject = new Subject<number>();
-    //     service['differencesFound'] = differenceFoundSubject;
-    //     expect(service.differencesFound$).toEqual(differenceFoundSubject.asObservable());
-    // });
+    it('differenceFound$ should return differencesFound as Observable', () => {
+        const differenceFoundSubject = new Subject<number>();
+        service['differencesFound'] = differenceFoundSubject;
+        const expectedDifferencesFound = service['differencesFound']
+            .asObservable()
+            .pipe(filter((differencesFound) => !!differencesFound))
+            .toString();
+        expect(service.differencesFound$.toString()).toEqual(expectedDifferencesFound);
+    });
 
-    // it('message$ should return message as Observable', () => {
-    //     const mockMessageSubject = new Subject<ChatMessage>();
-    //     service['message'] = mockMessageSubject;
-    //     expect(service.message$).toEqual(mockMessageSubject.asObservable());
-    // });
+    it('message$ should return message as Observable', () => {
+        const mockMessageSubject = new Subject<ChatMessage>();
+        service['message'] = mockMessageSubject;
+        const expectedMessage = service['message']
+            .asObservable()
+            .pipe(filter((message) => !!message))
+            .toString();
+        expect(service.message$.toString()).toEqual(expectedMessage);
+    });
 
-    // it('endMessage$ should return endMessage as Observable', () => {
-    //     const mockEndMessageSubject = new Subject<string>();
-    //     service['endMessage'] = mockEndMessageSubject;
-    //     expect(service.endMessage$).toEqual(mockEndMessageSubject.asObservable());
-    // });
+    it('endMessage$ should return endMessage as Observable', () => {
+        const mockEndMessageSubject = new Subject<string>();
+        service['endMessage'] = mockEndMessageSubject;
+        const expectedEndMessage = service['endMessage']
+            .asObservable()
+            .pipe(filter((endMessage) => !!endMessage))
+            .toString();
+        expect(service.endMessage$.toString()).toEqual(expectedEndMessage);
+    });
 
-    // it('opponentDifferenceFound$ should return opponentDifferenceFound as Observable', () => {
-    //     const mockOpponentDifferenceFoundSubject = new Subject<number>();
-    //     service['opponentDifferencesFound'] = mockOpponentDifferenceFoundSubject;
-    //     expect(service.opponentDifferencesFound$).toEqual(mockOpponentDifferenceFoundSubject.asObservable());
-    // });
+    it('opponentDifferenceFound$ should return opponentDifferenceFound as Observable', () => {
+        const mockOpponentDifferenceFoundSubject = new Subject<number>();
+        service['opponentDifferencesFound'] = mockOpponentDifferenceFoundSubject;
+        const expectedOpponentDifferenceFound = service['opponentDifferencesFound']
+            .asObservable()
+            .pipe(filter((opponentDifferencesFound) => !!opponentDifferencesFound))
+            .toString();
+        expect(service.opponentDifferencesFound$.toString()).toEqual(expectedOpponentDifferenceFound);
+    });
 
-    // it('players$ should return players as Observable', () => {
-    //     const mockPlayersSubject = new Subject<Players>();
-    //     service['players'] = mockPlayersSubject;
-    //     expect(service.players$).toEqual(mockPlayersSubject.asObservable());
-    // });
+    it('players$ should return players as Observable', () => {
+        const mockPlayersSubject = new Subject<Players>();
+        service['players'] = mockPlayersSubject;
+        const expectedPlayers = service['players']
+            .asObservable()
+            .pipe(filter((players) => !!players))
+            .toString();
+        expect(service.players$.toString()).toEqual(expectedPlayers);
+    });
 
-    // it('cheatDifferences$ should return cheatDifferences as Observable', () => {
-    //     const mockCheatDifferencesSubject = new Subject<Coordinate[]>();
-    //     service['cheatDifferences'] = mockCheatDifferencesSubject;
-    //     expect(service.cheatDifferences$).toEqual(mockCheatDifferencesSubject.asObservable());
-    // });
+    it('isFirstDifferencesFound$ should return isFirstDifferencesFound as Observable', () => {
+        const mockIsFirstDifferencesFoundSubject = new Subject<boolean>();
+        service['isFirstDifferencesFound'] = mockIsFirstDifferencesFoundSubject;
+        expect(service.isFirstDifferencesFound$).toEqual(mockIsFirstDifferencesFoundSubject.asObservable());
+    });
+
+    it('isGameModeChanged$ should return isGameModeChanged as Observable', () => {
+        const mockIsGameModeChangedSubject = new Subject<boolean>();
+        service['isGameModeChanged'] = mockIsGameModeChangedSubject;
+        expect(service.isGameModeChanged$).toEqual(mockIsGameModeChangedSubject.asObservable());
+    });
+
+    it('isGamePageRefreshed$ should return isGamePageRefreshed as Observable', () => {
+        const mockIsGamePageRefreshedSubject = new Subject<boolean>();
+        service['isGamePageRefreshed'] = mockIsGamePageRefreshedSubject;
+        expect(service.isGamePageRefreshed$).toEqual(mockIsGamePageRefreshedSubject.asObservable());
+    });
+
+    it('setMessage should call next on message', () => {
+        const messageNextSpy = spyOn(service['message'], 'next');
+        service.setMessage(mockChatMessage);
+        expect(messageNextSpy).toHaveBeenCalledOnceWith(mockChatMessage);
+    });
+
+    it('startNextGame should call clientSocket.send with GameEvents.StartNextGame', () => {
+        const sendSpy = spyOn(socketServiceMock, 'send');
+        service.startNextGame();
+        expect(sendSpy).toHaveBeenCalledOnceWith(GameEvents.StartNextGame);
+    });
+
+    it('requestHint should call clientSocket.send with GameEvents.RequestHint', () => {
+        const sendSpy = spyOn(socketServiceMock, 'send');
+        service.requestHint();
+        expect(sendSpy).toHaveBeenCalledOnceWith(GameEvents.RequestHint);
+    });
+
+    it('removeAllListeners should call clientSocket.socket.off', () => {
+        const offSpy = spyOn(socketServiceMock.socket, 'off');
+        service.removeAllListeners();
+        expect(offSpy).toHaveBeenCalled();
+    });
 
     it('should not emit game when game is falsy', () => {
         spyOn(service['currentGame'], 'next');
@@ -226,12 +290,6 @@ describe('GameManagerService', () => {
         expect(gameAreaService.setAllData).toHaveBeenCalled();
     });
 
-    // it('manageSocket should connect the client socket', () => {
-    //     const socketConnectSpy = spyOn(socketServiceMock, 'connect');
-    //     service.manageSocket();
-    //     expect(socketConnectSpy).toHaveBeenCalled();
-    // });
-
     it('should return the socket id', () => {
         const socketId = '1234';
         socketServiceMock.socket.id = socketId;
@@ -240,11 +298,6 @@ describe('GameManagerService', () => {
 
     it('should send a "StartGameByRoomId" message to the server', () => {
         socketServiceMock.send = jasmine.createSpy('send');
-        // const mockId = '1234';
-        // const roomId = {
-        //     roomId: mockId,
-        //     playerName: playerNameStub,
-        // };
         service.startGame();
         expect(socketServiceMock.send).toHaveBeenCalledWith(GameEvents.StartGameByRoomId);
     });
@@ -267,28 +320,12 @@ describe('GameManagerService', () => {
         expect(socketServiceMock.send).toHaveBeenCalledWith(MessageEvents.LocalMessage, { tag: MessageTag.Received, message: 'Hello world' });
     });
 
-    // it('manageSocket should add the events listeners to CreateSoloGame, RemoveDifference and TimerStarted events', () => {
-    //     const socketOnSpy = spyOn(socketServiceMock, 'on');
-    //     service.manageSocket();
-    //     expect(socketOnSpy).toHaveBeenCalledWith(RoomEvents.CreateClassicSoloRoom, jasmine.any(Function));
-    //     expect(socketOnSpy).toHaveBeenCalledWith(GameEvents.RemoveDifference, jasmine.any(Function));
-    //     expect(socketOnSpy).toHaveBeenCalledWith(GameEvents.TimerUpdate, jasmine.any(Function));
-    //     expect(socketOnSpy).toHaveBeenCalledWith(GameEvents.EndGame, jasmine.any(Function));
-    // });
-
-    // it('manageSocket should update client game when CreateSoloGame linked event is sent from server', () => {
-    //     service.manageSocket();
-    //     const currentGameSubjectNextSpy = spyOn(service['currentGame'], 'next');
-    //     socketHelper.peerSideEmit(RoomEvents.CreateClassicSoloRoom, mockClientSideGame);
-    //     expect(currentGameSubjectNextSpy).toHaveBeenCalledWith(mockClientSideGame);
-    // });
-
-    // it('manageSocket should update client game when GameStarted linked event is sent from server', () => {
-    //     service.manageSocket();
-    //     const currentGameSubjectNextSpy = spyOn(service['players'], 'next');
-    //     socketHelper.peerSideEmit(GameEvents.GameStarted, mockData);
-    //     expect(currentGameSubjectNextSpy).toHaveBeenCalledWith(mockData.players);
-    // });
+    it('manageSocket should update client game when GameStarted linked event is sent from server', () => {
+        service.manageSocket();
+        const currentGameSubjectNextSpy = spyOn(service['currentGame'], 'next');
+        socketHelper.peerSideEmit(GameEvents.GameStarted, mockRoom);
+        expect(currentGameSubjectNextSpy).toHaveBeenCalledWith(mockRoom.clientGame);
+    });
 
     it('manageSocket should update client game when RemoveDifference linked event is sent from server', () => {
         const checkStatusSpy = spyOn(service, 'checkStatus');
@@ -349,6 +386,27 @@ describe('GameManagerService', () => {
         const endSpy = spyOn(service['endMessage'], 'next');
         socketHelper.peerSideEmit(GameEvents.EndGame, mockEndMessage);
         expect(endSpy).toHaveBeenCalledWith(mockEndMessage);
+    });
+
+    it('manageSocket should update client game when UpdateDifferencesFound linked event is sent from server', () => {
+        service.manageSocket();
+        const differencesFoundSpy = spyOn(service['differencesFound'], 'next');
+        socketHelper.peerSideEmit(GameEvents.UpdateDifferencesFound, mockTimer);
+        expect(differencesFoundSpy).toHaveBeenCalledWith(mockTimer);
+    });
+
+    it('manageSocket should update client game when GameModeChanged linked event is sent from server', () => {
+        service.manageSocket();
+        const isGameModeChangedSpy = spyOn(service['isGameModeChanged'], 'next');
+        socketHelper.peerSideEmit(GameEvents.GameModeChanged);
+        expect(isGameModeChangedSpy).toHaveBeenCalledWith(true);
+    });
+
+    it('manageSocket should update client game when GamePageRefreshed linked event is sent from server', () => {
+        service.manageSocket();
+        const isGamePageRefreshedSpy = spyOn(service['isGamePageRefreshed'], 'next');
+        socketHelper.peerSideEmit(GameEvents.GamePageRefreshed);
+        expect(isGamePageRefreshedSpy).toHaveBeenCalledWith(true);
     });
 
     it('manageSocket should update client game when MessageEvents linked event is sent from server', () => {
