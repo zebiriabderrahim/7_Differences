@@ -14,12 +14,10 @@ import { GameConfigConst } from '@common/game-interfaces';
 export class ConfigPageComponent {
     actions: typeof Actions;
     readonly createRoute: string;
-    readonly homeRoute: string;
     configConstants: GameConfigConst;
 
     constructor(private readonly dialog: MatDialog) {
         this.configConstants = { countdownTime: DEFAULT_COUNTDOWN_VALUE, penaltyTime: DEFAULT_PENALTY_VALUE, bonusTime: DEFAULT_BONUS_VALUE };
-        this.homeRoute = '/home';
         this.createRoute = '/create';
         this.actions = Actions;
     }

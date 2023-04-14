@@ -39,6 +39,7 @@ import { DeleteResetConfirmationDialogComponent } from './components/delete-rese
 import { LimitedTimePageComponent } from './pages/limited-time-page/limited-time-page.component';
 import { ConfigDialogComponent } from './components/config-dialog/config-dialog.component';
 import { NoGameAvailibleDialogComponent } from './components/no-game-availible-dialog/no-game-availible-dialog.component';
+import { HistoryBoxComponent } from './components/history-box/history-box.component';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -71,6 +72,7 @@ import { NoGameAvailibleDialogComponent } from './components/no-game-availible-d
         LimitedTimePageComponent,
         ConfigDialogComponent,
         NoGameAvailibleDialogComponent,
+        HistoryBoxComponent,
     ],
     imports: [
         AppMaterialModule,

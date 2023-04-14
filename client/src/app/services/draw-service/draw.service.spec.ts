@@ -352,6 +352,20 @@ describe('DrawService', () => {
         expect(spyFillRect).toHaveBeenCalledOnceWith(fakeRectangleTopCorner.x, fakeRectangleTopCorner.y, rectangleWidth, rectangleWidth);
     });
 
+    it('drawRectangle should set rectangleHeight to negative with appropriate conditions', () => {
+        const fakeCoordinate: Coordinate = { x: 33, y: 70 };
+        const fakeRectangleTopCorner: Coordinate = { x: 50, y: 50 };
+        const rectangleWidth = fakeCoordinate.x - fakeRectangleTopCorner.x;
+
+        service['clickPosition'] = fakeCoordinate;
+        service['rectangleTopCorner'] = fakeRectangleTopCorner;
+        service['isSquareModeOn'] = true;
+        service['activeContext'] = contextStub;
+        const spyFillRect = spyOn(contextStub, 'fillRect');
+        service['drawRectangle']();
+        expect(spyFillRect).toHaveBeenCalledOnceWith(fakeRectangleTopCorner.x, fakeRectangleTopCorner.y, rectangleWidth, -rectangleWidth);
+    });
+
     it('drawLine should call stroke and lineTo on activeContext', () => {
         const fakeCoordinate: Coordinate = { x: 33, y: 33 };
         service['clickPosition'] = fakeCoordinate;

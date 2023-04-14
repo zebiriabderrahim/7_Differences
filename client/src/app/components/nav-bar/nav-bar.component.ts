@@ -6,14 +6,12 @@ import { Component } from '@angular/core';
     styleUrls: ['./nav-bar.component.scss'],
 })
 export class NavBarComponent {
-    readonly gameRoute: string;
     readonly selectionRoute: string;
     readonly configRoute: string;
     readonly homeRoute: string;
     readonly limitedRoute: string;
 
     constructor() {
-        this.gameRoute = '/game';
         this.selectionRoute = '/selection';
         this.configRoute = '/config';
         this.homeRoute = '/home';

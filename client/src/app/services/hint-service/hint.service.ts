@@ -13,9 +13,9 @@ import { QuadrantPosition } from '@app/enum/quadrant-position';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { Quadrant } from '@app/interfaces/quadrant';
 import { ReplayEvent } from '@app/interfaces/replay-actions';
-import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { GameManagerService } from '@app/services/game-manager-service/game-manager.service';
 import { Coordinate } from '@common/coordinate';
 import { Subject } from 'rxjs';
 @Injectable({
@@ -31,7 +31,7 @@ export class HintService {
     private thirdHintDifferenceEnlarged: boolean[][];
 
     constructor(
-        private readonly classicSystem: ClassicSystemService,
+        private readonly gameManager: GameManagerService,
         private readonly gameAreaService: GameAreaService,
         private readonly differenceService: DifferenceService,
     ) {
@@ -44,7 +44,7 @@ export class HintService {
     }
 
     get differences(): Coordinate[][] {
-        return this.classicSystem.differences;
+        return this.gameManager.differences;
     }
 
     resetHints(): void {
@@ -52,7 +52,7 @@ export class HintService {
         this.isThirdHintActive = false;
     }
 
-    clickDuringThirdHint(): void {
+    deactivateThirdHint(): void {
         this.isThirdHintActive = false;
         const replayEvent: ReplayEvent = {
             action: ReplayActions.DeactivateThirdHint,
@@ -67,7 +67,7 @@ export class HintService {
             let hintSquare: Coordinate[] = [];
             const differenceIndex: number = this.differences.length > 1 ? this.generateRandomNumber(0, this.differences.length - 1) : 0;
             let difference: Coordinate[] = this.differences[differenceIndex];
-            if (replayDifference !== undefined) {
+            if (replayDifference) {
                 difference = replayDifference;
             }
             if (this.nAvailableHints === 1) {
@@ -90,7 +90,7 @@ export class HintService {
             if (this.nAvailableHints !== 1) {
                 this.gameAreaService.flashCorrectPixels(hintSquare, speed);
             }
-            this.classicSystem.requestHint();
+            this.gameManager.requestHint();
             this.nAvailableHints--;
         }
     }

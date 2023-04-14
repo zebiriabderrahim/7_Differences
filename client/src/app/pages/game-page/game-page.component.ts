@@ -6,8 +6,8 @@ import { ASSETS_HINTS } from '@app/constants/hint';
 import { CANVAS_MEASUREMENTS } from '@app/constants/image';
 import { HintProximity } from '@app/enum/hint-proximity';
 import { CanvasMeasurements } from '@app/interfaces/game-interfaces';
-import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { GameManagerService } from '@app/services/game-manager-service/game-manager.service';
 import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ReplayService } from '@app/services/replay-service/replay.service';
@@ -44,13 +44,13 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     // eslint-disable-next-line max-params
     constructor(
         private readonly gameAreaService: GameAreaService,
-        private readonly classicService: ClassicSystemService,
+        private readonly gameManager: GameManagerService,
         private readonly imageService: ImageService,
         private readonly hintService: HintService,
         private readonly matDialog: MatDialog,
         private readonly replayService: ReplayService,
     ) {
-        this.classicService.manageSocket();
+        this.gameManager.manageSocket();
         this.differencesFound = 0;
         this.opponentDifferencesFound = 0;
         this.timer = 0;
@@ -65,7 +65,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     }
 
     get differences(): Coordinate[][] {
-        return this.classicService.differences;
+        return this.gameManager.differences;
     }
 
     get proximity(): HintProximity {
@@ -90,7 +90,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        this.classicService.startGame();
+        this.gameManager.startGame();
 
         this.hintService.resetHints();
 
@@ -114,41 +114,41 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     }
 
     getPlayers(): void {
-        this.classicService.players$.pipe(takeUntil(this.onDestroy$)).subscribe((players) => {
+        this.gameManager.players$.pipe(takeUntil(this.onDestroy$)).subscribe((players) => {
             this.players = players;
-            if (players.player1.playerId === this.classicService.getSocketId()) {
+            if (players.player1.playerId === this.gameManager.getSocketId()) {
                 this.player = players.player1.name;
-            } else if (players.player2 && players.player2.playerId === this.classicService.getSocketId()) {
+            } else if (players.player2 && players.player2.playerId === this.gameManager.getSocketId()) {
                 this.player = players.player2.name;
             }
         });
     }
 
     setUpGame(): void {
-        this.classicService.currentGame$.pipe(takeUntil(this.onDestroy$)).subscribe((game) => {
+        this.gameManager.currentGame$.pipe(takeUntil(this.onDestroy$)).subscribe((game) => {
             this.game = game;
-            this.gameAreaService.setOgContext(
+            this.gameAreaService.setOriginalContext(
                 this.originalCanvas.nativeElement.getContext('2d', {
                     willReadFrequently: true,
                 }) as CanvasRenderingContext2D,
             );
-            this.gameAreaService.setMdContext(
+            this.gameAreaService.setModifiedContext(
                 this.modifiedCanvas.nativeElement.getContext('2d', {
                     willReadFrequently: true,
                 }) as CanvasRenderingContext2D,
             );
-            this.gameAreaService.setOgFrontContext(
+            this.gameAreaService.setOriginalFrontContext(
                 this.originalCanvasForeground.nativeElement.getContext('2d', {
                     willReadFrequently: true,
                 }) as CanvasRenderingContext2D,
             );
-            this.gameAreaService.setMdFrontContext(
+            this.gameAreaService.setModifiedFrontContext(
                 this.modifiedCanvasForeground.nativeElement.getContext('2d', {
                     willReadFrequently: true,
                 }) as CanvasRenderingContext2D,
             );
-            this.imageService.loadImage(this.gameAreaService.getOgContext(), this.game.original);
-            this.imageService.loadImage(this.gameAreaService.getMdContext(), this.game.modified);
+            this.imageService.loadImage(this.gameAreaService.getOriginalContext(), this.game.original);
+            this.imageService.loadImage(this.gameAreaService.getModifiedContext(), this.game.modified);
             this.gameAreaService.setAllData();
         });
     }
@@ -174,41 +174,41 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     }
 
     updateTimer(): void {
-        this.classicService.timer$.pipe(takeUntil(this.onDestroy$)).subscribe((timer) => {
+        this.gameManager.timer$.pipe(takeUntil(this.onDestroy$)).subscribe((timer) => {
             this.timer = timer;
         });
     }
 
     handleMessages(): void {
-        this.classicService.message$.pipe(takeUntil(this.onDestroy$)).subscribe((message) => {
+        this.gameManager.message$.pipe(takeUntil(this.onDestroy$)).subscribe((message) => {
             this.messages.push(message);
         });
     }
 
     showEndMessage(): void {
-        this.classicService.endMessage$.pipe(takeUntil(this.onDestroy$)).subscribe((endMessage) => {
+        this.gameManager.endMessage$.pipe(takeUntil(this.onDestroy$)).subscribe((endMessage) => {
             this.showEndGameDialog(endMessage);
         });
     }
 
     handleDifferences(): void {
-        this.classicService.differencesFound$.pipe(takeUntil(this.onDestroy$)).subscribe((differencesFound) => {
+        this.gameManager.differencesFound$.pipe(takeUntil(this.onDestroy$)).subscribe((differencesFound) => {
             this.differencesFound = differencesFound;
         });
 
-        this.classicService.opponentDifferencesFound$.pipe(takeUntil(this.onDestroy$)).subscribe((opponentDifferencesFound) => {
+        this.gameManager.opponentDifferencesFound$.pipe(takeUntil(this.onDestroy$)).subscribe((opponentDifferencesFound) => {
             this.opponentDifferencesFound = opponentDifferencesFound;
         });
     }
 
     updateIfFirstDifferencesFound(): void {
-        this.classicService.isFirstDifferencesFound$.pipe(takeUntil(this.onDestroy$)).subscribe((isFirstDifferencesFound) => {
-            if (isFirstDifferencesFound && this.isLimitedMode()) this.classicService.startNextGame();
+        this.gameManager.isFirstDifferencesFound$.pipe(takeUntil(this.onDestroy$)).subscribe((isFirstDifferencesFound) => {
+            if (isFirstDifferencesFound && this.isLimitedMode()) this.gameManager.startNextGame();
         });
     }
 
     updateGameMode(): void {
-        this.classicService.isGameModeChanged$.pipe(takeUntil(this.onDestroy$)).subscribe((isGameModeChanged) => {
+        this.gameManager.isGameModeChanged$.pipe(takeUntil(this.onDestroy$)).subscribe((isGameModeChanged) => {
             if (isGameModeChanged) this.game.mode = GameModes.LimitedSolo;
         });
     }
@@ -233,11 +233,11 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     mouseClickOnCanvas(event: MouseEvent, isLeft: boolean) {
         if (!this.gameAreaService.detectLeftClick(event)) return;
         if (this.isThirdHintActive) {
-            this.hintService.clickDuringThirdHint();
+            this.hintService.deactivateThirdHint();
         }
         this.gameAreaService.setAllData();
-        this.classicService.setIsLeftCanvas(isLeft);
-        this.classicService.requestVerification(this.gameAreaService.getMousePosition());
+        this.gameManager.setIsLeftCanvas(isLeft);
+        this.gameManager.requestVerification(this.gameAreaService.getMousePosition());
     }
 
     checkThirdHint(event: MouseEvent) {
@@ -248,7 +248,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
 
     addRightSideMessage(text: string) {
         this.messages.push({ tag: MessageTag.Sent, message: text });
-        this.classicService.sendMessage(text);
+        this.gameManager.sendMessage(text);
     }
 
     isLimitedMode(): boolean {
@@ -263,6 +263,6 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.onDestroy$.next();
         this.onDestroy$.complete();
         this.gameAreaService.resetCheatMode();
-        this.classicService.removeAllListeners();
+        this.gameManager.removeAllListeners();
     }
 }
