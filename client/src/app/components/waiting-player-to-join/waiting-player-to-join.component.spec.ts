@@ -5,6 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { COUNTDOWN_TIME } from '@app/constants/constants';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
+import { PlayerData } from '@common/game-interfaces';
 import { BehaviorSubject, map, of } from 'rxjs';
 import { WaitingForPlayerToJoinComponent } from './waiting-player-to-join.component';
 
@@ -145,13 +146,12 @@ describe('WaitingPlayerToJoinComponent', () => {
     //     expect(dialogRefSpy.close).toHaveBeenCalled();
     // }));
 
-    // it('refusePlayer should refuse the player using the roomManagerService', () => {
-    //     const gameId = '12';
-    //     const playerName = 'John';
-    //     component['data'] = { roomId: '23', player: playerName, gameId };
-    //     component.refusePlayer('John');
-    //     expect(roomManagerServiceSpy.refusePlayer).toHaveBeenCalledWith(gameId, playerName);
-    // });
+    it('refusePlayer should refuse the player using the roomManagerService', () => {
+        const playerName = 'John';
+        component.refusePlayer(playerName);
+        const expectedPlayerData: PlayerData = { gameId: component['data'].gameId, playerName } as PlayerData;
+        expect(roomManagerServiceSpy.refusePlayer).toHaveBeenCalledWith(expectedPlayerData);
+    });
 
     it('acceptPlayer should navigate to the game page after dialog close', () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for fake afterClosed
