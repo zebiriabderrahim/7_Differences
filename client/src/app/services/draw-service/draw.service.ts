@@ -140,12 +140,8 @@ export class DrawService {
         const rectangleWidth: number = this.clickPosition.x - this.rectangleTopCorner.x;
         const drawingHeight: number = this.clickPosition.y - this.rectangleTopCorner.y;
         let rectangleHeight: number = this.isSquareModeOn ? rectangleWidth : drawingHeight;
-        if (this.isSquareModeOn) {
-            if (drawingHeight < 0 && rectangleHeight > 0) {
-                rectangleHeight = -rectangleHeight;
-            } else if (rectangleWidth < 0 && rectangleHeight < 0 && drawingHeight > 0) {
-                rectangleHeight = -rectangleHeight;
-            }
+        if (this.isSquareModeOn && drawingHeight < 0 !== (rectangleHeight < 0 || rectangleWidth < 0)) {
+            rectangleHeight = -rectangleHeight;
         }
         this.activeContext.fillRect(this.rectangleTopCorner.x, this.rectangleTopCorner.y, rectangleWidth, rectangleHeight);
     }
