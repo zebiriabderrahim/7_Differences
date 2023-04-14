@@ -10,6 +10,7 @@ import {
     SMALL_HINT_ENLARGEMENT,
 } from '@app/constants/hint';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
+import { SPEED_X1 } from '@app/constants/replay';
 import { HintProximity } from '@app/enum/hint-proximity';
 import { QuadrantPosition } from '@app/enum/quadrant-position';
 import { ReplayActions } from '@app/enum/replay-actions';
@@ -60,14 +61,11 @@ export class HintService {
         this.replayEventsSubject.next(replayEvent);
     }
 
-    requestHint(replayDifference?: Coordinate[], replaySpeed?: number): void {
-        const speed = replaySpeed ? replaySpeed : 1;
+    requestHint(replayDifference?: Coordinate[], flashingSpeed: number = SPEED_X1): void {
         if (this.nAvailableHints > 0 && this.differences.length > 0) {
-            const differenceIndex: number = this.differences.length > 1 ? this.generateRandomNumber(0, this.differences.length - 1) : 0;
-            let difference: Coordinate[] = this.differences[differenceIndex];
-            if (replayDifference) {
-                difference = replayDifference;
-            }
+            const difference: Coordinate[] = replayDifference
+                ? replayDifference
+                : this.differences[this.generateRandomIndex(this.differences.length)];
             if (this.nAvailableHints === LAST_HINT_NUMBER) {
                 this.isThirdHintActive = true;
                 this.generateLastHintDifferences(difference);
@@ -76,7 +74,7 @@ export class HintService {
                 if (this.nAvailableHints === SECOND_TO_LAST_HINT_NUMBER) {
                     hintQuadrant = this.getHintQuadrant(difference, hintQuadrant);
                 }
-                this.gameAreaService.flashCorrectPixels(this.generateHintSquare(hintQuadrant), speed);
+                this.gameAreaService.flashCorrectPixels(this.generateHintSquare(hintQuadrant), flashingSpeed);
             }
             const replayEvent: ReplayEvent = {
                 action: ReplayActions.UseHint,
@@ -89,7 +87,7 @@ export class HintService {
         }
     }
 
-    checkThirdHint(coordinate: Coordinate): void {
+    checkThirdHintProximity(coordinate: Coordinate): void {
         this.switchProximity(this.thirdHintProximity[coordinate.x][coordinate.y]);
     }
 
@@ -124,7 +122,7 @@ export class HintService {
     }
 
     private getHintQuadrant(differencesCoordinates: Coordinate[], quadrant: Quadrant): Quadrant {
-        const subQuadrants: Quadrant[] = this.getSubQuadrants(quadrant);
+        const subQuadrants: Quadrant[] = this.generateSubQuadrants(quadrant);
         const quadrants: QuadrantPosition[] = [];
         for (const coord of differencesCoordinates) {
             for (const quadrantPosition of QUADRANT_POSITIONS) {
@@ -133,12 +131,11 @@ export class HintService {
                 }
             }
         }
-        const quadrantNumber: number = quadrants.length > 1 ? this.generateRandomNumber(0, quadrants.length - 1) : 0;
-        return subQuadrants[quadrants[quadrantNumber]];
+        return subQuadrants[quadrants[this.generateRandomIndex(quadrants.length)]];
     }
 
-    private generateRandomNumber(min: number, max: number) {
-        return Math.floor(Math.random() * (max - min + 1) + min);
+    private generateRandomIndex(length: number) {
+        return Math.floor(Math.random() * length);
     }
 
     private generateHintSquare(quadrant: Quadrant): Coordinate[] {
@@ -178,7 +175,7 @@ export class HintService {
         );
     }
 
-    private getSubQuadrants(quadrant: Quadrant): Quadrant[] {
+    private generateSubQuadrants(quadrant: Quadrant): Quadrant[] {
         const halfWidth = (quadrant.topCorner.x - quadrant.bottomCorner.x) / 2;
         const halfHeight = (quadrant.topCorner.y - quadrant.bottomCorner.y) / 2;
         const middleCoordinate: Coordinate = { x: quadrant.bottomCorner.x + halfWidth, y: quadrant.bottomCorner.y + halfHeight };
