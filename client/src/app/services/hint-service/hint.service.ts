@@ -104,19 +104,15 @@ export class HintService {
     }
 
     private generateLastHintDifferences(difference: Coordinate[]): void {
+        this.fillThirdHintProximityMatrix(difference, HintProximity.OnIt);
+        this.fillThirdHintProximityMatrix(this.differenceService.enlargeDifferences(difference, SMALL_HINT_ENLARGEMENT), HintProximity.Close);
+        this.fillThirdHintProximityMatrix(this.differenceService.enlargeDifferences(difference, LARGE_HINT_ENLARGEMENT), HintProximity.Far);
+    }
+
+    private fillThirdHintProximityMatrix(difference: Coordinate[], hintProximity: HintProximity): void {
         for (const coord of difference) {
-            this.thirdHintProximity[coord.x][coord.y] = HintProximity.OnIt;
-        }
-        const littleEnlarge = this.differenceService.enlargeDifferences(difference, SMALL_HINT_ENLARGEMENT);
-        for (const coord of littleEnlarge) {
-            if (this.thirdHintProximity[coord.x][coord.y] > HintProximity.OnIt) {
-                this.thirdHintProximity[coord.x][coord.y] = HintProximity.Close;
-            }
-        }
-        const bigEnlarge = this.differenceService.enlargeDifferences(difference, LARGE_HINT_ENLARGEMENT);
-        for (const coord of bigEnlarge) {
-            if (this.thirdHintProximity[coord.x][coord.y] > HintProximity.Close) {
-                this.thirdHintProximity[coord.x][coord.y] = HintProximity.Far;
+            if (this.thirdHintProximity[coord.x][coord.y] === HintProximity.TooFar) {
+                this.thirdHintProximity[coord.x][coord.y] = hintProximity;
             }
         }
     }
