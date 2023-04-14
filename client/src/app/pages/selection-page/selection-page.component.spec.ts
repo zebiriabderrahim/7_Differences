@@ -9,12 +9,10 @@ import { NavBarComponent } from '@app/components/nav-bar/nav-bar.component';
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-// import { GameCard } from '@common/game-interfaces';
-import { BehaviorSubject, Subscription, of } from 'rxjs';
+import { BehaviorSubject, Subscription, Subscription, of } from 'rxjs';
 import { SelectionPageComponent } from './selection-page.component';
 
 describe('SelectionPageComponent', () => {
-    // let mockGameCard: GameCard;
     let component: SelectionPageComponent;
     let fixture: ComponentFixture<SelectionPageComponent>;
     let roomManagerService: jasmine.SpyObj<RoomManagerService>;
@@ -22,7 +20,6 @@ describe('SelectionPageComponent', () => {
 
     beforeEach(async () => {
         deletedGameIdMock = new BehaviorSubject<string>('idMock');
-        // mockGameCard = { _id: '123', name: 'mockName', difficultyLevel: true, soloTopTime: [], oneVsOneTopTime: [], thumbnail: '' };
         roomManagerService = jasmine.createSpyObj('RoomManagerService', ['handleRoomEvents', 'connect', 'disconnect', 'removeAllListeners'], {
             deletedGameId$: deletedGameIdMock,
             isReloadNeeded$: of(true),
@@ -46,6 +43,13 @@ describe('SelectionPageComponent', () => {
 
         fixture = TestBed.createComponent(SelectionPageComponent);
         component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    afterEach(() => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed to callFake
+        spyOn(component, 'ngOnDestroy').and.callFake(() => {});
+        fixture.destroy();
         fixture.detectChanges();
     });
 
@@ -74,13 +78,19 @@ describe('SelectionPageComponent', () => {
         expect(component['index']).toEqual(0);
     });
 
-    // it('should remove the deleted game card from the game cards list', () => {
-    //     const gameCards: GameCard[] = [mockGameCard, mockGameCard, mockGameCard];
-    //     const filterSpy = spyOn(Array.prototype, 'filter').and.callThrough();
-    //     component.handleGameCardDelete(gameCards);
-    //     deletedGameIdMock.next('456');
-    //     expect(filterSpy).toHaveBeenCalled();
-    // });
+    it('should reload game carousel if reload is needed', () => {
+        spyOn(component, 'loadGameCarrousel');
+        component.handleGameCardsUpdate();
+        fixture.detectChanges();
+        expect(component['index']).toBe(0);
+        expect(component.loadGameCarrousel).toHaveBeenCalled();
+    });
+
+    it('should unsubscribe reloadSubscription when component is destroyed', () => {
+        component['reloadSubscription'] = undefined as unknown as Subscription;
+        component.ngOnDestroy();
+        expect(component['reloadSubscription']).toBeUndefined();
+    });
 
     it('should unsubscribe reloadSubscription when component is destroyed', () => {
         component['reloadSubscription'] = undefined as unknown as Subscription;

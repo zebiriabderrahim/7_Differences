@@ -15,7 +15,6 @@ import { Subscription } from 'rxjs';
 export class SelectionPageComponent implements AfterViewInit, OnDestroy {
     gameCarrousel: CarouselPaginator;
     readonly homeRoute: string;
-    readonly selectionRoute: string;
     readonly configRoute: string;
     private index: number;
     private reloadSubscription: Subscription;
@@ -26,7 +25,6 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
     ) {
         this.gameCarrousel = { hasNext: false, hasPrevious: false, gameCards: [] };
         this.homeRoute = '/home';
-        this.selectionRoute = '/selection';
         this.configRoute = '/config';
         this.index = 0;
         this.roomManagerService.handleRoomEvents();

@@ -1,32 +1,35 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
-import { GameCardEvents, PlayerEvents, RoomEvents } from '@common/enums';
-import { LimitedGameDetails, playerData, PlayerNameAvailability, RoomAvailability } from '@common/game-interfaces';
+import { GameCardEvents, HistoryEvents, PlayerEvents, RoomEvents } from '@common/enums';
+import { PlayerNameAvailability, RoomAvailability, PlayerData } from '@common/game-interfaces';
 import { Subject } from 'rxjs';
+
 @Injectable({
     providedIn: 'root',
 })
-export class RoomManagerService implements OnDestroy {
+export class RoomManagerService {
     private joinedPlayerNames: Subject<string[]>;
-    private isPlayerNameTaken: Subject<PlayerNameAvailability>;
+    private playerNameAvailability: Subject<PlayerNameAvailability>;
     private oneVsOneRoomsAvailabilityByGameId: Subject<RoomAvailability>;
     private isPlayerAccepted: Subject<boolean>;
     private refusedPlayerId: Subject<string>;
     private createdRoomId: Subject<string>;
     private deletedGameId: Subject<string>;
-    private isReloadNeeded: Subject<boolean>;
+    private isGameCardsReloadNeeded: Subject<boolean>;
     private isLimitedCoopRoomAvailable: Subject<boolean>;
+    private isGameHistoryReloadNeeded: Subject<boolean>;
 
     constructor(private readonly clientSocket: ClientSocketService) {
-        this.isPlayerNameTaken = new Subject<PlayerNameAvailability>();
+        this.playerNameAvailability = new Subject<PlayerNameAvailability>();
         this.createdRoomId = new Subject<string>();
         this.isPlayerAccepted = new Subject<boolean>();
         this.joinedPlayerNames = new Subject<string[]>();
         this.oneVsOneRoomsAvailabilityByGameId = new Subject<RoomAvailability>();
         this.deletedGameId = new Subject<string>();
         this.refusedPlayerId = new Subject<string>();
-        this.isReloadNeeded = new Subject<boolean>();
+        this.isGameCardsReloadNeeded = new Subject<boolean>();
         this.isLimitedCoopRoomAvailable = new Subject<boolean>();
+        this.isGameHistoryReloadNeeded = new Subject<boolean>();
         this.connect();
     }
 
@@ -34,8 +37,8 @@ export class RoomManagerService implements OnDestroy {
         return this.joinedPlayerNames.asObservable();
     }
 
-    get isNameTaken$() {
-        return this.isPlayerNameTaken.asObservable();
+    get playerNameAvailability$() {
+        return this.playerNameAvailability.asObservable();
     }
 
     get createdRoomId$() {
@@ -59,25 +62,27 @@ export class RoomManagerService implements OnDestroy {
     }
 
     get isReloadNeeded$() {
-        return this.isReloadNeeded.asObservable();
+        return this.isGameCardsReloadNeeded.asObservable();
     }
 
     get isLimitedCoopRoomAvailable$() {
         return this.isLimitedCoopRoomAvailable.asObservable();
     }
 
-    createSoloRoom(gameId: string, playerName: string) {
-        const playerPayLoad = { gameId, playerName } as playerData;
+    get isGameHistoryReloadNeeded$() {
+        return this.isGameHistoryReloadNeeded.asObservable();
+    }
+
+    createSoloRoom(playerPayLoad: PlayerData) {
         this.clientSocket.send(RoomEvents.CreateClassicSoloRoom, playerPayLoad);
     }
 
-    createOneVsOneRoom(gameId: string, playerName: string): void {
-        const playerPayLoad = { gameId, playerName } as playerData;
+    createOneVsOneRoom(playerPayLoad: PlayerData): void {
         this.clientSocket.send(RoomEvents.CreateOneVsOneRoom, playerPayLoad);
     }
 
-    createLimitedRoom(gameDetails: LimitedGameDetails): void {
-        this.clientSocket.send(RoomEvents.CreateSoloLimitedRoom, gameDetails);
+    createLimitedRoom(playerPayLoad: PlayerData): void {
+        this.clientSocket.send(RoomEvents.CreateLimitedRoom, playerPayLoad);
     }
 
     updateRoomOneVsOneAvailability(gameId: string): void {
@@ -100,18 +105,15 @@ export class RoomManagerService implements OnDestroy {
         this.clientSocket.send(PlayerEvents.GetJoinedPlayerNames, gameId);
     }
 
-    updateWaitingPlayerNameList(gameId: string, playerName: string): void {
-        const playerPayLoad = { gameId, playerName } as playerData;
+    updateWaitingPlayerNameList(playerPayLoad: PlayerData): void {
         this.clientSocket.send(PlayerEvents.UpdateWaitingPlayerNameList, playerPayLoad);
     }
 
-    isPlayerNameIsAlreadyTaken(gameId: string, playerName: string): void {
-        const playerPayLoad = { gameId, playerName } as playerData;
+    isPlayerNameIsAlreadyTaken(playerPayLoad: PlayerData): void {
         this.clientSocket.send(PlayerEvents.CheckIfPlayerNameIsAvailable, playerPayLoad);
     }
 
-    refusePlayer(gameId: string, playerName: string): void {
-        const playerPayLoad = { gameId, playerName } as playerData;
+    refusePlayer(playerPayLoad: PlayerData): void {
         this.clientSocket.send(PlayerEvents.RefusePlayer, playerPayLoad);
     }
 
@@ -123,8 +125,8 @@ export class RoomManagerService implements OnDestroy {
         this.clientSocket.send(PlayerEvents.CancelJoining, gameId);
     }
 
-    checkIfAnyCoopRoomExists(gameDetails: LimitedGameDetails) {
-        this.clientSocket.send(RoomEvents.CheckIfAnyCoopRoomExists, gameDetails);
+    checkIfAnyCoopRoomExists(playerPayLoad: PlayerData) {
+        this.clientSocket.send(RoomEvents.CheckIfAnyCoopRoomExists, playerPayLoad);
     }
 
     gameCardCreated() {
@@ -149,6 +151,10 @@ export class RoomManagerService implements OnDestroy {
 
     gameConstantsUpdated() {
         this.clientSocket.send(GameCardEvents.GameConstantsUpdated);
+    }
+
+    gamesHistoryDeleted() {
+        this.clientSocket.send(GameCardEvents.GamesHistoryDeleted);
     }
 
     connect(): void {
@@ -197,7 +203,7 @@ export class RoomManagerService implements OnDestroy {
         });
 
         this.clientSocket.on(PlayerEvents.PlayerNameTaken, (playerNameAvailability: PlayerNameAvailability) => {
-            this.isPlayerNameTaken.next(playerNameAvailability);
+            this.playerNameAvailability.next(playerNameAvailability);
         });
 
         this.clientSocket.on(PlayerEvents.PlayerAccepted, (isAccepted: boolean) => {
@@ -212,10 +218,11 @@ export class RoomManagerService implements OnDestroy {
             this.deletedGameId.next(gameId);
         });
         this.clientSocket.on(GameCardEvents.RequestReload, () => {
-            this.isReloadNeeded.next(true);
+            this.isGameCardsReloadNeeded.next(true);
         });
-    }
-    ngOnDestroy(): void {
-        this.clientSocket.disconnect();
+
+        this.clientSocket.on(HistoryEvents.RequestReload, () => {
+            this.isGameHistoryReloadNeeded.next(true);
+        });
     }
 }

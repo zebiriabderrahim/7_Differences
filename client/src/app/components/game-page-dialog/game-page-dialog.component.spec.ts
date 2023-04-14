@@ -1,14 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { GamePageDialogComponent } from '@app/components/game-page-dialog/game-page-dialog.component';
-import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
+import { GameManagerService } from '@app/services/game-manager-service/game-manager.service';
 import { ReplayService } from '@app/services/replay-service/replay.service';
 import { BehaviorSubject } from 'rxjs';
 
 describe('GamePageDialogComponent', () => {
     let component: GamePageDialogComponent;
     let fixture: ComponentFixture<GamePageDialogComponent>;
-    let classicServiceSpy: jasmine.SpyObj<ClassicSystemService>;
+    let gameManagerServiceSpy: jasmine.SpyObj<GameManagerService>;
     let replayServiceSpy: jasmine.SpyObj<ReplayService>;
     const replayTimerSubjectTest = new BehaviorSubject<number>(0);
     const replayDifferenceFoundSubjectTest = new BehaviorSubject<number>(0);
@@ -20,7 +20,7 @@ describe('GamePageDialogComponent', () => {
             replayDifferenceFound$: replayDifferenceFoundSubjectTest,
             replayOpponentDifferenceFound$: replayOpponentDifferenceFoundSubjectTest,
         });
-        classicServiceSpy = jasmine.createSpyObj('ClassicService', ['abandonGame']);
+        gameManagerServiceSpy = jasmine.createSpyObj('GameManagerService', ['abandonGame']);
         await TestBed.configureTestingModule({
             declarations: [GamePageDialogComponent],
             imports: [MatDialogModule],
@@ -33,8 +33,8 @@ describe('GamePageDialogComponent', () => {
                     provide: MatDialog,
                 },
                 {
-                    provide: ClassicSystemService,
-                    useValue: classicServiceSpy,
+                    provide: GameManagerService,
+                    useValue: gameManagerServiceSpy,
                 },
                 {
                     provide: ReplayService,

@@ -7,10 +7,10 @@
     <mat-button-toggle-group [(value)]="selectedCanvasAction">
         <mat-button-toggle [value]="canvasAction.Pencil" (change)="setCanvasAction($event.value)">
             <mat-icon>gesture</mat-icon>
-            <mat-form-field appearance="fill" style="width: 80px">
+            <mat-form-field class = "field" appearance="fill">
                 <mat-select [(value)]="pencilDiameter" (selectionChange)="setPencilWidth(pencilDiameter)">
                     <mat-option *ngFor="let pencil of drawValues" [value]="pencil">
-                        <svg width="20" height="20">
+                        <svg id = "pencil-svg">
                             <circle cx="50%" cy="50%" [attr.r]="pencil / (1 + 1)" [attr.fill]="drawColor" />
                         </svg>
                         {{ pencil }} px
@@ -25,11 +25,11 @@
         </mat-button-toggle>
         <mat-button-toggle [value]="canvasAction.Eraser" (change)="setCanvasAction($event.value)">
             <img src="./assets/eraser.svg" />
-            <mat-form-field appearance="fill" style="width: 80px">
+            <mat-form-field class = "field" appearance="fill">
                 <mat-select [(value)]="eraserLength"  (selectionChange)="setEraserLength(eraserLength)">
                     <mat-option *ngFor="let eraser of drawValues" [value]="eraser">
-                        <svg width="40" height="40" viewBox="0 0 35 35">
-                            <rect fill-rule="evenodd" y="10" [attr.width]="eraser" [attr.height]="eraser" fill="black" />
+                        <svg id="eraser-svg">
+                            <rect id="rectangle" y="10" [attr.width]="eraser" [attr.height]="eraser" />
                         </svg>
                         {{ eraser }} px
                     </mat-option>

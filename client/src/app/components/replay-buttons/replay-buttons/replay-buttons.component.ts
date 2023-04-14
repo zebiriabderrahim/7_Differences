@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { ONE_SECOND } from '@app/constants/constants';
+import { WAITING_TIME } from '@app/constants/constants';
 import { SPEED_X1, SPEED_X2, SPEED_X4 } from '@app/constants/replay';
 import { ReplayService } from '@app/services/replay-service/replay.service';
 
@@ -30,7 +30,7 @@ export class ReplayButtonsComponent implements OnInit, OnDestroy {
         this.isReplayButtonDisabled = true;
         setTimeout(() => {
             this.isReplayButtonDisabled = false;
-        }, ONE_SECOND);
+        }, WAITING_TIME);
     }
 
     pause() {

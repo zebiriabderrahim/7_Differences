@@ -38,6 +38,7 @@ import { ReplayButtonsComponent } from './components/replay-buttons/replay-butto
 import { DeleteResetConfirmationDialogComponent } from './components/delete-reset-confirmation-dialog/delete-reset-confirmation-dialog.component';
 import { LimitedTimePageComponent } from './pages/limited-time-page/limited-time-page.component';
 import { ConfigDialogComponent } from './components/config-dialog/config-dialog.component';
+import { HistoryBoxComponent } from './components/history-box/history-box.component';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -69,6 +70,7 @@ import { ConfigDialogComponent } from './components/config-dialog/config-dialog.
         DeleteResetConfirmationDialogComponent,
         LimitedTimePageComponent,
         ConfigDialogComponent,
+        HistoryBoxComponent,
     ],
     imports: [
         AppMaterialModule,

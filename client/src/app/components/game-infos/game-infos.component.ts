@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { GameManagerService } from '@app/services/game-manager-service/game-manager.service';
 import { HintService } from '@app/services/hint-service/hint.service';
 import { ClientSideGame, GameConfigConst } from '@common/game-interfaces';
 @Component({
@@ -8,13 +9,15 @@ import { ClientSideGame, GameConfigConst } from '@common/game-interfaces';
 })
 export class GameInfosComponent {
     @Input() game: ClientSideGame;
-    @Input() differencesCount: number;
     @Input() isReplayAvailable: boolean;
-    @Input() gameConstants: GameConfigConst;
-    constructor(private readonly hintService: HintService) {}
+
+    constructor(private readonly hintService: HintService, private readonly gameManager: GameManagerService) {}
 
     get nHints(): number {
         return this.hintService.nAvailableHints;
+    }
+    get gameConstants(): GameConfigConst {
+        return this.gameManager.gameConstants;
     }
 
     requestHint() {

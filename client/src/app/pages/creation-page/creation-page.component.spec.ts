@@ -2,7 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -149,6 +149,14 @@ describe('CreationPageComponent', () => {
         radioButtons[1]?.click();
         fixture.detectChanges();
         expect(component.radius).toEqual(component.radiusSizes[1]);
+    });
+
+    it('should call validateDifferences method on click', () => {
+        const validateButton = fixture.debugElement.query(By.css("button[name='validateButton']")).nativeElement;
+        const validateDifferencesSpy = spyOn(component, 'validateDifferences');
+        validateButton.click();
+        fixture.detectChanges();
+        expect(validateDifferencesSpy).toHaveBeenCalled();
     });
 
     it('should call validateDifferences method on click', () => {
