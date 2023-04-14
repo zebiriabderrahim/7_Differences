@@ -6,7 +6,7 @@ import { PlayersListManagerService } from '@app/services/players-list-manager/pl
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { Coordinate } from '@common/coordinate';
 import { GameCardEvents, GameEvents, MessageEvents, PlayerEvents, RoomEvents } from '@common/enums';
-import { ChatMessage, LimitedGameDetails, playerData } from '@common/game-interfaces';
+import { ChatMessage, PlayerData } from '@common/game-interfaces';
 import { Injectable, Logger } from '@nestjs/common';
 import {
     ConnectedSocket,
@@ -31,7 +31,7 @@ import { DELAY_BEFORE_EMITTING_TIME } from './game.gateway.constants';
 @Injectable()
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
     @WebSocketServer() private server: Server;
-
+    // eslint-disable-next-line max-params -- services are needed for the gateway
     constructor(
         private readonly logger: Logger,
         private readonly classicModeService: ClassicModeService,
@@ -46,18 +46,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(RoomEvents.CreateClassicSoloRoom)
-    async createSoloRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
+    async createSoloRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: PlayerData) {
         await this.classicModeService.createSoloRoom(socket, playerPayLoad, this.server);
     }
 
     @SubscribeMessage(RoomEvents.CreateOneVsOneRoom)
-    async createOneVsOneRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
+    async createOneVsOneRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: PlayerData) {
         await this.classicModeService.createOneVsOneRoom(socket, playerPayLoad, this.server);
     }
 
-    @SubscribeMessage(RoomEvents.CreateSoloLimitedRoom)
-    async createLimitedRoom(@ConnectedSocket() socket: Socket, @MessageBody() gameDetails: LimitedGameDetails) {
-        await this.limitedModeService.createLimitedRoom(socket, gameDetails, this.server);
+    @SubscribeMessage(RoomEvents.CreateLimitedRoom)
+    async createLimitedRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: PlayerData) {
+        await this.limitedModeService.createLimitedRoom(socket, playerPayLoad, this.server);
     }
 
     @SubscribeMessage(GameEvents.StartNextGame)
@@ -65,9 +65,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         await this.limitedModeService.startNextGame(socket, this.server);
     }
 
-    @SubscribeMessage(GameEvents.RemoveDiff)
+    @SubscribeMessage(GameEvents.RemoveDifference)
     validateCoords(@ConnectedSocket() socket: Socket, @MessageBody() coords: Coordinate) {
-        this.roomsManagerService.verifyCoords(socket, coords, this.server);
+        this.roomsManagerService.validateCoords(socket, coords, this.server);
     }
 
     @SubscribeMessage(GameEvents.CheckStatus)
@@ -87,8 +87,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     @SubscribeMessage(RoomEvents.DeleteCreatedOneVsOneRoom)
     deleteCreatedOneVsOneRoom(@ConnectedSocket() socket: Socket, @MessageBody() roomId: string) {
-        const gameId = this.roomsManagerService.getRoomById(roomId)?.clientGame.id;
-        this.playersListManagerService.cancelAllJoining(gameId, this.server);
+        const room = this.roomsManagerService.getRoomById(roomId);
+        if (!room) return;
+        this.playersListManagerService.cancelAllJoining(room.clientGame.id, this.server);
         this.classicModeService.deleteCreatedRoom(socket.id, roomId, this.server);
     }
     @SubscribeMessage(RoomEvents.DeleteCreatedCoopRoom)
@@ -104,14 +105,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(PlayerEvents.UpdateWaitingPlayerNameList)
-    updateWaitingPlayerNameList(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
+    updateWaitingPlayerNameList(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: PlayerData) {
         this.playersListManagerService.updateWaitingPlayerNameList(playerPayLoad, socket);
         const hostId = this.roomsManagerService.getHostIdByGameId(playerPayLoad.gameId);
         this.playersListManagerService.getWaitingPlayerNameList(hostId, playerPayLoad.gameId, this.server);
     }
 
     @SubscribeMessage(PlayerEvents.RefusePlayer)
-    refusePlayer(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: playerData) {
+    refusePlayer(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: PlayerData) {
         this.playersListManagerService.refusePlayer(playerPayLoad, this.server);
         this.playersListManagerService.getWaitingPlayerNameList(socket.id, playerPayLoad.gameId, this.server);
     }
@@ -125,7 +126,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(PlayerEvents.CheckIfPlayerNameIsAvailable)
-    checkIfPlayerNameIsAvailable(@MessageBody() playerPayLoad: playerData) {
+    checkIfPlayerNameIsAvailable(@MessageBody() playerPayLoad: PlayerData) {
         this.playersListManagerService.checkIfPlayerNameIsAvailable(playerPayLoad, this.server);
     }
 
@@ -142,8 +143,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(RoomEvents.CheckIfAnyCoopRoomExists)
-    checkIfAnyCoopRoomExists(@ConnectedSocket() socket: Socket, @MessageBody() gameDetails: LimitedGameDetails) {
-        this.limitedModeService.checkIfAnyCoopRoomExists(socket, gameDetails, this.server);
+    checkIfAnyCoopRoomExists(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: PlayerData) {
+        this.limitedModeService.checkIfAnyCoopRoomExists(socket, playerPayLoad, this.server);
     }
 
     @SubscribeMessage(MessageEvents.LocalMessage)
@@ -172,7 +173,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @SubscribeMessage(GameCardEvents.AllGamesDeleted)
     allGamesDeleted() {
         this.server.emit(GameCardEvents.RequestReload);
-        this.limitedModeService.handleDeleteAllGame();
+        this.limitedModeService.handleDeleteAllGames();
     }
 
     @SubscribeMessage(GameCardEvents.ResetAllTopTimes)
@@ -181,7 +182,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameCardEvents.GameConstantsUpdated)
-    gameConstantsUpdated() {
+    async gameConstantsUpdated() {
+        this.server.emit(GameCardEvents.RequestReload);
+        await this.roomsManagerService.getGameConstants();
+    }
+
+    @SubscribeMessage(GameCardEvents.GamesHistoryDeleted)
+    gamesHistoryDeleted() {
         this.server.emit(GameCardEvents.RequestReload);
     }
 

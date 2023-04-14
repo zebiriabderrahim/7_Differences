@@ -3,6 +3,8 @@ import { QuadrantPosition } from '@app/enum/quadrant-position';
 import { Quadrant } from '@app/interfaces/quadrant';
 
 export const DEFAULT_N_HINTS = 3;
+export const LAST_HINT_NUMBER = 1;
+export const SECOND_TO_LAST_HINT_NUMBER = 2;
 export const HINT_SQUARE_PADDING = 6;
 export const SMALL_HINT_ENLARGEMENT = 20;
 export const LARGE_HINT_ENLARGEMENT = 50;

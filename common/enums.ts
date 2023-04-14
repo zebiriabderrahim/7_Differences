@@ -3,14 +3,15 @@ export enum GameEvents {
     CheckStatus = 'CheckStatus',
     EndGame = 'EndGame',
     TimerUpdate = 'TimerUpdate',
-    RemoveDiff = 'removeDiff',
+    RemoveDifference = 'removeDifference',
     GameStarted = 'GameStarted',
     AbandonGame = 'AbandonGame',
     StartGameByRoomId = 'CreateOneVsOneGame',
     StartNextGame = 'StartNextGame',
     RequestHint = 'RequestHint',
-    UpdateDifferencesFound = "UpdateDifferencesFound",
-    GameModeChanged = "GameModeChanged"
+    UpdateDifferencesFound = 'UpdateDifferencesFound',
+    GameModeChanged = 'GameModeChanged',
+    GamePageRefreshed = 'Refresh',
 }
 
 export enum PlayerEvents {
@@ -26,6 +27,7 @@ export enum PlayerEvents {
     WaitingPlayerNameListUpdated = 'WaitingPlayerNameListUpdated',
 }
 
+
 export enum GameCardEvents {
     ResetTopTime = 'ResetTopTime',
     ResetAllTopTimes = 'ResetAllTopTimes',
@@ -36,44 +38,20 @@ export enum GameCardEvents {
     GameDeleted = 'GameDeleted',
     GameConstantsUpdated = 'GameConstantsUpdated',
     GetGameCards = 'GetGameCards',
+    GamesHistoryDeleted = "GamesHistoryDeleted"
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export enum HistoryEvents {
+    EntryAdded = 'entryAdded',
+    EntriesCleared = 'entriesCleared',
+    RequestReload = "RequestReload"
+}
 
 export enum RoomEvents {
     CreateClassicSoloRoom = 'CreateClassicSoloRoom',
     RoomSoloCreated = 'RoomSoloCreated',
     RoomLimitedCreated = 'RoomLimitedCreated',
-    CreateSoloLimitedRoom = 'CreateSoloLimitedRoom',
+    CreateLimitedRoom = 'CreateSoloLimitedRoom',
     RoomOneVsOneCreated = 'RoomOneVsOneCreated',
     RoomOneVsOneAvailable = 'RoomOneVsOneAvailable',
     CreateOneVsOneRoom = 'CreateOneVsOneRoom',
@@ -84,9 +62,14 @@ export enum RoomEvents {
     UndoRoomCreation = 'UndoRoomCreation',
     DeleteCreatedOneVsOneRoom = 'DeleteCreatedOneVsOneRoom',
     JoinOneVsOneRoom = 'JoinOneVsOneRoom',
-    CheckIfAnyCoopRoomExists = "CheckIfAnyCoopRoomExists",
-    LimitedCoopRoomJoined = "LimitedCoopRoomJoined",
-    DeleteCreatedCoopRoom = "DeleteCreatedCoopRoom",
+    CheckIfAnyCoopRoomExists = 'CheckIfAnyCoopRoomExists',
+    LimitedCoopRoomJoined = 'LimitedCoopRoomJoined',
+    DeleteCreatedCoopRoom = 'DeleteCreatedCoopRoom',
+}
+
+export enum PlayerStatus {
+    Winner = 'Winner',
+    Quitter = 'Quitter',
 }
 
 export enum GameModes {
@@ -102,8 +85,8 @@ export enum MessageEvents {
 }
 
 export enum MessageTag {
-    sent = 'sent',
-    received = 'received',
-    common = 'common',
-    global = 'global',
+    Sent = 'Sent',
+    Received = 'Received',
+    Common = 'Common',
+    Global = 'Global',
 }

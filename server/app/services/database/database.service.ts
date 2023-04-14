@@ -5,12 +5,13 @@
 import { Game, GameDocument } from '@app/model/database/game';
 import { GameCard, GameCardDocument } from '@app/model/database/game-card';
 import { GameConstants, GameConstantsDocument } from '@app/model/database/game-config-constants';
+import { GameHistory, GameHistoryDocument } from '@app/model/database/game-history';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
 import { GameConstantsDto } from '@app/model/dto/game/game-constants.dto';
 import { GameListsManagerService } from '@app/services/game-lists-manager/game-lists-manager.service';
 import { DEFAULT_BEST_TIMES, DEFAULT_BONUS_TIME, DEFAULT_COUNTDOWN_VALUE, DEFAULT_HINT_PENALTY } from '@common/constants';
-import { CarouselPaginator, PlayerTime } from '@common/game-interfaces';
 import { GameModes } from '@common/enums';
+import { CarouselPaginator, PlayerTime } from '@common/game-interfaces';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as fs from 'fs';
@@ -18,21 +19,22 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
-    private gameIds: string[] = [];
     private defaultConstants: GameConstants = {
         countdownTime: DEFAULT_COUNTDOWN_VALUE,
         penaltyTime: DEFAULT_HINT_PENALTY,
         bonusTime: DEFAULT_BONUS_TIME,
     };
+    private gameIds: string[];
     constructor(
         @InjectModel(Game.name) private readonly gameModel: Model<GameDocument>,
         @InjectModel(GameCard.name) private readonly gameCardModel: Model<GameCardDocument>,
         @InjectModel(GameConstants.name) private readonly gameConstantsModel: Model<GameConstantsDocument>,
+        @InjectModel(GameHistory.name) private readonly gameHistoryModel: Model<GameHistoryDocument>,
         private readonly gameListManager: GameListsManagerService,
-    ) {}
-
+    ) {
+        this.gameIds = [];
+    }
     async onModuleInit() {
-        await this.populateDbWithGameConstants();
         await this.getAllGameIds();
     }
 
@@ -43,6 +45,7 @@ export class DatabaseService implements OnModuleInit {
         }
         return this.gameListManager.getCarouselGames();
     }
+
     async getTopTimesGameById(gameId: string, gameMode: string): Promise<PlayerTime[]> {
         const mode = gameMode === GameModes.ClassicSolo ? 'soloTopTime' : 'oneVsOneTopTime';
         const topTimes = await this.gameCardModel
@@ -56,6 +59,7 @@ export class DatabaseService implements OnModuleInit {
     }
 
     async getGameConstants(): Promise<GameConstants> {
+        await this.populateDbWithGameConstants();
         return await this.gameConstantsModel.findOne().select('-__v -_id').exec();
     }
 
@@ -119,10 +123,13 @@ export class DatabaseService implements OnModuleInit {
     async deleteAllGames() {
         try {
             this.gameIds = [];
-            const games = await this.gameModel.find().exec();
-            for (const game of games) {
-                await this.deleteGameById(game._id.toString());
+            this.gameListManager.buildGameCarousel([]);
+            const gamesName = (await this.gameModel.find().select('-_id name').exec()).map((game) => game.name);
+            for (const gameName of gamesName) {
+                this.deleteGameAssetsByName(gameName);
             }
+            await this.gameModel.deleteMany({}).exec();
+            await this.gameCardModel.deleteMany({}).exec();
         } catch (error) {
             return Promise.reject(`Failed to delete all games --> ${error}`);
         }
@@ -141,16 +148,6 @@ export class DatabaseService implements OnModuleInit {
     async rebuildGameCarousel(): Promise<void> {
         const gameCardsList: GameCard[] = await this.gameCardModel.find().exec();
         this.gameListManager.buildGameCarousel(gameCardsList);
-    }
-
-    async populateDbWithGameConstants(): Promise<void> {
-        try {
-            if (!(await this.gameConstantsModel.exists({}))) {
-                await this.gameConstantsModel.create(this.defaultConstants);
-            }
-        } catch (error) {
-            return Promise.reject(`Failed to populate game constants --> ${error}`);
-        }
     }
 
     async updateGameConstants(gameConstantsDto: GameConstantsDto): Promise<void> {
@@ -179,15 +176,6 @@ export class DatabaseService implements OnModuleInit {
         }
     }
 
-    async getAllGameIds(): Promise<void> {
-        try {
-            const gameCardsIds = await this.gameCardModel.find().select('_id').exec();
-            this.gameIds = gameCardsIds.map((gameCard) => gameCard._id.toString());
-        } catch (error) {
-            return Promise.reject(`Failed to get all game ids --> ${error}`);
-        }
-    }
-
     async getRandomGame(playedGameIds: string[]): Promise<Game> {
         try {
             const gameIdsToPlay = this.gameIds.filter((id) => !playedGameIds.includes(id));
@@ -195,6 +183,49 @@ export class DatabaseService implements OnModuleInit {
             return await this.getGameById(randomGameId);
         } catch (error) {
             return Promise.reject(`Failed to get random game --> ${error}`);
+        }
+    }
+
+    async getGamesHistory(): Promise<GameHistory[]> {
+        try {
+            return await this.gameHistoryModel.find().select('-__v -_id').exec();
+        } catch (error) {
+            return Promise.reject(`Failed to get games history --> ${error}`);
+        }
+    }
+
+    async saveGameHistory(gameHistory: GameHistory): Promise<void> {
+        try {
+            await this.gameHistoryModel.create(gameHistory);
+        } catch (error) {
+            return Promise.reject(`Failed to add game history --> ${error}`);
+        }
+    }
+
+    async deleteAllGamesHistory() {
+        try {
+            await this.gameHistoryModel.deleteMany({}).exec();
+        } catch (error) {
+            return Promise.reject(`Failed to delete all games history --> ${error}`);
+        }
+    }
+
+    private async populateDbWithGameConstants(): Promise<void> {
+        try {
+            if (!(await this.gameConstantsModel.exists({}))) {
+                await this.gameConstantsModel.create(this.defaultConstants);
+            }
+        } catch (error) {
+            return Promise.reject(`Failed to populate game constants --> ${error}`);
+        }
+    }
+
+    private async getAllGameIds(): Promise<void> {
+        try {
+            const gameCardsIds = await this.gameCardModel.find().select('_id').exec();
+            this.gameIds = gameCardsIds.map((gameCard) => gameCard._id.toString());
+        } catch (error) {
+            return Promise.reject(`Failed to get all game ids --> ${error}`);
         }
     }
 }

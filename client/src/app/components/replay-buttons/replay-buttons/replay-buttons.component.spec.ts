@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ONE_SECOND } from '@app/constants/constants';
+import { WAITING_TIME } from '@app/constants/constants';
 import { ReplayService } from '@app/services/replay-service/replay.service';
 
 import { ReplayButtonsComponent } from './replay-buttons.component';
@@ -52,7 +52,7 @@ describe('ReplayButtonsComponent', () => {
         expect(replayServiceSpy.startReplay).toHaveBeenCalled();
         expect(replayServiceSpy.restartTimer).toHaveBeenCalled();
         expect(component.isReplayButtonDisabled).toBeTruthy();
-        jasmine.clock().tick(ONE_SECOND);
+        jasmine.clock().tick(WAITING_TIME);
         expect(component.isReplayButtonDisabled).toBeFalsy();
         jasmine.clock().uninstall();
     });

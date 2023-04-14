@@ -6,6 +6,21 @@ export interface Players {
     player2?: Player;
 }
 
+export interface GameHistory {
+    date: string,
+    startingHour: string,
+    duration: number,
+    gameMode: string,
+    player1: PlayerInfo,
+    player2?: PlayerInfo,
+}
+
+export interface PlayerInfo {
+    name: string;
+    isWinner: boolean;
+    isQuitter: boolean;
+}
+
 export interface ClientSideGame {
     id: string;
     name: string;
@@ -56,17 +71,12 @@ export interface GameRoom {
 export interface Player {
     playerId?: string;
     name: string;
-    diffData: Differences;
+    differenceData: Differences;
 }
 
-export interface playerData {
+export interface PlayerData {
     playerName: string;
     gameId: string;
-    gameMode: GameModes;
-}
-
-export interface LimitedGameDetails {
-    playerName: string;
     gameMode: GameModes;
 }
 
@@ -109,8 +119,14 @@ export interface NewRecord {
     gameMode: string;
 }
 
+export interface TimerMode {
+    isCountdown: boolean;
+    requiresPlayer2?: boolean;
+}
+
 export enum GameCardActions {
     Create = 'create',
     Join = 'join',
 }
 export { Coordinate };
+

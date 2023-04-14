@@ -1,6 +1,6 @@
 @import url('https://fonts.cdnfonts.com/css/troika-2');
 
-::ng-deep .dialog .mat-dialog-container{
+::ng-deep .dialog .mat-dialog-container {
     height: 0px;
     width: 0px;
     background: none;
@@ -34,7 +34,7 @@
     }
 }
 
-#abandon {
+.abandon {
     position: absolute;
     z-index: 2;
     left: 32%;
@@ -43,13 +43,25 @@
     color: black;
 }
 
-#button1 {
+.ending {
+    position: absolute;
+    z-index: 2;
+    left: 32%;
+    bottom: 45%;
+    font-family: 'Troika', sans-serif;
+    font-size: 30px;
+    color: black;
+    width: 650px;
+    line-height: 40px;
+}
+
+.button1 {
     position: absolute;
     left: 32%;
     top: 59%;
 }
 
-#button2 {
+.button2 {
     position: absolute;
     left: 50%;
     top: 59%;
@@ -61,6 +73,10 @@
     height: 150px;
     margin-right: 40px;
     z-index: 2;
+}
+
+.replayButton {
+    height: 80%;
 }
 
 .button-container img {
@@ -100,7 +116,7 @@
     font-family: 'Troika', sans-serif;
 }
 
-#yesButton {
+.yesButton {
     position: absolute;
     z-index: 2;
     width: 350px;
@@ -108,7 +124,7 @@
     opacity: 0;
 }
 
-#noButton {
+.noButton {
     position: absolute;
     z-index: 2;
     width: 350px;

@@ -5,8 +5,8 @@ import { REPLAY_LIMITER, SPEED_X1, SPEED_X2, SPEED_X4 } from '@app/constants/rep
 import { HintProximity } from '@app/enum/hint-proximity';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
-import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { GameManagerService } from '@app/services/game-manager-service/game-manager.service';
 import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
@@ -19,12 +19,12 @@ import { ReplayService } from './replay.service';
 describe('ReplayService', () => {
     let service: ReplayService;
     let gameAreaServiceSpy: jasmine.SpyObj<GameAreaService>;
-    let classicSystemServiceSpy: jasmine.SpyObj<ClassicSystemService>;
+    let gameManagerServiceSpy: jasmine.SpyObj<GameManagerService>;
     let soundServiceSpy: jasmine.SpyObj<SoundService>;
     let imageServiceSpy: jasmine.SpyObj<ImageService>;
     let hintServiceSpy: jasmine.SpyObj<HintService>;
     const replayEventGameAreaServiceSubTest = new BehaviorSubject<number>(0);
-    const replayEventClassicSystemServiceSubTest = new BehaviorSubject<number>(0);
+    const replayEventGameManagerServiceSubTest = new BehaviorSubject<number>(0);
     const replayEventHintServiceSubTest = new BehaviorSubject<number>(0);
 
     const gameRoomStub: GameRoom = {
@@ -54,13 +54,13 @@ describe('ReplayService', () => {
     beforeEach(() => {
         gameAreaServiceSpy = jasmine.createSpyObj(
             'GameAreaService',
-            ['getOgContext', 'getMdContext', 'setAllData', 'replaceDifference', 'showError', 'toggleCheatMode', 'flashCorrectPixels'],
+            ['getOriginalContext', 'getModifiedContext', 'setAllData', 'replaceDifference', 'showError', 'toggleCheatMode', 'flashCorrectPixels'],
             {
                 replayEventsSubject: replayEventGameAreaServiceSubTest,
             },
         );
-        classicSystemServiceSpy = jasmine.createSpyObj('ClassicSystemService', ['setMessage', 'requestHint'], {
-            replayEventsSubject: replayEventClassicSystemServiceSubTest,
+        gameManagerServiceSpy = jasmine.createSpyObj('GameManagerService', ['setMessage', 'requestHint'], {
+            replayEventsSubject: replayEventGameManagerServiceSubTest,
         });
         soundServiceSpy = jasmine.createSpyObj('SoundService', ['playCorrectSound', 'playErrorSound']);
         imageServiceSpy = jasmine.createSpyObj('ImageService', ['loadImage']);
@@ -72,7 +72,7 @@ describe('ReplayService', () => {
             providers: [
                 ReplayService,
                 { provide: GameAreaService, useValue: gameAreaServiceSpy },
-                { provide: ClassicSystemService, useValue: classicSystemServiceSpy },
+                { provide: GameManagerService, useValue: gameManagerServiceSpy },
                 { provide: SoundService, useValue: soundServiceSpy },
                 { provide: ImageService, useValue: imageServiceSpy },
                 { provide: HintService, useValue: hintServiceSpy },
@@ -199,13 +199,13 @@ describe('ReplayService', () => {
         const replayEvent: ReplayEvent = {
             action: ReplayActions.CaptureMessage,
             data: {
-                tag: MessageTag.common,
+                tag: MessageTag.Common,
                 message: 'test',
             } as ChatMessage,
             timestamp: 0,
         };
         service.replaySwitcher(replayEvent);
-        expect(classicSystemServiceSpy.setMessage).toHaveBeenCalledWith(replayEvent.data as ChatMessage);
+        expect(gameManagerServiceSpy.setMessage).toHaveBeenCalledWith(replayEvent.data as ChatMessage);
     });
 
     it('should handle ActivateCheat action', () => {
