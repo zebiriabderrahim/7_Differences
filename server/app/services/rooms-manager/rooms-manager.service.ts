@@ -2,9 +2,10 @@
 /* eslint-disable no-underscore-dangle */
 import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
+import { HistoryService } from '@app/services/history/history.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { CHARACTERS, KEY_SIZE, MAX_BONUS_TIME_ALLOWED, NOT_FOUND } from '@common/constants';
-import { GameEvents, GameModes, MessageEvents } from '@common/enums';
+import { GameEvents, GameModes, MessageEvents, PlayerStatus } from '@common/enums';
 import {
     ChatMessage,
     ClientSideGame,
@@ -25,7 +26,12 @@ export class RoomsManagerService implements OnModuleInit {
     private gameConstants: GameConfigConst;
     private modeTimerMap: { [key: string]: TimerMode };
     private rooms: Map<string, GameRoom>;
-    constructor(private readonly gameService: GameService, private readonly messageManager: MessageManagerService) {
+
+    constructor(
+        private readonly gameService: GameService,
+        private readonly messageManager: MessageManagerService,
+        private readonly historyService: HistoryService,
+    ) {
         this.rooms = new Map<string, GameRoom>();
         this.modeTimerMap = {
             [GameModes.ClassicSolo]: { isCountdown: false },
@@ -95,6 +101,7 @@ export class RoomsManagerService implements OnModuleInit {
             this.handleGamePageRefresh(socket, server);
             return;
         }
+        this.historyService.createEntry(room);
         socket.join(room.roomId);
         this.updateRoom(room);
         server.to(room.roomId).emit(GameEvents.GameStarted, room);
@@ -169,24 +176,27 @@ export class RoomsManagerService implements OnModuleInit {
             if (socket) socket.rooms.delete(room.roomId);
         });
     }
-    abandonGame(socket: io.Socket, server: io.Server): void {
+    async abandonGame(socket: io.Socket, server: io.Server): Promise<void> {
         const room = this.getRoomByPlayerId(socket.id);
         if (!room) return;
         const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
         const opponent: Player = room.player1.playerId === socket.id ? room.player2 : room.player1;
+        this.historyService.markPlayer(room.roomId, player.name, PlayerStatus.Quitter);
         if (this.isMultiplayerGame(room.clientGame) && opponent) {
+            if (room.clientGame.mode === GameModes.ClassicOneVsOne) this.historyService.markPlayer(room.roomId, opponent.name, PlayerStatus.Winner);
             const localMessage =
                 room.clientGame.mode === GameModes.ClassicOneVsOne
                     ? this.handleOneVsOneAbandon(player, room, server)
                     : this.handleCoopAbandon(opponent, room, server);
             server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
         } else {
+            await this.historyService.closeEntry(room.roomId, server);
             this.deleteRoom(room.roomId);
         }
         socket.leave(room.roomId);
     }
 
-    handelDisconnect(room: GameRoom): void {
+    handleDisconnect(room: GameRoom): void {
         if (room && !room.player2) this.deleteRoom(room.roomId);
     }
 
@@ -247,10 +257,11 @@ export class RoomsManagerService implements OnModuleInit {
         server.to(socket.id).emit(GameEvents.GamePageRefreshed);
     }
 
-    private handleOneVsOneAbandon(player: Player, room: GameRoom, server: io.Server): ChatMessage {
+    private async handleOneVsOneAbandon(player: Player, room: GameRoom, server: io.Server): Promise<ChatMessage> {
         room.endMessage = "L'adversaire a abandonné la partie!";
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
         this.leaveRoom(room, server);
+        await this.historyService.closeEntry(room.roomId, server);
         this.deleteRoom(room.roomId);
         return this.messageManager.getQuitMessage(player.name);
     }

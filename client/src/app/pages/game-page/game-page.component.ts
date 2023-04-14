@@ -236,7 +236,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     mouseClickOnCanvas(event: MouseEvent, isLeft: boolean) {
         if (!this.gameAreaService.detectLeftClick(event)) return;
         if (this.isThirdHintActive) {
-            this.hintService.clickDuringThirdHint();
+            this.hintService.deactivateThirdHint();
         }
         this.gameAreaService.setAllData();
         this.gameManager.setIsLeftCanvas(isLeft);

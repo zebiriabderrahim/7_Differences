@@ -80,6 +80,7 @@ export class DrawService {
 
     startOperation() {
         this.isMouseBeingDragged = true;
+        this.isSquareModeOn = false;
         this.setCanvasOperationStyle();
         if (this.isCurrentActionRectangle()) {
             this.rectangleTopCorner = this.clickPosition;
@@ -137,7 +138,11 @@ export class DrawService {
     private drawRectangle() {
         this.activeContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
         const rectangleWidth: number = this.clickPosition.x - this.rectangleTopCorner.x;
-        const rectangleHeight: number = this.isSquareModeOn ? rectangleWidth : this.clickPosition.y - this.rectangleTopCorner.y;
+        const drawingHeight: number = this.clickPosition.y - this.rectangleTopCorner.y;
+        let rectangleHeight: number = this.isSquareModeOn ? rectangleWidth : drawingHeight;
+        if (this.isSquareModeOn && drawingHeight < 0 !== (rectangleHeight < 0 || rectangleWidth < 0)) {
+            rectangleHeight = -rectangleHeight;
+        }
         this.activeContext.fillRect(this.rectangleTopCorner.x, this.rectangleTopCorner.y, rectangleWidth, rectangleHeight);
     }
 

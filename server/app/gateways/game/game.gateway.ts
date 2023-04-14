@@ -31,7 +31,7 @@ import { DELAY_BEFORE_EMITTING_TIME } from './game.gateway.constants';
 @Injectable()
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
     @WebSocketServer() private server: Server;
-
+    // eslint-disable-next-line max-params -- services are needed for the gateway
     constructor(
         private readonly logger: Logger,
         private readonly classicModeService: ClassicModeService,
@@ -185,6 +185,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     async gameConstantsUpdated() {
         this.server.emit(GameCardEvents.RequestReload);
         await this.roomsManagerService.getGameConstants();
+    }
+
+    @SubscribeMessage(GameCardEvents.GamesHistoryDeleted)
+    gamesHistoryDeleted() {
+        this.server.emit(GameCardEvents.RequestReload);
     }
 
     @SubscribeMessage(GameEvents.RequestHint)
