@@ -1,10 +1,10 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { ONE_SECOND, TEN_SECONDS } from '@app/constants/constants';
+import { COUNTDOWN_TIME, WAITING_TIME } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { GameCardActions } from '@common/game-interfaces';
-import { filter, interval, Subscription, takeWhile } from 'rxjs';
+import { GameCardActions, PlayerData } from '@common/game-interfaces';
+import { Subscription, filter, interval, takeWhile } from 'rxjs';
 
 @Component({
     selector: 'app-waiting-player-to-join',
@@ -23,7 +23,7 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
     constructor(
-        @Inject(MAT_DIALOG_DATA) private data: { roomId: string; player: string; gameId: string },
+        @Inject(MAT_DIALOG_DATA) private data: { roomId: string; player: string; gameId: string; isLimited: boolean },
         private readonly roomManagerService: RoomManagerService,
         private dialogRef: MatDialogRef<WaitingForPlayerToJoinComponent>,
         private readonly router: Router,
@@ -31,15 +31,16 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         this.playerNames = [];
         this.actions = GameCardActions;
     }
-    ngOnInit(): void {
-        // this.roomManagerService.joinedPlayerNames(this.data.gameId);
-        this.loadPlayerNamesList();
-        this.handleGameCardDelete();
+
+    get isLimited(): boolean {
+        return this.data.isLimited;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    toArray(obj: any): any[] {
-        return Object.values(obj);
+    ngOnInit(): void {
+        if (!this.data?.gameId) return;
+        this.roomManagerService.getJoinedPlayerNames(this.data.gameId);
+        this.loadPlayerNamesList();
+        this.handleGameCardDelete();
     }
 
     loadPlayerNamesList(): void {
@@ -51,7 +52,8 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
     }
 
     refusePlayer(playerName: string) {
-        this.roomManagerService.refusePlayer(this.data.gameId, playerName);
+        const playerPayLoad = { gameId: this.data.gameId, playerName } as PlayerData;
+        this.roomManagerService.refusePlayer(playerPayLoad);
     }
 
     acceptPlayer(playerName: string) {
@@ -60,12 +62,13 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
     }
 
     undoCreateOneVsOneRoom() {
-        this.roomManagerService.deleteCreatedOneVsOneRoom(this.data.roomId);
+        if (this.data.player) this.roomManagerService.deleteCreatedOneVsOneRoom(this.data.roomId);
+        else if (!this.data.player) this.roomManagerService.deleteCreatedCoopRoom(this.data.roomId);
     }
 
     countDownBeforeClosing() {
-        this.countdown = TEN_SECONDS;
-        const countdown$ = interval(ONE_SECOND).pipe(takeWhile(() => this.countdown > 0));
+        this.countdown = COUNTDOWN_TIME;
+        const countdown$ = interval(WAITING_TIME).pipe(takeWhile(() => this.countdown > 0));
         const countdownObserver = {
             next: () => {
                 this.countdown--;

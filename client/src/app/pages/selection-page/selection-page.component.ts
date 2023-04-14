@@ -15,7 +15,6 @@ import { Subscription } from 'rxjs';
 export class SelectionPageComponent implements AfterViewInit, OnDestroy {
     gameCarrousel: CarouselPaginator;
     readonly homeRoute: string;
-    readonly selectionRoute: string;
     readonly configRoute: string;
     private index: number;
     private reloadSubscription: Subscription;
@@ -26,10 +25,8 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
     ) {
         this.gameCarrousel = { hasNext: false, hasPrevious: false, gameCards: [] };
         this.homeRoute = '/home';
-        this.selectionRoute = '/selection';
         this.configRoute = '/config';
         this.index = 0;
-        this.roomManagerService.connect();
         this.roomManagerService.handleRoomEvents();
     }
 
@@ -71,5 +68,6 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.reloadSubscription?.unsubscribe();
+        this.roomManagerService.removeAllListeners();
     }
 }

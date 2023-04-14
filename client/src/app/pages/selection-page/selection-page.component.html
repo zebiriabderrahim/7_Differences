@@ -4,28 +4,31 @@
         <h1 *ngIf="router.url === '/config'">Configure ton jeu</h1>
         <app-nav-bar id ="nav-bar"></app-nav-bar>
     </div>
-    <mat-grid-list class="gameCarrousel" cols="4">
-       <ng-container  *ngIf="gameCarrousel.gameCards">
-            <mat-grid-tile *ngFor="let game of gameCarrousel.gameCards" class="section">
-                <app-game-sheet  [game]="game"></app-game-sheet>
-            </mat-grid-tile>
-        </ng-container>
-    </mat-grid-list>
-    <div class="buttonContainer">
-        <button mat-raised-button *ngIf="gameCarrousel.hasPrevious" mat-raised-button class="previous_button" (click)="previousCarrousel()"><< Précedent</button>
-        <button mat-raised-button *ngIf="gameCarrousel.hasNext" mat-raised-button class="next_button" (click)="nextCarrousel()">Suivant >></button>
+    <div class="gameCarrouselContainer">
+        <mat-grid-list class="gameCarrousel" cols="4">
+            <ng-container  *ngIf="gameCarrousel.gameCards">
+                <mat-grid-tile *ngFor="let game of gameCarrousel.gameCards" class="section">
+                    <app-game-sheet  [game]="game"></app-game-sheet>
+                </mat-grid-tile>
+            </ng-container>
+        </mat-grid-list>
+        <div class="buttonContainer">
+            <img id = "previous_button" alt="previousButton" *ngIf="gameCarrousel.hasPrevious" (click)="previousCarrousel()" src = "./assets/icon/previous_button.png"/>
+            <img id = "next_button" alt="nextButton" *ngIf="gameCarrousel.hasNext" (click)="nextCarrousel()" src = "./assets/icon/next_button.png"/>
+        </div>
     </div>
-    <img id = "selection" src = "./assets/SelectionBackground.jpg"/>
+    <img id = "selection" src = "./assets/background/SelectionBackground.jpg" alt="background"/>
 </div>
 <div *ngIf="router.url === '/selection'" class="footerPreview">
     <div class="section">
+        <img id = "wood" src = "./assets/icon/WoodPlank.png" alt="woodenPlank"/>
         <h2 class="sectionOne button" >Créer ton propre jeu</h2>
         <p>Tu peux créer ton propre jeu des sept différences pour y jouer en solo ou en duo</p>
         <p> Ne perds pas de temps et fais ton premier jeu !</p>
         <div class="buttonCreate"><a [routerLink]="configRoute"> Créer mon jeu</a></div>
     </div>
     <div class="section logo">
-        <img class="project-logo justified" src="./assets/raton.png" alt="Logo Projet " [routerLink]="homeRoute" />
+        <img class="project-logo justified" src="./assets/raton.png" alt="projectLogo" [routerLink]="homeRoute" />
     </div>
 </div>
 <div *ngIf="router.url === '/selection'" class="footer">

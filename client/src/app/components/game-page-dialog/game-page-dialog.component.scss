@@ -1,3 +1,133 @@
-.mat-dialog-title {
+@import url('https://fonts.cdnfonts.com/css/troika-2');
+
+::ng-deep .dialog .mat-dialog-container {
+    height: 0px;
+    width: 0px;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+.dialog-image {
+    position: absolute;
+    left: 50%;
+    top: 55%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 1;
+    width: 45%;
+    height: 45%;
+    animation: pop-in 0.5s ease-out forwards;
+}
+
+@keyframes pop-in {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+.abandon {
+    position: absolute;
+    z-index: 2;
+    left: 32%;
+    font-family: 'Troika', sans-serif;
+    font-size: 30px;
     color: black;
+}
+
+.ending {
+    position: absolute;
+    z-index: 2;
+    left: 32%;
+    bottom: 45%;
+    font-family: 'Troika', sans-serif;
+    font-size: 30px;
+    color: black;
+    width: 650px;
+    line-height: 40px;
+}
+
+.button1 {
+    position: absolute;
+    left: 32%;
+    top: 59%;
+}
+
+.button2 {
+    position: absolute;
+    left: 50%;
+    top: 59%;
+}
+
+.button-container {
+    position: relative;
+    width: 500px;
+    height: 150px;
+    margin-right: 40px;
+    z-index: 2;
+}
+
+.replayButton {
+    height: 80%;
+}
+
+.button-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 70%;
+    height: 70%;
+    transition: all 0.3s ease;
+}
+
+.button-container:hover img {
+    filter: drop-shadow(10px 10px 10px black);
+}
+
+.button-container .centered-yes {
+    position: absolute;
+    font-size: 50px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-66%, -150%);
+    text-align: center;
+    width: 450px;
+    color: white;
+    font-family: 'Troika', sans-serif;
+}
+
+.button-container .centered-no {
+    position: absolute;
+    font-size: 50px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-66%, -150%);
+    text-align: center;
+    width: 450px;
+    color: white;
+    font-family: 'Troika', sans-serif;
+}
+
+.yesButton {
+    position: absolute;
+    z-index: 2;
+    width: 350px;
+    height: 100px;
+    opacity: 0;
+}
+
+.noButton {
+    position: absolute;
+    z-index: 2;
+    width: 350px;
+    height: 100px;
+    opacity: 0;
 }

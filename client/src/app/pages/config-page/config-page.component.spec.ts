@@ -2,6 +2,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -9,21 +10,27 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
+import { ConfigDialogComponent } from '@app/components/config-dialog/config-dialog.component';
+import { DeleteResetConfirmationDialogComponent } from '@app/components/delete-reset-confirmation-dialog/delete-reset-confirmation-dialog.component';
 import { NavBarComponent } from '@app/components/nav-bar/nav-bar.component';
+import { Actions } from '@app/enum/delete-reset-actions';
 import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
-import { of } from 'rxjs';
+import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { ConfigPageComponent } from './config-page.component';
 
 describe('ConfigPageComponent', () => {
     let component: ConfigPageComponent;
     let fixture: ComponentFixture<ConfigPageComponent>;
+    let dialogSpy: jasmine.SpyObj<MatDialog>;
 
     beforeEach(async () => {
+        dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
             imports: [
                 RouterTestingModule,
                 MatGridListModule,
+                MatDialogModule,
                 MatExpansionModule,
                 BrowserAnimationsModule,
                 HttpClientTestingModule,
@@ -31,9 +38,10 @@ describe('ConfigPageComponent', () => {
                 ReactiveFormsModule,
                 MatFormFieldModule,
                 MatInputModule,
+                MatDialogModule,
             ],
             declarations: [ConfigPageComponent, SelectionPageComponent, NavBarComponent],
-            providers: [CommunicationService],
+            providers: [CommunicationService, RoomManagerService, { provide: MatDialog, useValue: dialogSpy }],
         }).compileComponents();
     });
 
@@ -43,58 +51,27 @@ describe('ConfigPageComponent', () => {
         fixture.detectChanges();
     });
 
+    afterEach(() => {
+        fixture.destroy();
+        fixture.detectChanges();
+    });
+
     it('should create', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should load a game when this one exist', () => {
-        spyOn(component['communicationService'], 'loadConfigConstants').and.returnValue(of({ countdownTime: 0, penaltyTime: 0, bonusTime: 0 }));
-        component.ngOnInit();
-        expect(component['communicationService'].loadConfigConstants).toHaveBeenCalled();
-        expect(component.configConstants).toEqual({ countdownTime: 0, penaltyTime: 0, bonusTime: 0 });
+    it('openConfirmationDialog should open the confirmation dialog', () => {
+        const action = {} as Actions;
+        component.openConfirmationDialog(action);
+        expect(dialogSpy.open).toHaveBeenCalledWith(DeleteResetConfirmationDialogComponent, {
+            data: { actions: action },
+            disableClose: true,
+            panelClass: 'dialog',
+        });
     });
 
-    it('should set the countdownTime property', () => {
-        const countdownTimeControl = component.configForm.controls['countdownTime'];
-        countdownTimeControl.setValue(10);
-
-        component.onSubmit();
-
-        expect(component.configConstants.countdownTime).toBe(10);
+    it('openConfigDialog should open the dialog with the ConfigDialogComponent and call afterClosed()', () => {
+        component.openConfigDialog();
+        expect(dialogSpy.open).toHaveBeenCalledWith(ConfigDialogComponent, jasmine.anything());
     });
-
-    it('should set the penaltyTime property', () => {
-        const penaltyTimeControl = component.configForm.controls['penaltyTime'];
-        penaltyTimeControl.setValue(5);
-
-        component.onSubmit();
-
-        expect(component.configConstants.penaltyTime).toBe(5);
-    });
-
-    it('should set the bonusTime property', () => {
-        const bonusTimeControl = component.configForm.controls['bonusTime'];
-        bonusTimeControl.setValue(2);
-
-        component.onSubmit();
-
-        expect(component.configConstants.bonusTime).toBe(2);
-    });
-
-    // it('should reset the form values to the default values', () => {
-    //     const countdownTimeControl = component.configForm.controls['countdownTime'];
-    //     countdownTimeControl.setValue(10);
-
-    //     const penaltyTimeControl = component.configForm.controls['penaltyTime'];
-    //     penaltyTimeControl.setValue(5);
-
-    //     const bonusTimeControl = component.configForm.controls['bonusTime'];
-    //     bonusTimeControl.setValue(2);
-
-    //     component.resetConfigForm();
-
-    //     expect(countdownTimeControl.value).toBe(DEFAULT_COUNTDOWN_VALUE);
-    //     expect(penaltyTimeControl.value).toBe(DEFAULT_PENALTY_VALUE);
-    //     expect(bonusTimeControl.value).toBe(DEFAULT_BONUS_VALUE);
-    // });
 });
