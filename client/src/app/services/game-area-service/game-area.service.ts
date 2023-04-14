@@ -91,15 +91,16 @@ export class GameAreaService {
             data: differenceCoord,
         };
         this.replayEventsSubject.next(replayEvent);
-        this.flashCorrectPixels(differenceCoord, replaySpeed, isPaused);
+        this.flashPixels(differenceCoord, replaySpeed, isPaused);
     }
 
-    flashCorrectPixels(differenceCoord: Coordinate[], replaySpeed?: number, isPaused: boolean = false): void {
+    // flashCorrectPixels(differenceCoord: Coordinate[], replaySpeed?: number, isPaused: boolean = false): void {
+    //     const imageDataIndexes = this.convert2DCoordToPixelIndex(differenceCoord);
+    //     this.flashPixels(imageDataIndexes, replaySpeed, isPaused);
+    // }
+
+    flashPixels(differenceCoord: Coordinate[], replaySpeed?: number, isPaused: boolean = false): void {
         const imageDataIndexes = this.convert2DCoordToPixelIndex(differenceCoord);
-        this.flashPixels(imageDataIndexes, replaySpeed, isPaused);
-    }
-
-    flashPixels(imageDataIndexes: number[], replaySpeed?: number, isPaused: boolean = false): void {
         const speed = replaySpeed ? replaySpeed : 1;
         const firstInterval = setInterval(() => {
             const secondInterval = setInterval(() => {

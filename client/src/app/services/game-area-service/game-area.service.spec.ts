@@ -121,7 +121,7 @@ describe('GameAreaService', () => {
         gameAreaService['originalContext'] = originalCanvas.getContext('2d')!;
         gameAreaService['modifiedContext'] = modifiedCanvas.getContext('2d')!;
         const putImageDataSpy = spyOn(gameAreaService['modifiedContext'], 'putImageData');
-        const flashCorrectPixelsSpy = spyOn(gameAreaService, 'flashCorrectPixels').and.callFake(() => {});
+        const flashPixelsSpy = spyOn(gameAreaService, 'flashPixels').and.callFake(() => {});
         gameAreaService['originalContext'].fillRect(0, 0, 3, 1);
         gameAreaService['modifiedContext'].createImageData(IMG_WIDTH, IMG_HEIGHT);
         const rectangleDifference = [
@@ -138,7 +138,7 @@ describe('GameAreaService', () => {
         gameAreaService['modifiedPixelData'] = gameAreaService['modifiedContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         gameAreaService.replaceDifference(rectangleDifference);
         expect(putImageDataSpy).toHaveBeenCalled();
-        expect(flashCorrectPixelsSpy).toHaveBeenCalled();
+        expect(flashPixelsSpy).toHaveBeenCalled();
         expect(gameAreaService['modifiedContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT)).toEqual(
             gameAreaService['modifiedContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT),
         );
@@ -182,7 +182,7 @@ describe('GameAreaService', () => {
         expect(methodSpy).toHaveBeenCalled();
     });
 
-    it('flashCorrectPixels should get image data indexes and call flashPixels', () => {
+    it('flashPixels should get image data indexes and call flashPixels', () => {
         spyOn(gameAreaService, 'putImageDataToContexts');
         const differenceCoord: Coordinate[] = [
             { x: 12, y: 15 },
@@ -190,12 +190,9 @@ describe('GameAreaService', () => {
             { x: 20, y: 100 },
             { x: 30, y: 0 },
         ];
-        const expectedIndexList: number[] = [38448, 0, 256080, 120];
-        const convert2DCoordToPixelIndexSpy = spyOn<any>(gameAreaService, 'convert2DCoordToPixelIndex').and.callThrough();
         const flashPixelsSpy = spyOn(gameAreaService, 'flashPixels').and.callFake(() => {});
-        gameAreaService.flashCorrectPixels(differenceCoord, undefined, false);
-        expect(convert2DCoordToPixelIndexSpy).toHaveBeenCalledWith(differenceCoord);
-        expect(flashPixelsSpy).toHaveBeenCalledWith(expectedIndexList, undefined, false);
+        gameAreaService.flashPixels(differenceCoord, undefined, false);
+        expect(flashPixelsSpy).toHaveBeenCalledWith(differenceCoord, undefined, false);
     });
 
     it('toggleCheatMode should enable cheat mode and start flashing red pixels', () => {
@@ -256,7 +253,7 @@ describe('GameAreaService', () => {
             IMG_WIDTH,
             IMG_HEIGHT,
         ));
-        gameAreaService.flashCorrectPixels(currentDifference);
+        gameAreaService.flashPixels(currentDifference);
         setInterval(() => {
             intervalCallback();
             setTimeout(() => {
