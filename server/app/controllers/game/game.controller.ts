@@ -20,6 +20,26 @@ export class GameController {
         }
     }
 
+    @Get('/history')
+    async getGameHistory(@Res() response: Response) {
+        try {
+            const gameHistory = await this.gameService.getGamesHistory();
+            response.status(HttpStatus.OK).json(gameHistory);
+        } catch (error) {
+            response.status(HttpStatus.NOT_FOUND).send(error.message);
+        }
+    }
+
+    @Get('carousel/:index')
+    async getGameCarrousel(@Param('index') index: number, @Res() response: Response) {
+        try {
+            const gameCarrousel = await this.gameService.getGameCarousel();
+            response.status(HttpStatus.OK).json(gameCarrousel[+index]);
+        } catch (error) {
+            response.status(HttpStatus.NOT_FOUND).send(error.message);
+        }
+    }
+
     @Get(':id')
     async gameById(@Param('id') id: string, @Res() response: Response) {
         try {
@@ -36,16 +56,6 @@ export class GameController {
         response.status(HttpStatus.OK).json(gameExists);
     }
 
-    @Get('carousel/:index')
-    async getGameCarrousel(@Param('index') index: number, @Res() response: Response) {
-        try {
-            const gameCarrousel = await this.gameService.getGameCarousel();
-            response.status(HttpStatus.OK).json(gameCarrousel[+index]);
-        } catch (error) {
-            response.status(HttpStatus.NOT_FOUND).send(error.message);
-        }
-    }
-
     @Post()
     async addGame(@Body() gameDto: CreateGameDto, @Res() response: Response) {
         try {
@@ -53,6 +63,15 @@ export class GameController {
             response.status(HttpStatus.CREATED).send();
         } catch (error) {
             response.status(HttpStatus.BAD_REQUEST).send(error.message);
+        }
+    }
+    @Delete('/history')
+    async deleteAllGamesHistory(@Res() response: Response) {
+        try {
+            await this.gameService.deleteAllGamesHistory();
+            response.status(HttpStatus.OK).send();
+        } catch (error) {
+            response.status(HttpStatus.NO_CONTENT).send(error.message);
         }
     }
 

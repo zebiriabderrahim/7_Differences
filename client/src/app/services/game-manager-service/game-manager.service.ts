@@ -11,7 +11,7 @@ import { filter, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
-export class ClassicSystemService {
+export class GameManagerService {
     replayEventsSubject: Subject<ReplayEvent>;
     differences: Coordinate[][];
     gameConstants: GameConfigConst;
@@ -105,7 +105,7 @@ export class ClassicSystemService {
     }
 
     requestVerification(coords: Coordinate): void {
-        this.clientSocket.send(GameEvents.RemoveDiff, coords);
+        this.clientSocket.send(GameEvents.RemoveDifference, coords);
     }
 
     replaceDifference(differences: Coordinate[]): void {
@@ -173,9 +173,12 @@ export class ClassicSystemService {
             this.saveEvent(ReplayActions.StartGame, room);
         });
 
-        this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
-            this.handleRemoveDiff(data);
-        });
+        this.clientSocket.on(
+            GameEvents.RemoveDifference,
+            (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
+                this.handleRemoveDiff(data);
+            },
+        );
 
         this.clientSocket.on(GameEvents.TimerUpdate, (timer: number) => {
             this.timer.next(timer);

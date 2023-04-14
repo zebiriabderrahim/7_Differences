@@ -15,9 +15,9 @@ import { QuadrantPosition } from '@app/enum/quadrant-position';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { Quadrant } from '@app/interfaces/quadrant';
 import { ReplayEvent } from '@app/interfaces/replay-actions';
-import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { GameManagerService } from '@app/services/game-manager-service/game-manager.service';
 import { Coordinate } from '@common/coordinate';
 import { Subject } from 'rxjs';
 @Injectable({
@@ -30,7 +30,7 @@ export class HintService {
     isThirdHintActive: boolean;
     private thirdHintProximity: HintProximity[][];
     constructor(
-        private readonly classicSystem: ClassicSystemService,
+        private readonly gameManager: GameManagerService,
         private readonly gameAreaService: GameAreaService,
         private readonly differenceService: DifferenceService,
     ) {
@@ -39,7 +39,7 @@ export class HintService {
     }
 
     get differences(): Coordinate[][] {
-        return this.classicSystem.differences;
+        return this.gameManager.differences;
     }
 
     resetHints(): void {
@@ -51,7 +51,7 @@ export class HintService {
             .map(() => new Array(IMG_HEIGHT).fill(HintProximity.TooFar)) as HintProximity[][];
     }
 
-    clickDuringThirdHint(): void {
+    deactivateThirdHint(): void {
         this.isThirdHintActive = false;
         const replayEvent: ReplayEvent = {
             action: ReplayActions.DeactivateThirdHint,
@@ -64,7 +64,10 @@ export class HintService {
         const speed = replaySpeed ? replaySpeed : 1;
         if (this.nAvailableHints > 0 && this.differences.length > 0) {
             const differenceIndex: number = this.differences.length > 1 ? this.generateRandomNumber(0, this.differences.length - 1) : 0;
-            const difference: Coordinate[] = replayDifference ? replayDifference : this.differences[differenceIndex];
+            let difference: Coordinate[] = this.differences[differenceIndex];
+            if (replayDifference) {
+                difference = replayDifference;
+            }
             if (this.nAvailableHints === LAST_HINT_NUMBER) {
                 this.isThirdHintActive = true;
                 this.generateLastHintDifferences(difference);
@@ -81,7 +84,7 @@ export class HintService {
                 data: difference,
             };
             this.replayEventsSubject.next(replayEvent);
-            this.classicSystem.requestHint();
+            this.gameManager.requestHint();
             this.nAvailableHints--;
         }
     }
