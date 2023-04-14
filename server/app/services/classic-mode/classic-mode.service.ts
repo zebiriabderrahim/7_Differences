@@ -2,11 +2,12 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 // Id comes from database to allow _id
 /* eslint-disable no-underscore-dangle */
+import { HistoryService } from '@app/services/history/history.service';
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { SCORE_POSITION } from '@common/constants';
-import { GameEvents, GameModes, PlayerEvents, RoomEvents } from '@common/enums';
-import { GameRoom, Player, PlayerData, RoomAvailability } from '@common/game-interfaces';
+import { GameEvents, GameModes, PlayerEvents, PlayerStatus, RoomEvents } from '@common/enums';
+import { GameRoom, Player, RoomAvailability, PlayerData } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
 
@@ -14,7 +15,11 @@ import * as io from 'socket.io';
 export class ClassicModeService {
     private roomAvailability: Map<string, RoomAvailability>;
 
-    constructor(private readonly roomsManagerService: RoomsManagerService, private readonly playersListManagerService: PlayersListManagerService) {
+    constructor(
+        private readonly roomsManagerService: RoomsManagerService,
+        private readonly historyService: HistoryService,
+        private readonly playersListManagerService: PlayersListManagerService,
+    ) {
         this.roomAvailability = new Map<string, RoomAvailability>();
     }
 
@@ -55,6 +60,7 @@ export class ClassicModeService {
         if (room.clientGame.differencesCount === player.differenceData.differencesFound && room.clientGame.mode === GameModes.ClassicSolo) {
             this.endGame(room, player, server);
         } else if (halfDifferences === player.differenceData.differencesFound && room.clientGame.mode === GameModes.ClassicOneVsOne) {
+            this.historyService.markPlayer(room.roomId, player.name, PlayerStatus.Winner);
             this.endGame(room, player, server);
         }
     }
@@ -67,6 +73,7 @@ export class ClassicModeService {
                 ? `${player.name} remporte la partie avec ${player.differenceData.differencesFound} différences trouvées! ${playerRankMessage}`
                 : `Vous avez trouvé les ${room.clientGame.differencesCount} différences! Bravo ${playerRankMessage}!`;
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
+        await this.historyService.closeEntry(room.roomId, server);
         this.playersListManagerService.deleteJoinedPlayersByGameId(room.clientGame.id);
         this.roomsManagerService.leaveRoom(room, server);
         this.roomsManagerService.deleteRoom(room.roomId);
@@ -103,7 +110,7 @@ export class ClassicModeService {
     handleSocketDisconnect(socket: io.Socket, server: io.Server): void {
         const room = this.roomsManagerService.getRoomByPlayerId(socket.id);
         const createdGameId = this.playersListManagerService.getGameIdByPlayerId(socket.id);
-        this.roomsManagerService.handelDisconnect(room);
+        this.roomsManagerService.handleDisconnect(room);
         const joinable = this.roomAvailability.get(room?.clientGame.id)?.isAvailableToJoin;
         if (room && !room.player2 && joinable && room.clientGame.mode === GameModes.ClassicOneVsOne) {
             this.updateRoomOneVsOneAvailability(socket.id, room.clientGame.id, server);
