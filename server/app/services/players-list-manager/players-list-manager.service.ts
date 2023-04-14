@@ -17,8 +17,8 @@ export class PlayersListManagerService {
 
     updateWaitingPlayerNameList(playerPayLoad: PlayerData, socket: io.Socket): void {
         const playerNames = this.joinedPlayersByGameId.get(playerPayLoad.gameId) ?? [];
-        const diffData = { currentDifference: [], differencesFound: 0 } as Differences;
-        const playerGuest = { name: playerPayLoad.playerName, diffData, playerId: socket.id } as Player;
+        const differenceData = { currentDifference: [], differencesFound: 0 } as Differences;
+        const playerGuest = { name: playerPayLoad.playerName, differenceData, playerId: socket.id } as Player;
         playerNames.push(playerGuest);
         this.joinedPlayersByGameId.set(playerPayLoad.gameId, playerNames);
     }
