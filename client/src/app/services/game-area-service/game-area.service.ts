@@ -4,8 +4,8 @@ import {
     FLASH_WAIT_TIME,
     GREEN_FLASH_TIME,
     LEFT_BUTTON,
-    ONE_SECOND,
     RED_FLASH_TIME,
+    WAITING_TIME,
     X_CENTERING_DISTANCE,
     YELLOW_FLASH_TIME,
 } from '@app/constants/constants';
@@ -67,7 +67,7 @@ export class GameAreaService {
         setTimeout(() => {
             frontContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
             this.clickDisabled = false;
-        }, ONE_SECOND / speed);
+        }, WAITING_TIME / speed);
         const replayEvent: ReplayEvent = {
             action: ReplayActions.ClickError,
             timestamp: Date.now(),
@@ -191,35 +191,35 @@ export class GameAreaService {
         }
     }
 
-    getOgContext(): CanvasRenderingContext2D {
+    getOriginalContext(): CanvasRenderingContext2D {
         return this.originalContext;
     }
 
-    getOgFrontContext(): CanvasRenderingContext2D {
+    getOriginalFrontContext(): CanvasRenderingContext2D {
         return this.originalContextFrontLayer;
     }
 
-    setOgContext(context: CanvasRenderingContext2D): void {
+    setOriginalContext(context: CanvasRenderingContext2D): void {
         this.originalContext = context;
     }
 
-    setOgFrontContext(context: CanvasRenderingContext2D): void {
+    setOriginalFrontContext(context: CanvasRenderingContext2D): void {
         this.originalContextFrontLayer = context;
     }
 
-    getMdContext(): CanvasRenderingContext2D {
+    getModifiedContext(): CanvasRenderingContext2D {
         return this.modifiedContext;
     }
 
-    getMdFrontContext(): CanvasRenderingContext2D {
+    getModifiedFrontContext(): CanvasRenderingContext2D {
         return this.modifiedContextFrontLayer;
     }
 
-    setMdContext(context: CanvasRenderingContext2D): void {
+    setModifiedContext(context: CanvasRenderingContext2D): void {
         this.modifiedContext = context;
     }
 
-    setMdFrontContext(context: CanvasRenderingContext2D): void {
+    setModifiedFrontContext(context: CanvasRenderingContext2D): void {
         this.modifiedContextFrontLayer = context;
     }
 
