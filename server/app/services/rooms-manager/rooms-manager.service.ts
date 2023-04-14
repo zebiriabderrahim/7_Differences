@@ -130,11 +130,13 @@ export class RoomsManagerService implements OnModuleInit {
         );
         const localMessage = index !== NOT_FOUND ? this.differenceFound(room, player, index) : this.differenceNotFound(room, player);
         const differencesData = {
-            currentDifference: player.diffData.currentDifference,
-            differencesFound: player.diffData.differencesFound,
+            currentDifference: player.differenceData.currentDifference,
+            differencesFound: player.differenceData.differencesFound,
         } as Differences;
         server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
-        server.to(room.roomId).emit(GameEvents.RemoveDiff, { differencesData, playerId: socket.id, cheatDifferences: room.originalDifferences });
+        server
+            .to(room.roomId)
+            .emit(GameEvents.RemoveDifference, { differencesData, playerId: socket.id, cheatDifferences: room.originalDifferences });
     }
 
     updateTimers(server: io.Server) {
@@ -200,15 +202,15 @@ export class RoomsManagerService implements OnModuleInit {
 
     private differenceFound(room: GameRoom, player: Player, index: number): ChatMessage {
         this.addBonusTime(room);
-        player.diffData.differencesFound++;
-        player.diffData.currentDifference = room.originalDifferences[index];
+        player.differenceData.differencesFound++;
+        player.differenceData.currentDifference = room.originalDifferences[index];
         room.originalDifferences.splice(index, 1);
         this.updateRoom(room);
         return this.messageManager.getLocalMessage(room.clientGame.mode, true, player.name);
     }
 
     private differenceNotFound(room: GameRoom, player: Player): ChatMessage {
-        player.diffData.currentDifference = [];
+        player.differenceData.currentDifference = [];
         this.updateRoom(room);
         return this.messageManager.getLocalMessage(room.clientGame.mode, false, player.name);
     }
@@ -279,8 +281,8 @@ export class RoomsManagerService implements OnModuleInit {
 
     private buildGameRoom(game: Game, playerPayLoad: PlayerData): GameRoom {
         const gameConstants = this.gameConstants;
-        const diffData = { currentDifference: [], differencesFound: 0 } as Differences;
-        const player = { name: playerPayLoad.playerName, diffData } as Player;
+        const differenceData = { currentDifference: [], differencesFound: 0 } as Differences;
+        const player = { name: playerPayLoad.playerName, differenceData } as Player;
         const room: GameRoom = {
             roomId: this.generateRoomId(),
             clientGame: this.buildClientGameVersion(game),

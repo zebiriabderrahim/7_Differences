@@ -1,47 +1,11 @@
-import { ChatMessage, NewRecord } from '@common/game-interfaces';
+import { SCORE_POSITION } from '@common/constants';
 import { GameModes, MessageTag } from '@common/enums';
+import { ChatMessage, NewRecord } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class MessageManagerService {
     private time: Date;
-
-    getFormatTime(): string {
-        this.time = new Date();
-        return `${this.time.getHours()} : ${this.time.getMinutes()} : ${this.time.getSeconds()}`;
-    }
-
-    getSoloDifferenceMessage(): ChatMessage {
-        const localMessage: ChatMessage = {
-            tag: MessageTag.Common,
-            message: this.getFormatTime() + ' - Différence trouvée',
-        };
-        return localMessage;
-    }
-
-    getOneVsOneDifferenceMessage(playerName: string): ChatMessage {
-        const localMessage: ChatMessage = {
-            tag: MessageTag.Common,
-            message: this.getFormatTime() + ` - Différence trouvée par ${playerName}`,
-        };
-        return localMessage;
-    }
-
-    getSoloErrorMessage(): ChatMessage {
-        const localMessage: ChatMessage = {
-            tag: MessageTag.Common,
-            message: this.getFormatTime() + ' - Erreur',
-        };
-        return localMessage;
-    }
-
-    getOneVsOneErrorMessage(playerName: string): ChatMessage {
-        const localMessage: ChatMessage = {
-            tag: MessageTag.Common,
-            message: this.getFormatTime() + ` - Erreur par ${playerName}`,
-        };
-        return localMessage;
-    }
 
     getQuitMessage(playerName: string): ChatMessage {
         const localMessage: ChatMessage = {
@@ -56,17 +20,45 @@ export class MessageManagerService {
             tag: MessageTag.Global,
             message:
                 this.getFormatTime() +
-                `– ${newRecord.playerName} obtient la ${newRecord.rank} e` +
-                `place dans les meilleurs temps du jeu ${newRecord.gameName} \n en ${newRecord.gameMode}`,
+                ` – ${newRecord.playerName} est maintenant ${SCORE_POSITION[newRecord.rank]}` +
+                ` dans les meilleurs temps du jeu ${newRecord.gameName} \n en ${newRecord.gameMode}`,
         };
         return localMessage;
     }
 
     getLocalMessage(gameMode: string, isFound: boolean, playerName: string): ChatMessage {
         if (isFound) {
-            return gameMode === GameModes.ClassicSolo ? this.getSoloDifferenceMessage() : this.getOneVsOneDifferenceMessage(playerName);
+            return gameMode === GameModes.ClassicSolo ? this.getDifferenceMessage() : this.getDifferenceMessage(playerName);
         } else {
-            return gameMode === GameModes.ClassicSolo ? this.getSoloErrorMessage() : this.getOneVsOneErrorMessage(playerName);
+            return gameMode === GameModes.ClassicSolo ? this.getErrorMessage() : this.getErrorMessage(playerName);
         }
+    }
+
+    private getFormatTime(): string {
+        this.time = new Date();
+        return `${this.time.getHours()} : ${this.time.getMinutes()} : ${this.time.getSeconds()}`;
+    }
+
+    private appendPlayerName(localMessage: ChatMessage, playerName?: string): ChatMessage {
+        if (playerName) {
+            localMessage.message += ` par ${playerName}`;
+        }
+        return localMessage;
+    }
+
+    private getDifferenceMessage(playerName?: string): ChatMessage {
+        const localMessage: ChatMessage = {
+            tag: MessageTag.Common,
+            message: this.getFormatTime() + ' - Différence trouvée',
+        };
+        return this.appendPlayerName(localMessage, playerName);
+    }
+
+    private getErrorMessage(playerName?: string): ChatMessage {
+        const localMessage: ChatMessage = {
+            tag: MessageTag.Common,
+            message: this.getFormatTime() + ' - Erreur',
+        };
+        return this.appendPlayerName(localMessage, playerName);
     }
 }

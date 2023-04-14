@@ -43,7 +43,7 @@ export class LimitedModeService {
         const room = this.roomsManagerService.getCreatedCoopRoom();
         if (!room) return;
         socket.join(room.roomId);
-        room.player2 = { name: playerPayLoad.playerName, playerId: socket.id, diffData: room.player1.diffData };
+        room.player2 = { name: playerPayLoad.playerName, playerId: socket.id, differenceData: room.player1.differenceData };
         this.roomsManagerService.updateRoom(room);
         server.to(room.roomId).emit(RoomEvents.LimitedCoopRoomJoined);
     }
@@ -91,12 +91,12 @@ export class LimitedModeService {
 
     private equalizeDiffFound(room: GameRoom, server: io.Server): void {
         if (room.clientGame.mode === GameModes.LimitedCoop) {
-            server.to(room.roomId).emit(GameEvents.UpdateDifferencesFound, room.player1.diffData.differencesFound);
+            server.to(room.roomId).emit(GameEvents.UpdateDifferencesFound, room.player1.differenceData.differencesFound);
         }
     }
 
     private sendEndMessage(room: GameRoom, server: io.Server): void {
-        room.endMessage = `Vous avez trouvé les ${room.player1.diffData.differencesFound} différences! Bravo!`;
+        room.endMessage = `Vous avez trouvé les ${room.player1.differenceData.differencesFound} différences! Bravo!`;
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
     }
 }
