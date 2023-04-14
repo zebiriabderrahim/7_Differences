@@ -1,15 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameHistory } from '@common/game-interfaces';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-history-box',
     templateUrl: './history-box.component.html',
     styleUrls: ['./history-box.component.scss'],
 })
-export class HistoryBoxComponent implements OnInit {
+export class HistoryBoxComponent implements OnInit, OnDestroy {
     gameHistory: GameHistory[];
+    private isGameHistoryReloadNeededSubscription: Subscription;
     constructor(private readonly roomManager: RoomManagerService, private readonly communicationService: CommunicationService) {
         this.gameHistory = [];
     }
@@ -26,7 +28,7 @@ export class HistoryBoxComponent implements OnInit {
     }
 
     handHistoryUpdate(): void {
-        this.roomManager.isGameHistoryReloadNeeded$.subscribe((isGameHistoryReloadNeeded: boolean) => {
+        this.isGameHistoryReloadNeededSubscription = this.roomManager.isGameHistoryReloadNeeded$.subscribe((isGameHistoryReloadNeeded: boolean) => {
             if (isGameHistoryReloadNeeded) this.loadHistory();
         });
     }
@@ -36,5 +38,9 @@ export class HistoryBoxComponent implements OnInit {
             this.gameHistory = [];
             this.roomManager.gamesHistoryDeleted();
         });
+    }
+
+    ngOnDestroy(): void {
+        this.isGameHistoryReloadNeededSubscription.unsubscribe();
     }
 }
