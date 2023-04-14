@@ -9,24 +9,30 @@ import { Subject } from 'rxjs';
 export class RoomManagerService implements OnDestroy {
     private joinedPlayerNames: Subject<string[]>;
     private playerNameAvailability: Subject<PlayerNameAvailability>;
-    private oneVsOneRoomsAvailabilityByGameId: Subject<RoomAvailability>;
+    private rooms1V1AvailabilityByGameId: Subject<RoomAvailability>;
     private isPlayerAccepted: Subject<boolean>;
     private refusedPlayerId: Subject<string>;
-    private createdRoomId: Subject<string>;
+    private roomOneVsOneId: Subject<string>;
+    private roomSoloId: Subject<string>;
+    private roomLimitedId: Subject<string>;
     private deletedGameId: Subject<string>;
     private isReloadNeeded: Subject<boolean>;
     private isLimitedCoopRoomAvailable: Subject<boolean>;
+    private hasNoGameAvailable: Subject<boolean>;
 
     constructor(private readonly clientSocket: ClientSocketService) {
         this.playerNameAvailability = new Subject<PlayerNameAvailability>();
-        this.createdRoomId = new Subject<string>();
+        this.roomOneVsOneId = new Subject<string>();
         this.isPlayerAccepted = new Subject<boolean>();
         this.joinedPlayerNames = new Subject<string[]>();
-        this.oneVsOneRoomsAvailabilityByGameId = new Subject<RoomAvailability>();
+        this.rooms1V1AvailabilityByGameId = new Subject<RoomAvailability>();
         this.deletedGameId = new Subject<string>();
         this.refusedPlayerId = new Subject<string>();
         this.isReloadNeeded = new Subject<boolean>();
         this.isLimitedCoopRoomAvailable = new Subject<boolean>();
+        this.hasNoGameAvailable = new Subject<boolean>();
+        this.roomSoloId = new Subject<string>();
+        this.roomLimitedId = new Subject<string>();
         this.connect();
     }
 
@@ -38,15 +44,23 @@ export class RoomManagerService implements OnDestroy {
         return this.playerNameAvailability.asObservable();
     }
 
-    get createdRoomId$() {
-        return this.createdRoomId.asObservable();
+    get roomOneVsOneId$() {
+        return this.roomOneVsOneId.asObservable();
+    }
+
+    get roomSoloId$() {
+        return this.roomSoloId.asObservable();
+    }
+
+    get roomLimitedId$() {
+        return this.roomLimitedId.asObservable();
     }
 
     get oneVsOneRoomsAvailabilityByRoomId$() {
-        return this.oneVsOneRoomsAvailabilityByGameId.asObservable();
+        return this.rooms1V1AvailabilityByGameId.asObservable();
     }
 
-    get roomId$() {
+    get isPlayerAccepted$() {
         return this.isPlayerAccepted.asObservable();
     }
 
@@ -64,6 +78,10 @@ export class RoomManagerService implements OnDestroy {
 
     get isLimitedCoopRoomAvailable$() {
         return this.isLimitedCoopRoomAvailable.asObservable();
+    }
+
+    get hasNoGameAvailable$() {
+        return this.hasNoGameAvailable.asObservable();
     }
 
     createSoloRoom(playerPayLoad: PlayerData) {
@@ -164,27 +182,31 @@ export class RoomManagerService implements OnDestroy {
 
     handleRoomEvents(): void {
         this.clientSocket.on(RoomEvents.RoomSoloCreated, (roomId: string) => {
-            this.createdRoomId.next(roomId);
+            this.roomSoloId.next(roomId);
         });
 
         this.clientSocket.on(RoomEvents.RoomOneVsOneCreated, (roomId: string) => {
-            this.createdRoomId.next(roomId);
+            this.roomOneVsOneId.next(roomId);
         });
 
         this.clientSocket.on(RoomEvents.RoomLimitedCreated, (roomId: string) => {
-            this.createdRoomId.next(roomId);
+            this.roomLimitedId.next(roomId);
         });
 
         this.clientSocket.on(RoomEvents.RoomOneVsOneAvailable, (availabilityData: RoomAvailability) => {
-            this.oneVsOneRoomsAvailabilityByGameId.next(availabilityData);
+            this.rooms1V1AvailabilityByGameId.next(availabilityData);
         });
 
         this.clientSocket.on(RoomEvents.OneVsOneRoomDeleted, (availabilityData: RoomAvailability) => {
-            this.oneVsOneRoomsAvailabilityByGameId.next(availabilityData);
+            this.rooms1V1AvailabilityByGameId.next(availabilityData);
         });
 
         this.clientSocket.on(RoomEvents.LimitedCoopRoomJoined, () => {
             this.isLimitedCoopRoomAvailable.next(true);
+        });
+
+        this.clientSocket.on(RoomEvents.NoGameAvailible, () => {
+            this.hasNoGameAvailable.next(true);
         });
 
         this.clientSocket.on(PlayerEvents.WaitingPlayerNameListUpdated, (waitingPlayerNameList: string[]) => {
@@ -206,10 +228,12 @@ export class RoomManagerService implements OnDestroy {
         this.clientSocket.on(GameCardEvents.GameDeleted, (gameId: string) => {
             this.deletedGameId.next(gameId);
         });
+
         this.clientSocket.on(GameCardEvents.RequestReload, () => {
             this.isReloadNeeded.next(true);
         });
     }
+
     ngOnDestroy(): void {
         this.clientSocket.disconnect();
     }
