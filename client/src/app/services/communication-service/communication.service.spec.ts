@@ -146,6 +146,17 @@ describe('CommunicationService', () => {
         req.flush(null);
     });
 
+    it('should delete games history when deleteAllGamesHistory is called', () => {
+        serviceComponent.deleteAllGamesHistory().subscribe(() => {
+            expect().nothing();
+        });
+
+        const req = httpMock.expectOne(`${serviceComponent['gameUrl']}/history`);
+        expect(req.request.method).toBe('DELETE');
+
+        req.flush(null);
+    });
+
     it('should return true if game exists', () => {
         const gameName = 'test-game';
         const expectedResponse = true;
