@@ -121,7 +121,7 @@ describe('WaitingPlayerToJoinComponent', () => {
     }));
 
     it('should start countdown and show message if player is not in playerNames', fakeAsync(() => {
-        component['data'] = { gameId: 'Charlie', player: 'testPlayer', roomId: 'testRoom' };
+        component['data'] = { gameId: 'Charlie', player: 'testPlayer', roomId: 'testRoom', isLimited: false };
         deletedGameIdMock.next('Charlie');
         component.ngOnInit();
         expect(component.countdown).toBe(COUNTDOWN_TIME);
