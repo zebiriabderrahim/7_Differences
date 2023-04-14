@@ -18,7 +18,7 @@ export class HistoryBoxComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.loadHistory();
-        this.handHistoryUpdate();
+        this.handleHistoryUpdate();
     }
 
     loadHistory(): void {
@@ -27,7 +27,7 @@ export class HistoryBoxComponent implements OnInit, OnDestroy {
         });
     }
 
-    handHistoryUpdate(): void {
+    handleHistoryUpdate(): void {
         this.isGameHistoryReloadNeededSubscription = this.roomManager.isGameHistoryReloadNeeded$.subscribe((isGameHistoryReloadNeeded: boolean) => {
             if (isGameHistoryReloadNeeded) this.loadHistory();
         });
