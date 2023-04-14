@@ -61,14 +61,13 @@ describe('WaitingPlayerToJoinComponent', () => {
     it('should return if the data does contain gameId', () => {
         const roomId = undefined as unknown as string;
         const gameId = undefined as unknown as string;
-        component['data'] = { roomId, player: 'Alice', gameId };
+        component['data'] = { roomId, player: 'Alice', gameId, isLimited: true };
         component.ngOnInit();
         expect(component['data']).toBeDefined();
     });
 
-
     it('should return if the data does contain gameId', () => {
-        const data = undefined as unknown as { roomId: string; player: string; gameId: string };
+        const data = undefined as unknown as { roomId: string; player: string; gameId: string; isLimited: true };
         component['data'] = data;
         component.ngOnInit();
         expect(component['data']).toBeUndefined();
@@ -176,7 +175,7 @@ describe('WaitingPlayerToJoinComponent', () => {
     it('undoCreateOneVsOneRoom should delete created one vs one room and refuse all players', () => {
         const gameId = '23';
         const playerNames = ['John', 'Jane'];
-        component['data'] = { roomId: '23', player: playerNames[0], gameId };
+        component['data'] = { roomId: '23', player: playerNames[0], gameId, isLimited: true };
         component.playerNames = playerNames;
         component.undoCreateOneVsOneRoom();
         expect(roomManagerServiceSpy.deleteCreatedOneVsOneRoom).toHaveBeenCalledWith(gameId);
@@ -184,7 +183,7 @@ describe('WaitingPlayerToJoinComponent', () => {
 
     it('undoCreateOneVsOneRoom should delete created coop room and refuse all players', () => {
         const gameId = '123';
-        component['data'] = { roomId: '23', player: undefined as unknown as string, gameId };
+        component['data'] = { roomId: '23', player: undefined as unknown as string, gameId, isLimited: false };
         component.undoCreateOneVsOneRoom();
         expect(roomManagerServiceSpy.deleteCreatedCoopRoom).toHaveBeenCalled();
     });

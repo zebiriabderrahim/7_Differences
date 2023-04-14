@@ -64,7 +64,7 @@ describe('ReplayService', () => {
         });
         soundServiceSpy = jasmine.createSpyObj('SoundService', ['playCorrectSound', 'playErrorSound']);
         imageServiceSpy = jasmine.createSpyObj('ImageService', ['loadImage']);
-        hintServiceSpy = jasmine.createSpyObj('HintService', ['requestHint', 'resetHints', 'clickDuringThirdHint', 'switchProximity'], {
+        hintServiceSpy = jasmine.createSpyObj('HintService', ['requestHint', 'resetHints', 'deactivateThirdHint', 'switchProximity'], {
             replayEventsSubject: replayEventHintServiceSubTest,
         });
 
@@ -310,7 +310,7 @@ describe('ReplayService', () => {
             timestamp: 0,
         };
         service.replaySwitcher(replayEvent);
-        expect(hintServiceSpy.clickDuringThirdHint).toHaveBeenCalled();
+        expect(hintServiceSpy.deactivateThirdHint).toHaveBeenCalled();
     });
 
     it('should call toggleCheatMode and flashCorrectPixels when isCheatMode and isDifferenceFound are true', () => {
