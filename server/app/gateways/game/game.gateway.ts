@@ -65,7 +65,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         await this.limitedModeService.startNextGame(socket, this.server);
     }
 
-    @SubscribeMessage(GameEvents.RemoveDiff)
+    @SubscribeMessage(GameEvents.RemoveDifference)
     validateCoords(@ConnectedSocket() socket: Socket, @MessageBody() coords: Coordinate) {
         this.roomsManagerService.validateCoords(socket, coords, this.server);
     }

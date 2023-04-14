@@ -48,7 +48,7 @@ describe('RoomsManagerService', () => {
     const fakePlayer = {
         playerId: 'testPlayer',
         name: 'testPlayer',
-        diffData: {
+        differenceData: {
             currentDifference: [{ x: 0, y: 0 }] as Coordinate[],
             differencesFound: 0,
         },
@@ -334,8 +334,8 @@ describe('RoomsManagerService', () => {
             emit: (event: string) => {
                 if (event === MessageEvents.LocalMessage) {
                     expect(event).toEqual(MessageEvents.LocalMessage);
-                } else if (event === GameEvents.RemoveDiff) {
-                    expect(event).toEqual(GameEvents.RemoveDiff);
+                } else if (event === GameEvents.RemoveDifference) {
+                    expect(event).toEqual(GameEvents.RemoveDifference);
                 }
             },
         } as BroadcastOperator<unknown, unknown>);
@@ -355,8 +355,8 @@ describe('RoomsManagerService', () => {
             emit: (event: string) => {
                 if (event === MessageEvents.LocalMessage) {
                     expect(event).toEqual(MessageEvents.LocalMessage);
-                } else if (event === GameEvents.RemoveDiff) {
-                    expect(event).toEqual(GameEvents.RemoveDiff);
+                } else if (event === GameEvents.RemoveDifference) {
+                    expect(event).toEqual(GameEvents.RemoveDifference);
                 }
             },
         } as BroadcastOperator<unknown, unknown>);
