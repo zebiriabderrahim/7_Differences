@@ -54,7 +54,7 @@ describe('ReplayService', () => {
     beforeEach(() => {
         gameAreaServiceSpy = jasmine.createSpyObj(
             'GameAreaService',
-            ['getOriginalContext', 'getModifiedContext', 'setAllData', 'replaceDifference', 'showError', 'toggleCheatMode', 'flashCorrectPixels'],
+            ['getOriginalContext', 'getModifiedContext', 'setAllData', 'replaceDifference', 'showError', 'toggleCheatMode', 'flashPixels'],
             {
                 replayEventsSubject: replayEventGameAreaServiceSubTest,
             },
@@ -313,23 +313,23 @@ describe('ReplayService', () => {
         expect(hintServiceSpy.deactivateThirdHint).toHaveBeenCalled();
     });
 
-    it('should call toggleCheatMode and flashCorrectPixels when isCheatMode and isDifferenceFound are true', () => {
+    it('should call toggleCheatMode and flashPixels when isCheatMode and isDifferenceFound are true', () => {
         service['replayInterval'] = replayIntervalMock;
         service['isCheatMode'] = true;
         service['isDifferenceFound'] = true;
         service.pauseReplay();
         expect(gameAreaServiceSpy.toggleCheatMode).toHaveBeenCalledWith(service['currentCoords'], service['replaySpeed']);
-        expect(gameAreaServiceSpy.flashCorrectPixels).toHaveBeenCalledWith(service['currentCoords'], service['replaySpeed'], true);
+        expect(gameAreaServiceSpy.flashPixels).toHaveBeenCalledWith(service['currentCoords'], service['replaySpeed'], true);
         expect(replayIntervalMock.pause).toHaveBeenCalled();
     });
 
-    it('should call toggleCheatMode and flashCorrectPixels when isCheatMode and isDifferenceFound are true', () => {
+    it('should call toggleCheatMode and flashPixels when isCheatMode and isDifferenceFound are true', () => {
         service['replayInterval'] = replayIntervalMock;
         service['isCheatMode'] = true;
         service['isDifferenceFound'] = true;
         service.resumeReplay();
         expect(gameAreaServiceSpy.toggleCheatMode).toHaveBeenCalledWith(service['currentCoords'], service['replaySpeed']);
-        expect(gameAreaServiceSpy.flashCorrectPixels).toHaveBeenCalledWith(service['currentCoords'], service['replaySpeed'], false);
+        expect(gameAreaServiceSpy.flashPixels).toHaveBeenCalledWith(service['currentCoords'], service['replaySpeed'], false);
         expect(replayIntervalMock.resume).toHaveBeenCalled();
     });
 

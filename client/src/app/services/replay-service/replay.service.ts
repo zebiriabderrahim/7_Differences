@@ -203,7 +203,7 @@ export class ReplayService {
             this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
         }
         if (this.isDifferenceFound) {
-            this.gameAreaService.flashCorrectPixels(this.currentCoords, this.replaySpeed, true);
+            this.gameAreaService.flashPixels(this.currentCoords, this.replaySpeed, true);
         }
         this.replayInterval.pause();
     }
@@ -213,7 +213,7 @@ export class ReplayService {
             this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
         }
         if (this.isDifferenceFound) {
-            this.gameAreaService.flashCorrectPixels(this.currentCoords, this.replaySpeed, false);
+            this.gameAreaService.flashPixels(this.currentCoords, this.replaySpeed, false);
         }
         this.replayInterval.resume();
     }

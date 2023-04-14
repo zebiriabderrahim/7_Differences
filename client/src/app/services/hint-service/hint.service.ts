@@ -74,7 +74,7 @@ export class HintService {
                 if (this.nAvailableHints === SECOND_TO_LAST_HINT_NUMBER) {
                     hintQuadrant = this.generateHintQuadrant(difference, hintQuadrant);
                 }
-                this.gameAreaService.flashCorrectPixels(this.generateHintSquare(hintQuadrant), flashingSpeed);
+                this.gameAreaService.flashPixels(this.generateHintSquare(hintQuadrant), flashingSpeed);
             }
             const replayEvent: ReplayEvent = {
                 action: ReplayActions.UseHint,
