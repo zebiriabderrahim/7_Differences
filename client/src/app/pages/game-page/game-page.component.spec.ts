@@ -292,6 +292,14 @@ describe('GamePageComponent', () => {
         expect(showEndGameDialogSpy).toHaveBeenCalled();
     });
 
+    it('should call showEndGameDialog should handle undefined game', () => {
+        component.ngAfterViewInit();
+        component.game = undefined as unknown as ClientSideGame;
+        endMessageTest.next(endGameMessageTest);
+        component.showEndGameDialog('test');
+        expect(dialog.open).toHaveBeenCalled();
+    });
+
     it('should do nothing if the left click on original image is not detected', () => {
         mouse = new MouseEvent('click', { button: 1 });
         component.mouseClickOnCanvas(mouse, false);
