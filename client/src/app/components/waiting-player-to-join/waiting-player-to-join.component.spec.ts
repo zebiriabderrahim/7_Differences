@@ -74,16 +74,6 @@ describe('WaitingPlayerToJoinComponent', () => {
         expect(component['data']).toBeUndefined();
     });
 
-    // it('getJoinedPlayerNamesByGameId should subscribe to joinedPlayerNamesByGameId$ and set playerNames', () => {
-    //     joinedPlayerNamesMock.next({
-    //         gameId: 'test-game-id',
-    //         playerNamesList: ['Alice', 'Bob', 'Charlie'],
-    //     });
-
-    //     expect(component['playerNamesSubscription']).toBeDefined();
-    //     expect(component.playerNames).toEqual(joinedPlayerNamesMock.value.playerNamesList);
-    // });
-
     it('should call countDownBeforeClosing onInit', () => {
         const countDownBeforeClosingSpy = spyOn(component, 'countDownBeforeClosing');
         component.ngOnInit();
@@ -159,18 +149,6 @@ describe('WaitingPlayerToJoinComponent', () => {
         component.acceptPlayer('Alice');
         expect(router.navigate).toHaveBeenCalledWith(['/game']);
     });
-
-    // it('acceptPlayer should refuse all other players and accept the given player', () => {
-    //     const refusePlayerSpy = spyOn(component, 'refusePlayer');
-    //     const stubName = 'Alice';
-    //     component.playerNames = [stubName, 'Bob', 'Charlie'];
-    //     fixture.detectChanges();
-    //     component.acceptPlayer(stubName);
-    //     expect(refusePlayerSpy).toHaveBeenCalledWith('Bob');
-    //     expect(refusePlayerSpy).toHaveBeenCalledWith('Charlie');
-    //     expect(roomManagerServiceSpy.acceptPlayer).toHaveBeenCalled();
-    //     expect(router.navigate).toHaveBeenCalledWith(['/game', undefined, stubName]);
-    // });
 
     it('undoCreateOneVsOneRoom should delete created one vs one room and refuse all players', () => {
         const gameId = '23';
