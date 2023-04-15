@@ -169,9 +169,9 @@ describe('GamePageComponent', () => {
 
     it('should set players and player of second player if id matches', () => {
         const mockId = '1';
-        const playersTest = {
+        const playersTest: Players = {
             player1: { name: 'player1', differenceData: mockDifferenceData },
-            player2: { name: 'player2', differenceData: mockDifferenceData },
+            player2: { name: 'player2', differenceData: mockDifferenceData, playerId: mockId },
         };
 
         gameManagerServiceSpy.getSocketId.and.returnValue(mockId);
@@ -180,7 +180,7 @@ describe('GamePageComponent', () => {
         component.ngAfterViewInit();
         playersSubjectTest.next(playersTest);
         expect(component.players).toBeDefined();
-        // expect(component.player).toEqual(playersTest.player2.name);
+        expect(component.player).not.toEqual(playersTest.player1.name);
     });
 
     it('should set players and player of second player if the 2nd player is defined', () => {
