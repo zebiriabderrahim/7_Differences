@@ -1,3 +1,5 @@
+// Needed more lines for tests
+/* eslint-disable max-lines */
 // Needed for empty call Fakes
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { HttpClientModule } from '@angular/common/http';
@@ -306,12 +308,20 @@ describe('GamePageComponent', () => {
     //     expect(resetCheatModeSpy).toHaveBeenCalled();
     // });
 
-    // it('should call toggleCheatMode when "t" key is pressed', () => {
-    //     const toggleCheatModeSpy = spyOn(gameAreaService, 'toggleCheatMode').and.callFake(() => {});
-    //     const event = new KeyboardEvent('keydown', { key: 't' });
-    //     window.dispatchEvent(event);
-    //     expect(toggleCheatModeSpy).toHaveBeenCalled();
-    // });
+    it('should call toggleCheatMode when "t" key is pressed', () => {
+        const toggleCheatModeSpy = spyOn(gameAreaService, 'toggleCheatMode').and.callFake(() => {});
+        const event = new KeyboardEvent('keydown', { key: 't' });
+        window.dispatchEvent(event);
+        expect(toggleCheatModeSpy).toHaveBeenCalled();
+    });
+
+    it('should call hintService.request when "i" key is pressed', () => {
+        component.game = clientSideGameTest;
+        component.game.mode = GameModes.ClassicSolo;
+        const event = new KeyboardEvent('keydown', { key: 'i' });
+        window.dispatchEvent(event);
+        expect(hintServiceSpy.requestHint).toHaveBeenCalled();
+    });
 
     it('should not call toggleCheatMode when "t" key is not pressed', () => {
         const toggleCheatModeSpy = spyOn(gameAreaService, 'toggleCheatMode').and.callFake(() => {});
