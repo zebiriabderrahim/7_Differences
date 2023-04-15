@@ -69,7 +69,17 @@ describe('GamePageComponent', () => {
         });
         gameManagerServiceSpy = jasmine.createSpyObj(
             'GameManagerService',
-            ['sendMessage', 'requestVerification', 'manageSocket', 'disconnect', 'setIsLeftCanvas', 'getSocketId', 'startGame', 'removeAllListeners'],
+            [
+                'sendMessage',
+                'requestVerification',
+                'manageSocket',
+                'disconnect',
+                'setIsLeftCanvas',
+                'getSocketId',
+                'startGame',
+                'removeAllListeners',
+                'startNextGame',
+            ],
             {
                 currentGame$: clientSideGameSubjectTest,
                 timer$: timerSubjectTest,
@@ -258,6 +268,21 @@ describe('GamePageComponent', () => {
         component.ngAfterViewInit();
         opponentDifferencesFoundSubjectTest.next(opponentDifferencesFoundTest);
         expect(component.opponentDifferencesFound).toEqual(opponentDifferencesFoundTest);
+    });
+
+    it('updateIfFirstDifferencesFound should call gameManager.startNextGame', () => {
+        component.game = clientSideGameTest;
+        component.updateGameMode();
+        isGameModeChangedTest.next(true);
+        expect(component.game.mode).toEqual(GameModes.LimitedSolo);
+    });
+
+    it('updateGameMode should set gameMode to solo if changed', () => {
+        component.game = clientSideGameTest;
+        component.game.mode = GameModes.LimitedSolo;
+        component.updateGameMode();
+        isFirstDifferencesFoundTest.next(true);
+        expect(gameManagerServiceSpy.startNextGame).toHaveBeenCalled();
     });
 
     it('should call showEndGameDialog when receiving endMessage', () => {
