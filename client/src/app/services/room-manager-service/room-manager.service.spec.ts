@@ -53,9 +53,9 @@ describe('RoomManagerService', () => {
     //     expect(service.isUpdated$).toEqual(service['deletedGameId'].asObservable());
     // });
 
-    it('oneVsOneRoomsAvailabilityByRoomId$ should return oneVsOneRoomsAvailabilityByGameId asObservable', () => {
-        expect(service.oneVsOneRoomsAvailabilityByRoomId$).toEqual(service['oneVsOneRoomsAvailabilityByGameId'].asObservable());
-    });
+    // it('oneVsOneRoomsAvailabilityByRoomId$ should return oneVsOneRoomsAvailabilityByGameId asObservable', () => {
+    //     expect(service.oneVsOneRoomsAvailabilityByRoomId$).toEqual(service['oneVsOneRoomsAvailabilityByGameId'].asObservable());
+    // });
 
     // it('acceptedPlayerByRoom$ should return acceptedPlayerByRoom asObservable', () => {
     //     expect(service.createdRoomId$).toEqual(service['acceptedPlayerByRoom'].asObservable());

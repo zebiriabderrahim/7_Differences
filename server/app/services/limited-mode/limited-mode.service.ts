@@ -15,7 +15,10 @@ export class LimitedModeService {
 
     async createLimitedRoom(socket: io.Socket, playerPayLoad: PlayerData, server: io.Server): Promise<void> {
         const limitedRoom = await this.roomsManagerService.createRoom(playerPayLoad);
-        if (!limitedRoom) return;
+        if (!limitedRoom) {
+            socket.emit(RoomEvents.NoGameAvailible);
+            return;
+        }
         this.availableGameByRoomId.set(limitedRoom.roomId, [limitedRoom.clientGame.id]);
         socket.join(limitedRoom.roomId);
         server.to(limitedRoom.roomId).emit(RoomEvents.RoomLimitedCreated, limitedRoom.roomId);
@@ -30,12 +33,12 @@ export class LimitedModeService {
         if (!room) return;
         const playedGameIds = this.getGameIds(room.roomId);
         const nextGameId = await this.roomsManagerService.loadNextGame(room, playedGameIds);
+        this.equalizeDifferencesFound(room, server);
         if (!nextGameId) {
-            this.endGame(room, server);
+            await this.endGame(room, server);
             return;
         }
         if (playedGameIds) this.availableGameByRoomId.set(room.roomId, [...playedGameIds, nextGameId]);
-        this.equalizeDiffFound(room, server);
         this.roomsManagerService.startGame(socket, server);
     }
 
@@ -81,15 +84,15 @@ export class LimitedModeService {
         return this.availableGameByRoomId.get(roomId);
     }
 
-    private endGame(room: GameRoom, server: io.Server): void {
+    private async endGame(room: GameRoom, server: io.Server): Promise<void> {
+        await this.historyService.closeEntry(room.roomId, server);
         this.sendEndMessage(room, server);
-        this.historyService.closeEntry(room.roomId, server);
         this.roomsManagerService.leaveRoom(room, server);
         this.roomsManagerService.deleteRoom(room.roomId);
         this.deleteAvailableGame(room.roomId);
     }
 
-    private equalizeDiffFound(room: GameRoom, server: io.Server): void {
+    private equalizeDifferencesFound(room: GameRoom, server: io.Server): void {
         if (room.clientGame.mode === GameModes.LimitedCoop) {
             server.to(room.roomId).emit(GameEvents.UpdateDifferencesFound, room.player1.differenceData.differencesFound);
         }

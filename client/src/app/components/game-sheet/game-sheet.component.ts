@@ -4,15 +4,15 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { DeleteResetConfirmationDialogComponent } from '@app/components/delete-reset-confirmation-dialog/delete-reset-confirmation-dialog.component';
 import { JoinedPlayerDialogComponent } from '@app/components/joined-player-dialog/joined-player-dialog.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { WaitingForPlayerToJoinComponent } from '@app/components/waiting-player-to-join/waiting-player-to-join.component';
 import { Actions } from '@app/enum/delete-reset-actions';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { GameCard, PlayerData } from '@common/game-interfaces';
-import { filter, Subscription, take } from 'rxjs';
-import { DeleteResetConfirmationDialogComponent } from '@app/components/delete-reset-confirmation-dialog/delete-reset-confirmation-dialog.component';
 import { GameModes } from '@common/enums';
+import { GameCard, PlayerData } from '@common/game-interfaces';
+import { Subscription, filter, take } from 'rxjs';
 
 @Component({
     selector: 'app-game-sheet',
@@ -24,8 +24,9 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     url: SafeResourceUrl;
     actions: typeof Actions;
     private isAvailable: boolean;
-    private roomIdSubscription: Subscription;
+    private roomSoloIdSubscription: Subscription;
     private roomAvailabilitySubscription: Subscription;
+    private roomOneVsOneIdSubscription: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
@@ -68,7 +69,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
 
     playSolo(): void {
         this.createSoloRoom();
-        this.roomIdSubscription = this.roomManagerService.createdRoomId$.pipe(filter((roomId) => !!roomId)).subscribe(() => {
+        this.roomSoloIdSubscription = this.roomManagerService.roomSoloId$.pipe(filter((roomId) => !!roomId)).subscribe(() => {
             this.router.navigate(['/game']);
         });
     }
@@ -105,7 +106,7 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     }
 
     openWaitingDialog(playerName: string): void {
-        this.roomIdSubscription = this.roomManagerService.createdRoomId$
+        this.roomOneVsOneIdSubscription = this.roomManagerService.roomOneVsOneId$
             .pipe(
                 filter((roomId) => !!roomId),
                 take(1),
@@ -132,7 +133,8 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     }
 
     ngOnDestroy(): void {
-        this.roomIdSubscription?.unsubscribe();
+        this.roomSoloIdSubscription?.unsubscribe();
         this.roomAvailabilitySubscription?.unsubscribe();
+        this.roomOneVsOneIdSubscription?.unsubscribe();
     }
 }

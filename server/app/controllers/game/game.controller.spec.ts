@@ -8,6 +8,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'express';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { GameController } from './game.controller';
+import { GameHistory } from '@app/model/database/game-history';
+import { GameModes } from '@common/enums';
 
 describe('GameController', () => {
     let controller: GameController;
@@ -33,6 +35,15 @@ describe('GameController', () => {
         modifiedImage: 'test',
         nDifference: 1,
         differences: 'test',
+    };
+
+    const gameHistoryTest: GameHistory = {
+        gameMode: GameModes.ClassicOneVsOne,
+        player1: { name: 'John Doe', isWinner: true, isQuitter: false },
+        player2: { name: 'Jane Doe', isWinner: false, isQuitter: false },
+        duration: 100,
+        startingHour: '2020-01-01T00:00:00.000Z',
+        date: '2020-01-01T00:00:00.000Z',
     };
 
     beforeEach(async () => {
@@ -255,5 +266,61 @@ describe('GameController', () => {
         await controller.updateGameConstants(new GameConstantsDto(), res);
         expect(gameService.updateGameConstants).toThrow();
         expect(gameService.updateGameConstants.called).toBeTruthy();
+    });
+
+    it('getGamesHistory should call getGamesHistory() in gameService', async () => {
+        gameService.getGamesHistory.resolves([gameHistoryTest]);
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.OK);
+            return res;
+        };
+        res.json = (gameHistory) => {
+            expect(gameHistory).toEqual([gameHistoryTest]);
+            return res;
+        };
+        res.send = () => res;
+        await controller.getGamesHistory(res);
+        expect(gameService.getGamesHistory.calledOnce).toBeTruthy();
+    });
+
+    it('getGamesHistory() should return NOT_FOUND when service unable to fetch game history', async () => {
+        gameService.getGamesHistory.rejects();
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.NOT_FOUND);
+            return res;
+        };
+        res.json = (gameHistory) => {
+            expect(gameHistory).toEqual(undefined);
+            return res;
+        };
+        res.send = () => res;
+        await controller.getGamesHistory(res);
+        expect(gameService.getGamesHistory.called).toBeTruthy();
+    });
+
+    it('deleteAllGamesHistory() should call deleteAllGamesHistory() in gameService', async () => {
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.OK);
+            return res;
+        };
+        res.send = () => res;
+        await controller.deleteAllGamesHistory(res);
+        expect(gameService.deleteAllGamesHistory.calledOnce).toBeTruthy();
+    });
+
+    it('deleteAllGamesHistory() should return NOT_FOUND when service unable to delete all games history', async () => {
+        gameService.deleteAllGamesHistory.throwsException();
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.NO_CONTENT);
+            return res;
+        };
+        res.send = () => res;
+        await controller.deleteAllGamesHistory(res);
+        expect(gameService.deleteAllGamesHistory).toThrow();
+        expect(gameService.deleteAllGamesHistory.called).toBeTruthy();
     });
 });
