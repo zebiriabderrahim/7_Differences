@@ -1,7 +1,7 @@
 <div id="history-box">
     <div class="content">
         <div *ngFor="let history of gameHistory">
-            <span> {{ history.date }} - {{history.startingHour}}&nbsp; &nbsp;<strong>Durée :</strong> {{ history.duration | date: 'mm:ss' }} &nbsp; &nbsp;<strong>Mode :</strong> {{history.gameMode}}</span>
+            <span class="general-infos"> {{ history.date }} - {{history.startingHour}}&nbsp; &nbsp;<strong>Durée :&nbsp;</strong> {{ history.duration | date: 'mm:ss' }} &nbsp; &nbsp;<strong>Mode :&nbsp;</strong> {{history.gameMode}}</span>
             <div class="playersInfo" >
                 <div class ="player1info" *ngIf="history.player1">
                     <span *ngIf="history.player1.isWinner"> Joueur 1 : <strong>{{ history.player1.name }}</strong></span>
@@ -17,5 +17,5 @@
             <br>
         </div>
     </div>
-    <mat-button-toggle (click)="deleteAllGamesHistory()">Supprimer l'historique des jeux</mat-button-toggle>
+    <mat-button-toggle (click)="deleteAllGamesHistory()"><mat-icon>delete_forever</mat-icon> Supprimer l'historique des jeux</mat-button-toggle>
 </div>

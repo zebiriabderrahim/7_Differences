@@ -118,14 +118,28 @@
 }
 
 .game-constants {
-    display: inline-block;
-    margin-left: 6%;
-    margin-right: 6%;
-    float: none;
+    max-width: 540px;
+    position: absolute;
+    left: 26%;
+    bottom: 25%;
 }
 
-.game-constants {
-    width: 80%;
+.game-creation {
+    position: absolute;
+    left: 2%;
+    bottom: 25%;
+}
+
+.game-reinitialization {
+    position: absolute;
+    left: 26%;
+    bottom: 10%;
+}
+
+.game-deletion {
+    position: absolute;
+    left: 2%;
+    bottom: 10%;
 }
 
 .game-constants * * {
@@ -188,4 +202,10 @@
     color: white;
     font-family: 'Troika', sans-serif;
     line-height: 50px;
+  }
+
+  app-history-box {
+    position: absolute;
+    right: 5%;
+    bottom: 0%;
   }
