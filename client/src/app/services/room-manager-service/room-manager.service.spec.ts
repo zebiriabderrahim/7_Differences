@@ -272,12 +272,6 @@ describe('RoomManagerService', () => {
         expect(roomIdSpy).toHaveBeenCalledOnceWith(mockGameId);
     });
 
-    // it('ngOnDestroy should call disconnect', () => {
-    //     const disconnectSpy = spyOn(socketServiceMock, 'disconnect');
-    //     service.ngOnDestroy();
-    //     expect(disconnectSpy).toHaveBeenCalled();
-    // });
-
     it('should call isLimitedCoopRoomAvailable.next when RoomEvents.LimitedCoopRoomJoined is received', () => {
         service.handleRoomEvents();
         const isLimitedCoopRoomAvailableSpy = spyOn(service['isLimitedCoopRoomAvailable'], 'next');
