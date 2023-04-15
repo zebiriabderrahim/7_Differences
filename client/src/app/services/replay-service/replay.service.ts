@@ -166,15 +166,6 @@ export class ReplayService {
         this.currentReplayIndex++;
     }
 
-    getNextInterval(): number {
-        const nextActionIndex = this.currentReplayIndex + 1;
-        this.isDifferenceFound = false;
-        if (nextActionIndex < this.replayEvents.length) {
-            return (this.replayEvents[nextActionIndex].timestamp - this.replayEvents[this.currentReplayIndex].timestamp) / this.replaySpeed;
-        }
-        return REPLAY_LIMITER;
-    }
-
     startReplay(): void {
         this.isReplaying = true;
         this.currentReplayIndex = 0;
@@ -210,13 +201,16 @@ export class ReplayService {
         this.replayInterval.resume();
     }
 
-    cancelReplay(): void {
-        this.replayInterval.cancel();
-        this.currentReplayIndex = 0;
-    }
-
     upSpeed(speed: number): void {
         this.replaySpeed = speed;
+        if (this.isCheatMode) {
+            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
+            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
+        }
+        if (this.isDifferenceFound) {
+            this.gameAreaService.flashCorrectPixels(this.currentCoords, this.replaySpeed, false);
+            this.gameAreaService.flashCorrectPixels(this.currentCoords, this.replaySpeed, true);
+        }
     }
 
     restartTimer(): void {
@@ -230,5 +224,19 @@ export class ReplayService {
         this.replayEvents = [];
         this.currentReplayIndex = 0;
         this.isReplaying = false;
+    }
+
+    private cancelReplay(): void {
+        this.replayInterval.cancel();
+        this.currentReplayIndex = 0;
+    }
+
+    private getNextInterval(): number {
+        const nextActionIndex = this.currentReplayIndex + 1;
+        this.isDifferenceFound = false;
+        if (nextActionIndex < this.replayEvents.length) {
+            return (this.replayEvents[nextActionIndex].timestamp - this.replayEvents[this.currentReplayIndex].timestamp) / this.replaySpeed;
+        }
+        return REPLAY_LIMITER;
     }
 }
