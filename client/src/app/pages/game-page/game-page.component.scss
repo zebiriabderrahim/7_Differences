@@ -169,4 +169,21 @@ app-replay-buttons {
     object-fit: cover;
 }
 
+#raccoon {
+    position: absolute;
+    left: 0%;
+    top: 6%;
+}
+
+#intro {
+    position: absolute;
+    left: 1%;
+    top: 30.5%;
+    text-align: center;
+    font-size: 30px;
+    font-weight: 700;
+    -webkit-text-stroke: 1px black;
+    font-family: 'Troika', sans-serif;
+}
+
 
