@@ -36,7 +36,6 @@ export class RoomManagerService {
         this.roomSoloId = new Subject<string>();
         this.roomLimitedId = new Subject<string>();
         this.isGameHistoryReloadNeeded = new Subject<boolean>();
-        this.connect();
     }
 
     get joinedPlayerNamesByGameId$() {

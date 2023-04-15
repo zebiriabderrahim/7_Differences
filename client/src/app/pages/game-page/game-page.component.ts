@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { GamePageDialogComponent } from '@app/components/game-page-dialog/game-page-dialog.component';
 import { DEFAULT_PLAYERS, INPUT_TAG_NAME, SOLO_GAME_ID } from '@app/constants/constants';
 import { ASSETS_HINTS } from '@app/constants/hint';
@@ -49,6 +50,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         private readonly hintService: HintService,
         private readonly matDialog: MatDialog,
         private readonly replayService: ReplayService,
+        private readonly router: Router,
     ) {
         this.gameManager.manageSocket();
         this.differencesFound = 0;
@@ -111,6 +113,8 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.updateIfFirstDifferencesFound();
 
         this.updateGameMode();
+
+        this.handlePageRefresh();
     }
 
     getPlayers(): void {
@@ -210,6 +214,12 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     updateGameMode(): void {
         this.gameManager.isGameModeChanged$.pipe(takeUntil(this.onDestroy$)).subscribe((isGameModeChanged) => {
             if (isGameModeChanged) this.game.mode = GameModes.LimitedSolo;
+        });
+    }
+
+    handlePageRefresh(): void {
+        this.gameManager.isGamePageRefreshed$.pipe(takeUntil(this.onDestroy$)).subscribe((isGamePageRefreshed) => {
+            if (isGamePageRefreshed) this.router.navigate(['/']);
         });
     }
 
