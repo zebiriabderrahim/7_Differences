@@ -273,7 +273,6 @@ export class ReplayService {
     }
 
     private replayOpponentDifferencesFoundUpdate(replayData: ReplayPayload): void {
-        this.replayOpponentDifferencesFoundUpdate(replayData as ReplayPayload);
         this.replayOpponentDifferenceFound.next(replayData as number);
     }
 

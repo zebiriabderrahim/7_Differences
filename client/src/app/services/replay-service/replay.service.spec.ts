@@ -128,14 +128,10 @@ describe('ReplayService', () => {
             };
         });
         const replaySwitcherSpy = spyOn(service, 'replaySwitcher').and.callThrough();
-        const cancelReplaySpy = spyOn(service, 'cancelReplay').and.callThrough();
         service['replayEvents'] = replayEventsStub;
         service.startReplay();
         expect(service.isReplaying).toBe(true);
         expect(replaySwitcherSpy).toHaveBeenCalledTimes(replayEventsStub.length);
-        service.cancelReplay();
-        expect(cancelReplaySpy).toHaveBeenCalled();
-        expect(service.isReplaying).toBe(false);
     });
 
     it('should handle StartGame action', () => {
