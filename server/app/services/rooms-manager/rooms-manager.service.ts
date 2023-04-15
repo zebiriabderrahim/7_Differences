@@ -69,7 +69,9 @@ export class RoomsManagerService implements OnModuleInit {
     }
 
     getHostIdByGameId(gameId: string): string {
-        const roomTarget = Array.from(this.rooms.values()).find((room) => room.clientGame.id === gameId);
+        const roomTarget = Array.from(this.rooms.values()).find(
+            (room) => room.clientGame.id === gameId && room.clientGame.mode === GameModes.ClassicOneVsOne && !room.player2,
+        );
         return roomTarget?.player1.playerId;
     }
 
@@ -77,8 +79,7 @@ export class RoomsManagerService implements OnModuleInit {
         return Array.from(this.rooms.values()).find((room) => room.clientGame.mode === GameModes.LimitedCoop && !room.player2);
     }
 
-    addAcceptedPlayer(roomId: string, player: Player): void {
-        const room = this.getRoomById(roomId);
+    addAcceptedPlayer(room: GameRoom, player: Player): void {
         room.player2 = player;
         this.updateRoom(room);
     }
@@ -176,6 +177,7 @@ export class RoomsManagerService implements OnModuleInit {
             if (socket) socket.rooms.delete(room.roomId);
         });
     }
+
     async abandonGame(socket: io.Socket, server: io.Server): Promise<void> {
         const room = this.getRoomByPlayerId(socket.id);
         if (!room) return;
@@ -183,10 +185,9 @@ export class RoomsManagerService implements OnModuleInit {
         const opponent: Player = room.player1.playerId === socket.id ? room.player2 : room.player1;
         this.historyService.markPlayer(room.roomId, player.name, PlayerStatus.Quitter);
         if (this.isMultiplayerGame(room.clientGame) && opponent) {
-            if (room.clientGame.mode === GameModes.ClassicOneVsOne) this.historyService.markPlayer(room.roomId, opponent.name, PlayerStatus.Winner);
             const localMessage =
                 room.clientGame.mode === GameModes.ClassicOneVsOne
-                    ? this.handleOneVsOneAbandon(player, room, server)
+                    ? await this.handleOneVsOneAbandon(player, room, server)
                     : this.handleCoopAbandon(opponent, room, server);
             server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
         } else {
@@ -258,6 +259,8 @@ export class RoomsManagerService implements OnModuleInit {
     }
 
     private async handleOneVsOneAbandon(player: Player, room: GameRoom, server: io.Server): Promise<ChatMessage> {
+        const opponent: Player = room.player1.playerId === player.playerId ? room.player2 : room.player1;
+        this.historyService.markPlayer(room.roomId, opponent?.name, PlayerStatus.Winner);
         room.endMessage = "L'adversaire a abandonné la partie!";
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
         this.leaveRoom(room, server);

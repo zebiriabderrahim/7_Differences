@@ -41,12 +41,13 @@ describe('GameSheetComponent', () => {
                 'gameCardDeleted',
             ],
             {
-                roomId$: roomIdSpy,
+                roomSoloId$: roomIdSpy,
                 createdRoomId$: new BehaviorSubject('0'),
                 oneVsOneRoomsAvailabilityByRoomId$: new BehaviorSubject({
                     gameId: '0',
                     isAvailableToJoin: true,
                 }),
+                roomOneVsOneId$: roomIdSpy,
             },
         );
         await TestBed.configureTestingModule({
@@ -176,8 +177,8 @@ describe('GameSheetComponent', () => {
     it('this.roomAvailabilitySubscription?.unsubscribe() should ne call if undefined', () => {
         component['roomAvailabilitySubscription'] = undefined as unknown as Subscription;
         const mockSubscription = new Subscription();
-        component['roomIdSubscription'] = mockSubscription;
-        const unsubscribeSpy = spyOn(component['roomIdSubscription'], 'unsubscribe');
+        component['roomSoloIdSubscription'] = mockSubscription;
+        const unsubscribeSpy = spyOn(component['roomSoloIdSubscription'], 'unsubscribe');
         component.ngOnDestroy();
         expect(unsubscribeSpy).toHaveBeenCalled();
     });

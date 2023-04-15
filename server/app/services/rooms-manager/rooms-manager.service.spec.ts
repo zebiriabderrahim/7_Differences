@@ -217,10 +217,8 @@ describe('RoomsManagerService', () => {
 
     it('addAcceptedPlayer() should add the player to the room and call getRoomById and updateRoom ', () => {
         service['rooms'].set(fakeRoom.roomId, fakeRoom);
-        const getRoomByIdSpy = jest.spyOn(service, 'getRoomById').mockReturnValueOnce(fakeRoom);
         const updateRoomSpy = jest.spyOn(service, 'updateRoom');
-        service.addAcceptedPlayer(fakeRoom.roomId, fakePlayer);
-        expect(getRoomByIdSpy).toBeCalled();
+        service.addAcceptedPlayer(fakeRoom, fakePlayer);
         expect(updateRoomSpy).toBeCalled();
         expect(fakeRoom.player2).toEqual(fakePlayer);
     });
@@ -512,19 +510,19 @@ describe('RoomsManagerService', () => {
         expect(service['handleCoopAbandon']).toBeCalled();
     });
 
-    // it('abandonGame() should NOT call handleOneVsOneAbandon OR handleCoopAbandon if game mode is not multi ', () => {
-    //     jest.spyOn(service, 'getRoomByPlayerId').mockReturnValueOnce(fakeRoom);
-    //     service['isMultiplayerGame'] = jest.fn().mockReturnValueOnce(false);
-    //     const deleteRoomSpy = jest.spyOn(service, 'deleteRoom');
-    //     service.abandonGame(socket, server);
-    //     expect(deleteRoomSpy).toBeCalled();
-    // });
+    it('abandonGame() should NOT call handleOneVsOneAbandon OR handleCoopAbandon if game mode is not multi ', async () => {
+        jest.spyOn(service, 'getRoomByPlayerId').mockReturnValueOnce(fakeRoom);
+        service['isMultiplayerGame'] = jest.fn().mockReturnValueOnce(false);
+        const deleteRoomSpy = jest.spyOn(service, 'deleteRoom');
+        await service.abandonGame(socket, server);
+        expect(deleteRoomSpy).toBeCalled();
+    });
 
-    it('abandonGame() should NOT call handleOneVsOneAbandon OR handleCoopAbandon if room undefined ', () => {
+    it('abandonGame() should NOT call handleOneVsOneAbandon OR handleCoopAbandon if room undefined ', async () => {
         jest.spyOn(service, 'getRoomById').mockReturnValue(undefined);
         service['handleOneVsOneAbandon'] = jest.fn();
         service['handleCoopAbandon'] = jest.fn();
-        service.abandonGame(socket, server);
+        await service.abandonGame(socket, server);
         expect(service['handleOneVsOneAbandon']).not.toBeCalled();
         expect(service['handleCoopAbandon']).not.toBeCalled();
     });
@@ -564,22 +562,26 @@ describe('RoomsManagerService', () => {
         expect(result).toBeDefined();
     });
 
-    // it('handleOneVsOneAbandon() should call abandonMessage and deleteRoom emit on EndGame event', () => {
-    //     service['deleteRoom'] = jest.fn();
-    //     service['leaveRoom'] = jest.fn();
-    //     server.to.returns({
-    //         emit: (event: string) => {
-    //             if (event === GameEvents.EndGame) {
-    //                 expect(event).toEqual(GameEvents.EndGame);
-    //             } else if (event === MessageEvents.LocalMessage) {
-    //                 expect(event).toEqual(MessageEvents.LocalMessage);
-    //             }
-    //         },
-    //     } as BroadcastOperator<unknown, unknown>);
-    //     service['handleOneVsOneAbandon'](fakePlayer, fakeRoom, server);
-    //     expect(service['deleteRoom']).toBeCalled();
-    //     expect(service['leaveRoom']).toBeCalled();
-    // });
+    it('handleOneVsOneAbandon() should call abandonMessage and deleteRoom emit on EndGame event', async () => {
+        service['deleteRoom'] = jest.fn();
+        service['leaveRoom'] = jest.fn();
+        const markPlayerSpy = jest.spyOn(historyService, 'markPlayer');
+        const closeEntrySpy = jest.spyOn(historyService, 'closeEntry');
+        server.to.returns({
+            emit: (event: string) => {
+                if (event === GameEvents.EndGame) {
+                    expect(event).toEqual(GameEvents.EndGame);
+                } else if (event === MessageEvents.LocalMessage) {
+                    expect(event).toEqual(MessageEvents.LocalMessage);
+                }
+            },
+        } as BroadcastOperator<unknown, unknown>);
+        await service['handleOneVsOneAbandon'](fakePlayer, fakeRoom, server);
+        expect(markPlayerSpy).toBeCalled();
+        expect(closeEntrySpy).toBeCalled();
+        expect(service['deleteRoom']).toBeCalled();
+        expect(service['leaveRoom']).toBeCalled();
+    });
 
     it('handleCoopAbandon() should call abandonMessage and deleteRoom emit on EndGame event', () => {
         service['updateRoom'] = jest.fn();
