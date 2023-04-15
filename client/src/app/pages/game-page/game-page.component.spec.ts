@@ -12,7 +12,7 @@ import { GameAreaService } from '@app/services/game-area-service/game-area.servi
 import { GameManagerService } from '@app/services/game-manager-service/game-manager.service';
 import { HintService } from '@app/services/hint-service/hint.service';
 import { ReplayService } from '@app/services/replay-service/replay.service';
-import { MessageTag } from '@common/enums';
+import { GameModes, MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, Players } from '@common/game-interfaces';
 import { BehaviorSubject, Subject } from 'rxjs';
 
@@ -84,7 +84,8 @@ describe('GamePageComponent', () => {
         );
         hintServiceSpy = jasmine.createSpyObj('HintService', ['requestHint', 'resetHints', 'deactivateThirdHint', 'checkThirdHintProximity'], {
             thirdHintProximity: HintProximity.OnIt,
-            nAvailableHints: 3,
+            nAvailableHints: 0,
+            isThirdHintActive: true,
         });
         routeSpy = jasmine.createSpyObj('ActivatedRoute', ['navigate'], { params: paramsSubjectTest });
         dialog = jasmine.createSpyObj('MatDialog', ['open']);
@@ -264,6 +265,12 @@ describe('GamePageComponent', () => {
         expect(gameManagerServiceSpy).toBeTruthy();
     });
 
+    it('checkThirdHint should call hintService.checkThirdHintProximity', () => {
+        component.isReplayAvailable = false;
+        component.checkThirdHint(new MouseEvent('click', { button: 0 }));
+        expect(hintServiceSpy.checkThirdHintProximity).toHaveBeenCalled();
+    });
+
     it('showAbandonDialog should open abandon dialog', () => {
         component.showAbandonDialog();
         expect(dialog.open).toHaveBeenCalled();
@@ -319,5 +326,21 @@ describe('GamePageComponent', () => {
         paramsSubjectTest.next({ roomId: mockId });
         expect(gameManagerServiceSpy.startGame).toHaveBeenCalled();
         expect(routeSpy.params).toEqual(paramsSubjectTest);
+    });
+
+    it('isLimitedMode should return true if the game mode is limited', () => {
+        component.game = clientSideGameTest;
+        component.game.mode = GameModes.LimitedSolo;
+        expect(component.isLimitedMode()).toBeTruthy();
+        component.game.mode = GameModes.LimitedCoop;
+        expect(component.isLimitedMode()).toBeTruthy();
+    });
+
+    it('isMultiplayerMode should return true if the game mode is Classic1v1 or LimitedCoop', () => {
+        component.game = clientSideGameTest;
+        component.game.mode = GameModes.LimitedCoop;
+        expect(component.isMultiplayerMode()).toBeTruthy();
+        component.game.mode = GameModes.ClassicOneVsOne;
+        expect(component.isMultiplayerMode()).toBeTruthy();
     });
 });
