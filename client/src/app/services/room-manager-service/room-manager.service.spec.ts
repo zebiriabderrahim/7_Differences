@@ -75,6 +75,10 @@ describe('RoomManagerService', () => {
         expect(service.refusedPlayerId$).toEqual(service['refusedPlayerId'].asObservable());
     });
 
+    it('isLimitedCoopRoomAvailable$ should return isLimitedCoopRoomAvailable asObservable', () => {
+        expect(service.isLimitedCoopRoomAvailable$).toEqual(service['isLimitedCoopRoomAvailable'].asObservable());
+    });
+
     it('createSoloRoom should call clientSocket.send with CreateSoloGame and gameId and playerName', () => {
         const sendSpy = spyOn(socketServiceMock, 'send');
         service.createSoloRoom(mockPlayerData);
