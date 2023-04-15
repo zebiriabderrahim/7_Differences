@@ -155,6 +155,35 @@ describe('GamePageComponent', () => {
         // expect(component.player).toEqual(playersTest.player1.name);
     });
 
+    it('setUpReplay should set differencesFound', () => {
+        component.setUpReplay();
+        component.isReplayAvailable = true;
+        replayDifferenceFoundSubjectTest.next(differencesFoundTest);
+        expect(component.differencesFound).toEqual(differencesFoundTest);
+    });
+
+    it('setUpReplay should set opponentDifferencesFound', () => {
+        component.setUpReplay();
+        component.isReplayAvailable = true;
+        replayOpponentDifferenceFoundSubjectTest.next(differencesFoundTest);
+        expect(component.opponentDifferencesFound).toEqual(differencesFoundTest);
+    });
+
+    it('setUpReplay should set timer', () => {
+        component.setUpReplay();
+        component.isReplayAvailable = true;
+        replayTimerSubjectTest.next(differencesFoundTest);
+        expect(component.timer).toEqual(differencesFoundTest);
+    });
+
+    it('setUpReplay should set reset messages and differencesFound if timer is 0', () => {
+        component.setUpReplay();
+        component.isReplayAvailable = true;
+        replayTimerSubjectTest.next(0);
+        expect(component.messages).toEqual([]);
+        expect(component.differencesFound).toEqual(0);
+    });
+
     it('should set players that are id matches', () => {
         const playersTest = {
             player1: { name: 'player1', differenceData: mockDifferenceData },
