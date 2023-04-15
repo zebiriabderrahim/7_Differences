@@ -10,7 +10,7 @@ export interface ClickErrorData {
 export interface ReplayEvent {
     action: ReplayActions;
     timestamp: number;
-    data?: Payload;
+    data?: ReplayPayload;
 }
 
-export type Payload = Coordinate[] | ClickErrorData | ChatMessage | string | number | GameRoom;
+export type ReplayPayload = Coordinate[] | ClickErrorData | ChatMessage | string | number | GameRoom;

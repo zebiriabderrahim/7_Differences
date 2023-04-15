@@ -4,6 +4,7 @@ import { REPLAY_LIMITER, SPEED_X1 } from '@app/constants/replay';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
+import { CaptureService } from '@app/services/capture-service/capture.service';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { HintService } from '@app/services/hint-service/hint.service';
@@ -17,12 +18,12 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class ReplayService {
     isReplaying: boolean = false;
+    replayEvents: ReplayEvent[] = [];
     private replaySpeed = SPEED_X1;
     private currentCoords: Coordinate[] = [];
     private isCheatMode: boolean = false;
     private isDifferenceFound: boolean = false;
     private replayInterval: ReplayInterval;
-    private replayEvents: ReplayEvent[] = [];
     private currentReplayIndex: number = 0;
     private replayTimer: BehaviorSubject<number>;
     private replayDifferenceFound: BehaviorSubject<number>;
@@ -34,18 +35,9 @@ export class ReplayService {
         private readonly soundService: SoundService,
         private readonly imageService: ImageService,
         private readonly hintService: HintService,
+        private readonly captureService: CaptureService,
     ) {
-        this.gameAreaService.replayEventsSubject.asObservable().subscribe((replayEvent: ReplayEvent) => {
-            if (!this.isReplaying) {
-                this.replayEvents.push(replayEvent);
-            }
-        });
-        this.classicSystemService.replayEventsSubject.asObservable().subscribe((replayEvent: ReplayEvent) => {
-            if (!this.isReplaying) {
-                this.replayEvents.push(replayEvent);
-            }
-        });
-        this.hintService.replayEventsSubject.asObservable().subscribe((replayEvent: ReplayEvent) => {
+        this.captureService.replayEventsSubject$.subscribe((replayEvent: ReplayEvent) => {
             if (!this.isReplaying) {
                 this.replayEvents.push(replayEvent);
             }

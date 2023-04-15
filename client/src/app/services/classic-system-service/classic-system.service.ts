@@ -1,18 +1,17 @@
 import { Injectable } from '@angular/core';
 import { ReplayActions } from '@app/enum/replay-actions';
-import { Payload, ReplayEvent } from '@app/interfaces/replay-actions';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
 import { GameEvents, MessageEvents, MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, Differences, GameConfigConst, GameRoom, Players } from '@common/game-interfaces';
-import { filter, Subject } from 'rxjs';
+import { Subject, filter } from 'rxjs';
+import { CaptureService } from '@app/services/capture-service/capture.service';
 @Injectable({
     providedIn: 'root',
 })
 export class ClassicSystemService {
-    replayEventsSubject: Subject<ReplayEvent>;
     differences: Coordinate[][];
     gameConstants: GameConfigConst;
     private timer: Subject<number>;
@@ -32,6 +31,7 @@ export class ClassicSystemService {
         private readonly clientSocket: ClientSocketService,
         private readonly gameAreaService: GameAreaService,
         private readonly soundService: SoundService,
+        private readonly captureService: CaptureService,
     ) {
         this.currentGame = new Subject<ClientSideGame>();
         this.differencesFound = new Subject<number>();
@@ -40,7 +40,6 @@ export class ClassicSystemService {
         this.message = new Subject<ChatMessage>();
         this.endMessage = new Subject<string>();
         this.opponentDifferencesFound = new Subject<number>();
-        this.replayEventsSubject = new Subject<ReplayEvent>();
         this.isFirstDifferencesFound = new Subject<boolean>();
         this.isGameModeChanged = new Subject<boolean>();
         this.isGamePageRefreshed = new Subject<boolean>();
@@ -120,11 +119,6 @@ export class ClassicSystemService {
         }
     }
 
-    saveEvent(action: ReplayActions, data: Payload): void {
-        const replayEvent: ReplayEvent = { action, timestamp: Date.now(), data };
-        this.replayEventsSubject.next(replayEvent);
-    }
-
     handleRemoveDiff(data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }): void {
         if (data.playerId === this.getSocketId()) {
             this.replaceDifference(data.differencesData.currentDifference);
@@ -135,7 +129,7 @@ export class ClassicSystemService {
             this.opponentDifferencesFound.next(data.differencesData.differencesFound);
         }
         this.differences = data.cheatDifferences;
-        this.saveEvent(ReplayActions.DifferenceFoundUpdate, data.differencesData.differencesFound);
+        this.captureService.saveReplayEvent(ReplayActions.DifferenceFoundUpdate, data.differencesData.differencesFound);
     }
 
     abandonGame(): void {
@@ -156,7 +150,7 @@ export class ClassicSystemService {
 
     sendMessage(textMessage: string): void {
         const newMessage = { tag: MessageTag.Received, message: textMessage };
-        this.saveEvent(ReplayActions.CaptureMessage, { tag: MessageTag.Sent, message: textMessage } as ChatMessage);
+        this.captureService.saveReplayEvent(ReplayActions.CaptureMessage, { tag: MessageTag.Sent, message: textMessage } as ChatMessage);
         this.clientSocket.send(MessageEvents.LocalMessage, newMessage);
     }
 
@@ -170,7 +164,7 @@ export class ClassicSystemService {
             this.gameConstants = room.gameConstants;
             this.players.next({ player1: room.player1, player2: room.player2 });
             this.differences = room.originalDifferences;
-            this.saveEvent(ReplayActions.StartGame, room);
+            this.captureService.saveReplayEvent(ReplayActions.StartGame, room);
         });
 
         this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
@@ -179,7 +173,7 @@ export class ClassicSystemService {
 
         this.clientSocket.on(GameEvents.TimerUpdate, (timer: number) => {
             this.timer.next(timer);
-            this.saveEvent(ReplayActions.TimerUpdate, timer);
+            this.captureService.saveReplayEvent(ReplayActions.TimerUpdate, timer);
         });
 
         this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {
@@ -188,7 +182,7 @@ export class ClassicSystemService {
 
         this.clientSocket.on(MessageEvents.LocalMessage, (receivedMessage: ChatMessage) => {
             this.message.next(receivedMessage);
-            this.saveEvent(ReplayActions.CaptureMessage, receivedMessage);
+            this.captureService.saveReplayEvent(ReplayActions.CaptureMessage, receivedMessage);
         });
 
         this.clientSocket.on(GameEvents.UpdateDifferencesFound, (differencesFound: number) => {
