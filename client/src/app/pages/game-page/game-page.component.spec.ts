@@ -58,6 +58,7 @@ describe('GamePageComponent', () => {
     const replayTimerSubjectTest = new BehaviorSubject<number>(0);
     const replayDifferenceFoundSubjectTest = new BehaviorSubject<number>(0);
     const replayOpponentDifferenceFoundSubjectTest = new BehaviorSubject<number>(0);
+    const isGamePageRefreshedTest = new Subject<boolean>();
 
     beforeEach(async () => {
         replayServiceSpy = jasmine.createSpyObj('ReplayService', ['resetReplay'], {
@@ -89,7 +90,7 @@ describe('GamePageComponent', () => {
                 isFirstDifferencesFound$: isFirstDifferencesFoundTest,
                 isGameModeChanged$: isGameModeChangedTest,
                 differences: [[{ x: 0, y: 0 }]],
-                isGamePageRefreshed$: new Subject<boolean>(),
+                isGamePageRefreshed$: isGamePageRefreshedTest,
             },
         );
         hintServiceSpy = jasmine.createSpyObj('HintService', ['requestHint', 'resetHints', 'deactivateThirdHint', 'checkThirdHintProximity'], {
@@ -260,19 +261,26 @@ describe('GamePageComponent', () => {
         expect(component.opponentDifferencesFound).toEqual(opponentDifferencesFoundTest);
     });
 
-    it('updateIfFirstDifferencesFound should call gameManager.startNextGame', () => {
+    it('updateGameMode should set set gameMode to solo if changed', () => {
         component.game = clientSideGameTest;
         component.updateGameMode();
         isGameModeChangedTest.next(true);
         expect(component.game.mode).toEqual(GameModes.LimitedSolo);
     });
 
-    it('updateGameMode should set gameMode to solo if changed', () => {
+    it('updateGameMode should call gameManager.startNextGame', () => {
         component.game = clientSideGameTest;
         component.game.mode = GameModes.LimitedSolo;
         component.updateGameMode();
         isFirstDifferencesFoundTest.next(true);
         expect(gameManagerServiceSpy.startNextGame).toHaveBeenCalled();
+    });
+
+    it('handlePageRefresh should router.navigate', () => {
+        const routerNavigateSpy = spyOn(component['router'], 'navigate');
+        component.handlePageRefresh();
+        isGamePageRefreshedTest.next(true);
+        expect(routerNavigateSpy).toHaveBeenCalled();
     });
 
     it('should call showEndGameDialog when receiving endMessage', () => {
