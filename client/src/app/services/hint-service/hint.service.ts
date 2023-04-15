@@ -12,35 +12,34 @@ import { HintProximity } from '@app/enum/hint-proximity';
 import { QuadrantPosition } from '@app/enum/quadrant-position';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { Quadrant } from '@app/interfaces/quadrant';
-import { ReplayEvent } from '@app/interfaces/replay-actions';
+import { CaptureService } from '@app/services/capture-service/capture.service';
 import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { DifferenceService } from '@app/services/difference-service/difference.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { Coordinate } from '@common/coordinate';
-import { Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class HintService {
     nAvailableHints: number;
-    replayEventsSubject: Subject<ReplayEvent>;
     proximity: HintProximity;
     isThirdHintActive: boolean;
     private thirdHintDifference: boolean[][];
     private thirdHintDifferenceSlightlyEnlarged: boolean[][];
     private thirdHintDifferenceEnlarged: boolean[][];
 
+    // eslint-disable-next-line max-params
     constructor(
         private readonly classicSystem: ClassicSystemService,
         private readonly gameAreaService: GameAreaService,
         private readonly differenceService: DifferenceService,
+        private readonly captureService: CaptureService,
     ) {
         this.resetHints();
         this.proximity = HintProximity.TooFar;
         this.thirdHintDifference = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
         this.thirdHintDifferenceSlightlyEnlarged = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
         this.thirdHintDifferenceEnlarged = this.differenceService.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
-        this.replayEventsSubject = new Subject<ReplayEvent>();
     }
 
     get differences(): Coordinate[][] {
@@ -54,11 +53,7 @@ export class HintService {
 
     clickDuringThirdHint(): void {
         this.isThirdHintActive = false;
-        const replayEvent: ReplayEvent = {
-            action: ReplayActions.DeactivateThirdHint,
-            timestamp: Date.now(),
-        };
-        this.replayEventsSubject.next(replayEvent);
+        this.captureService.saveReplayEvent(ReplayActions.DeactivateThirdHint);
     }
 
     requestHint(replayDifference?: Coordinate[], replaySpeed?: number): void {
@@ -81,12 +76,7 @@ export class HintService {
                 }
                 hintSquare = this.generateHintSquare(hintQuadrant);
             }
-            const replayEvent: ReplayEvent = {
-                action: ReplayActions.UseHint,
-                timestamp: Date.now(),
-                data: difference,
-            };
-            this.replayEventsSubject.next(replayEvent);
+            this.captureService.saveReplayEvent(ReplayActions.UseHint, difference);
             if (this.nAvailableHints !== 1) {
                 this.gameAreaService.flashCorrectPixels(hintSquare, speed);
             }
@@ -110,12 +100,7 @@ export class HintService {
     switchProximity(nextProximity: HintProximity): void {
         if (nextProximity !== this.proximity) {
             this.proximity = nextProximity;
-            const replayEvent: ReplayEvent = {
-                action: ReplayActions.ActivateThirdHint,
-                timestamp: Date.now(),
-                data: nextProximity,
-            };
-            this.replayEventsSubject.next(replayEvent);
+            this.captureService.saveReplayEvent(ReplayActions.ActivateThirdHint, nextProximity);
         }
     }
 
