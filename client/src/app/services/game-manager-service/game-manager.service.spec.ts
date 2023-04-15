@@ -118,27 +118,6 @@ describe('GameManagerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('timer$ should return timer as Observable', () => {
-        const mockTimerSubject = new Subject<number>();
-        service['timer'] = mockTimerSubject;
-        const expectedTimer = service['timer']
-            .asObservable()
-            .pipe(filter((timer) => !!timer))
-            .toString();
-        expect(service.timer$.toString()).toEqual(expectedTimer);
-        mockTimerSubject.next(mockTimer);
-    });
-
-    it('differenceFound$ should return differencesFound as Observable', () => {
-        const differenceFoundSubject = new Subject<number>();
-        service['differencesFound'] = differenceFoundSubject;
-        const expectedDifferencesFound = service['differencesFound']
-            .asObservable()
-            .pipe(filter((differencesFound) => !!differencesFound))
-            .toString();
-        expect(service.differencesFound$.toString()).toEqual(expectedDifferencesFound);
-    });
-
     it('message$ should return message as Observable', () => {
         const mockMessageSubject = new Subject<ChatMessage>();
         service['message'] = mockMessageSubject;
@@ -157,16 +136,6 @@ describe('GameManagerService', () => {
             .pipe(filter((endMessage) => !!endMessage))
             .toString();
         expect(service.endMessage$.toString()).toEqual(expectedEndMessage);
-    });
-
-    it('opponentDifferenceFound$ should return opponentDifferenceFound as Observable', () => {
-        const mockOpponentDifferenceFoundSubject = new Subject<number>();
-        service['opponentDifferencesFound'] = mockOpponentDifferenceFoundSubject;
-        const expectedOpponentDifferenceFound = service['opponentDifferencesFound']
-            .asObservable()
-            .pipe(filter((opponentDifferencesFound) => !!opponentDifferencesFound))
-            .toString();
-        expect(service.opponentDifferencesFound$.toString()).toEqual(expectedOpponentDifferenceFound);
     });
 
     it('players$ should return players as Observable', () => {
@@ -249,6 +218,12 @@ describe('GameManagerService', () => {
 
         service['timer'].next(mockTimer);
         service['timer'].next(mockTimer);
+
+        const expectedTimer = service['timer']
+            .asObservable()
+            .pipe(filter((timer) => !!timer))
+            .toString();
+        expect(service.timer$.toString()).toEqual(expectedTimer);
     });
 
     it('should not emit differencesFound when differencesFound is falsy', () => {
@@ -264,6 +239,11 @@ describe('GameManagerService', () => {
 
         service['differencesFound'].next(mockNDifferences);
         service['differencesFound'].next(mockNDifferences);
+        const expectedDifferencesFound = service['differencesFound']
+            .asObservable()
+            .pipe(filter((differencesFound) => !!differencesFound))
+            .toString();
+        expect(service.differencesFound$.toString()).toEqual(expectedDifferencesFound);
     });
 
     it('should not emit message when message is falsy', () => {
@@ -315,6 +295,12 @@ describe('GameManagerService', () => {
 
         service['opponentDifferencesFound'].next(mockOpponentDifferenceFound);
         service['opponentDifferencesFound'].next(mockOpponentDifferenceFound);
+
+        const expectedOpponentDifferenceFound = service['opponentDifferencesFound']
+            .asObservable()
+            .pipe(filter((opponentDifferencesFound) => !!opponentDifferencesFound))
+            .toString();
+        expect(service.opponentDifferencesFound$.toString()).toEqual(expectedOpponentDifferenceFound);
     });
 
     it('should not emit players when players is falsy', () => {
