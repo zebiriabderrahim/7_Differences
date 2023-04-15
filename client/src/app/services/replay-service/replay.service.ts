@@ -18,7 +18,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class ReplayService {
     isReplaying: boolean = false;
-    replayEvents: ReplayEvent[] = [];
+    private replayEvents: ReplayEvent[] = [];
     private replaySpeed = SPEED_X1;
     private currentCoords: Coordinate[] = [];
     private isCheatMode: boolean = false;
