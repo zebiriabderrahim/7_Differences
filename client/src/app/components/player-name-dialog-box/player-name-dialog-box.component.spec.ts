@@ -5,6 +5,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
+import { PlayerNameAvailability, RoomAvailability } from '@common/game-interfaces';
 import { BehaviorSubject } from 'rxjs';
 import { PlayerNameDialogBoxComponent } from './player-name-dialog-box.component';
 
@@ -13,16 +14,20 @@ describe('PlayerNameDialogBoxComponent', () => {
     let fixture: ComponentFixture<PlayerNameDialogBoxComponent>;
     let dialogRef: MatDialogRef<PlayerNameDialogBoxComponent, unknown>;
     let roomManagerServiceSpy: jasmine.SpyObj<RoomManagerService>;
-    let gameIdOfRoomToBeDeletedMock: BehaviorSubject<string>;
+    let oneVsOneRoomsAvailabilityByRoomIdMock: BehaviorSubject<RoomAvailability>;
+    let deletedGameIdMock: BehaviorSubject<string>;
+    let playerNameAvailabilityMock: BehaviorSubject<PlayerNameAvailability>;
 
     beforeEach(async () => {
+        oneVsOneRoomsAvailabilityByRoomIdMock = new BehaviorSubject<RoomAvailability>({ gameId: '1', isAvailableToJoin: true, hostId: 'def456' });
+        playerNameAvailabilityMock = new BehaviorSubject<PlayerNameAvailability>({ gameId: '1', isNameAvailable: false });
+        deletedGameIdMock = new BehaviorSubject<string>('12');
         const mockIsNameTaken = new BehaviorSubject({ gameId: '1', isNameAvailable: false });
-        gameIdOfRoomToBeDeletedMock = new BehaviorSubject<string>('12');
         roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['isPlayerNameIsAlreadyTaken', 'isNameTaken$'], {
             isNameTaken$: mockIsNameTaken,
-            gameIdOfRoomToBeDeleted$: gameIdOfRoomToBeDeletedMock,
-            oneVsOneRoomsAvailabilityByRoomId$: new BehaviorSubject({ gameId: '1', isAvailableToJoin: true }),
-            deletedGameId$: new BehaviorSubject<string>('12'),
+            oneVsOneRoomsAvailabilityByRoomId$: oneVsOneRoomsAvailabilityByRoomIdMock,
+            deletedGameId$: deletedGameIdMock,
+            playerNameAvailability$: playerNameAvailabilityMock,
         });
         await TestBed.configureTestingModule({
             imports: [ReactiveFormsModule, MatFormFieldModule],
@@ -60,33 +65,67 @@ describe('PlayerNameDialogBoxComponent', () => {
         expect(dialogRef.close).not.toHaveBeenCalledWith('');
     });
 
-    // it('validatePlayerName should return null if player name is not taken', async () => {
-    //     const control = jasmine.createSpyObj('AbstractControl', ['value']);
-    //     control.value = 'ExistentGameName';
-    //     const result = await component.validatePlayerName(control);
-
-    //     expect(result).toBeNull();
-    // });
-
-    // it('validatePlayerName should return { nameTaken: true } if player name is taken', async () => {
-    //     component['data'] = { gameId: '1' };
-    //     const control = jasmine.createSpyObj('AbstractControl', ['value']);
-    //     control.value = 'ExistentGameName';
-    //     const result = await component.validatePlayerName(control);
-
-    //     expect(result).toEqual({ nameTaken: true });
-    // });
-
     it('ngOnInit should call handelCreateUndoCreation', () => {
         const handelCreateUndoCreationSpy = spyOn(component, 'handleCreateUndoCreation').and.callFake(() => {});
         component.ngOnInit();
         expect(handelCreateUndoCreationSpy).toHaveBeenCalled();
     });
 
-    // it('handleCreateUndoCreation should close the dialog when the gameId matches the id of the room to be deleted', () => {
-    //     const gameId = '12';
-    //     gameIdOfRoomToBeDeletedMock.next(gameId);
-    //     component.handleCreateUndoCreation(gameId);
-    //     expect(dialogRef.close).toHaveBeenCalled();
-    // });
+    it('should close dialog when room is not available to join', () => {
+        const gameId = '1';
+        const roomAvailability = { gameId, isAvailableToJoin: false, hostId: 'abc123' };
+        component.handleCreateUndoCreation(gameId);
+        oneVsOneRoomsAvailabilityByRoomIdMock.next(roomAvailability);
+        expect(dialogRef.close).toHaveBeenCalled();
+    });
+
+    it('handleGameCardDelete should not close the dialog when the deleted game ID does not match the current game ID', () => {
+        component.handleGameCardDelete();
+        deletedGameIdMock.next('456');
+        expect(dialogRef.close).not.toHaveBeenCalled();
+    });
+
+    it('handleGameCardDelete should close the dialog when the deletedGameId$ event is triggered with a matching gameId', () => {
+        const gameId = 'test-game-id';
+        component['data'] = { gameId };
+        fixture.detectChanges();
+        deletedGameIdMock.next(gameId);
+        expect(dialogRef.close).toHaveBeenCalled();
+    });
+
+    it('should return null when data is not set', async () => {
+        component['data'] = undefined as unknown as { gameId: 'test' };
+        const control = new FormControl();
+        const result = await component.validatePlayerName(control);
+        expect(result).toBeNull();
+    });
+
+    it('validatePlayerName should return null when player name is available', async () => {
+        component['data'] = { gameId: 'game-123' };
+        roomManagerServiceSpy.isPlayerNameIsAlreadyTaken.and.returnValue(void 0);
+        playerNameAvailabilityMock.next({ gameId: 'game-123', isNameAvailable: true });
+
+        const result = await component.validatePlayerName(new FormControl(''));
+        expect(result).toBeNull();
+    });
+
+    it('validatePlayerName should return "nameTaken" error when player name is not available', async () => {
+        component['data'] = { gameId: 'game-123' };
+        roomManagerServiceSpy.isPlayerNameIsAlreadyTaken.and.returnValue(void 0);
+        playerNameAvailabilityMock.next({ gameId: 'game-123', isNameAvailable: false });
+
+        const result = await component.validatePlayerName(new FormControl(''));
+        expect(result).toEqual({ nameTaken: true });
+    });
+
+    it('validatePlayerName should call roomManagerService.isPlayerNameIsAlreadyTaken with correct payload', async () => {
+        const control = new FormControl('');
+        component['data'] = { gameId: 'game-123' };
+        roomManagerServiceSpy.isPlayerNameIsAlreadyTaken.and.returnValue(void 0);
+        playerNameAvailabilityMock.next({ gameId: 'game-123', isNameAvailable: false });
+
+        control.setValue('player-1');
+        await component.validatePlayerName(control);
+        expect(roomManagerServiceSpy.isPlayerNameIsAlreadyTaken).toHaveBeenCalled();
+    });
 });
