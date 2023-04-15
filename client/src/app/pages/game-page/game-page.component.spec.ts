@@ -76,6 +76,7 @@ describe('GamePageComponent', () => {
                 // cheatDifferences$: cheatDifferencesSubjectTest,
                 isFirstDifferencesFound$: isFirstDifferencesFoundTest,
                 isGameModeChanged$: isGameModeChangedTest,
+                isGamePageRefreshed$: new Subject<boolean>(),
             },
         );
         routeSpy = jasmine.createSpyObj('ActivatedRoute', ['navigate'], { params: paramsSubjectTest });

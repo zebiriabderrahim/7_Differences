@@ -316,7 +316,7 @@ describe('GameGateway', () => {
         assert.calledWith(server.emit, GameCardEvents.RequestReload);
     });
 
-    it('handleDisconnect() should call endGame',async () => {
+    it('handleDisconnect() should call endGame', async () => {
         await gateway.handleDisconnect(socket);
         expect(classicService.handleSocketDisconnect).toBeTruthy();
     });
