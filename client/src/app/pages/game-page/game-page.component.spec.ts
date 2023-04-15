@@ -6,9 +6,11 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DEFAULT_PLAYERS } from '@app/constants/constants';
+import { HintProximity } from '@app/enum/hint-proximity';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { GameManagerService } from '@app/services/game-manager-service/game-manager.service';
+import { HintService } from '@app/services/hint-service/hint.service';
 import { ReplayService } from '@app/services/replay-service/replay.service';
 import { MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, Players } from '@common/game-interfaces';
@@ -23,6 +25,7 @@ describe('GamePageComponent', () => {
     let dialog: jasmine.SpyObj<MatDialog>;
     let gameManagerServiceSpy: jasmine.SpyObj<GameManagerService>;
     let replayServiceSpy: jasmine.SpyObj<ReplayService>;
+    let hintServiceSpy: jasmine.SpyObj<HintService>;
     let routeSpy: jasmine.SpyObj<ActivatedRoute>;
     const clientSideGameTest: ClientSideGame = {
         id: '1',
@@ -76,8 +79,13 @@ describe('GamePageComponent', () => {
                 // cheatDifferences$: cheatDifferencesSubjectTest,
                 isFirstDifferencesFound$: isFirstDifferencesFoundTest,
                 isGameModeChanged$: isGameModeChangedTest,
+                differences: [[{ x: 0, y: 0 }]],
             },
         );
+        hintServiceSpy = jasmine.createSpyObj('HintService', ['requestHint', 'resetHints', 'deactivateThirdHint', 'checkThirdHintProximity'], {
+            thirdHintProximity: HintProximity.OnIt,
+            nAvailableHints: 3,
+        });
         routeSpy = jasmine.createSpyObj('ActivatedRoute', ['navigate'], { params: paramsSubjectTest });
         dialog = jasmine.createSpyObj('MatDialog', ['open']);
         await TestBed.configureTestingModule({
@@ -87,6 +95,7 @@ describe('GamePageComponent', () => {
                 GameAreaService,
                 { provide: GameManagerService, useValue: gameManagerServiceSpy },
                 { provide: MatDialog, useValue: dialog },
+                { provide: HintService, useValue: hintServiceSpy },
                 { provide: ActivatedRoute, useValue: routeSpy },
                 { provide: ReplayService, useValue: replayServiceSpy },
             ],
@@ -117,6 +126,14 @@ describe('GamePageComponent', () => {
         component.ngAfterViewInit();
         clientSideGameSubjectTest.next(clientSideGameTest);
         expect(component.game).toBeDefined();
+    });
+
+    it('differences() should return the gameManager.differences', () => {
+        expect(component.differences).toEqual(gameManagerService.differences);
+    });
+
+    it('proximity() should return hintService.thirdHintProximity', () => {
+        expect(component.proximity).toEqual(hintServiceSpy.thirdHintProximity);
     });
 
     it('should set players and playerName and player1 as player when id matches', () => {
