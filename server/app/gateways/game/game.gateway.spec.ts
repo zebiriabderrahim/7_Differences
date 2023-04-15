@@ -220,9 +220,9 @@ describe('GameGateway', () => {
         expect(cancelJoiningSpy).toHaveBeenCalled();
     });
 
-    it('abandonGame() should call abandonGame in roomsManagerService', () => {
+    it('abandonGame() should call abandonGame in roomsManagerService', async () => {
         const abandonGameSpy = jest.spyOn(roomsManagerService, 'abandonGame');
-        gateway.abandonGame(socket);
+        await gateway.abandonGame(socket);
         expect(abandonGameSpy).toHaveBeenCalled();
     });
 
@@ -316,8 +316,8 @@ describe('GameGateway', () => {
         assert.calledWith(server.emit, GameCardEvents.RequestReload);
     });
 
-    it('handleDisconnect() should call endGame', () => {
-        gateway.handleDisconnect(socket);
+    it('handleDisconnect() should call endGame',async () => {
+        await gateway.handleDisconnect(socket);
         expect(classicService.handleSocketDisconnect).toBeTruthy();
     });
 
