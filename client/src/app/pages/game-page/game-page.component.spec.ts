@@ -43,7 +43,6 @@ describe('GamePageComponent', () => {
     const opponentDifferencesFoundTest = 2;
     const endGameMessageTest = 'La partie est terminée';
     const messageTest: ChatMessage = { tag: MessageTag.Common, message: 'messageTest' };
-    // const cheatDifferenceTest: Coordinate[] = [];
     const mockDifferenceData = { currentDifference: [], differencesFound: 0 };
 
     const clientSideGameSubjectTest = new Subject<ClientSideGame>();
@@ -53,7 +52,6 @@ describe('GamePageComponent', () => {
     const messageSubjectTest = new Subject<ChatMessage>();
     const endMessageTest = new Subject<string>();
     const opponentDifferencesFoundSubjectTest = new Subject<number>();
-    // const cheatDifferencesSubjectTest = new Subject<Coordinate[]>();
     const paramsSubjectTest = new Subject<{ roomId: string }>();
     const isFirstDifferencesFoundTest = new Subject<boolean>();
     const isGameModeChangedTest = new Subject<boolean>();
@@ -88,7 +86,6 @@ describe('GamePageComponent', () => {
                 message$: messageSubjectTest,
                 endMessage$: endMessageTest,
                 opponentDifferencesFound$: opponentDifferencesFoundSubjectTest,
-                // cheatDifferences$: cheatDifferencesSubjectTest,
                 isFirstDifferencesFound$: isFirstDifferencesFoundTest,
                 isGameModeChanged$: isGameModeChangedTest,
                 differences: [[{ x: 0, y: 0 }]],
@@ -162,7 +159,6 @@ describe('GamePageComponent', () => {
         component.ngAfterViewInit();
         playersSubjectTest.next(playersTest);
         expect(component.players).toBeDefined();
-        // expect(component.player).toEqual(playersTest.player1.name);
     });
 
     it('setUpReplay should set differencesFound', () => {
@@ -248,13 +244,6 @@ describe('GamePageComponent', () => {
         messageSubjectTest.next(messageTest);
         expect(component.messages.length).toEqual(2);
     });
-
-    // it('should update the differences of cheat mode', () => {
-    //     expect(component['cheatDifferences']).toBeUndefined();
-    //     component.ngAfterViewInit();
-    //     cheatDifferencesSubjectTest.next(cheatDifferenceTest);
-    //     expect(component['cheatDifferences'].length).toEqual(cheatDifferenceTest.length);
-    // });
 
     it('should update the differences found', () => {
         expect(component.differencesFound).toEqual(0);
@@ -355,20 +344,6 @@ describe('GamePageComponent', () => {
         expect(messagesLength).toBeLessThan(component.messages.length);
         expect(gameManagerServiceSpy.sendMessage).toHaveBeenCalledWith(text);
     });
-
-    // it('ngOnDestroy should unsubscribe from subscriptions', () => {
-    //     component['gameSub'] = undefined as unknown as Subscription;
-    //     component['timerSub'] = undefined as unknown as Subscription;
-    //     component['differenceSub'] = undefined as unknown as Subscription;
-    //     // component['routeParamSub'] = undefined as unknown as Subscription;
-    //     component['opponentDifferenceSub'] = undefined as unknown as Subscription;
-    //     component['messageSub'] = undefined as unknown as Subscription;
-    //     component['endGameSub'] = undefined as unknown as Subscription;
-    //     // component['cheatDifferencesSub'] = undefined as unknown as Subscription;
-    //     const resetCheatModeSpy = spyOn(gameAreaService, 'resetCheatMode');
-    //     component.ngOnDestroy();
-    //     expect(resetCheatModeSpy).toHaveBeenCalled();
-    // });
 
     it('should call toggleCheatMode when "t" key is pressed', () => {
         const toggleCheatModeSpy = spyOn(gameAreaService, 'toggleCheatMode').and.callFake(() => {});
