@@ -33,9 +33,9 @@ export class LimitedModeService {
         if (!room) return;
         const playedGameIds = this.getGameIds(room.roomId);
         const nextGameId = await this.roomsManagerService.loadNextGame(room, playedGameIds);
-        this.equalizeDiffFound(room, server);
+        this.equalizeDifferencesFound(room, server);
         if (!nextGameId) {
-            this.endGame(room, server);
+            await this.endGame(room, server);
             return;
         }
         if (playedGameIds) this.availableGameByRoomId.set(room.roomId, [...playedGameIds, nextGameId]);
@@ -84,15 +84,15 @@ export class LimitedModeService {
         return this.availableGameByRoomId.get(roomId);
     }
 
-    private endGame(room: GameRoom, server: io.Server): void {
+    private async endGame(room: GameRoom, server: io.Server): Promise<void> {
+        await this.historyService.closeEntry(room.roomId, server);
         this.sendEndMessage(room, server);
-        this.historyService.closeEntry(room.roomId, server);
         this.roomsManagerService.leaveRoom(room, server);
         this.roomsManagerService.deleteRoom(room.roomId);
         this.deleteAvailableGame(room.roomId);
     }
 
-    private equalizeDiffFound(room: GameRoom, server: io.Server): void {
+    private equalizeDifferencesFound(room: GameRoom, server: io.Server): void {
         if (room.clientGame.mode === GameModes.LimitedCoop) {
             server.to(room.roomId).emit(GameEvents.UpdateDifferencesFound, room.player1.differenceData.differencesFound);
         }
