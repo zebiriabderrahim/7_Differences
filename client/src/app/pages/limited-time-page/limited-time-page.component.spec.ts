@@ -85,4 +85,11 @@ describe('LimitedTimePageComponent', () => {
         expect(component.openWaitingDialog).not.toHaveBeenCalled();
         expect(component['isStartingGame']).toEqual(false);
     });
+
+    it('openWaitingDialog should open dialog', () => {
+        const mockRoomId = 'test-room-id';
+        const dialogOpenSpy = spyOn(component['dialog'], 'open').and.callThrough();
+        component.openWaitingDialog(mockRoomId);
+        expect(dialogOpenSpy).toHaveBeenCalled();
+    });
 });
