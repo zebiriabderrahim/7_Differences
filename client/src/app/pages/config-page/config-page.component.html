@@ -2,38 +2,38 @@
     <div class="upper-list-game">
         <app-selection-page> </app-selection-page>
     </div>
-    <div class="under-game-list">
-        <app-history-box></app-history-box>
-        <mat-grid-list cols="2" rows="2" rowHeight="225px">
-            <mat-grid-tile>
-                <div class="button-container">
-                    <button class="create_button" mat-button [routerLink]="createRoute">
-                    </button>
-                    <img src="./assets/icon/CreationPageButton.png" alt="createButton"/>
-                    <div class="centered-create">Création de jeu</div>
-                </div>
-                <div class="button-container">
-                    <button mat-raised-button class="reset_button" (click)="openConfirmationDialog(actions.ResetAllTopTimes)"></button>
-                    <img src="./assets/icon/ResetButton.png" alt="resetButton"/>
-                    <div class="centered-reset">Réinitialiser les meilleurs temps</div>
-                </div>
-            </mat-grid-tile>
-            <mat-grid-tile
-                ><div class="game-constants">
-                    <div class="button-container">
-                        <button mat-raised-button class="config_button" (click)="openConfigDialog()">Configurer les constantes de jeu</button>
-                        <img src="./assets/icon/ConfigButton.png">
-                        <div class="centered-reset">Configurer les constantes de jeu</div>
-                    </div>
-                </div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-              <div class="button-container">
-                <button mat-raised-button class="delete_button" (click)="openConfirmationDialog(actions.DeleteAllGames)"></button>
-                <img src="./assets/icon/DeleteAll.png" alt="deleteAll">
-                <div class="centered-delete">Supprimer tous les jeux</div>
-              </div>
-            </mat-grid-tile>
-        </mat-grid-list>
+    <app-history-box></app-history-box>
+    <div class="game-creation">
+        <div class="button-container">
+            <button class="create_button" mat-button [routerLink]="createRoute">
+            </button>
+            <img src="./assets/icon/CreationPageButton.png" alt="createButton"/>
+            <div class="centered-create">Création de jeu</div>
+        </div>
     </div>
+
+    <div class="game-constants">
+        <div class="button-container">
+            <button mat-raised-button class="config_button" (click)="openConfigDialog()">Configurer les constantes de jeu</button>
+            <img src="./assets/icon/ConfigButton.png">
+            <div class="centered-reset">Configurer les constantes de jeu</div>
+        </div>
+    </div>   
+        
+    <div class="game-reinitialization">  
+        <div class="button-container">
+            <button mat-raised-button class="reset_button" (click)="openConfirmationDialog(actions.ResetAllTopTimes)"></button>
+            <img src="./assets/icon/ResetButton.png" alt="resetButton"/>
+            <div class="centered-reset">Réinitialiser les meilleurs temps</div>
+        </div>            
+    </div> 
+    
+    <div class="game-deletion">  
+        <div class="button-container">
+            <button mat-raised-button class="delete_button" (click)="openConfirmationDialog(actions.DeleteAllGames)"></button>
+            <img src="./assets/icon/DeleteAll.png" alt="deleteAll">
+            <div class="centered-delete">Supprimer tous les jeux</div>
+        </div>
+    </div>
+              
 </div>

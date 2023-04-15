@@ -3,9 +3,7 @@
         <h1>{{ game.name }}</h1>
         <div class="game-feedback">
             <mat-icon class="personIcon">person</mat-icon>
-            <h1>
-                {{ player }} Différences trouvées : {{ differencesFound }}
-            </h1>
+            <h1>{{ player }} Différences trouvées : {{ differencesFound }}</h1>
             &nbsp;
             <h1>Temps : {{ timer * 1000 | date: 'mm:ss' }}</h1>
             &nbsp;
@@ -15,15 +13,11 @@
                 <span *ngIf="game.mode === gameMode.ClassicOneVsOne"> Différences trouvées :{{ opponentDifferencesFound }}</span>
             </h1>
         </div>
-        <app-game-infos
-            [isReplayAvailable]="isReplayAvailable"
-            [game]="game"
-        ></app-game-infos>
+        <app-game-infos [isReplayAvailable]="isReplayAvailable" [game]="game"></app-game-infos>
         <div *ngIf="isThirdHintActive">
-            <img  id="raccoon" [src]="hintsAssets[proximity]" />
-            <p>Je peux guider ton curseur vers une différence! </p>
+            <img id="raccoon" [src]="hintsAssets[proximity]" />
+            <p id = "intro">Yo moi c'est Émile et je t'accompagnerai pendant que tu cherches une des différences. Observes bien la façon dont je réagis lorsque tu te déplaces sur un des canvas</p>
         </div>
-        
     </div>
     <div class="canvas-container">
         <div class="game-canvas">
@@ -32,7 +26,7 @@
                 [attr.height]="canvasSize.height"
                 [attr.width]="canvasSize.width"
                 #originalCanvasFG
-                (click)="mouseClickOnCanvas($event,  true)"
+                (click)="mouseClickOnCanvas($event, true)"
                 (mousemove)="checkThirdHint($event)"
             ></canvas>
             <canvas
@@ -40,7 +34,7 @@
                 [attr.height]="canvasSize.height"
                 [attr.width]="canvasSize.width"
                 #originalCanvas
-                (click)="mouseClickOnCanvas($event,  true)"
+                (click)="mouseClickOnCanvas($event, true)"
                 (mousemove)="checkThirdHint($event)"
             ></canvas>
         </div>
@@ -50,7 +44,7 @@
                 [attr.height]="canvasSize.height"
                 [attr.width]="canvasSize.width"
                 #modifiedCanvasFG
-                (click)="mouseClickOnCanvas($event,  false)"
+                (click)="mouseClickOnCanvas($event, false)"
                 (mousemove)="checkThirdHint($event)"
             ></canvas>
             <canvas
@@ -58,14 +52,16 @@
                 [attr.height]="canvasSize.height"
                 [attr.width]="canvasSize.width"
                 #modifiedCanvas
-                (click)="mouseClickOnCanvas($event,  false)"
+                (click)="mouseClickOnCanvas($event, false)"
                 (mousemove)="checkThirdHint($event)"
             ></canvas>
         </div>
     </div>
-    <button *ngIf="!isReplayAvailable" class="importantButton justified" (click)="showAbandonDialog()"><span id = "abandon">Abandonner la partie</span></button>
+    <button *ngIf="!isReplayAvailable" class="importantButton justified" (click)="showAbandonDialog()">
+        <span id="abandon">Abandonner la partie</span>
+    </button>
 </div>
-<img id = "background" src = "./assets/background/BackgroundImage.jpg" alt="background" />
+<img id="background" src="./assets/background/BackgroundImage.jpg" alt="background" />
 <div *ngIf="game">
     <app-chat-box (add)="addRightSideMessage($event)" [messages]="messages" [isReplaying]="isReplayAvailable" [gameMode]="game.mode"></app-chat-box>
     <app-replay-buttons [isReplayAvailable]="isReplayAvailable"></app-replay-buttons>
