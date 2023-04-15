@@ -68,10 +68,6 @@ export class DifferenceService {
         return this.differences;
     }
 
-    createFalseMatrix(width: number, height: number): boolean[][] {
-        return new Array(width).fill(false).map(() => new Array(height).fill(false)) as boolean[][];
-    }
-
     enlargeDifferences(differenceCoordinates: Coordinate[], radius: number): Coordinate[] {
         const enlargedDifferenceCoordinates: Coordinate[] = [];
         for (const coordinate of differenceCoordinates) {
@@ -92,6 +88,10 @@ export class DifferenceService {
             }
         }
         return enlargedDifferenceCoordinates;
+    }
+
+    private createFalseMatrix(width: number, height: number): boolean[][] {
+        return new Array(width).fill(false).map(() => new Array(height).fill(false)) as boolean[][];
     }
 
     private findAdjacentCoords(coord: Coordinate): Coordinate[] {

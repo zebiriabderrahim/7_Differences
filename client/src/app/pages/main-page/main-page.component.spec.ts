@@ -32,8 +32,4 @@ describe('MainPageComponent', () => {
     it("button 'Configuration' should redirect correctly", () => {
         expect(component.configRoute).toEqual('/config');
     });
-
-    it("button 'Jouer' should redirect correctly", () => {
-        expect(component.gameRoute).toEqual('/game');
-    });
 });

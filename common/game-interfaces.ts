@@ -6,6 +6,21 @@ export interface Players {
     player2?: Player;
 }
 
+export interface GameHistory {
+    date: string,
+    startingHour: string,
+    duration: number,
+    gameMode: string,
+    player1: PlayerInfo,
+    player2?: PlayerInfo,
+}
+
+export interface PlayerInfo {
+    name: string;
+    isWinner: boolean;
+    isQuitter: boolean;
+}
+
 export interface ClientSideGame {
     id: string;
     name: string;
@@ -56,7 +71,7 @@ export interface GameRoom {
 export interface Player {
     playerId?: string;
     name: string;
-    diffData: Differences;
+    differenceData: Differences;
 }
 
 export interface PlayerData {
@@ -114,3 +129,4 @@ export enum GameCardActions {
     Join = 'join',
 }
 export { Coordinate };
+

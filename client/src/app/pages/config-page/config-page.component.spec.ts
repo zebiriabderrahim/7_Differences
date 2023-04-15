@@ -2,6 +2,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -12,6 +13,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ConfigDialogComponent } from '@app/components/config-dialog/config-dialog.component';
 import { DeleteResetConfirmationDialogComponent } from '@app/components/delete-reset-confirmation-dialog/delete-reset-confirmation-dialog.component';
+import { HistoryBoxComponent } from '@app/components/history-box/history-box.component';
 import { NavBarComponent } from '@app/components/nav-bar/nav-bar.component';
 import { Actions } from '@app/enum/delete-reset-actions';
 import { SelectionPageComponent } from '@app/pages/selection-page/selection-page.component';
@@ -39,8 +41,9 @@ describe('ConfigPageComponent', () => {
                 MatFormFieldModule,
                 MatInputModule,
                 MatDialogModule,
+                MatButtonToggleModule,
             ],
-            declarations: [ConfigPageComponent, SelectionPageComponent, NavBarComponent],
+            declarations: [ConfigPageComponent, SelectionPageComponent, NavBarComponent, HistoryBoxComponent],
             providers: [CommunicationService, RoomManagerService, { provide: MatDialog, useValue: dialogSpy }],
         }).compileComponents();
     });

@@ -1,19 +1,21 @@
 import { Logger, Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { GameService } from './services/game/game.service';
+import { MongooseModule } from '@nestjs/mongoose';
 import { GameController } from './controllers/game/game.controller';
-import { DatabaseService } from './services/database/database.service';
 import { GameGateway } from './gateways/game/game.gateway';
-import { ClassicModeService } from './services/classic-mode/classic-mode.service';
-import { GameListsManagerService } from './services/game-lists-manager/game-lists-manager.service';
 import { Game, gameSchema } from './model/database/game';
 import { GameCard, gameCardSchema } from './model/database/game-card';
+import { ClassicModeService } from './services/classic-mode/classic-mode.service';
+import { DatabaseService } from './services/database/database.service';
+import { GameListsManagerService } from './services/game-lists-manager/game-lists-manager.service';
+import { GameService } from './services/game/game.service';
+import { HistoryService } from './services/history/history.service';
 import { MessageManagerService } from './services/message-manager/message-manager.service';
 import { PlayersListManagerService } from './services/players-list-manager/players-list-manager.service';
 import { GameConstants, gameConstantsSchema } from './model/database/game-config-constants';
 import { RoomsManagerService } from './services/rooms-manager/rooms-manager.service';
 import { LimitedModeService } from './services/limited-mode/limited-mode.service';
+import { GameHistory, gameHistorySchema } from './model/database/game-history';
 
 @Module({
     imports: [
@@ -29,6 +31,7 @@ import { LimitedModeService } from './services/limited-mode/limited-mode.service
             { name: Game.name, schema: gameSchema },
             { name: GameCard.name, schema: gameCardSchema },
             { name: GameConstants.name, schema: gameConstantsSchema },
+            { name: GameHistory.name, schema: gameHistorySchema },
         ]),
     ],
     controllers: [GameController],
@@ -41,6 +44,7 @@ import { LimitedModeService } from './services/limited-mode/limited-mode.service
         ClassicModeService,
         GameListsManagerService,
         MessageManagerService,
+        HistoryService,
         PlayersListManagerService,
         RoomsManagerService,
         LimitedModeService,

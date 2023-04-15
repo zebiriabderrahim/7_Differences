@@ -1,15 +1,15 @@
-import { GameService } from '@app/services/game/game.service';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { NOT_FOUND } from '@common/constants';
-import { GameEvents, GameModes, RoomEvents } from '@common/enums';
+import { GameEvents, RoomEvents, GameModes } from '@common/enums';
 import { GameRoom, PlayerData } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
+import { HistoryService } from '@app/services/history/history.service';
 
 @Injectable()
 export class LimitedModeService {
     private availableGameByRoomId: Map<string, string[]>;
-    constructor(private readonly roomsManagerService: RoomsManagerService, private readonly gameService: GameService) {
+    constructor(private readonly roomsManagerService: RoomsManagerService, private readonly historyService: HistoryService) {
         this.availableGameByRoomId = new Map<string, string[]>();
     }
 
@@ -43,7 +43,7 @@ export class LimitedModeService {
         const room = this.roomsManagerService.getCreatedCoopRoom();
         if (!room) return;
         socket.join(room.roomId);
-        room.player2 = { name: playerPayLoad.playerName, playerId: socket.id, diffData: room.player1.diffData };
+        room.player2 = { name: playerPayLoad.playerName, playerId: socket.id, differenceData: room.player1.differenceData };
         this.roomsManagerService.updateRoom(room);
         server.to(room.roomId).emit(RoomEvents.LimitedCoopRoomJoined);
     }
@@ -83,6 +83,7 @@ export class LimitedModeService {
 
     private endGame(room: GameRoom, server: io.Server): void {
         this.sendEndMessage(room, server);
+        this.historyService.closeEntry(room.roomId, server);
         this.roomsManagerService.leaveRoom(room, server);
         this.roomsManagerService.deleteRoom(room.roomId);
         this.deleteAvailableGame(room.roomId);
@@ -90,12 +91,12 @@ export class LimitedModeService {
 
     private equalizeDiffFound(room: GameRoom, server: io.Server): void {
         if (room.clientGame.mode === GameModes.LimitedCoop) {
-            server.to(room.roomId).emit(GameEvents.UpdateDifferencesFound, room.player1.diffData.differencesFound);
+            server.to(room.roomId).emit(GameEvents.UpdateDifferencesFound, room.player1.differenceData.differencesFound);
         }
     }
 
     private sendEndMessage(room: GameRoom, server: io.Server): void {
-        room.endMessage = `Vous avez trouvé les ${room.player1.diffData.differencesFound} différences! Bravo!`;
+        room.endMessage = `Vous avez trouvé les ${room.player1.differenceData.differencesFound} différences! Bravo!`;
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
     }
 }
