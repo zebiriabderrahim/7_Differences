@@ -93,6 +93,16 @@ describe('DatabaseService', () => {
             thumbnail: 'assets/test/modified.bmp',
         },
     ];
+
+    const gameHistoryTest: GameHistory = {
+        gameMode: GameModes.ClassicOneVsOne,
+        player1: { name: 'John Doe', isWinner: true, isQuitter: false },
+        player2: { name: 'Jane Doe', isWinner: false, isQuitter: false },
+        duration: 100,
+        startingHour: '2020-01-01T00:00:00.000Z',
+        date: '2020-01-01T00:00:00.000Z',
+    };
+
     const DELAY_BEFORE_CLOSING_CONNECTION = 30;
 
     beforeEach(async () => {
@@ -452,6 +462,45 @@ describe('DatabaseService', () => {
         const id = (await gameModel.create(newGameInDB))._id.toString();
         const game = await dataBaseService.getGameById(id);
         expect(game).toBeDefined();
+    });
+
+    it('getGamesHistory should return the games history', async () => {
+        await gameHistoryModel.create(gameHistoryTest);
+        const gamesHistory = await dataBaseService.getGamesHistory();
+        expect(gamesHistory).toBeDefined();
+    });
+
+    it('getGamesHistory should fail if mongo query failed', async () => {
+        jest.spyOn(gameHistoryModel, 'find').mockImplementation(() => {
+            throw new Error('Mock MongoDB error');
+        });
+        await expect(dataBaseService.getGamesHistory()).rejects.toBeTruthy();
+    });
+
+    it('saveGameHistory should save the game history', async () => {
+        const createSpy = jest.spyOn(gameHistoryModel, 'create');
+        await dataBaseService.saveGameHistory(gameHistoryTest);
+        expect(createSpy).toBeCalledTimes(1);
+    });
+
+    it('saveGameHistory should fail if mongo query failed', async () => {
+        jest.spyOn(gameHistoryModel, 'create').mockImplementation(() => {
+            throw new Error('Mock MongoDB error');
+        });
+        await expect(dataBaseService.saveGameHistory(gameHistoryTest)).rejects.toBeTruthy();
+    });
+
+    it('deleteAllGamesHistory should delete all the games history', async () => {
+        const deleteManySpy = jest.spyOn(gameHistoryModel, 'deleteMany');
+        await dataBaseService.deleteAllGamesHistory();
+        expect(deleteManySpy).toBeCalledTimes(1);
+    });
+
+    it('deleteAllGamesHistory should fail if mongo query failed', async () => {
+        jest.spyOn(gameHistoryModel, 'deleteMany').mockImplementation(() => {
+            throw new Error('Mock MongoDB error');
+        });
+        await expect(dataBaseService.deleteAllGamesHistory()).rejects.toBeTruthy();
     });
 
     afterAll(() => {
