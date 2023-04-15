@@ -169,6 +169,7 @@ export class GameManagerService {
             this.gameConstants = room.gameConstants;
             this.players.next({ player1: room.player1, player2: room.player2 });
             this.differences = room.originalDifferences;
+            this.soundService.stopBackgroundMusic();
             this.captureService.saveReplayEvent(ReplayActions.StartGame, room);
         });
 

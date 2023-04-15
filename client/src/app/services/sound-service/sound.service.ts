@@ -6,10 +6,12 @@ import { Injectable } from '@angular/core';
 export class SoundService {
     private correctSoundEffect: HTMLAudioElement;
     private incorrectSoundEffect: HTMLAudioElement;
+    private backgroundMusic: HTMLAudioElement;
 
     constructor() {
         this.correctSoundEffect = new Audio('assets/sound/WinSoundEffect.mp3');
         this.incorrectSoundEffect = new Audio('assets/sound/ErrorSoundEffect.mp3');
+        this.backgroundMusic = new Audio('assets/sound/BackgroundMusic.mp3');
     }
 
     playErrorSound(): void {
@@ -18,5 +20,15 @@ export class SoundService {
 
     playCorrectSound(): void {
         this.correctSoundEffect.play();
+    }
+
+    loopBackgroundMusic(): void {
+        this.backgroundMusic.loop = true;
+        this.backgroundMusic.play();
+    }
+
+    stopBackgroundMusic(): void {
+        this.backgroundMusic.pause();
+        this.backgroundMusic.currentTime = 0;
     }
 }
