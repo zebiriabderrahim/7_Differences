@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { NoGameAvailibleDialogComponent } from '@app/components/no-game-availible-dialog/no-game-availible-dialog.component';
+import { NoGameAvailableDialogComponent } from '@app/components/no-game-available-dialog/no-game-available-dialog.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
 import { WaitingForPlayerToJoinComponent } from '@app/components/waiting-player-to-join/waiting-player-to-join.component';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
@@ -91,7 +91,7 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
 
     handleNoGameAvailable() {
         this.hasNoGameAvailableSubscription = this.roomManagerService.hasNoGameAvailable$.subscribe((hasNoGameAvailable) => {
-            if (hasNoGameAvailable) this.dialog.open(NoGameAvailibleDialogComponent, { disableClose: true });
+            if (hasNoGameAvailable) this.dialog.open(NoGameAvailableDialogComponent, { disableClose: true });
         });
     }
 

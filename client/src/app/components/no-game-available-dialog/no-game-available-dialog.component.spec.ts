@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { NoGameAvailibleDialogComponent } from './no-game-availible-dialog.component';
+import { NoGameAvailableDialogComponent } from '@app/components/no-game-available-dialog/no-game-available-dialog.component';
 
-describe('NoGameAvailibleDialogComponent', () => {
-    let component: NoGameAvailibleDialogComponent;
-    let fixture: ComponentFixture<NoGameAvailibleDialogComponent>;
+describe('NoGameAvailableDialogComponent', () => {
+    let component: NoGameAvailableDialogComponent;
+    let fixture: ComponentFixture<NoGameAvailableDialogComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [RouterTestingModule],
-            declarations: [NoGameAvailibleDialogComponent],
+            declarations: [NoGameAvailableDialogComponent],
         }).compileComponents();
 
-        fixture = TestBed.createComponent(NoGameAvailibleDialogComponent);
+        fixture = TestBed.createComponent(NoGameAvailableDialogComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
