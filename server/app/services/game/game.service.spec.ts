@@ -7,6 +7,7 @@ import { CarouselPaginator, PlayerTime } from '@common/game-interfaces';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { GameService } from './game.service';
+import { GameHistory } from '@app/model/database/game-history';
 
 describe('GameService', () => {
     let gameService: GameService;
@@ -40,6 +41,16 @@ describe('GameService', () => {
         nDifference: 1,
         differences: 'test',
     };
+
+    const gameHistoryTest: GameHistory = {
+        gameMode: GameModes.ClassicOneVsOne,
+        player1: { name: 'John Doe', isWinner: true, isQuitter: false },
+        player2: { name: 'Jane Doe', isWinner: false, isQuitter: false },
+        duration: 100,
+        startingHour: '2020-01-01T00:00:00.000Z',
+        date: '2020-01-01T00:00:00.000Z',
+    };
+
     beforeEach(async () => {
         databaseService = createStubInstance(DatabaseService);
         const module: TestingModule = await Test.createTestingModule({
@@ -173,5 +184,30 @@ describe('GameService', () => {
         databaseService.getRandomGame.resolves(null);
         expect(await gameService.getRandomGame([])).toEqual(null);
         expect(databaseService.getRandomGame.calledOnce).toBe(true);
+    });
+
+    it('getGamesHistory() should call getGamesHistory() and return testGame as expected ', async () => {
+        databaseService.getGamesHistory.resolves([gameHistoryTest]);
+        expect(await gameService.getGamesHistory()).toEqual([gameHistoryTest]);
+        expect(databaseService.getGamesHistory.calledOnce).toBe(true);
+    });
+
+    it('getGamesHistory() should throw NotFoundException when getGamesHistory() in databaseService unable to found Game', async () => {
+        databaseService.getGamesHistory.resolves(undefined);
+        expect(async () => await gameService.getGamesHistory()).rejects.toThrowError();
+        expect(databaseService.getGamesHistory.calledOnce).toBe(true);
+    });
+
+    it('saveGameHistory() should call saveGameHistory() ', async () => {
+        databaseService.saveGameHistory.resolves();
+        await gameService.saveGameHistory(gameHistoryTest);
+        expect(databaseService.saveGameHistory.calledOnce).toBe(true);
+        expect(databaseService.saveGameHistory.calledWith(gameHistoryTest)).toBe(true);
+    });
+
+    it('deleteAllGamesHistory() should call deleteAllGamesHistory() ', async () => {
+        databaseService.deleteAllGamesHistory.resolves();
+        await gameService.deleteAllGamesHistory();
+        expect(databaseService.deleteAllGamesHistory.calledOnce).toBe(true);
     });
 });

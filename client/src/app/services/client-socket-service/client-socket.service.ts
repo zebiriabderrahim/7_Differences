@@ -12,6 +12,7 @@ export class ClientSocketService {
     private readonly baseUrl: string;
     constructor() {
         this.baseUrl = environment.serverUrl.replace('/api', '');
+        this.connect();
     }
     isSocketAlive() {
         return this.socket && this.socket.connected;

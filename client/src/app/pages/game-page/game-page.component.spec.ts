@@ -89,6 +89,7 @@ describe('GamePageComponent', () => {
                 isFirstDifferencesFound$: isFirstDifferencesFoundTest,
                 isGameModeChanged$: isGameModeChangedTest,
                 differences: [[{ x: 0, y: 0 }]],
+                isGamePageRefreshed$: new Subject<boolean>(),
             },
         );
         hintServiceSpy = jasmine.createSpyObj('HintService', ['requestHint', 'resetHints', 'deactivateThirdHint', 'checkThirdHintProximity'], {

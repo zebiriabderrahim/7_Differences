@@ -93,6 +93,7 @@ export class GameService {
     async saveGameHistory(gameHistory: GameHistory): Promise<void> {
         await this.databaseService.saveGameHistory(gameHistory);
     }
+
     async deleteAllGamesHistory() {
         await this.databaseService.deleteAllGamesHistory();
     }

@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { GamePageDialogComponent } from '@app/components/game-page-dialog/game-page-dialog.component';
 import { DEFAULT_PLAYERS, INPUT_TAG_NAME, SOLO_GAME_ID } from '@app/constants/constants';
 import { ASSETS_HINTS } from '@app/constants/hint';
@@ -11,7 +12,6 @@ import { GameManagerService } from '@app/services/game-manager-service/game-mana
 import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ReplayService } from '@app/services/replay-service/replay.service';
-import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { Coordinate } from '@common/coordinate';
 import { GameModes, MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, Players } from '@common/game-interfaces';
@@ -50,10 +50,9 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         private readonly hintService: HintService,
         private readonly matDialog: MatDialog,
         private readonly replayService: ReplayService,
-        private readonly roomManagerService: RoomManagerService,
+        private readonly router: Router,
     ) {
         this.gameManager.manageSocket();
-        this.roomManagerService.handleRoomEvents();
         this.differencesFound = 0;
         this.opponentDifferencesFound = 0;
         this.timer = 0;
@@ -114,6 +113,8 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.updateIfFirstDifferencesFound();
 
         this.updateGameMode();
+
+        this.handlePageRefresh();
     }
 
     getPlayers(): void {
@@ -216,6 +217,12 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         });
     }
 
+    handlePageRefresh(): void {
+        this.gameManager.isGamePageRefreshed$.pipe(takeUntil(this.onDestroy$)).subscribe((isGamePageRefreshed) => {
+            if (isGamePageRefreshed) this.router.navigate(['/']);
+        });
+    }
+
     showAbandonDialog(): void {
         this.matDialog.open(GamePageDialogComponent, {
             data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ? ' },
@@ -267,6 +274,5 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.onDestroy$.complete();
         this.gameAreaService.resetCheatMode();
         this.gameManager.removeAllListeners();
-        this.roomManagerService.removeAllListeners();
     }
 }

@@ -21,7 +21,7 @@ export class GameController {
     }
 
     @Get('/history')
-    async getGameHistory(@Res() response: Response) {
+    async getGamesHistory(@Res() response: Response) {
         try {
             const gameHistory = await this.gameService.getGamesHistory();
             response.status(HttpStatus.OK).json(gameHistory);
