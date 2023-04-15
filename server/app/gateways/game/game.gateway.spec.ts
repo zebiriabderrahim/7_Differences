@@ -4,7 +4,7 @@ import { PlayersListManagerService } from '@app/services/players-list-manager/pl
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { Coordinate } from '@common/coordinate';
 import { GameCardEvents, GameModes } from '@common/enums';
-import { ClientSideGame, Differences, GameConfigConst, GameRoom, PlayerData } from '@common/game-interfaces';
+import { ChatMessage, ClientSideGame, Differences, GameConfigConst, GameRoom, PlayerData } from '@common/game-interfaces';
 import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SinonStubbedInstance, assert, createStubInstance } from 'sinon';
@@ -232,16 +232,19 @@ describe('GameGateway', () => {
         expect(checkIfAnyCoopRoomExistsSpy).toHaveBeenCalled();
     });
 
-    // it('sendMessage() should broadcast on MessageEvents ', () => {;
-    //     stub(socket, 'broadcast').returns({
-    //         emit: (events: string) => {
-    //             expect(events).toBe(MessageEvents.LocalMessage);
-    //         },
-    //     } as BroadcastOperator<unknown, unknown>);
+    it('sendMessage() should broadcast on MessageEvents ', () => {
+        Object.defineProperty(socket, 'broadcast', {
+            value: {
+                to: jest.fn().mockReturnThis(),
+                emit: jest.fn(),
+            },
+            writable: true,
+        });
 
-    //     gateway.sendMessage(socket, {} as ChatMessage);
-    //     expect(socket.broadcast.emit).toHaveBeenCalled();
-    // });
+        const broadcastSpy = jest.spyOn(socket.broadcast, 'to');
+        gateway.sendMessage(socket, {} as ChatMessage);
+        expect(broadcastSpy).toHaveBeenCalled();
+    });
 
     it('gameCardDeleted() should call handleDeleteGame in limitedModeService and emit on GameDeleted and RequestReload events ', () => {
         const handleDeleteGameSpy = jest.spyOn(limitedModeService, 'handleDeleteGame');
@@ -305,6 +308,12 @@ describe('GameGateway', () => {
         gateway.afterInit();
         jest.advanceTimersByTime(DELAY_BEFORE_EMITTING_TIME);
         expect(updateTimersSpy).toBeCalled();
+    });
+
+    it('gamesHistoryDeleted should emit on RequestReload', () => {
+        gateway.gamesHistoryDeleted();
+        assert.calledOnce(server.emit);
+        assert.calledWith(server.emit, GameCardEvents.RequestReload);
     });
 
     it('handleDisconnect() should call endGame', () => {
