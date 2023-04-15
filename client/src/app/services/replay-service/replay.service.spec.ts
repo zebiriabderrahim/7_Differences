@@ -86,8 +86,9 @@ describe('ReplayService', () => {
     });
 
     it('should set isReplaying to true when startReplay is called', () => {
+        service['replayEvents'] = replayEventsStub;
         service.startReplay();
-        expect(service.isReplaying).toBe(true);
+        expect(service.isReplaying).toBeTruthy();
     });
 
     it('should call createReplayInterval and replaySwitcher when startReplay is called', () => {
