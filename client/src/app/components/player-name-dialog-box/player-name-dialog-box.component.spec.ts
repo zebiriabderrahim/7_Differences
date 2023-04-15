@@ -1,13 +1,16 @@
 // to spyOn handelCreateUndoCreationSpy and do nothing
 /* eslint-disable @typescript-eslint/no-empty-function */
+import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { PlayerNameAvailability, RoomAvailability } from '@common/game-interfaces';
 import { BehaviorSubject } from 'rxjs';
 import { PlayerNameDialogBoxComponent } from './player-name-dialog-box.component';
+import { MatInputModule } from '@angular/material/input';
 
 describe('PlayerNameDialogBoxComponent', () => {
     let component: PlayerNameDialogBoxComponent;
@@ -30,8 +33,8 @@ describe('PlayerNameDialogBoxComponent', () => {
             playerNameAvailability$: playerNameAvailabilityMock,
         });
         await TestBed.configureTestingModule({
-            imports: [ReactiveFormsModule, MatFormFieldModule],
-            declarations: [],
+            imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, CommonModule, BrowserAnimationsModule],
+            declarations: [PlayerNameDialogBoxComponent],
             providers: [
                 { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } },
                 { provide: MAT_DIALOG_DATA, useValue: { id: '1' } },
