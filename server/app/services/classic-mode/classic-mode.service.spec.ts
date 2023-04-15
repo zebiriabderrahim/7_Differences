@@ -9,6 +9,7 @@
 // import { Game } from '@app/model/database/game';
 import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
+import { HistoryService } from '@app/services/history/history.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
@@ -26,6 +27,7 @@ describe('ClassicModeService', () => {
     let gameService: SinonStubbedInstance<GameService>;
     let playersListManagerService: SinonStubbedInstance<PlayersListManagerService>;
     let roomsManagerService: SinonStubbedInstance<RoomsManagerService>;
+    let historyService: SinonStubbedInstance<HistoryService>;
     let socket: SinonStubbedInstance<Socket>;
     let server: SinonStubbedInstance<Server>;
 
@@ -38,7 +40,7 @@ describe('ClassicModeService', () => {
         differencesCount: 1,
         mode: '',
     };
-    const diffData: Differences = {
+    const differenceData: Differences = {
         currentDifference: [],
         differencesFound: 0,
     };
@@ -61,7 +63,7 @@ describe('ClassicModeService', () => {
     const fakePlayer: Player = {
         playerId: 'testPlayer',
         name: 'testPlayer',
-        diffData: fakeDiff,
+        differenceData: fakeDiff,
     };
 
     const fakeRoom: GameRoom = {
@@ -78,7 +80,7 @@ describe('ClassicModeService', () => {
     const fakePlayer2: Player = {
         playerId: 'testPlayer2',
         name: 'testPlayer2',
-        diffData: { currentDifference: [], differencesFound: 1 },
+        differenceData: { currentDifference: [], differencesFound: 1 },
     };
 
     const fakeData = { gameId: 'fakeRoomId', playerName: 'fakePlayerName' } as PlayerData;
@@ -88,6 +90,7 @@ describe('ClassicModeService', () => {
         messageManagerService = createStubInstance(MessageManagerService);
         playersListManagerService = createStubInstance(PlayersListManagerService);
         roomsManagerService = createStubInstance(RoomsManagerService);
+        historyService = createStubInstance(HistoryService);
         socket = createStubInstance<Socket>(Socket);
         server = createStubInstance<Server>(Server);
         const module: TestingModule = await Test.createTestingModule({
@@ -108,6 +111,10 @@ describe('ClassicModeService', () => {
                 {
                     provide: RoomsManagerService,
                     useValue: roomsManagerService,
+                },
+                {
+                    provide: HistoryService,
+                    useValue: historyService,
                 },
             ],
         }).compile();
@@ -203,7 +210,7 @@ describe('ClassicModeService', () => {
 
     it('checkStatus should call getRoomIdFromSocket and getRoomById', async () => {
         fakeRoom.clientGame.mode = GameModes.ClassicSolo;
-        fakeRoom.player1.diffData.differencesFound = 1;
+        fakeRoom.player1.differenceData.differencesFound = 1;
         const getRoomIdFromSocketSpy = jest.spyOn(roomsManagerService, 'getRoomIdFromSocket').mockReturnValue(fakeRoom.roomId);
         const getRoomByIdSpy = jest.spyOn(roomsManagerService, 'getRoomById').mockReturnValue(fakeRoom);
         const endGameSpy = jest.spyOn(service, 'endGame').mockImplementationOnce(async (_fakeRoom, _fakePlayer, _server) => {
@@ -218,7 +225,7 @@ describe('ClassicModeService', () => {
     it('checkStatus should call getRoomIdFromSocket and getRoomById', async () => {
         fakeRoom.player1.playerId = undefined;
         fakeRoom.clientGame.mode = GameModes.ClassicOneVsOne;
-        fakeRoom.player1.diffData.differencesFound = 1;
+        fakeRoom.player1.differenceData.differencesFound = 1;
         const getRoomIdFromSocketSpy = jest.spyOn(roomsManagerService, 'getRoomIdFromSocket').mockReturnValue(fakeRoom.roomId);
         const getRoomByIdSpy = jest.spyOn(roomsManagerService, 'getRoomById').mockReturnValue(fakeRoom);
         const endGameSpy = jest.spyOn(service, 'endGame').mockImplementationOnce(async (_fakeRoom, _fakePlayer, _server) => {
@@ -420,6 +427,35 @@ describe('ClassicModeService', () => {
         await service['createClassicRoom'](socket, fakeData);
         expect(createRoomSpy).toBeCalled();
         expect(updateRoomSpy).toBeCalled();
+    });
+
+    it('checkStatus should call getRoomIdFromSocket and getRoomById', async () => {
+        fakeRoom.clientGame.mode = GameModes.ClassicSolo;
+        fakeRoom.player1.differenceData.differencesFound = 1;
+        const getRoomIdFromSocketSpy = jest.spyOn(roomsManagerService, 'getRoomIdFromSocket').mockReturnValue(fakeRoom.roomId);
+        const getRoomByIdSpy = jest.spyOn(roomsManagerService, 'getRoomById').mockReturnValue(fakeRoom);
+        const endGameSpy = jest.spyOn(service, 'endGame').mockImplementationOnce(async (_fakeRoom, _fakePlayer, _server) => {
+            return;
+        });
+        await service.checkStatus(socket, server);
+        expect(getRoomIdFromSocketSpy).toBeCalled();
+        expect(getRoomByIdSpy).toBeCalled();
+        expect(endGameSpy).toBeCalled();
+    });
+
+    it('checkStatus should call getRoomIdFromSocket and getRoomById', async () => {
+        fakeRoom.player1.playerId = undefined;
+        fakeRoom.clientGame.mode = GameModes.ClassicOneVsOne;
+        fakeRoom.player1.differenceData.differencesFound = 1;
+        const getRoomIdFromSocketSpy = jest.spyOn(roomsManagerService, 'getRoomIdFromSocket').mockReturnValue(fakeRoom.roomId);
+        const getRoomByIdSpy = jest.spyOn(roomsManagerService, 'getRoomById').mockReturnValue(fakeRoom);
+        const endGameSpy = jest.spyOn(service, 'endGame').mockImplementationOnce(async (_fakeRoom, _fakePlayer, _server) => {
+            return;
+        });
+        await service.checkStatus(socket, server);
+        expect(getRoomIdFromSocketSpy).toBeCalled();
+        expect(getRoomByIdSpy).toBeCalled();
+        expect(endGameSpy).toBeCalled();
     });
 
     afterEach(() => {

@@ -1,12 +1,13 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
-import { GameCardEvents, PlayerEvents, RoomEvents } from '@common/enums';
-import { PlayerData, PlayerNameAvailability, RoomAvailability } from '@common/game-interfaces';
+import { GameCardEvents, HistoryEvents, PlayerEvents, RoomEvents } from '@common/enums';
+import { PlayerNameAvailability, RoomAvailability, PlayerData } from '@common/game-interfaces';
 import { Subject } from 'rxjs';
+
 @Injectable({
     providedIn: 'root',
 })
-export class RoomManagerService implements OnDestroy {
+export class RoomManagerService {
     private joinedPlayerNames: Subject<string[]>;
     private playerNameAvailability: Subject<PlayerNameAvailability>;
     private oneVsOneRoomsAvailabilityByGameId: Subject<RoomAvailability>;
@@ -14,8 +15,9 @@ export class RoomManagerService implements OnDestroy {
     private refusedPlayerId: Subject<string>;
     private createdRoomId: Subject<string>;
     private deletedGameId: Subject<string>;
-    private isReloadNeeded: Subject<boolean>;
+    private isGameCardsReloadNeeded: Subject<boolean>;
     private isLimitedCoopRoomAvailable: Subject<boolean>;
+    private isGameHistoryReloadNeeded: Subject<boolean>;
 
     constructor(private readonly clientSocket: ClientSocketService) {
         this.playerNameAvailability = new Subject<PlayerNameAvailability>();
@@ -25,8 +27,9 @@ export class RoomManagerService implements OnDestroy {
         this.oneVsOneRoomsAvailabilityByGameId = new Subject<RoomAvailability>();
         this.deletedGameId = new Subject<string>();
         this.refusedPlayerId = new Subject<string>();
-        this.isReloadNeeded = new Subject<boolean>();
+        this.isGameCardsReloadNeeded = new Subject<boolean>();
         this.isLimitedCoopRoomAvailable = new Subject<boolean>();
+        this.isGameHistoryReloadNeeded = new Subject<boolean>();
         this.connect();
     }
 
@@ -59,11 +62,15 @@ export class RoomManagerService implements OnDestroy {
     }
 
     get isReloadNeeded$() {
-        return this.isReloadNeeded.asObservable();
+        return this.isGameCardsReloadNeeded.asObservable();
     }
 
     get isLimitedCoopRoomAvailable$() {
         return this.isLimitedCoopRoomAvailable.asObservable();
+    }
+
+    get isGameHistoryReloadNeeded$() {
+        return this.isGameHistoryReloadNeeded.asObservable();
     }
 
     createSoloRoom(playerPayLoad: PlayerData) {
@@ -146,6 +153,10 @@ export class RoomManagerService implements OnDestroy {
         this.clientSocket.send(GameCardEvents.GameConstantsUpdated);
     }
 
+    gamesHistoryDeleted() {
+        this.clientSocket.send(GameCardEvents.GamesHistoryDeleted);
+    }
+
     connect(): void {
         this.clientSocket.connect();
     }
@@ -207,10 +218,11 @@ export class RoomManagerService implements OnDestroy {
             this.deletedGameId.next(gameId);
         });
         this.clientSocket.on(GameCardEvents.RequestReload, () => {
-            this.isReloadNeeded.next(true);
+            this.isGameCardsReloadNeeded.next(true);
         });
-    }
-    ngOnDestroy(): void {
-        this.clientSocket.disconnect();
+
+        this.clientSocket.on(HistoryEvents.RequestReload, () => {
+            this.isGameHistoryReloadNeeded.next(true);
+        });
     }
 }

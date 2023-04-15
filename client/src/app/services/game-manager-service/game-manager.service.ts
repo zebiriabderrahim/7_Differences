@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ReplayActions } from '@app/enum/replay-actions';
+import { ReplayEvent } from '@app/interfaces/replay-actions';
+import { CaptureService } from '@app/services/capture-service/capture.service';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
@@ -7,11 +9,11 @@ import { Coordinate } from '@common/coordinate';
 import { GameEvents, MessageEvents, MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, Differences, GameConfigConst, GameRoom, Players } from '@common/game-interfaces';
 import { Subject, filter } from 'rxjs';
-import { CaptureService } from '@app/services/capture-service/capture.service';
 @Injectable({
     providedIn: 'root',
 })
-export class ClassicSystemService {
+export class GameManagerService {
+    replayEventsSubject: Subject<ReplayEvent>;
     differences: Coordinate[][];
     gameConstants: GameConfigConst;
     private timer: Subject<number>;
@@ -40,6 +42,7 @@ export class ClassicSystemService {
         this.message = new Subject<ChatMessage>();
         this.endMessage = new Subject<string>();
         this.opponentDifferencesFound = new Subject<number>();
+        this.replayEventsSubject = new Subject<ReplayEvent>();
         this.isFirstDifferencesFound = new Subject<boolean>();
         this.isGameModeChanged = new Subject<boolean>();
         this.isGamePageRefreshed = new Subject<boolean>();
@@ -104,7 +107,7 @@ export class ClassicSystemService {
     }
 
     requestVerification(coords: Coordinate): void {
-        this.clientSocket.send(GameEvents.RemoveDiff, coords);
+        this.clientSocket.send(GameEvents.RemoveDifference, coords);
     }
 
     replaceDifference(differences: Coordinate[]): void {
@@ -167,9 +170,12 @@ export class ClassicSystemService {
             this.captureService.saveReplayEvent(ReplayActions.StartGame, room);
         });
 
-        this.clientSocket.on(GameEvents.RemoveDiff, (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
-            this.handleRemoveDiff(data);
-        });
+        this.clientSocket.on(
+            GameEvents.RemoveDifference,
+            (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
+                this.handleRemoveDiff(data);
+            },
+        );
 
         this.clientSocket.on(GameEvents.TimerUpdate, (timer: number) => {
             this.timer.next(timer);

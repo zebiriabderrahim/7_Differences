@@ -8,7 +8,6 @@ import { ForegroundService } from '@app/services/foreground-service/foreground.s
     styleUrls: ['./canvas-middle-buttons.component.scss'],
 })
 export class CanvasMiddleButtonsComponent {
-    canvasPosition: typeof CanvasPosition;
     constructor(private readonly foregroundService: ForegroundService) {}
 
     swapForegrounds() {

@@ -5,8 +5,8 @@ import { ReplayActions } from '@app/enum/replay-actions';
 import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
 import { CaptureService } from '@app/services/capture-service/capture.service';
-import { ClassicSystemService } from '@app/services/classic-system-service/classic-system.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
+import { GameManagerService } from '@app/services/game-manager-service/game-manager.service';
 import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
@@ -31,7 +31,7 @@ export class ReplayService {
 
     constructor(
         private readonly gameAreaService: GameAreaService,
-        private readonly classicSystemService: ClassicSystemService,
+        private readonly gameManager: GameManagerService,
         private readonly soundService: SoundService,
         private readonly imageService: ImageService,
         private readonly hintService: HintService,
@@ -110,9 +110,9 @@ export class ReplayService {
         switch (replayData.action) {
             case ReplayActions.StartGame:
                 this.hintService.resetHints();
-                this.classicSystemService.differences = (replayData.data as GameRoom).originalDifferences;
-                this.imageService.loadImage(this.gameAreaService.getOgContext(), (replayData.data as GameRoom).clientGame.original);
-                this.imageService.loadImage(this.gameAreaService.getMdContext(), (replayData.data as GameRoom).clientGame.modified);
+                this.gameManager.differences = (replayData.data as GameRoom).originalDifferences;
+                this.imageService.loadImage(this.gameAreaService.getOriginalContext(), (replayData.data as GameRoom).clientGame.original);
+                this.imageService.loadImage(this.gameAreaService.getModifiedContext(), (replayData.data as GameRoom).clientGame.modified);
                 this.gameAreaService.setAllData();
                 break;
             case ReplayActions.ClickFound:
@@ -131,7 +131,7 @@ export class ReplayService {
                 );
                 break;
             case ReplayActions.CaptureMessage:
-                this.classicSystemService.setMessage(replayData.data as ChatMessage);
+                this.gameManager.setMessage(replayData.data as ChatMessage);
                 break;
             case ReplayActions.ActivateCheat:
                 this.isCheatMode = true;
@@ -158,7 +158,7 @@ export class ReplayService {
                 this.hintService.switchProximity(replayData.data as number);
                 break;
             case ReplayActions.DeactivateThirdHint:
-                this.hintService.clickDuringThirdHint();
+                this.hintService.deactivateThirdHint();
                 break;
             default:
                 break;
