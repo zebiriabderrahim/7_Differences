@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { ReplayActions } from '@app/enum/replay-actions';
-import { Payload, ReplayEvent } from '@app/interfaces/replay-actions';
+import { ReplayEvent } from '@app/interfaces/replay-actions';
+import { CaptureService } from '@app/services/capture-service/capture.service';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
 import { GameEvents, MessageEvents, MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, Differences, GameConfigConst, GameRoom, Players } from '@common/game-interfaces';
-import { filter, Subject } from 'rxjs';
+import { Subject, filter } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
@@ -32,6 +33,7 @@ export class GameManagerService {
         private readonly clientSocket: ClientSocketService,
         private readonly gameAreaService: GameAreaService,
         private readonly soundService: SoundService,
+        private readonly captureService: CaptureService,
     ) {
         this.currentGame = new Subject<ClientSideGame>();
         this.differencesFound = new Subject<number>();
@@ -121,11 +123,6 @@ export class GameManagerService {
         if (isPlayerIdMatch) this.isFirstDifferencesFound.next(true);
     }
 
-    saveEvent(action: ReplayActions, data: Payload): void {
-        const replayEvent: ReplayEvent = { action, timestamp: Date.now(), data };
-        this.replayEventsSubject.next(replayEvent);
-    }
-
     handleRemoveDiff(data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }): void {
         const isPlayerIdMatch = data.playerId === this.getSocketId();
         if (isPlayerIdMatch) {
@@ -137,7 +134,7 @@ export class GameManagerService {
             this.opponentDifferencesFound.next(data.differencesData.differencesFound);
         }
         this.differences = data.cheatDifferences;
-        this.saveEvent(ReplayActions.DifferenceFoundUpdate, data.differencesData.differencesFound);
+        this.captureService.saveReplayEvent(ReplayActions.DifferenceFoundUpdate, data.differencesData.differencesFound);
     }
 
     abandonGame(): void {
@@ -158,7 +155,7 @@ export class GameManagerService {
 
     sendMessage(textMessage: string): void {
         const newMessage = { tag: MessageTag.Received, message: textMessage };
-        this.saveEvent(ReplayActions.CaptureMessage, { tag: MessageTag.Sent, message: textMessage } as ChatMessage);
+        this.captureService.saveReplayEvent(ReplayActions.CaptureMessage, { tag: MessageTag.Sent, message: textMessage } as ChatMessage);
         this.clientSocket.send(MessageEvents.LocalMessage, newMessage);
     }
 
@@ -172,7 +169,7 @@ export class GameManagerService {
             this.gameConstants = room.gameConstants;
             this.players.next({ player1: room.player1, player2: room.player2 });
             this.differences = room.originalDifferences;
-            this.saveEvent(ReplayActions.StartGame, room);
+            this.captureService.saveReplayEvent(ReplayActions.StartGame, room);
         });
 
         this.clientSocket.on(
@@ -184,7 +181,7 @@ export class GameManagerService {
 
         this.clientSocket.on(GameEvents.TimerUpdate, (timer: number) => {
             this.timer.next(timer);
-            this.saveEvent(ReplayActions.TimerUpdate, timer);
+            this.captureService.saveReplayEvent(ReplayActions.TimerUpdate, timer);
         });
 
         this.clientSocket.on(GameEvents.EndGame, (endGameMessage: string) => {
@@ -193,7 +190,7 @@ export class GameManagerService {
 
         this.clientSocket.on(MessageEvents.LocalMessage, (receivedMessage: ChatMessage) => {
             this.message.next(receivedMessage);
-            this.saveEvent(ReplayActions.CaptureMessage, receivedMessage);
+            this.captureService.saveReplayEvent(ReplayActions.CaptureMessage, receivedMessage);
         });
 
         this.clientSocket.on(GameEvents.UpdateDifferencesFound, (differencesFound: number) => {

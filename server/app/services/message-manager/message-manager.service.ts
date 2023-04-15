@@ -21,7 +21,7 @@ export class MessageManagerService {
             message:
                 this.getFormatTime() +
                 ` – ${newRecord.playerName} est maintenant ${SCORE_POSITION[newRecord.rank]}` +
-                ` dans les meilleurs temps du jeu ${newRecord.gameName} \n en ${newRecord.gameMode}`,
+                ` dans les meilleurs temps du jeu ${newRecord.gameName} \\n en ${newRecord.gameMode}`,
         };
         return localMessage;
     }
@@ -47,18 +47,19 @@ export class MessageManagerService {
     }
 
     private getDifferenceMessage(playerName?: string): ChatMessage {
-        const localMessage: ChatMessage = {
-            tag: MessageTag.Common,
-            message: this.getFormatTime() + ' - Différence trouvée',
-        };
+        const localMessage: ChatMessage = this.basicMessage('Différence trouvée');
         return this.appendPlayerName(localMessage, playerName);
     }
 
     private getErrorMessage(playerName?: string): ChatMessage {
-        const localMessage: ChatMessage = {
-            tag: MessageTag.Common,
-            message: this.getFormatTime() + ' - Erreur',
-        };
+        const localMessage: ChatMessage = this.basicMessage('Erreur');
         return this.appendPlayerName(localMessage, playerName);
+    }
+
+    private basicMessage(message: string): ChatMessage {
+        return {
+            tag: MessageTag.Common,
+            message: this.getFormatTime() + ' - ' + message,
+        };
     }
 }

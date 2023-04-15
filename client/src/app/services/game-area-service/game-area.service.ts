@@ -12,15 +12,13 @@ import {
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { GREEN_PIXEL, N_PIXEL_ATTRIBUTE, RED_PIXEL, YELLOW_PIXEL } from '@app/constants/pixels';
 import { ReplayActions } from '@app/enum/replay-actions';
-import { ReplayEvent } from '@app/interfaces/replay-actions';
+import { CaptureService } from '@app/services/capture-service/capture.service';
 import { Coordinate } from '@common/coordinate';
-import { Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class GameAreaService {
-    replayEventsSubject: Subject<ReplayEvent>;
     mousePosition: Coordinate;
     private originalPixelData: ImageData;
     private modifiedPixelData: ImageData;
@@ -34,11 +32,10 @@ export class GameAreaService {
     private isCheatMode: boolean;
     private cheatModeInterval: number | undefined;
 
-    constructor() {
+    constructor(private readonly captureService: CaptureService) {
         this.mousePosition = { x: 0, y: 0 };
         this.clickDisabled = false;
         this.isCheatMode = false;
-        this.replayEventsSubject = new Subject<ReplayEvent>();
     }
 
     @HostListener('keydown', ['$event'])
@@ -68,12 +65,7 @@ export class GameAreaService {
             frontContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
             this.clickDisabled = false;
         }, WAITING_TIME / speed);
-        const replayEvent: ReplayEvent = {
-            action: ReplayActions.ClickError,
-            timestamp: Date.now(),
-            data: { isMainCanvas, pos: errorCoordinate },
-        };
-        this.replayEventsSubject.next(replayEvent);
+        this.captureService.saveReplayEvent(ReplayActions.ClickError, { isMainCanvas, pos: errorCoordinate });
     }
 
     replaceDifference(differenceCoord: Coordinate[], replaySpeed?: number, isPaused: boolean = false): void {
@@ -85,12 +77,7 @@ export class GameAreaService {
         }
         this.modifiedContext.putImageData(this.modifiedPixelData, 0, 0);
         this.resetCheatMode();
-        const replayEvent: ReplayEvent = {
-            action: ReplayActions.ClickFound,
-            timestamp: Date.now(),
-            data: differenceCoord,
-        };
-        this.replayEventsSubject.next(replayEvent);
+        this.captureService.saveReplayEvent(ReplayActions.ClickFound, differenceCoord);
         this.flashCorrectPixels(differenceCoord, replaySpeed, isPaused);
     }
 
@@ -127,7 +114,6 @@ export class GameAreaService {
     }
 
     toggleCheatMode(startDifferences: Coordinate[], replaySpeed?: number): void {
-        let replayEvent: ReplayEvent;
         const speed = replaySpeed ? replaySpeed : 1;
         const imageDataIndexes: number[] = this.convert2DCoordToPixelIndex(startDifferences);
         if (!this.isCheatMode) {
@@ -143,19 +129,9 @@ export class GameAreaService {
                     this.clearFlashing();
                 }, RED_FLASH_TIME / speed);
             }, CHEAT_MODE_WAIT_TIME / speed) as unknown as number;
-            replayEvent = {
-                action: ReplayActions.ActivateCheat,
-                timestamp: Date.now(),
-                data: startDifferences,
-            };
-            this.replayEventsSubject.next(replayEvent);
+            this.captureService.saveReplayEvent(ReplayActions.ActivateCheat, startDifferences);
         } else {
-            replayEvent = {
-                action: ReplayActions.DeactivateCheat,
-                timestamp: Date.now(),
-                data: startDifferences,
-            };
-            this.replayEventsSubject.next(replayEvent);
+            this.captureService.saveReplayEvent(ReplayActions.DeactivateCheat, startDifferences);
             clearInterval(this.cheatModeInterval);
             this.clearFlashing();
         }
