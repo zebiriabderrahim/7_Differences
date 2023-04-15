@@ -33,13 +33,9 @@ export class PlayersListManagerService {
     }
 
     getAcceptPlayer(gameId: string, playerName: string, server: io.Server): Player {
-        this.joinedPlayersByGameId.get(gameId)?.forEach((player) => {
-            if (player.name !== playerName) {
-                this.cancelJoiningByPlayerName(player.name, gameId, server);
-            }
-        });
         const acceptedPlayer = this.joinedPlayersByGameId.get(gameId)?.[0];
         if (!acceptedPlayer) return;
+        this.cancelAllJoining(gameId, server);
         return acceptedPlayer;
     }
 
@@ -52,13 +48,10 @@ export class PlayersListManagerService {
 
     cancelJoiningByPlayerId(playerId: string, gameId: string): void {
         const playerNames = this.joinedPlayersByGameId.get(gameId);
-        if (playerNames) {
-            const index = playerNames.indexOf(playerNames.find((player) => player.playerId === playerId));
-            if (index !== NOT_FOUND) {
-                playerNames.splice(index, 1);
-            }
-            this.joinedPlayersByGameId.set(gameId, playerNames);
-        }
+        if (!playerNames) return;
+        const index = playerNames.indexOf(playerNames.find((player) => player.playerId === playerId));
+        if (index !== NOT_FOUND) playerNames.splice(index, 1);
+        this.joinedPlayersByGameId.set(gameId, playerNames);
     }
 
     cancelAllJoining(gameId: string, server: io.Server): void {
@@ -110,11 +103,10 @@ export class PlayersListManagerService {
 
     private cancelJoiningByPlayerName(playerName: string, gameId: string, server: io.Server): void {
         const playerId = this.getPlayerIdByPlayerName(gameId, playerName);
-        if (playerId) {
-            this.cancelJoiningByPlayerId(playerId, gameId);
-            server.to(playerId).emit(PlayerEvents.PlayerRefused, playerId);
-            server.emit(RoomEvents.UndoRoomCreation, gameId);
-        }
+        if (!playerId) return;
+        this.cancelJoiningByPlayerId(playerId, gameId);
+        server.to(playerId).emit(PlayerEvents.PlayerRefused, playerId);
+        server.emit(RoomEvents.UndoRoomCreation, gameId);
     }
 
     private getPlayerIdByPlayerName(gameId: string, playerName: string): string {

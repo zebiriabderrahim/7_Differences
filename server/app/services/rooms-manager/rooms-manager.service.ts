@@ -69,7 +69,9 @@ export class RoomsManagerService implements OnModuleInit {
     }
 
     getHostIdByGameId(gameId: string): string {
-        const roomTarget = Array.from(this.rooms.values()).find((room) => room.clientGame.id === gameId);
+        const roomTarget = Array.from(this.rooms.values()).find(
+            (room) => room.clientGame.id === gameId && room.clientGame.mode === GameModes.ClassicOneVsOne && !room.player2,
+        );
         return roomTarget?.player1.playerId;
     }
 
@@ -77,8 +79,7 @@ export class RoomsManagerService implements OnModuleInit {
         return Array.from(this.rooms.values()).find((room) => room.clientGame.mode === GameModes.LimitedCoop && !room.player2);
     }
 
-    addAcceptedPlayer(roomId: string, player: Player): void {
-        const room = this.getRoomById(roomId);
+    addAcceptedPlayer(room: GameRoom, player: Player): void {
         room.player2 = player;
         this.updateRoom(room);
     }
@@ -176,6 +177,7 @@ export class RoomsManagerService implements OnModuleInit {
             if (socket) socket.rooms.delete(room.roomId);
         });
     }
+
     async abandonGame(socket: io.Socket, server: io.Server): Promise<void> {
         const room = this.getRoomByPlayerId(socket.id);
         if (!room) return;
