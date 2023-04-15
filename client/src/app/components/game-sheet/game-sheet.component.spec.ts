@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameSheetComponent } from '@app/components/game-sheet/game-sheet.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
+import { Actions } from '@app/enum/delete-reset-actions';
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
@@ -165,6 +166,12 @@ describe('GameSheetComponent', () => {
         } as MatDialogRef<PlayerNameDialogBoxComponent, unknown>);
         component.openWaitingDialog('test');
         roomIdSpy.next('0');
+        expect(dialogSpy).toHaveBeenCalled();
+    });
+
+    it('openConfirmationDialog should open dialog with DeleteResetConfirmationDialog', () => {
+        const dialogSpy = spyOn(component['dialog'], 'open');
+        component.openConfirmationDialog(Actions.DeleteGame);
         expect(dialogSpy).toHaveBeenCalled();
     });
 
