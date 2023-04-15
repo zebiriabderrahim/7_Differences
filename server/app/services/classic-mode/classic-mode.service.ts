@@ -58,10 +58,10 @@ export class ClassicModeService {
         const player: Player = room.player1.playerId === socket.id ? room.player1 : room.player2;
         if (!player) return;
         if (room.clientGame.differencesCount === player.differenceData.differencesFound && room.clientGame.mode === GameModes.ClassicSolo) {
-            this.endGame(room, player, server);
+            await this.endGame(room, player, server);
         } else if (halfDifferences === player.differenceData.differencesFound && room.clientGame.mode === GameModes.ClassicOneVsOne) {
             this.historyService.markPlayer(room.roomId, player.name, PlayerStatus.Winner);
-            this.endGame(room, player, server);
+            await this.endGame(room, player, server);
         }
     }
 
@@ -96,7 +96,7 @@ export class ClassicModeService {
     acceptPlayer(acceptedPlayer: Player, roomId: string, server: io.Server): void {
         const room = this.roomsManagerService.getRoomById(roomId);
         if (!room) return;
-        this.roomsManagerService.addAcceptedPlayer(roomId, acceptedPlayer);
+        this.roomsManagerService.addAcceptedPlayer(room, acceptedPlayer);
         server.to(acceptedPlayer.playerId).emit(PlayerEvents.PlayerAccepted, true);
     }
 
@@ -107,7 +107,7 @@ export class ClassicModeService {
         });
     }
 
-    handleSocketDisconnect(socket: io.Socket, server: io.Server): void {
+    async handleSocketDisconnect(socket: io.Socket, server: io.Server): Promise<void> {
         const room = this.roomsManagerService.getRoomByPlayerId(socket.id);
         const createdGameId = this.playersListManagerService.getGameIdByPlayerId(socket.id);
         this.roomsManagerService.handleDisconnect(room);
@@ -117,7 +117,7 @@ export class ClassicModeService {
             this.playersListManagerService.cancelAllJoining(room.clientGame.id, server);
             this.roomsManagerService.deleteRoom(room.roomId);
         } else if (room && room.timer !== 0 && !joinable) {
-            this.roomsManagerService.abandonGame(socket, server);
+            await this.roomsManagerService.abandonGame(socket, server);
         } else if (!createdGameId) {
             this.deleteOneVsOneAvailability(socket, server);
         } else {

@@ -45,8 +45,8 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
     }
 
     handleAcceptedPlayer() {
-        this.acceptedPlayerSubscription = this.roomManagerService.roomId$.subscribe((roomId) => {
-            if (roomId) {
+        this.acceptedPlayerSubscription = this.roomManagerService.isPlayerAccepted$.subscribe((isPlayerAccepted) => {
+            if (isPlayerAccepted) {
                 this.dialogRef.close();
                 this.router.navigate(['/game']);
             }

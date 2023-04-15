@@ -71,8 +71,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameEvents.CheckStatus)
-    checkStatus(@ConnectedSocket() socket: Socket) {
-        this.classicModeService.checkStatus(socket, this.server);
+    async checkStatus(@ConnectedSocket() socket: Socket) {
+        await this.classicModeService.checkStatus(socket, this.server);
     }
 
     @SubscribeMessage(RoomEvents.UpdateRoomOneVsOneAvailability)
@@ -138,8 +138,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameEvents.AbandonGame)
-    abandonGame(@ConnectedSocket() socket: Socket) {
-        this.roomsManagerService.abandonGame(socket, this.server);
+    async abandonGame(@ConnectedSocket() socket: Socket) {
+        await this.roomsManagerService.abandonGame(socket, this.server);
     }
 
     @SubscribeMessage(RoomEvents.CheckIfAnyCoopRoomExists)
@@ -207,8 +207,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         this.logger.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
     }
 
-    handleDisconnect(@ConnectedSocket() socket: Socket) {
+    async handleDisconnect(@ConnectedSocket() socket: Socket) {
         this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
-        this.classicModeService.handleSocketDisconnect(socket, this.server);
+        await this.classicModeService.handleSocketDisconnect(socket, this.server);
     }
 }
