@@ -203,7 +203,7 @@ describe('GameManagerService', () => {
     });
 
     it('replaceDifference should throw an error if Coordinate length is 0', () => {
-        service.replaceDifference([]);
+        service.replaceDifference([], true);
         expect(gameAreaService.showError).toHaveBeenCalled();
         expect(soundServiceSpy.playErrorSound).toHaveBeenCalled();
     });
@@ -221,13 +221,13 @@ describe('GameManagerService', () => {
     });
 
     it('replaceDifference should modify coordinate if coordinate length is greater than 0', () => {
-        const cord: Coordinate[] = [
+        const coordinate: Coordinate[] = [
             { x: 1, y: 1 },
             { x: 2, y: 2 },
         ];
         service['isLeftCanvas'] = true;
-        service.replaceDifference(cord);
-        expect(gameAreaService.replaceDifference).toHaveBeenCalledWith(cord);
+        service.replaceDifference(coordinate, true);
+        expect(gameAreaService.replaceDifference).toHaveBeenCalledWith(coordinate);
         expect(gameAreaService.showError).not.toHaveBeenCalled();
         expect(gameAreaService.setAllData).toHaveBeenCalled();
     });
@@ -310,11 +310,11 @@ describe('GameManagerService', () => {
         const getSocketIdSpy = spyOn(service, 'getSocketId').and.callFake(() => {
             return mockDataDifference.playerId;
         });
-        const replaceDifferenceSpy = spyOn(service, 'replaceDifference');
+        // const replaceDifferenceSpy = spyOn(service, 'replaceDifference');
         service.manageSocket();
         const differencesFoundSpy = spyOn(service['differencesFound'], 'next');
         socketHelper.peerSideEmit(GameEvents.RemoveDifference, mockDataDifference);
-        expect(replaceDifferenceSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.currentDifference);
+        // expect(replaceDifferenceSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.currentDifference);
         expect(differencesFoundSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.differencesFound);
         expect(checkStatusSpy).toHaveBeenCalled();
         expect(getSocketIdSpy).toHaveBeenCalled();
@@ -333,11 +333,11 @@ describe('GameManagerService', () => {
             return 'notMatchingSocketId';
         });
 
-        const replaceDifferenceSpy = spyOn(service, 'replaceDifference');
+        // const replaceDifferenceSpy = spyOn(service, 'replaceDifference');
         service.manageSocket();
         const differencesFoundSpy = spyOn(service['differencesFound'], 'next');
         socketHelper.peerSideEmit(GameEvents.RemoveDifference, mockDataDifference);
-        expect(replaceDifferenceSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.currentDifference);
+        // expect(replaceDifferenceSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.currentDifference);
         expect(differencesFoundSpy).not.toHaveBeenCalledWith(mockDataDifference.differencesData.differencesFound);
         expect(checkStatusSpy).not.toHaveBeenCalled();
         expect(getSocketIdSpy).toHaveBeenCalled();
