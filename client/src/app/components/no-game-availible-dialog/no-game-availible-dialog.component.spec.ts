@@ -20,4 +20,16 @@ describe('NoGameAvailibleDialogComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('gotoHome should navigate to home', () => {
+        const navigateSpy = spyOn(component.router, 'navigate');
+        component.goToHome();
+        expect(navigateSpy).toHaveBeenCalledWith(['/']);
+    });
+
+    it('goToCreate should navigate to create', () => {
+        const navigateSpy = spyOn(component.router, 'navigate');
+        component.goToCreate();
+        expect(navigateSpy).toHaveBeenCalledWith(['/create']);
+    });
 });
