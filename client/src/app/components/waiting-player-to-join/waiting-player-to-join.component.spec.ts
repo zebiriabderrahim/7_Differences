@@ -91,28 +91,28 @@ describe('WaitingPlayerToJoinComponent', () => {
         expect(countDownBeforeClosingSpy).toHaveBeenCalled();
     });
 
-    // it('countDownBeforeClosing should set countdown', () => {
-    //     jasmine.clock().install();
-    //     component['countdown'] = TEN_SECONDS;
-    //     component.ngOnInit();
-    //     component.countDownBeforeClosing();
-    //     deletedGameIdMock.next('test-game-id');
-    //     expect(component['countdown']).toEqual(TEN_SECONDS);
-    //     jasmine.clock().tick(TEN_SECONDS);
-    //     expect(dialogRefSpy.close).not.toHaveBeenCalled();
-    // });
+    it('countDownBeforeClosing should set countdown', () => {
+        jasmine.clock().install();
+        component['countdown'] = COUNTDOWN_TIME;
+        component.ngOnInit();
+        component.countDownBeforeClosing();
+        deletedGameIdMock.next('test-game-id');
+        expect(component['countdown']).toEqual(COUNTDOWN_TIME);
+        jasmine.clock().tick(COUNTDOWN_TIME);
+        expect(dialogRefSpy.close).not.toHaveBeenCalled();
+    });
 
-    // it('countDownBeforeClosing should set countdown', () => {
-    //     jasmine.clock().install();
-    //     component['countdown'] = TEN_SECONDS;
-    //     component.ngOnInit();
-    //     component.countDownBeforeClosing();
-    //     deletedGameIdMock.next('test-game-id');
-    //     jasmine.clock().tick(TEN_SECONDS);
-    //     component.countDownBeforeClosing();
-    //     jasmine.clock().tick(TEN_SECONDS);
-    //     expect(dialogRefSpy.close).not.toHaveBeenCalled();
-    // });
+    it('countDownBeforeClosing should set countdown', () => {
+        jasmine.clock().install();
+        component['countdown'] = COUNTDOWN_TIME;
+        component.ngOnInit();
+        component.countDownBeforeClosing();
+        deletedGameIdMock.next('test-game-id');
+        jasmine.clock().tick(COUNTDOWN_TIME);
+        component.countDownBeforeClosing();
+        jasmine.clock().tick(COUNTDOWN_TIME);
+        expect(dialogRefSpy.close).not.toHaveBeenCalled();
+    });
 
     it('countDownBeforeClosing should set countdown', () => {
         component['countdown'] = 1;
@@ -136,15 +136,15 @@ describe('WaitingPlayerToJoinComponent', () => {
         expect(countDownBeforeClosingSpy).toHaveBeenCalled();
     }));
 
-    // it('should start countdown and show message if player is not in playerNames', fakeAsync(() => {
-    //     component['data'] = { gameId: 'Charlie', player: 'testPlayer', roomId: 'testRoom' };
-    //     deletedGameIdMock.next('Charlie');
-    //     component.ngOnInit();
-    //     expect(component.countdown).toBe(COUNTDOWN_TIME);
-    //     // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- needed for test
-    //     tick(12000);
-    //     expect(dialogRefSpy.close).toHaveBeenCalled();
-    // }));
+    it('should start countdown and show message if player is not in playerNames', fakeAsync(() => {
+        component['data'] = { gameId: 'Charlie', player: 'testPlayer', roomId: 'testRoom', isLimited: true };
+        deletedGameIdMock.next('Charlie');
+        component.ngOnInit();
+        expect(component.countdown).toBe(COUNTDOWN_TIME);
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- needed for test
+        tick(12000);
+        expect(dialogRefSpy.close).toHaveBeenCalled();
+    }));
 
     it('refusePlayer should refuse the player using the roomManagerService', () => {
         const playerName = 'John';
