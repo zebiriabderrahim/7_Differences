@@ -15,10 +15,10 @@ export const INITIAL_QUADRANT: Quadrant = {
 };
 
 export const ASSETS_HINTS = [
-    './assets/hintsImage/happyRaccoon.png',
-    './assets/hintsImage/confuseRaccoon.png',
-    './assets/hintsImage/passifRaccoon.png',
-    './assets/hintsImage/sadRaccoon.png',
+    './assets/hintsImage/happyRaccoon.gif',
+    './assets/hintsImage/confuseRaccoon.gif',
+    './assets/hintsImage/passiveRaccoon.gif',
+    './assets/hintsImage/sadRaccoon.gif',
 ];
 
 export const QUADRANT_POSITIONS: QuadrantPosition[] = [
