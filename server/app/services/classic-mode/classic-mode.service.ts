@@ -96,7 +96,7 @@ export class ClassicModeService {
     acceptPlayer(acceptedPlayer: Player, roomId: string, server: io.Server): void {
         const room = this.roomsManagerService.getRoomById(roomId);
         if (!room) return;
-        this.roomsManagerService.addAcceptedPlayer(roomId, acceptedPlayer);
+        this.roomsManagerService.addAcceptedPlayer(room, acceptedPlayer);
         server.to(acceptedPlayer.playerId).emit(PlayerEvents.PlayerAccepted, true);
     }
 
