@@ -20,18 +20,24 @@ describe('LimitedTimePageComponent', () => {
     let roomManagerServiceSpy: jasmine.SpyObj<RoomManagerService>;
     let createdRoomId: BehaviorSubject<string>;
     let isLimitedCoopRoomAvailable: BehaviorSubject<boolean>;
+    let hasNoGameAvailable: BehaviorSubject<boolean>;
     let playerName: BehaviorSubject<string>;
+    let roomLimitedId: BehaviorSubject<string>;
 
     beforeEach(async () => {
         createdRoomId = new BehaviorSubject<string>('test-room-id');
         playerName = new BehaviorSubject<string>('Alice');
         isLimitedCoopRoomAvailable = new BehaviorSubject<boolean>(true);
+        hasNoGameAvailable = new BehaviorSubject<boolean>(true);
+        roomLimitedId = new BehaviorSubject<string>('test-room-id');
         roomManagerServiceSpy = jasmine.createSpyObj(
             'RoomManagerService',
             ['createLimitedRoom', 'checkIfAnyCoopRoomExists', 'handleRoomEvents', 'removeAllListeners'],
             {
                 createdRoomId$: createdRoomId,
                 isLimitedCoopRoomAvailable$: isLimitedCoopRoomAvailable,
+                hasNoGameAvailable$: hasNoGameAvailable,
+                roomLimitedId$: roomLimitedId,
             },
         );
         await TestBed.configureTestingModule({
@@ -141,6 +147,12 @@ describe('LimitedTimePageComponent', () => {
         component['isLimitedCoopRoomAvailableSubscription'] = undefined as unknown as Subscription;
         component.ngOnDestroy();
         expect(component['isLimitedCoopRoomAvailableSubscription']).toBeUndefined();
+    });
+
+    it('should unsubscribe hasNoGameAvailableSubscription when ngOndestroy is called', () => {
+        component['hasNoGameAvailableSubscription'] = undefined as unknown as Subscription;
+        component.ngOnDestroy();
+        expect(component['hasNoGameAvailableSubscription']).toBeUndefined();
     });
 
     it('should unsubscribe roomIdSubscription when redirectToGamePage is called', () => {
