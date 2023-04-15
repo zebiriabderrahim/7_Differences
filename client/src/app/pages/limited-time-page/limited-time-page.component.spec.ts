@@ -104,6 +104,7 @@ describe('LimitedTimePageComponent', () => {
         isLimitedCoopRoomAvailable.next(false);
         component.redirectToGamePage(GameModes.LimitedCoop);
         createdRoomId.next(roomId);
+        expect(component['isStartingGame']).toEqual(false);
     });
 
     it('redirectToGamePage should  navigate to game page when game mode is LimitedCoop and a limited coop room is  available', () => {
@@ -112,6 +113,7 @@ describe('LimitedTimePageComponent', () => {
         component.redirectToGamePage(gameMode);
         isLimitedCoopRoomAvailable.next(true);
         createdRoomId.next(roomId);
+        expect(component['isStartingGame']).toEqual(false);
     });
 
     it('openWaitingDialog should open dialog', () => {
