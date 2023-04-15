@@ -24,7 +24,6 @@ describe('GameSheetComponent', () => {
     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl', 'navigate']);
     let roomManagerServiceSpy: jasmine.SpyObj<RoomManagerService>;
     let roomIdSpy: Subject<string>;
-    // let communicationService: CommunicationService;
 
     beforeEach(async () => {
         roomIdSpy = new Subject<string>();
@@ -79,7 +78,6 @@ describe('GameSheetComponent', () => {
 
     beforeEach(() => {
         fixture = TestBed.createComponent(GameSheetComponent);
-        // communicationService = TestBed.inject(CommunicationService);
         component = fixture.componentInstance;
 
         component.game = {
@@ -117,19 +115,6 @@ describe('GameSheetComponent', () => {
         roomIdSpy.next(roomId);
         expect(routerSpy.navigate).toHaveBeenCalled();
     });
-
-    // it('should call deleteGameById method of communicationService and redirect to config page', () => {
-    //     const deleteGameByIdSpy = spyOn(communicationService, 'deleteGameById').and.returnValue(of());
-    //     component.deleteGameCard();
-    //     expect(deleteGameByIdSpy).toHaveBeenCalledWith(component.game._id);
-    // });
-
-    // it('should call deleteGameById method of communicationService and redirect to config page', () => {
-    //     spyOn(communicationService, 'deleteGameById').and.returnValue(of(void 0));
-    //     routerSpy.navigateByUrl.and.returnValue(Promise.resolve(true));
-    //     component.deleteGameCard();
-    //     expect(routerSpy.navigateByUrl).toHaveBeenCalled();
-    // });
 
     it('createSoloRoom should call openDialog ', () => {
         const openDialogSpy = spyOn(component, 'openDialog').and.returnValue({
