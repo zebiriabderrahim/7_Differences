@@ -305,10 +305,10 @@ describe('RoomManagerService', () => {
         expect(isLimitedCoopRoomAvailableSpy).toHaveBeenCalledOnceWith(true);
     });
 
-    it('should call hasNoGameAvailable.next when RoomEvents.NoGameAvailible is received', () => {
+    it('should call hasNoGameAvailable.next when RoomEvents.NoGameAvailable is received', () => {
         service.handleRoomEvents();
         const isLimitedCoopRoomAvailableSpy = spyOn(service['hasNoGameAvailable'], 'next');
-        socketHelper.peerSideEmit(RoomEvents.NoGameAvailible, true);
+        socketHelper.peerSideEmit(RoomEvents.NoGameAvailable, true);
         expect(isLimitedCoopRoomAvailableSpy).toHaveBeenCalledOnceWith(true);
     });
 
