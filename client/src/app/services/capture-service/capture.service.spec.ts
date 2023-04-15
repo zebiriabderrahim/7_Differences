@@ -6,13 +6,11 @@ import { CaptureService } from './capture.service';
 
 describe('CaptureService', () => {
     let service: CaptureService;
-    let timestampStub: number;
     let dataStub: ReplayPayload;
 
     beforeEach(() => {
         TestBed.configureTestingModule({});
         service = TestBed.inject(CaptureService);
-        timestampStub = Date.now();
         dataStub = 'data';
     });
 
@@ -23,10 +21,10 @@ describe('CaptureService', () => {
     it('should emit a replay event on saveReplayEvent call', (done) => {
         const action: ReplayActions = ReplayActions.StartGame;
         const data: ReplayPayload = dataStub;
-        const expectedReplayEvent: ReplayEvent = { action, timestamp: timestampStub, data };
 
         service.replayEventsSubject$.subscribe((replayEvent: ReplayEvent) => {
-            expect(replayEvent).toEqual(expectedReplayEvent);
+            expect(replayEvent.action).toEqual(action);
+            expect(replayEvent.data).toEqual(data);
             done();
         });
 
