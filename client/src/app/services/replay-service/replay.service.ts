@@ -2,8 +2,9 @@
 import { Injectable } from '@angular/core';
 import { REPLAY_LIMITER, SPEED_X1 } from '@app/constants/replay';
 import { ReplayActions } from '@app/enum/replay-actions';
-import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
+import { ClickErrorData, ReplayEvent, ReplayPayload } from '@app/interfaces/replay-actions';
 import { ReplayInterval } from '@app/interfaces/replay-interval';
+import { CaptureService } from '@app/services/capture-service/capture.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { GameManagerService } from '@app/services/game-manager-service/game-manager.service';
 import { HintService } from '@app/services/hint-service/hint.service';
@@ -17,12 +18,12 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class ReplayService {
     isReplaying: boolean = false;
+    private replayEvents: ReplayEvent[] = [];
     private replaySpeed = SPEED_X1;
     private currentCoords: Coordinate[] = [];
     private isCheatMode: boolean = false;
     private isDifferenceFound: boolean = false;
     private replayInterval: ReplayInterval;
-    private replayEvents: ReplayEvent[] = [];
     private currentReplayIndex: number = 0;
     private replayTimer: BehaviorSubject<number>;
     private replayDifferenceFound: BehaviorSubject<number>;
@@ -34,18 +35,9 @@ export class ReplayService {
         private readonly soundService: SoundService,
         private readonly imageService: ImageService,
         private readonly hintService: HintService,
+        private readonly captureService: CaptureService,
     ) {
-        this.gameAreaService.replayEventsSubject.asObservable().subscribe((replayEvent: ReplayEvent) => {
-            if (!this.isReplaying) {
-                this.replayEvents.push(replayEvent);
-            }
-        });
-        this.gameManager.replayEventsSubject.asObservable().subscribe((replayEvent: ReplayEvent) => {
-            if (!this.isReplaying) {
-                this.replayEvents.push(replayEvent);
-            }
-        });
-        this.hintService.replayEventsSubject.asObservable().subscribe((replayEvent: ReplayEvent) => {
+        this.captureService.replayEventsSubject$.subscribe((replayEvent: ReplayEvent) => {
             if (!this.isReplaying) {
                 this.replayEvents.push(replayEvent);
             }
@@ -117,70 +109,45 @@ export class ReplayService {
     replaySwitcher(replayData: ReplayEvent): void {
         switch (replayData.action) {
             case ReplayActions.StartGame:
-                this.hintService.resetHints();
-                this.gameManager.differences = (replayData.data as GameRoom).originalDifferences;
-                this.imageService.loadImage(this.gameAreaService.getOriginalContext(), (replayData.data as GameRoom).clientGame.original);
-                this.imageService.loadImage(this.gameAreaService.getModifiedContext(), (replayData.data as GameRoom).clientGame.modified);
-                this.gameAreaService.setAllData();
+                this.replayGameStart(replayData.data as ReplayPayload);
                 break;
             case ReplayActions.ClickFound:
-                this.currentCoords = replayData.data as Coordinate[];
-                this.isDifferenceFound = true;
-                this.soundService.playCorrectSound();
-                this.gameAreaService.setAllData();
-                this.gameAreaService.replaceDifference(replayData.data as Coordinate[], this.replaySpeed);
+                this.replayClickFound(replayData.data as ReplayPayload);
                 break;
             case ReplayActions.ClickError:
-                this.soundService.playErrorSound();
-                this.gameAreaService.showError(
-                    (replayData.data as ClickErrorData).isMainCanvas as boolean,
-                    (replayData.data as ClickErrorData).pos as Coordinate,
-                    this.replaySpeed,
-                );
+                this.replayClickError(replayData.data as ReplayPayload);
                 break;
             case ReplayActions.CaptureMessage:
-                this.gameManager.setMessage(replayData.data as ChatMessage);
+                this.replayCaptureMessage(replayData.data as ReplayPayload);
                 break;
             case ReplayActions.ActivateCheat:
-                this.isCheatMode = true;
-                this.currentCoords = replayData.data as Coordinate[];
-                this.gameAreaService.toggleCheatMode(replayData.data as Coordinate[], this.replaySpeed);
+                this.replayActivateCheat(replayData.data as ReplayPayload);
                 break;
             case ReplayActions.DeactivateCheat:
-                this.isCheatMode = false;
-                this.gameAreaService.toggleCheatMode(replayData.data as Coordinate[], this.replaySpeed);
+                this.replayDeactivateCheat(replayData.data as ReplayPayload);
                 break;
             case ReplayActions.TimerUpdate:
-                this.replayTimer.next(replayData.data as number);
+                this.replayTimerUpdate(replayData.data as ReplayPayload);
                 break;
             case ReplayActions.DifferenceFoundUpdate:
-                this.replayDifferenceFound.next(replayData.data as number);
+                this.replayDifferenceFoundUpdate(replayData.data as ReplayPayload);
                 break;
             case ReplayActions.OpponentDifferencesFoundUpdate:
-                this.replayOpponentDifferenceFound.next(replayData.data as number);
+                this.replayOpponentDifferencesFoundUpdate(replayData.data as ReplayPayload);
                 break;
             case ReplayActions.UseHint:
-                this.hintService.requestHint(replayData.data as Coordinate[], this.replaySpeed);
+                this.replayUseHint(replayData.data as ReplayPayload);
                 break;
             case ReplayActions.ActivateThirdHint:
-                this.hintService.switchProximity(replayData.data as number);
+                this.replayActivateThirdHint(replayData.data as ReplayPayload);
                 break;
             case ReplayActions.DeactivateThirdHint:
-                this.hintService.deactivateThirdHint();
+                this.replayDeactivateThirdHint();
                 break;
             default:
                 break;
         }
         this.currentReplayIndex++;
-    }
-
-    getNextInterval(): number {
-        const nextActionIndex = this.currentReplayIndex + 1;
-        this.isDifferenceFound = false;
-        if (nextActionIndex < this.replayEvents.length) {
-            return (this.replayEvents[nextActionIndex].timestamp - this.replayEvents[this.currentReplayIndex].timestamp) / this.replaySpeed;
-        }
-        return REPLAY_LIMITER;
     }
 
     startReplay(): void {
@@ -218,13 +185,16 @@ export class ReplayService {
         this.replayInterval.resume();
     }
 
-    cancelReplay(): void {
-        this.replayInterval.cancel();
-        this.currentReplayIndex = 0;
-    }
-
     upSpeed(speed: number): void {
         this.replaySpeed = speed;
+        if (this.isCheatMode) {
+            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
+            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
+        }
+        if (this.isDifferenceFound) {
+            this.gameAreaService.flashPixels(this.currentCoords, this.replaySpeed, false);
+            this.gameAreaService.flashPixels(this.currentCoords, this.replaySpeed, true);
+        }
     }
 
     restartTimer(): void {
@@ -238,5 +208,83 @@ export class ReplayService {
         this.replayEvents = [];
         this.currentReplayIndex = 0;
         this.isReplaying = false;
+    }
+
+    private cancelReplay(): void {
+        this.replayInterval.cancel();
+        this.currentReplayIndex = 0;
+    }
+
+    private getNextInterval(): number {
+        const nextActionIndex = this.currentReplayIndex + 1;
+        this.isDifferenceFound = false;
+        if (nextActionIndex < this.replayEvents.length) {
+            return (this.replayEvents[nextActionIndex].timestamp - this.replayEvents[this.currentReplayIndex].timestamp) / this.replaySpeed;
+        }
+        return REPLAY_LIMITER;
+    }
+
+    private replayGameStart(replayData: ReplayPayload): void {
+        this.hintService.resetHints();
+        this.gameManager.differences = (replayData as GameRoom).originalDifferences;
+        this.imageService.loadImage(this.gameAreaService.getOriginalContext(), (replayData as GameRoom).clientGame.original);
+        this.imageService.loadImage(this.gameAreaService.getModifiedContext(), (replayData as GameRoom).clientGame.modified);
+        this.gameAreaService.setAllData();
+    }
+
+    private replayClickFound(replayData: ReplayPayload): void {
+        this.currentCoords = replayData as Coordinate[];
+        this.isDifferenceFound = true;
+        this.soundService.playCorrectSound();
+        this.gameAreaService.setAllData();
+        this.gameAreaService.replaceDifference(replayData as Coordinate[], this.replaySpeed);
+    }
+
+    private replayClickError(replayData: ReplayPayload): void {
+        this.soundService.playErrorSound();
+        this.gameAreaService.showError(
+            (replayData as ClickErrorData).isMainCanvas as boolean,
+            (replayData as ClickErrorData).pos as Coordinate,
+            this.replaySpeed,
+        );
+    }
+
+    private replayCaptureMessage(replayData: ReplayPayload): void {
+        this.gameManager.setMessage(replayData as ChatMessage);
+    }
+
+    private replayActivateCheat(replayData: ReplayPayload): void {
+        this.isCheatMode = true;
+        this.currentCoords = replayData as Coordinate[];
+        this.gameAreaService.toggleCheatMode(replayData as Coordinate[], this.replaySpeed);
+    }
+
+    private replayDeactivateCheat(replayData: ReplayPayload): void {
+        this.isCheatMode = false;
+        this.gameAreaService.toggleCheatMode(replayData as Coordinate[], this.replaySpeed);
+    }
+
+    private replayTimerUpdate(replayData: ReplayPayload): void {
+        this.replayTimer.next(replayData as number);
+    }
+
+    private replayDifferenceFoundUpdate(replayData: ReplayPayload): void {
+        this.replayDifferenceFound.next(replayData as number);
+    }
+
+    private replayOpponentDifferencesFoundUpdate(replayData: ReplayPayload): void {
+        this.replayOpponentDifferenceFound.next(replayData as number);
+    }
+
+    private replayUseHint(replayData: ReplayPayload): void {
+        this.hintService.requestHint(replayData as Coordinate[], this.replaySpeed);
+    }
+
+    private replayActivateThirdHint(replayData: ReplayPayload): void {
+        this.hintService.switchProximity(replayData as number);
+    }
+
+    private replayDeactivateThirdHint(): void {
+        this.hintService.deactivateThirdHint();
     }
 }

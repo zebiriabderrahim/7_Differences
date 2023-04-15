@@ -14,6 +14,7 @@ import { Coordinate } from '@common/coordinate';
 import { GameEvents, MessageEvents, MessageTag } from '@common/enums';
 import { ChatMessage, Differences, GameRoom, Players } from '@common/game-interfaces';
 import { Subject, filter } from 'rxjs';
+import { CaptureService } from '@app/services/capture-service/capture.service';
 import { Socket } from 'socket.io-client';
 import { GameManagerService } from './game-manager.service';
 
@@ -110,7 +111,12 @@ describe('GameManagerService', () => {
 
     beforeEach(() => {
         service = TestBed.inject(GameManagerService);
-        service = new GameManagerService(socketServiceMock, TestBed.inject(GameAreaService), TestBed.inject(SoundService));
+        service = new GameManagerService(
+            socketServiceMock,
+            TestBed.inject(GameAreaService),
+            TestBed.inject(SoundService),
+            TestBed.inject(CaptureService),
+        );
         gameAreaService = TestBed.inject(GameAreaService);
     });
 
