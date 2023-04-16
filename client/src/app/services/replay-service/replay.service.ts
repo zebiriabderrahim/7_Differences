@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { REPLAY_LIMITER, SPEED_X1 } from '@app/constants/replay';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { ClickErrorData, ReplayEvent, ReplayPayload } from '@app/interfaces/replay-actions';
@@ -10,12 +10,12 @@ import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { ChatMessage, Coordinate, GameRoom } from '@common/game-interfaces';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
-export class ReplayService {
+export class ReplayService implements OnDestroy {
     isReplaying: boolean;
     private replayEvents: ReplayEvent[];
     private replaySpeed: number;
@@ -27,6 +27,7 @@ export class ReplayService {
     private replayTimer: BehaviorSubject<number>;
     private replayDifferenceFound: BehaviorSubject<number>;
     private replayOpponentDifferenceFound: BehaviorSubject<number>;
+    private replayEventsSubjectSubscription: Subscription;
 
     // Replay needs to communicate with all services
     // eslint-disable-next-line max-params
@@ -38,7 +39,7 @@ export class ReplayService {
         private readonly hintService: HintService,
         private readonly captureService: CaptureService,
     ) {
-        this.setUpCapture();
+        this.addReplayEvent();
         this.isReplaying = false;
         this.replayTimer = new BehaviorSubject<number>(0);
         this.replayDifferenceFound = new BehaviorSubject<number>(0);
@@ -94,10 +95,6 @@ export class ReplayService {
             this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
             this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
         }
-        if (this.isDifferenceFound) {
-            this.gameAreaService.flashPixels(this.currentCoords, this.replaySpeed, false);
-            this.gameAreaService.flashPixels(this.currentCoords, this.replaySpeed, true);
-        }
     }
 
     restartTimer(): void {
@@ -113,6 +110,10 @@ export class ReplayService {
         this.isReplaying = false;
     }
 
+    ngOnDestroy(): void {
+        this.replayEventsSubjectSubscription?.unsubscribe();
+    }
+
     private toggleFlashing(isPaused: boolean): void {
         if (this.isCheatMode) {
             this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
@@ -122,11 +123,9 @@ export class ReplayService {
         }
     }
 
-    private setUpCapture(): void {
-        this.captureService.replayEventsSubject$.subscribe((replayEvent: ReplayEvent) => {
-            if (!this.isReplaying) {
-                this.replayEvents.push(replayEvent);
-            }
+    private addReplayEvent(): void {
+        this.replayEventsSubjectSubscription = this.captureService.replayEventsSubject$.subscribe((replayEvent: ReplayEvent) => {
+            if (!this.isReplaying) this.replayEvents.push(replayEvent);
         });
     }
 
