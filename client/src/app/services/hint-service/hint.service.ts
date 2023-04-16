@@ -123,7 +123,6 @@ export class HintService {
     private generateHintSquare(quadrant: Quadrant): Coordinate[] {
         const hintSquare: Coordinate[] = [];
         const { topCorner, bottomCorner } = quadrant;
-
         for (let i = bottomCorner.x; i < topCorner.x + HINT_SQUARE_PADDING; i++) {
             for (let j = bottomCorner.y; j < topCorner.y + HINT_SQUARE_PADDING; j++) {
                 const coordinate = { x: i, y: j };
@@ -132,7 +131,6 @@ export class HintService {
                 }
             }
         }
-
         return hintSquare;
     }
 
