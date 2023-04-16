@@ -110,22 +110,29 @@ export class ClassicModeService {
     async handleSocketDisconnect(socket: io.Socket, server: io.Server): Promise<void> {
         const room = this.roomsManagerService.getRoomByPlayerId(socket.id);
         const createdGameId = this.playersListManagerService.getGameIdByPlayerId(socket.id);
-        await this.roomsManagerService.handleDisconnect(room, server);
+        await this.roomsManagerService.handleSoloModesDisconnect(room, server);
         const joinable = this.roomAvailability.get(room?.clientGame.id)?.isAvailableToJoin;
         if (room && !room.player2 && joinable && room.clientGame.mode === GameModes.ClassicOneVsOne) {
-            this.updateRoomOneVsOneAvailability(socket.id, room.clientGame.id, server);
-            this.playersListManagerService.cancelAllJoining(room.clientGame.id, server);
-            this.roomsManagerService.deleteRoom(room.roomId);
-            await this.historyService.closeEntry(room.roomId, server);
+            this.handleDisconnectBeforeStarted(room, socket, server);
         } else if (room && room.timer !== 0 && !joinable) {
             await this.roomsManagerService.abandonGame(socket, server);
         } else if (!createdGameId) {
             this.deleteOneVsOneAvailability(socket, server);
         } else {
-            const hostId = this.roomsManagerService.getHostIdByGameId(createdGameId);
-            this.playersListManagerService.deleteJoinedPlayerByPlayerId(socket.id, createdGameId);
-            this.playersListManagerService.getWaitingPlayerNameList(hostId, createdGameId, server);
+            this.handleDisconnectBeforeCreated(createdGameId, socket, server);
         }
+    }
+
+    private handleDisconnectBeforeStarted(room: GameRoom, socket: io.Socket, server: io.Server): void {
+        this.updateRoomOneVsOneAvailability(socket.id, room.clientGame.id, server);
+        this.playersListManagerService.cancelAllJoining(room.clientGame.id, server);
+        this.roomsManagerService.deleteRoom(room.roomId);
+    }
+
+    private handleDisconnectBeforeCreated(createdGameId: string, socket: io.Socket, server: io.Server): void {
+        const hostId = this.roomsManagerService.getHostIdByGameId(createdGameId);
+        this.playersListManagerService.deleteJoinedPlayerByPlayerId(socket.id, createdGameId);
+        this.playersListManagerService.getWaitingPlayerNameList(hostId, createdGameId, server);
     }
 
     private async createClassicRoom(socket: io.Socket, playerPayLoad: PlayerData): Promise<string> {

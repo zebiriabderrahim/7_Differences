@@ -531,7 +531,7 @@ describe('RoomsManagerService', () => {
         fakeRoom.player2 = undefined;
         service['rooms'].set(fakeRoom.roomId, fakeRoom);
         const deleteRoomSpy = jest.spyOn(service, 'deleteRoom');
-        service.handleDisconnect(fakeRoom);
+        service.handleSoloModesDisconnect(fakeRoom);
         expect(deleteRoomSpy).toBeCalled();
     });
 
