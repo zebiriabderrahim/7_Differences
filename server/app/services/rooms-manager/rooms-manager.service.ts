@@ -197,7 +197,7 @@ export class RoomsManagerService implements OnModuleInit {
         socket.leave(room.roomId);
     }
 
-    async handleDisconnect(room: GameRoom, server: io.Server): Promise<void> {
+    async handleSoloModesDisconnect(room: GameRoom, server: io.Server): Promise<void> {
         if (room && !room.player2) {
             this.historyService.markPlayer(room.roomId, room.player1.name, PlayerStatus.Quitter);
             await this.historyService.closeEntry(room.roomId, server);
