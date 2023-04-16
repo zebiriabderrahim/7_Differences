@@ -11,7 +11,7 @@ export class SoundService {
     constructor() {
         this.correctSoundEffect = new Audio('assets/sound/WinSoundEffect.mp3');
         this.incorrectSoundEffect = new Audio('assets/sound/ErrorSoundEffect.mp3');
-        this.backgroundMusic = new Audio('assets/sound/BackgroundMusic.mp3');
+        this.backgroundMusic = new Audio('assets/sound/DingDongMusic.mp3');
     }
 
     playErrorSound(): void {
