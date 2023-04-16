@@ -22,10 +22,6 @@ export class CommunicationService {
             .pipe(catchError(this.handleError<CarouselPaginator>('loadGameCarousel')));
     }
 
-    loadGameById(id: number): Observable<Game> {
-        return this.http.get<Game>(`${this.gameUrl}/${id}`).pipe(catchError(this.handleError<Game>('loadGameById')));
-    }
-
     postGame(gameData: GameDetails): Observable<void> {
         return this.http.post<void>(`${this.gameUrl}`, gameData).pipe(catchError(this.handleError<void>('postGame')));
     }

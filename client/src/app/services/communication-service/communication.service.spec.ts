@@ -56,26 +56,6 @@ describe('CommunicationService', () => {
         request.flush(mockGameCarrousel);
     });
 
-    it('should GET a game by id when loadGameById is called', () => {
-        game = {
-            id: 0,
-            name: '',
-            difficultyLevel: true,
-            original: '',
-            modified: '',
-            soloTopTime: [],
-            oneVsOneTopTime: [],
-            differencesCount: 0,
-            thumbnail: '',
-            hintList: [''],
-        };
-        serviceComponent.loadGameById(0).subscribe((response) => {
-            expect(response).toEqual(game);
-        });
-        const request = httpMock.expectOne(`${serviceComponent['gameUrl']}/0`);
-        request.flush(game);
-    });
-
     it('should send a POST request to the server when postGame is called', () => {
         gameDetails = {
             name: '',
