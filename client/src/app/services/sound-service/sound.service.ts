@@ -12,10 +12,12 @@ export class SoundService {
     constructor() {
         this.correctSoundEffect = new Audio('assets/sound/WinSoundEffect.mp3');
         this.incorrectSoundEffect = new Audio('assets/sound/ErrorSoundEffect.mp3');
-        this.backgroundMusic = new Audio('assets/sound/DingDongMusic.mp3');
+        this.backgroundMusic = new Audio('assets/sound/BackgroundMusic.mp3');
         this.gameMusic = new Audio('assets/sound/GameMusic.mp3');
         this.backgroundMusic.loop = true;
+        this.backgroundMusic.volume = 0.02;
         this.gameMusic.loop = true;
+        this.gameMusic.volume = 0.02;
     }
 
     playErrorSound(): void {
@@ -42,5 +44,6 @@ export class SoundService {
     stopGameMusic(): void {
         this.gameMusic.pause();
         this.gameMusic.currentTime = 0;
+        this.backgroundMusic.play();
     }
 }

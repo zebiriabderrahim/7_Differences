@@ -1,4 +1,4 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { SoundService } from '@app/services/sound-service/sound.service';
 
 @Component({
@@ -6,7 +6,7 @@ import { SoundService } from '@app/services/sound-service/sound.service';
     templateUrl: './main-page.component.html',
     styleUrls: ['./main-page.component.scss'],
 })
-export class MainPageComponent implements AfterViewInit {
+export class MainPageComponent {
     readonly gameTitle: string;
     readonly selectionRoute: string;
     readonly limitedRoute: string;
@@ -22,7 +22,7 @@ export class MainPageComponent implements AfterViewInit {
         this.teammateNameList = ['Jeremy Ear,', 'Sulayman Hosna,', 'Edgar Kappauf,', 'Mathieu Prévost,', 'Zakaria Zair,', 'Abderrahim Zebiri'];
     }
 
-    ngAfterViewInit(): void {
+    playBackgroundMusic(): void {
         this.soundService.loopBackgroundMusic();
     }
 }
