@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { SoundService } from '@app/services/sound-service/sound.service';
 
 @Component({
     selector: 'app-main-page',
@@ -13,16 +12,12 @@ export class MainPageComponent {
     readonly configRoute: string;
     readonly teamNumber: string;
     readonly teammateNameList: string[];
-    constructor(private readonly soundService: SoundService) {
+    constructor() {
         this.gameTitle = '7 Différences';
         this.selectionRoute = '/selection';
         this.configRoute = '/config';
         this.limitedRoute = '/limited';
         this.teamNumber = "Présenté par l'équipe 101";
         this.teammateNameList = ['Jeremy Ear,', 'Sulayman Hosna,', 'Edgar Kappauf,', 'Mathieu Prévost,', 'Zakaria Zair,', 'Abderrahim Zebiri'];
-    }
-
-    playBackgroundMusic(): void {
-        this.soundService.loopBackgroundMusic();
     }
 }

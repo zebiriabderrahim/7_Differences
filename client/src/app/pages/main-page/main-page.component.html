@@ -6,13 +6,13 @@
     <section id="server-message" class="flex-column section">
         <h2>Choisis ton mode de jeu :</h2>
         <div class="flex-row">
-            <button class="button" (click)="playBackgroundMusic()" [routerLink]="selectionRoute">
+            <button class="button" [routerLink]="selectionRoute">
                 <span id = "classic">Classique</span>
             </button>
-            <button class="button" (click)="playBackgroundMusic()" [routerLink]="limitedRoute">
+            <button class="button" [routerLink]="limitedRoute">
                 <span id = "limited">Temps Limité</span>
             </button>
-            <button class="button" (click)="playBackgroundMusic()" [routerLink]="configRoute">
+            <button class="button" [routerLink]="configRoute">
                 <span id = "config">Configuration</span>
             </button>
         </div>
