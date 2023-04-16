@@ -12,6 +12,7 @@ import { GameManagerService } from '@app/services/game-manager-service/game-mana
 import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ReplayService } from '@app/services/replay-service/replay.service';
+import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
 import { GameModes, MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, Players } from '@common/game-interfaces';
@@ -51,6 +52,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         private readonly matDialog: MatDialog,
         private readonly replayService: ReplayService,
         private readonly router: Router,
+        private readonly soundService: SoundService,
     ) {
         this.gameManager.manageSocket();
         this.differencesFound = 0;
@@ -64,6 +66,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.isReplayAvailable = false;
         this.gameMode = GameModes;
         this.onDestroy$ = new Subject();
+        this.soundService.loopGameMusic();
     }
 
     get differences(): Coordinate[][] {
@@ -274,5 +277,6 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
         this.onDestroy$.complete();
         this.gameAreaService.resetCheatMode();
         this.gameManager.removeAllListeners();
+        this.soundService.stopGameMusic();
     }
 }
