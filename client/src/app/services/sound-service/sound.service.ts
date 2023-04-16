@@ -15,8 +15,8 @@ export class SoundService {
         this.backgroundMusic = new Audio('assets/sound/BackgroundMusic.mp3');
         this.gameMusic = new Audio('assets/sound/GameMusic.mp3');
         this.backgroundMusic.loop = true;
-        this.backgroundMusic.volume = 0.02;
         this.gameMusic.loop = true;
+        this.backgroundMusic.volume = 0.02;
         this.gameMusic.volume = 0.02;
     }
 
