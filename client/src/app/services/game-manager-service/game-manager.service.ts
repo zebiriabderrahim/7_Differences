@@ -123,7 +123,7 @@ export class GameManagerService {
         if (isPlayerIdMatch) this.isFirstDifferencesFound.next(true);
     }
 
-    handleRemoveDiff(data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }): void {
+    handleRemoveDifference(data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }): void {
         const isPlayerIdMatch = data.playerId === this.getSocketId();
         if (isPlayerIdMatch) {
             this.replaceDifference(data.differencesData.currentDifference, isPlayerIdMatch);
@@ -176,7 +176,7 @@ export class GameManagerService {
         this.clientSocket.on(
             GameEvents.RemoveDifference,
             (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
-                this.handleRemoveDiff(data);
+                this.handleRemoveDifference(data);
             },
         );
 
