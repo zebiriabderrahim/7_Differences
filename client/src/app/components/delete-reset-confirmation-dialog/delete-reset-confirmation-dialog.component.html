@@ -11,6 +11,10 @@
     <p class = "reset-question">Êtes-vous sûr de vouloir réinitialiser le meilleur temps ?</p>
 </div>
 
+<div *ngIf="data.actions === actions.DeleteHistory">
+    <p class = "history-question">Êtes-vous sûr de vouloir supprimer l'historique?</p>
+</div>
+
 <div class = "button1" *ngIf="data.actions === actions.DeleteAllGames">
     <div class="button-container">
         <button class = "yesButton" mat-button  mat-dialog-close (click)="deleteAllGames()"></button>
@@ -38,6 +42,14 @@
 <div class = "button1" *ngIf="data.actions === actions.ResetTopTime">
     <div class="button-container">
         <button class = "yesButton" mat-button  mat-dialog-close (click)="resetTopTime()"></button>
+        <img src="./assets/icon/PlayButton.png" alt="yesButton">
+        <div class="centered-yes">Oui</div>
+    </div>
+</div>
+
+<div class = "button1" *ngIf="data.actions === actions.DeleteHistory">
+    <div class="button-container">
+        <button class = "yesButton" mat-button  mat-dialog-close (click)="deleteAllHistory()"></button>
         <img src="./assets/icon/PlayButton.png" alt="yesButton">
         <div class="centered-yes">Oui</div>
     </div>
