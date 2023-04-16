@@ -7,7 +7,7 @@ import { PlayersListManagerService } from '@app/services/players-list-manager/pl
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { SCORE_POSITION } from '@common/constants';
 import { GameEvents, GameModes, PlayerEvents, PlayerStatus, RoomEvents } from '@common/enums';
-import { GameRoom, Player, RoomAvailability, PlayerData } from '@common/game-interfaces';
+import { GameRoom, Player, PlayerData, RoomAvailability } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
 
@@ -110,12 +110,13 @@ export class ClassicModeService {
     async handleSocketDisconnect(socket: io.Socket, server: io.Server): Promise<void> {
         const room = this.roomsManagerService.getRoomByPlayerId(socket.id);
         const createdGameId = this.playersListManagerService.getGameIdByPlayerId(socket.id);
-        this.roomsManagerService.handleDisconnect(room);
+        await this.roomsManagerService.handleDisconnect(room, server);
         const joinable = this.roomAvailability.get(room?.clientGame.id)?.isAvailableToJoin;
         if (room && !room.player2 && joinable && room.clientGame.mode === GameModes.ClassicOneVsOne) {
             this.updateRoomOneVsOneAvailability(socket.id, room.clientGame.id, server);
             this.playersListManagerService.cancelAllJoining(room.clientGame.id, server);
             this.roomsManagerService.deleteRoom(room.roomId);
+            await this.historyService.closeEntry(room.roomId, server);
         } else if (room && room.timer !== 0 && !joinable) {
             await this.roomsManagerService.abandonGame(socket, server);
         } else if (!createdGameId) {
