@@ -38,11 +38,7 @@ export class ReplayService {
         private readonly hintService: HintService,
         private readonly captureService: CaptureService,
     ) {
-        this.captureService.replayEventsSubject$.subscribe((replayEvent: ReplayEvent) => {
-            if (!this.isReplaying) {
-                this.replayEvents.push(replayEvent);
-            }
-        });
+        this.setUpCapture();
         this.isReplaying = false;
         this.replayTimer = new BehaviorSubject<number>(0);
         this.replayDifferenceFound = new BehaviorSubject<number>(0);
@@ -83,22 +79,12 @@ export class ReplayService {
     }
 
     pauseReplay(): void {
-        if (this.isCheatMode) {
-            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
-        }
-        if (this.isDifferenceFound) {
-            this.gameAreaService.flashPixels(this.currentCoords, this.replaySpeed, true);
-        }
+        this.toggleFlashing(true);
         this.replayInterval.pause();
     }
 
     resumeReplay(): void {
-        if (this.isCheatMode) {
-            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
-        }
-        if (this.isDifferenceFound) {
-            this.gameAreaService.flashPixels(this.currentCoords, this.replaySpeed, false);
-        }
+        this.toggleFlashing(false);
         this.replayInterval.resume();
     }
 
@@ -125,6 +111,23 @@ export class ReplayService {
         this.replayEvents = [];
         this.currentReplayIndex = 0;
         this.isReplaying = false;
+    }
+
+    private toggleFlashing(isPaused: boolean): void {
+        if (this.isCheatMode) {
+            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
+        }
+        if (this.isDifferenceFound) {
+            this.gameAreaService.flashPixels(this.currentCoords, this.replaySpeed, isPaused);
+        }
+    }
+
+    private setUpCapture(): void {
+        this.captureService.replayEventsSubject$.subscribe((replayEvent: ReplayEvent) => {
+            if (!this.isReplaying) {
+                this.replayEvents.push(replayEvent);
+            }
+        });
     }
 
     private replaySwitcher(replayData: ReplayEvent): void {
@@ -179,7 +182,7 @@ export class ReplayService {
         const start = (delay?: number) => {
             if (this.currentReplayIndex < this.replayEvents.length) {
                 startTime = Date.now();
-                remainingTime = delay === undefined ? getNextInterval() : delay;
+                remainingTime = !delay ? getNextInterval() : delay;
 
                 if (!delay) {
                     callback();
