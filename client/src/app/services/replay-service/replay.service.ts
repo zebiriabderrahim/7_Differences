@@ -167,8 +167,6 @@ export class ReplayService implements OnDestroy {
             case ReplayActions.DeactivateThirdHint:
                 this.replayDeactivateThirdHint();
                 break;
-            default:
-                break;
         }
         this.currentReplayIndex++;
     }
@@ -178,7 +176,7 @@ export class ReplayService implements OnDestroy {
         let remainingTime: number;
         let startTime: number;
 
-        const start = (delay?: number) => {
+        const start = (delay: number = 0) => {
             if (this.currentReplayIndex < this.replayEvents.length) {
                 startTime = Date.now();
                 remainingTime = !delay ? getNextInterval() : delay;
