@@ -114,6 +114,12 @@ export class ReplayService implements OnDestroy {
         this.replayEventsSubjectSubscription?.unsubscribe();
     }
 
+    addReplayEvent(): void {
+        this.replayEventsSubjectSubscription = this.captureService.replayEventsSubject$.subscribe((replayEvent: ReplayEvent) => {
+            if (!this.isReplaying) this.replayEvents.push(replayEvent);
+        });
+    }
+
     private toggleFlashing(isPaused: boolean): void {
         if (this.isCheatMode) {
             this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
@@ -121,12 +127,6 @@ export class ReplayService implements OnDestroy {
         if (this.isDifferenceFound) {
             this.gameAreaService.flashPixels(this.currentCoords, this.replaySpeed, isPaused);
         }
-    }
-
-    private addReplayEvent(): void {
-        this.replayEventsSubjectSubscription = this.captureService.replayEventsSubject$.subscribe((replayEvent: ReplayEvent) => {
-            if (!this.isReplaying) this.replayEvents.push(replayEvent);
-        });
     }
 
     private replaySwitcher(replayData: ReplayEvent): void {

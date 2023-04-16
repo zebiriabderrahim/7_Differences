@@ -84,6 +84,8 @@ describe('ReplayService', () => {
         });
 
         service = TestBed.inject(ReplayService);
+
+        service['replayEvents'] = replayEventsStub;
     });
 
     it('should be created', () => {
@@ -335,6 +337,12 @@ describe('ReplayService', () => {
     });
 
     it('should set replaySpeed to SPEED_X1', () => {
+        service.upSpeed(SPEED_X1);
+        expect(service['replaySpeed']).toBe(SPEED_X1);
+    });
+
+    it('should speed up the flashing for cheat mode when up speed', () => {
+        service['isCheatMode'] = true;
         service.upSpeed(SPEED_X1);
         expect(service['replaySpeed']).toBe(SPEED_X1);
     });
