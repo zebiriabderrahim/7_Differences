@@ -47,7 +47,7 @@ describe('GameAreaService', () => {
     });
 
     it('should detect left click on screen and call saveCoord', () => {
-        const saveCoordSpy = spyOn(gameAreaService, 'saveCoord');
+        const saveCoordSpy = spyOn<any>(gameAreaService, 'saveCoord');
         expect(gameAreaService.detectLeftClick({ button: LEFT_BUTTON } as MouseEvent)).toBeTruthy();
         expect(saveCoordSpy).toHaveBeenCalled();
     });
@@ -55,7 +55,7 @@ describe('GameAreaService', () => {
     it('saveCoord should properly save mouse position', () => {
         const expectedMousePosition = { x: 15, y: 18 };
         const clickEvent: MouseEvent = { offsetX: 15, offsetY: 18 } as MouseEvent;
-        gameAreaService.saveCoord(clickEvent);
+        gameAreaService['saveCoord'](clickEvent);
         expect(gameAreaService['mousePosition']).toEqual(expectedMousePosition);
     });
 
