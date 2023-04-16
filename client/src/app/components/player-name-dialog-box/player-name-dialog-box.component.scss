@@ -73,3 +73,12 @@ button {
     font-family: 'Troika', sans-serif;
     font-size: 18px;
 }
+
+.count {
+    position: absolute;
+    z-index: 2;
+    left: 60%;
+    bottom: 20%;
+    font-family: 'Troika', sans-serif;
+    font-size: 30px;
+}
