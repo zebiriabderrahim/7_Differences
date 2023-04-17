@@ -20,8 +20,8 @@ import { LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON } from '@app/constants/constan
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { ForegroundService } from '@app/services/foreground-service/foreground.service';
-import { CreationPageComponent } from './creation-page.component';
 import { of } from 'rxjs';
+import { CreationPageComponent } from './creation-page.component';
 
 describe('CreationPageComponent', () => {
     let component: CreationPageComponent;

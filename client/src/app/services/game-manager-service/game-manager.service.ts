@@ -123,18 +123,19 @@ export class GameManagerService {
         if (isPlayerIdMatch) this.isFirstDifferencesFound.next(true);
     }
 
-    handleRemoveDiff(data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }): void {
+    handleRemoveDifference(data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }): void {
         const isPlayerIdMatch = data.playerId === this.getSocketId();
         if (isPlayerIdMatch) {
             this.replaceDifference(data.differencesData.currentDifference, isPlayerIdMatch);
             this.differencesFound.next(data.differencesData.differencesFound);
             this.checkStatus();
+            this.captureService.saveReplayEvent(ReplayActions.DifferenceFoundUpdate, data.differencesData.differencesFound);
         } else if (data.differencesData.currentDifference.length !== 0) {
             this.replaceDifference(data.differencesData.currentDifference, isPlayerIdMatch);
             this.opponentDifferencesFound.next(data.differencesData.differencesFound);
+            this.captureService.saveReplayEvent(ReplayActions.OpponentDifferencesFoundUpdate, data.differencesData.differencesFound);
         }
         this.differences = data.cheatDifferences;
-        this.captureService.saveReplayEvent(ReplayActions.DifferenceFoundUpdate, data.differencesData.differencesFound);
     }
 
     abandonGame(): void {
@@ -175,7 +176,7 @@ export class GameManagerService {
         this.clientSocket.on(
             GameEvents.RemoveDifference,
             (data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }) => {
-                this.handleRemoveDiff(data);
+                this.handleRemoveDifference(data);
             },
         );
 

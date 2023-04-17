@@ -24,10 +24,9 @@ export class CanvasTopButtonsComponent {
         this.canvasAction = CanvasAction;
         this.selectedCanvasAction = CanvasAction.Pencil;
         this.drawValues = DRAW_VALUES;
-        this.drawColor = DEFAULT_COLOR;
         this.colors = COLORS;
         this.setCanvasAction(this.selectedCanvasAction);
-        this.setDrawingColor(this.drawColor);
+        this.setDrawingColor(DEFAULT_COLOR);
         this.setPencilWidth(this.pencilDiameter);
         this.setEraserLength(this.eraserLength);
     }

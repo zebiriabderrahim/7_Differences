@@ -16,7 +16,7 @@ export class LimitedModeService {
     async createLimitedRoom(socket: io.Socket, playerPayLoad: PlayerData, server: io.Server): Promise<void> {
         const limitedRoom = await this.roomsManagerService.createRoom(playerPayLoad);
         if (!limitedRoom) {
-            socket.emit(RoomEvents.NoGameAvailible);
+            socket.emit(RoomEvents.NoGameAvailable);
             return;
         }
         this.availableGameByRoomId.set(limitedRoom.roomId, [limitedRoom.clientGame.id]);

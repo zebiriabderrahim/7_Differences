@@ -149,7 +149,7 @@ export class RoomsManagerService implements OnModuleInit {
         }
     }
 
-    addHintPenalty(socket: io.Socket, server: io.Server): void {
+    async addHintPenalty(socket: io.Socket, server: io.Server): Promise<void> {
         const roomId = this.getRoomIdFromSocket(socket);
         const room = this.getRoomById(roomId);
         if (!room) return;
@@ -159,7 +159,7 @@ export class RoomsManagerService implements OnModuleInit {
         if (this.isLimitedModeGame(clientGame)) penaltyTime = -penaltyTime;
 
         if (timer + penaltyTime < 0) {
-            this.countdownOver(room, server);
+            await this.countdownOver(room, server);
         } else {
             room.timer += penaltyTime;
             this.rooms.set(room.roomId, room);
@@ -197,8 +197,12 @@ export class RoomsManagerService implements OnModuleInit {
         socket.leave(room.roomId);
     }
 
-    handleDisconnect(room: GameRoom): void {
-        if (room && !room.player2) this.deleteRoom(room.roomId);
+    async handleSoloModesDisconnect(room: GameRoom, server: io.Server): Promise<void> {
+        if (room && !room.player2) {
+            this.historyService.markPlayer(room.roomId, room.player1.name, PlayerStatus.Quitter);
+            await this.historyService.closeEntry(room.roomId, server);
+            this.deleteRoom(room.roomId);
+        }
     }
 
     private differenceFound(room: GameRoom, player: Player, index: number): ChatMessage {
@@ -233,17 +237,18 @@ export class RoomsManagerService implements OnModuleInit {
         this.updateRoom(room);
     }
 
-    private updateTimer(room: GameRoom, server: io.Server, isCountdown: boolean): void {
+    private async updateTimer(room: GameRoom, server: io.Server, isCountdown: boolean): Promise<void> {
         if (isCountdown) room.timer--;
         else room.timer++;
         this.updateRoom(room);
         server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
-        if (room.timer === 0) this.countdownOver(room, server);
+        if (room.timer === 0) await this.countdownOver(room, server);
     }
 
-    private countdownOver(room: GameRoom, server: io.Server): void {
+    private async countdownOver(room: GameRoom, server: io.Server): Promise<void> {
         room.endMessage = 'Temps écoulé !';
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
+        await this.historyService.closeEntry(room.roomId, server);
         this.deleteRoom(room.roomId);
         this.leaveRoom(room, server);
     }
