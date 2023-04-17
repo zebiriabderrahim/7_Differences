@@ -15,8 +15,13 @@ describe('DeleteResetConfirmationDialogComponent', () => {
     const gameId = '123';
 
     beforeEach(async () => {
-        roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['resetAllTopTimes', 'allGamesDeleted', 'resetTopTime']);
-        communicationServiceSpy = jasmine.createSpyObj('communicationService', ['deleteAllGames', 'deleteGameById ']);
+        roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', [
+            'resetAllTopTimes',
+            'allGamesDeleted',
+            'resetTopTime',
+            'gameCardDeleted',
+        ]);
+        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['deleteAllGames', 'deleteGameById']);
         await TestBed.configureTestingModule({
             declarations: [DeleteResetConfirmationDialogComponent],
             imports: [MatDialogModule, HttpClientModule],
@@ -53,5 +58,12 @@ describe('DeleteResetConfirmationDialogComponent', () => {
         component.data = { actions: Actions.DeleteGame, gameId };
         component.resetTopTime();
         expect(roomManagerServiceSpy.resetTopTime).toHaveBeenCalledWith(gameId);
+    });
+
+    it('deleteGameCard should call communicationService.deleteGameById with the correct gameId', () => {
+        component.data = { actions: Actions.DeleteGame, gameId };
+        communicationServiceSpy.deleteGameById.and.returnValue(of(void 0));
+        component.deleteGameCard();
+        expect(communicationServiceSpy.deleteGameById).toHaveBeenCalledWith(gameId);
     });
 });

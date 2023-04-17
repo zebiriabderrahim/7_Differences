@@ -91,4 +91,10 @@ describe('SelectionPageComponent', () => {
         component.ngOnDestroy();
         expect(component['reloadSubscription']).toBeUndefined();
     });
+
+    it('should unsubscribe reloadSubscription when component is destroyed', () => {
+        component['reloadSubscription'] = undefined as unknown as Subscription;
+        component.ngOnDestroy();
+        expect(component['reloadSubscription']).toBeUndefined();
+    });
 });

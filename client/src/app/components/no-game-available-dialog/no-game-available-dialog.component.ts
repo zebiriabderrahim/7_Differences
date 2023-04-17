@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-    selector: 'app-no-game-availible-dialog',
+    selector: 'app-no-game-available-dialog',
     templateUrl: './no-game-available-dialog.component.html',
     styleUrls: ['./no-game-available-dialog.component.scss'],
 })

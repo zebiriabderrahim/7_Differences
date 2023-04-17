@@ -1,6 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatIconModule } from '@angular/material/icon';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameHistory } from '@common/game-interfaces';
@@ -28,7 +29,7 @@ describe('HistoryBoxComponent', () => {
         communicationServiceSpy.deleteAllGamesHistory.and.returnValue(mockDeleteAllGames.asObservable());
 
         await TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule, MatButtonToggleModule],
+            imports: [HttpClientTestingModule, MatButtonToggleModule, MatIconModule],
             declarations: [HistoryBoxComponent],
             providers: [
                 { provide: CommunicationService, useValue: communicationServiceSpy },
