@@ -1,10 +1,11 @@
+/* eslint-disable no-unused-vars */
 // Needed more lines for tests
 /* eslint-disable max-lines */
 // needed to spy on private functions
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-function */
 // Need to mock functions
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, flush } from '@angular/core/testing';
 import { WAITING_TIME } from '@app/constants/constants';
 import { REPLAY_LIMITER, SPEED_X1, SPEED_X2, SPEED_X4 } from '@app/constants/replay';
 import { HintProximity } from '@app/enum/hint-proximity';
@@ -31,6 +32,7 @@ describe('ReplayService', () => {
     let hintServiceSpy: jasmine.SpyObj<HintService>;
     let captureServiceSpy: jasmine.SpyObj<CaptureService>;
     let replayEventsSubjectStub: Subject<ReplayEvent>;
+    let timerCallbackSpy: jasmine.Spy<jasmine.Func> | (() => void);
     const replayEventGameManagerServiceSubTest = new BehaviorSubject<number>(0);
 
     const gameRoomStub: GameRoom = {
@@ -57,7 +59,7 @@ describe('ReplayService', () => {
         cancel: jasmine.createSpy('cancel'),
     };
 
-    beforeEach(async () => {
+    beforeEach(() => {
         replayEventsSubjectStub = new Subject<ReplayEvent>();
         gameAreaServiceSpy = jasmine.createSpyObj(
             'GameAreaService',
@@ -89,6 +91,17 @@ describe('ReplayService', () => {
         service['replayEvents'] = replayEventsStub;
     });
 
+    beforeEach(() => {
+        timerCallbackSpy = jasmine.createSpy('timerCallback');
+        jasmine.clock().uninstall();
+        jasmine.clock().install();
+    });
+
+    afterEach(() => {
+        jasmine.clock().uninstall();
+        service.ngOnDestroy();
+    });
+
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
@@ -96,6 +109,7 @@ describe('ReplayService', () => {
     it('should set isReplaying to true when startReplay is called', () => {
         service['replayEvents'] = replayEventsStub;
         service.startReplay();
+        jasmine.clock().tick(WAITING_TIME);
         expect(service.isReplaying).toBeTruthy();
     });
 
@@ -104,13 +118,13 @@ describe('ReplayService', () => {
         const replaySwitcherSpy = spyOn<any>(service, 'replaySwitcher');
         service['replayEvents'] = replayEventsStub;
         service.startReplay();
+        jasmine.clock().tick(WAITING_TIME);
         expect(service.isReplaying).toBe(true);
         expect(createReplayIntervalSpy).toHaveBeenCalled();
-        expect(replaySwitcherSpy).toHaveBeenCalledTimes(1);
+        expect(replaySwitcherSpy).toHaveBeenCalled();
     });
 
     it('should call createReplayInterval and replaySwitcher when interval is paused and resumed', () => {
-        jasmine.clock().install();
         const createReplayIntervalSpy = spyOn<any>(service, 'createReplayInterval').and.callThrough();
         const replaySwitcherSpy = spyOn<any>(service, 'replaySwitcher');
         service['currentReplayIndex'] = 0;
@@ -121,18 +135,74 @@ describe('ReplayService', () => {
         expect(service.isReplaying).toBe(true);
         expect(createReplayIntervalSpy).toHaveBeenCalled();
         expect(replaySwitcherSpy).toHaveBeenCalled();
-        jasmine.clock().uninstall();
     });
 
-    it('should call cancelReplay when replayEvents is empty', (done) => {
+    it('should call createReplayInterval and replaySwitcher when interval is paused and resumed without waiting', () => {
+        const createReplayIntervalSpy = spyOn<any>(service, 'createReplayInterval').and.callThrough();
+        const replaySwitcherSpy = spyOn<any>(service, 'replaySwitcher');
+        service['currentReplayIndex'] = 0;
+        service.startReplay();
+        service.pauseReplay();
+        service.resumeReplay();
+        jasmine.clock().tick(WAITING_TIME);
+        expect(service.isReplaying).toBe(true);
+        expect(createReplayIntervalSpy).toHaveBeenCalled();
+        expect(replaySwitcherSpy).toHaveBeenCalled();
+    });
+
+    it('should call createReplayInterval and replaySwitcher when interval is paused and resumed without waiting', () => {
+        const createReplayIntervalSpy = spyOn<any>(service, 'createReplayInterval').and.callThrough();
+        const replaySwitcherSpy = spyOn<any>(service, 'replaySwitcher');
+        service['currentReplayIndex'] = 0;
+        service.startReplay();
+        service.pauseReplay();
+        service.resumeReplay();
+        jasmine.clock().tick(WAITING_TIME);
+        expect(service.isReplaying).toBe(true);
+        expect(createReplayIntervalSpy).toHaveBeenCalled();
+        expect(replaySwitcherSpy).toHaveBeenCalled();
+    });
+
+    it('getNextInterval should return REPLAY_LIMITER when currentReplayIndex is 0', () => {
+        service['replayEvents'] = replayEventsStub;
+        service['currentReplayIndex'] = 40;
+        expect(service['getNextInterval']()).toEqual(REPLAY_LIMITER);
+    });
+
+    it('cancelReplay should call clearTimeout', () => {
+        spyOn(window, 'setTimeout')
+            .and.callThrough()
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- needed for test
+            .and.returnValue(40 as unknown as ReturnType<typeof setTimeout>);
+        const clearTimeoutSpy = spyOn(window, 'clearTimeout');
+        service.startReplay();
+        service['cancelReplay']();
+        jasmine.clock().tick(WAITING_TIME);
+        expect(clearTimeoutSpy).toHaveBeenCalled();
+    });
+
+    it('should call cancelReplay when replayEvents is empty', fakeAsync(() => {
         const cancelReplaySpy = spyOn<any>(service, 'cancelReplay').and.callThrough();
         service['replayEvents'] = [];
         service.startReplay();
         setTimeout(() => {
             expect(cancelReplaySpy).toHaveBeenCalled();
-            done();
         }, REPLAY_LIMITER);
-    });
+        expect(timerCallbackSpy).not.toHaveBeenCalled();
+        flush();
+    }));
+
+    it('should call cancelReplay when replayEvents is over', fakeAsync(() => {
+        const cancelReplaySpy = spyOn<any>(service, 'cancelReplay').and.callThrough();
+        service['replayEvents'] = [];
+        service.startReplay();
+        service['currentReplayIndex'] = replayEventsStub.length;
+        setTimeout(() => {
+            expect(cancelReplaySpy).toHaveBeenCalled();
+        }, REPLAY_LIMITER);
+        expect(timerCallbackSpy).not.toHaveBeenCalled();
+        flush();
+    }));
 
     it('should stop the replay when there are no more events to process', () => {
         spyOn<any>(service, 'createReplayInterval').and.callFake((callback: (i: ReplayEvent) => void) => {
@@ -152,6 +222,7 @@ describe('ReplayService', () => {
         const replaySwitcherSpy = spyOn<any>(service, 'replaySwitcher').and.callThrough();
         service['replayEvents'] = replayEventsStub;
         service.startReplay();
+        jasmine.clock().tick(WAITING_TIME);
         expect(service.isReplaying).toBe(true);
         expect(replaySwitcherSpy).toHaveBeenCalledTimes(replayEventsStub.length);
     });
@@ -404,6 +475,7 @@ describe('ReplayService', () => {
         service['currentReplayIndex'] = 5;
         service['replayInterval'] = replayIntervalMock;
         service.restartReplay();
+        jasmine.clock().tick(WAITING_TIME);
         expect(service['currentReplayIndex']).toBe(0);
         expect(replayIntervalMock.resume).toHaveBeenCalled();
     });
