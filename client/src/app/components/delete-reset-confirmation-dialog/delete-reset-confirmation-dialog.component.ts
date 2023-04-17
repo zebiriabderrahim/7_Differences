@@ -29,6 +29,12 @@ export class DeleteResetConfirmationDialogComponent {
         });
     }
 
+    deleteAllGamesHistory(): void {
+        this.communicationService.deleteAllGamesHistory().subscribe(() => {
+            this.roomManagerService.gamesHistoryDeleted();
+        });
+    }
+
     deleteGameCard() {
         this.communicationService.deleteGameById(this.data.gameId).subscribe(() => {
             this.roomManagerService.gameCardDeleted(this.data.gameId);
