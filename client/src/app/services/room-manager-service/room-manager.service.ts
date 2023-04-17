@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { GameCardEvents, HistoryEvents, PlayerEvents, RoomEvents } from '@common/enums';
-import { PlayerNameAvailability, RoomAvailability, PlayerData } from '@common/game-interfaces';
+import { PlayerData, PlayerNameAvailability, RoomAvailability } from '@common/game-interfaces';
 import { Subject } from 'rxjs';
 
 @Injectable({
@@ -215,7 +215,7 @@ export class RoomManagerService {
             this.isLimitedCoopRoomAvailable.next(true);
         });
 
-        this.clientSocket.on(RoomEvents.NoGameAvailible, () => {
+        this.clientSocket.on(RoomEvents.NoGameAvailable, () => {
             this.hasNoGameAvailable.next(true);
         });
 

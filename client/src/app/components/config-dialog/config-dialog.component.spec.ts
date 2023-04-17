@@ -22,6 +22,10 @@ describe('ConfigDialogComponent', () => {
         roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['gameConstantsUpdated'], {
             isReloadNeeded$: isReloadNeeded,
         });
+        isReloadNeeded = new BehaviorSubject<boolean>(true);
+        roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['gameConstantsUpdated'], {
+            isReloadNeeded$: isReloadNeeded,
+        });
         await TestBed.configureTestingModule({
             declarations: [ConfigDialogComponent],
             imports: [MatDialogModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, HttpClientModule, NoopAnimationsModule],
@@ -31,6 +35,9 @@ describe('ConfigDialogComponent', () => {
         fixture = TestBed.createComponent(ConfigDialogComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+    });
+    afterEach(() => {
+        component.ngOnDestroy();
     });
     afterEach(() => {
         component.ngOnDestroy();
@@ -84,19 +91,16 @@ describe('ConfigDialogComponent', () => {
         expect(component['roomManagerService'].gameConstantsUpdated).toHaveBeenCalled();
     });
 
-    it('resetConfigForm should reset the form with default values', () => {
-        const defaultValues = {
+    it('resetConfigForm should reset the config form and update the game constants', () => {
+        const resetSpy = spyOn(component.configForm, 'reset');
+
+        component.resetConfigForm();
+
+        expect(resetSpy).toHaveBeenCalledWith({
             countdownTime: DEFAULT_COUNTDOWN_VALUE,
             penaltyTime: DEFAULT_PENALTY_VALUE,
             bonusTime: DEFAULT_BONUS_VALUE,
-        };
-        component.configForm.setValue({
-            countdownTime: 10,
-            penaltyTime: 5,
-            bonusTime: 5,
         });
-        component.resetConfigForm();
-        expect(component.configForm.value).toEqual(defaultValues);
     });
 
     it('should call loadGameConstants when handleChanges is called if Reload is needed', () => {

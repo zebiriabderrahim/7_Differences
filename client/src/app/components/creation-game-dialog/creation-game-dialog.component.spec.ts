@@ -2,7 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -14,8 +14,6 @@ import { DifferenceService } from '@app/services/difference-service/difference.s
 import { ImageService } from '@app/services/image-service/image.service';
 import { of } from 'rxjs';
 import { CreationGameDialogComponent } from './creation-game-dialog.component';
-// import { ElementRef } from '@angular/core';
-// import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 
 describe('CreationGameDialogComponent', () => {
     let component: CreationGameDialogComponent;
@@ -26,9 +24,6 @@ describe('CreationGameDialogComponent', () => {
     let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
 
     beforeEach(async () => {
-        // component.differenceCanvas = CanvasTestHelper.createCanvas(0, 0) as unknown as ElementRef<HTMLCanvasElement>;
-        // // component.differenceCanvas.nativeElement.width = IMG_WIDTH;
-        // // component.differenceCanvas.nativeElement.height = IMG_HEIGHT;
         imageServiceSpy = jasmine.createSpyObj('ImageService', [
             'generateDifferences',
             'resetBackground',

@@ -14,6 +14,7 @@ export class GamePageDialogComponent {
         private readonly gameManager: GameManagerService,
         private readonly replayService: ReplayService,
     ) {}
+
     abandonGame(): void {
         this.gameManager.abandonGame();
     }
