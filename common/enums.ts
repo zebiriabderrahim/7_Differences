@@ -66,7 +66,7 @@ export enum RoomEvents {
     CheckIfAnyCoopRoomExists = 'CheckIfAnyCoopRoomExists',
     LimitedCoopRoomJoined = 'LimitedCoopRoomJoined',
     DeleteCreatedCoopRoom = 'DeleteCreatedCoopRoom',
-    NoGameAvailible = "NoGameAvailible"
+    NoGameAvailable = "NoGameAvailable"
 }
 
 export enum PlayerStatus {
