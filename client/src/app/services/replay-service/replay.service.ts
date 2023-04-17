@@ -1,5 +1,4 @@
-/* eslint-disable max-params */
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { REPLAY_LIMITER, SPEED_X1 } from '@app/constants/replay';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { ClickErrorData, ReplayEvent, ReplayPayload } from '@app/interfaces/replay-actions';
@@ -11,24 +10,27 @@ import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { SoundService } from '@app/services/sound-service/sound.service';
 import { ChatMessage, Coordinate, GameRoom } from '@common/game-interfaces';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
-export class ReplayService {
-    isReplaying: boolean = false;
-    private replayEvents: ReplayEvent[] = [];
-    private replaySpeed = SPEED_X1;
-    private currentCoords: Coordinate[] = [];
-    private isCheatMode: boolean = false;
-    private isDifferenceFound: boolean = false;
+export class ReplayService implements OnDestroy {
+    isReplaying: boolean;
+    private replayEvents: ReplayEvent[];
+    private replaySpeed: number;
+    private currentCoords: Coordinate[];
+    private isCheatMode: boolean;
+    private isDifferenceFound: boolean;
     private replayInterval: ReplayInterval;
-    private currentReplayIndex: number = 0;
+    private currentReplayIndex: number;
     private replayTimer: BehaviorSubject<number>;
     private replayDifferenceFound: BehaviorSubject<number>;
     private replayOpponentDifferenceFound: BehaviorSubject<number>;
+    private replayEventsSubjectSubscription: Subscription;
 
+    // Replay needs to communicate with all services
+    // eslint-disable-next-line max-params
     constructor(
         private readonly gameAreaService: GameAreaService,
         private readonly gameManager: GameManagerService,
@@ -37,14 +39,17 @@ export class ReplayService {
         private readonly hintService: HintService,
         private readonly captureService: CaptureService,
     ) {
-        this.captureService.replayEventsSubject$.subscribe((replayEvent: ReplayEvent) => {
-            if (!this.isReplaying) {
-                this.replayEvents.push(replayEvent);
-            }
-        });
+        this.addReplayEvent();
+        this.isReplaying = false;
         this.replayTimer = new BehaviorSubject<number>(0);
         this.replayDifferenceFound = new BehaviorSubject<number>(0);
         this.replayOpponentDifferenceFound = new BehaviorSubject<number>(0);
+        this.replayEvents = [];
+        this.replaySpeed = SPEED_X1;
+        this.currentCoords = [];
+        this.isCheatMode = false;
+        this.isDifferenceFound = false;
+        this.currentReplayIndex = 0;
     }
 
     get replayTimer$() {
@@ -59,54 +64,72 @@ export class ReplayService {
         return this.replayOpponentDifferenceFound.asObservable();
     }
 
-    createReplayInterval(callback: () => void, getNextInterval: () => number): ReplayInterval {
-        let timeoutId: ReturnType<typeof setTimeout> | null = null;
-        let remainingTime: number;
-        let startTime: number;
-
-        const start = (delay?: number) => {
-            if (this.currentReplayIndex < this.replayEvents.length) {
-                startTime = Date.now();
-                remainingTime = delay === undefined ? getNextInterval() : delay;
-
-                if (!delay) {
-                    callback();
-                }
-
-                timeoutId = setTimeout(() => {
-                    start();
-                }, remainingTime);
-            } else {
-                this.cancelReplay();
-            }
-        };
-
-        const pause = () => {
-            if (timeoutId) {
-                clearTimeout(timeoutId);
-                remainingTime -= Date.now() - startTime;
-                timeoutId = null;
-            }
-        };
-
-        const resume = () => {
-            if (timeoutId === null) {
-                start(remainingTime);
-            }
-        };
-
-        const cancel = () => {
-            if (timeoutId) {
-                clearTimeout(timeoutId);
-                timeoutId = null;
-            }
-            this.isReplaying = false;
-        };
-
-        return { start, pause, resume, cancel };
+    startReplay(): void {
+        this.isReplaying = true;
+        this.currentReplayIndex = 0;
+        this.replayInterval = this.createReplayInterval(
+            () => this.replaySwitcher(this.replayEvents[this.currentReplayIndex]),
+            () => this.getNextInterval(),
+        );
+        this.replayInterval.start();
     }
 
-    replaySwitcher(replayData: ReplayEvent): void {
+    restartReplay(): void {
+        this.currentReplayIndex = 0;
+        this.replayInterval.resume();
+    }
+
+    pauseReplay(): void {
+        this.toggleFlashing(true);
+        this.replayInterval.pause();
+    }
+
+    resumeReplay(): void {
+        this.toggleFlashing(false);
+        this.replayInterval.resume();
+    }
+
+    upSpeed(speed: number): void {
+        this.replaySpeed = speed;
+        if (this.isCheatMode) {
+            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
+            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
+        }
+    }
+
+    restartTimer(): void {
+        this.replayOpponentDifferenceFound.next(0);
+        this.replayDifferenceFound.next(0);
+        this.replayTimer.next(0);
+    }
+
+    resetReplay(): void {
+        this.replaySpeed = SPEED_X1;
+        this.replayEvents = [];
+        this.currentReplayIndex = 0;
+        this.isReplaying = false;
+    }
+
+    ngOnDestroy(): void {
+        this.replayEventsSubjectSubscription?.unsubscribe();
+    }
+
+    addReplayEvent(): void {
+        this.replayEventsSubjectSubscription = this.captureService.replayEventsSubject$.subscribe((replayEvent: ReplayEvent) => {
+            if (!this.isReplaying) this.replayEvents.push(replayEvent);
+        });
+    }
+
+    private toggleFlashing(isPaused: boolean): void {
+        if (this.isCheatMode) {
+            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
+        }
+        if (this.isDifferenceFound) {
+            this.gameAreaService.flashPixels(this.currentCoords, this.replaySpeed, isPaused);
+        }
+    }
+
+    private replaySwitcher(replayData: ReplayEvent): void {
         switch (replayData.action) {
             case ReplayActions.StartGame:
                 this.replayGameStart(replayData.data as ReplayPayload);
@@ -144,70 +167,55 @@ export class ReplayService {
             case ReplayActions.DeactivateThirdHint:
                 this.replayDeactivateThirdHint();
                 break;
-            default:
-                break;
         }
         this.currentReplayIndex++;
     }
 
-    startReplay(): void {
-        this.isReplaying = true;
-        this.currentReplayIndex = 0;
-        this.replayInterval = this.createReplayInterval(
-            () => this.replaySwitcher(this.replayEvents[this.currentReplayIndex]),
-            () => this.getNextInterval(),
-        );
-        this.replayInterval.start();
-    }
+    private createReplayInterval(callback: () => void, getNextInterval: () => number): ReplayInterval {
+        let timeoutId: ReturnType<typeof setTimeout> | null = null;
+        let remainingTime: number;
+        let startTime: number;
 
-    restartReplay(): void {
-        this.currentReplayIndex = 0;
-        this.replayInterval.resume();
-    }
+        const start = (delay: number = 0) => {
+            if (this.currentReplayIndex < this.replayEvents.length) {
+                startTime = Date.now();
+                remainingTime = !delay ? getNextInterval() : delay;
 
-    pauseReplay(): void {
-        if (this.isCheatMode) {
-            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
-        }
-        if (this.isDifferenceFound) {
-            this.gameAreaService.flashCorrectPixels(this.currentCoords, this.replaySpeed, true);
-        }
-        this.replayInterval.pause();
-    }
+                if (!delay) {
+                    callback();
+                }
 
-    resumeReplay(): void {
-        if (this.isCheatMode) {
-            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
-        }
-        if (this.isDifferenceFound) {
-            this.gameAreaService.flashCorrectPixels(this.currentCoords, this.replaySpeed, false);
-        }
-        this.replayInterval.resume();
-    }
+                timeoutId = setTimeout(() => {
+                    start();
+                }, remainingTime);
+            } else {
+                this.cancelReplay();
+            }
+        };
 
-    upSpeed(speed: number): void {
-        this.replaySpeed = speed;
-        if (this.isCheatMode) {
-            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
-            this.gameAreaService.toggleCheatMode(this.currentCoords, this.replaySpeed);
-        }
-        if (this.isDifferenceFound) {
-            this.gameAreaService.flashCorrectPixels(this.currentCoords, this.replaySpeed, false);
-            this.gameAreaService.flashCorrectPixels(this.currentCoords, this.replaySpeed, true);
-        }
-    }
+        const pause = () => {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+                remainingTime -= Date.now() - startTime;
+                timeoutId = null;
+            }
+        };
 
-    restartTimer(): void {
-        this.replayOpponentDifferenceFound.next(0);
-        this.replayDifferenceFound.next(0);
-        this.replayTimer.next(0);
-    }
+        const resume = () => {
+            if (timeoutId === null) {
+                start(remainingTime);
+            }
+        };
 
-    resetReplay(): void {
-        this.replaySpeed = SPEED_X1;
-        this.replayEvents = [];
-        this.currentReplayIndex = 0;
-        this.isReplaying = false;
+        const cancel = () => {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+                timeoutId = null;
+            }
+            this.isReplaying = false;
+        };
+
+        return { start, pause, resume, cancel };
     }
 
     private cancelReplay(): void {
