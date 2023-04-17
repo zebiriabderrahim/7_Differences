@@ -21,6 +21,7 @@
     padding: 10px;
     z-index: 1;
     font-size: 30px;
+    -webkit-text-stroke: 2px black;
 }
 
 h1 {
@@ -217,7 +218,7 @@ p {
     justify-content: center;
     z-index: 2;
     left: 32%;
-    top: 15%;
+    top: 47.5%;
     font-size: 35px;
     font-family: 'Troika', sans-serif;
     color:white;

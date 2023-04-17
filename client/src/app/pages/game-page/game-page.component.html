@@ -1,6 +1,6 @@
 <div id="game-page" class="justified">
     <div *ngIf="game" class="game-infos information-header justified">
-        <h1>{{ game.name }}</h1>
+        <h1 id = "title">{{ game.name }}</h1>
         <div class="game-feedback">
             <mat-icon class="personIcon">person</mat-icon>
             <h1>{{ player }} Différences trouvées : {{ differencesFound }}</h1>
@@ -16,8 +16,7 @@
         <app-game-infos [isReplayAvailable]="isReplayAvailable" [game]="game"></app-game-infos>
         <div *ngIf="isThirdHintActive">
             <img id="raccoon" [src]="hintsAssets[proximity]" />
-            <p id = "intro1">Yo moi c'est big Émile et je t'accompagnerai pendant que tu cherches une des différences</p>
-            <p id = "intro2">Observes bien la façon dont je réagis lorsque tu déplaces la souris sur un des canvas</p>
+            <p id = "intro1">Yo moi c'est big Émile. Observes bien la façon dont je réagis lorsque tu déplaces la souris sur un des canvas</p>
         </div>
     </div>
     <div class="canvas-container">

@@ -15,7 +15,8 @@ h1 {
     text-align: center;
     display: inline-block;
     animation: titleFadeIn 0.5s ease-in-out;
-    color: black;
+    color: white;
+    -webkit-text-stroke: 2px black;
 }
 
 h2 {
@@ -24,7 +25,9 @@ h2 {
     animation: titleFadeIn 1s ease-in-out;
     z-index: 1;
     font-family: 'Troika', sans-serif;
+    color: white;
     font-size: 40px;
+    -webkit-text-stroke: 2px black;
 }
 
 @keyframes titleFadeIn {
