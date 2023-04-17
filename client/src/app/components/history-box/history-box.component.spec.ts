@@ -58,4 +58,9 @@ describe('HistoryBoxComponent', () => {
         component.handleHistoryUpdate();
         expect(communicationServiceSpy.loadGameHistory).toHaveBeenCalled();
     });
+
+    it('openConfirmationDialog should call dialog.open', () => {
+        component.openConfirmationDialog();
+        expect(matDialogSpy.open).toHaveBeenCalled();
+    });
 });
