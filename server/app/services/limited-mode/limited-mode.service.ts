@@ -16,7 +16,7 @@ export class LimitedModeService {
     async createLimitedRoom(socket: io.Socket, playerPayLoad: PlayerData, server: io.Server): Promise<void> {
         const limitedRoom = await this.roomsManagerService.createRoom(playerPayLoad);
         if (!limitedRoom) {
-            socket.emit(RoomEvents.NoGameAvailible);
+            socket.emit(RoomEvents.NoGameAvailable);
             return;
         }
         this.availableGameByRoomId.set(limitedRoom.roomId, [limitedRoom.clientGame.id]);
@@ -65,22 +65,18 @@ export class LimitedModeService {
         const gameIds = this.availableGameByRoomId.get(roomId);
         if (!gameIds) return;
         const index = gameIds.indexOf(gameId);
-        if (index !== NOT_FOUND) {
-            gameIds.splice(index, 1);
-        }
+        if (index !== NOT_FOUND) gameIds.splice(index, 1);
     }
 
     handleDeleteGame(gameId: string): void {
-        for (const gameIds of this.availableGameByRoomId.values()) {
-            gameIds.push(gameId);
-        }
+        for (const gameIds of this.availableGameByRoomId.values()) gameIds.push(gameId);
     }
 
     handleDeleteAllGames(): void {
         this.availableGameByRoomId.clear();
     }
 
-    getGameIds(roomId: string): string[] {
+    private getGameIds(roomId: string): string[] {
         return this.availableGameByRoomId.get(roomId);
     }
 
