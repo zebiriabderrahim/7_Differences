@@ -5,10 +5,12 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 // Need to mock functions
 import { TestBed } from '@angular/core/testing';
+import { WAITING_TIME } from '@app/constants/constants';
 import { REPLAY_LIMITER, SPEED_X1, SPEED_X2, SPEED_X4 } from '@app/constants/replay';
 import { HintProximity } from '@app/enum/hint-proximity';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { ClickErrorData, ReplayEvent } from '@app/interfaces/replay-actions';
+import { CaptureService } from '@app/services//capture-service/capture.service';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
 import { GameManagerService } from '@app/services/game-manager-service/game-manager.service';
 import { HintService } from '@app/services/hint-service/hint.service';
@@ -17,7 +19,7 @@ import { SoundService } from '@app/services/sound-service/sound.service';
 import { Coordinate } from '@common/coordinate';
 import { MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, GameConfigConst, GameRoom, Player } from '@common/game-interfaces';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { ReplayService } from './replay.service';
 
 describe('ReplayService', () => {
@@ -27,9 +29,9 @@ describe('ReplayService', () => {
     let soundServiceSpy: jasmine.SpyObj<SoundService>;
     let imageServiceSpy: jasmine.SpyObj<ImageService>;
     let hintServiceSpy: jasmine.SpyObj<HintService>;
-    const replayEventGameAreaServiceSubTest = new BehaviorSubject<number>(0);
+    let captureServiceSpy: jasmine.SpyObj<CaptureService>;
+    let replayEventsSubjectStub: Subject<ReplayEvent>;
     const replayEventGameManagerServiceSubTest = new BehaviorSubject<number>(0);
-    const replayEventHintServiceSubTest = new BehaviorSubject<number>(0);
 
     const gameRoomStub: GameRoom = {
         roomId: 'test',
@@ -42,10 +44,10 @@ describe('ReplayService', () => {
     };
 
     const replayEventsStub: ReplayEvent[] = [
-        { timestamp: 0, action: ReplayActions.StartGame, data: gameRoomStub },
-        { timestamp: 0, action: ReplayActions.TimerUpdate },
-        { timestamp: 0, action: ReplayActions.ClickFound },
-        { timestamp: 0, action: ReplayActions.ClickError, data: { isMainCanvas: true, pos: { x: 0, y: 0 } } as ClickErrorData },
+        { timestamp: WAITING_TIME, action: ReplayActions.StartGame, data: gameRoomStub },
+        { timestamp: WAITING_TIME * 2, action: ReplayActions.TimerUpdate },
+        { timestamp: WAITING_TIME * 3, action: ReplayActions.ClickFound },
+        { timestamp: WAITING_TIME * 2 * 2, action: ReplayActions.ClickError, data: { isMainCanvas: true, pos: { x: 0, y: 0 } } as ClickErrorData },
     ];
 
     const replayIntervalMock = {
@@ -55,22 +57,20 @@ describe('ReplayService', () => {
         cancel: jasmine.createSpy('cancel'),
     };
 
-    beforeEach(() => {
+    beforeEach(async () => {
+        replayEventsSubjectStub = new Subject<ReplayEvent>();
         gameAreaServiceSpy = jasmine.createSpyObj(
             'GameAreaService',
             ['getOriginalContext', 'getModifiedContext', 'setAllData', 'replaceDifference', 'showError', 'toggleCheatMode', 'flashPixels'],
-            {
-                replayEventsSubject: replayEventGameAreaServiceSubTest,
-            },
+            {},
         );
         gameManagerServiceSpy = jasmine.createSpyObj('GameManagerService', ['setMessage', 'requestHint'], {
             replayEventsSubject: replayEventGameManagerServiceSubTest,
         });
         soundServiceSpy = jasmine.createSpyObj('SoundService', ['playCorrectSound', 'playErrorSound']);
         imageServiceSpy = jasmine.createSpyObj('ImageService', ['loadImage']);
-        hintServiceSpy = jasmine.createSpyObj('HintService', ['requestHint', 'resetHints', 'deactivateThirdHint', 'switchProximity'], {
-            replayEventsSubject: replayEventHintServiceSubTest,
-        });
+        hintServiceSpy = jasmine.createSpyObj('HintService', ['requestHint', 'resetHints', 'deactivateThirdHint', 'switchProximity'], {});
+        captureServiceSpy = jasmine.createSpyObj('CaptureService', ['capture'], { replayEventsSubject$: replayEventsSubjectStub });
 
         TestBed.configureTestingModule({
             providers: [
@@ -80,6 +80,7 @@ describe('ReplayService', () => {
                 { provide: SoundService, useValue: soundServiceSpy },
                 { provide: ImageService, useValue: imageServiceSpy },
                 { provide: HintService, useValue: hintServiceSpy },
+                { provide: CaptureService, useValue: captureServiceSpy },
             ],
         });
 
@@ -109,15 +110,18 @@ describe('ReplayService', () => {
     });
 
     it('should call createReplayInterval and replaySwitcher when interval is paused and resumed', () => {
+        jasmine.clock().install();
         const createReplayIntervalSpy = spyOn<any>(service, 'createReplayInterval').and.callThrough();
         const replaySwitcherSpy = spyOn<any>(service, 'replaySwitcher');
-        service['replayEvents'] = replayEventsStub;
+        service['currentReplayIndex'] = 0;
         service.startReplay();
         service.pauseReplay();
         service.resumeReplay();
+        jasmine.clock().tick(WAITING_TIME);
         expect(service.isReplaying).toBe(true);
         expect(createReplayIntervalSpy).toHaveBeenCalled();
         expect(replaySwitcherSpy).toHaveBeenCalled();
+        jasmine.clock().uninstall();
     });
 
     it('should call cancelReplay when replayEvents is empty', (done) => {
@@ -178,6 +182,31 @@ describe('ReplayService', () => {
         expect(soundServiceSpy.playCorrectSound).toHaveBeenCalled();
         expect(gameAreaServiceSpy.setAllData).toHaveBeenCalled();
         expect(gameAreaServiceSpy.replaceDifference).toHaveBeenCalledWith(replayEvent.data as Coordinate[], service['replaySpeed']);
+    });
+
+    it('addReplayEvent should add a new event to the replayEvents array', () => {
+        const pushSpy = spyOn(service['replayEvents'], 'push');
+        const replayEvent: ReplayEvent = {
+            action: ReplayActions.ClickFound,
+            data: [] as Coordinate[],
+            timestamp: 0,
+        };
+        service.addReplayEvent();
+        replayEventsSubjectStub.next(replayEvent);
+        expect(pushSpy).toHaveBeenCalled();
+    });
+
+    it('addReplayEvent should not add a new event to the replayEvents array', () => {
+        const pushSpy = spyOn(service['replayEvents'], 'push');
+        replayEventsSubjectStub = undefined as unknown as Subject<ReplayEvent>;
+        expect(pushSpy).not.toHaveBeenCalled();
+    });
+
+    it('ngOnDestroy should unsubscribe from replayEventsSubject', () => {
+        const replayEventsSubjectSubscriptionSpy = spyOn(service['replayEventsSubjectSubscription'], 'unsubscribe');
+        service['replayEventsSubjectSubscription'] = undefined as unknown as Subscription;
+        service.ngOnDestroy();
+        expect(replayEventsSubjectSubscriptionSpy).not.toHaveBeenCalled();
     });
 
     it('should handle ClickError action', () => {
