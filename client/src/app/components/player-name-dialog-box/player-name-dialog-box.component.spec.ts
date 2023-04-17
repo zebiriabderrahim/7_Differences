@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- needed to spy on private methods*/
 // to spyOn handelCreateUndoCreationSpy and do nothing
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { CommonModule } from '@angular/common';
@@ -5,12 +6,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { PlayerNameAvailability, RoomAvailability } from '@common/game-interfaces';
 import { BehaviorSubject } from 'rxjs';
 import { PlayerNameDialogBoxComponent } from './player-name-dialog-box.component';
-import { MatInputModule } from '@angular/material/input';
 
 describe('PlayerNameDialogBoxComponent', () => {
     let component: PlayerNameDialogBoxComponent;
@@ -69,7 +70,7 @@ describe('PlayerNameDialogBoxComponent', () => {
     });
 
     it('ngOnInit should call handelCreateUndoCreation', () => {
-        const handelCreateUndoCreationSpy = spyOn(component, 'handleCreateUndoCreation').and.callFake(() => {});
+        const handelCreateUndoCreationSpy = spyOn<any>(component, 'handleCreateUndoCreation').and.callFake(() => {});
         component.ngOnInit();
         expect(handelCreateUndoCreationSpy).toHaveBeenCalled();
     });
@@ -77,13 +78,13 @@ describe('PlayerNameDialogBoxComponent', () => {
     it('should close dialog when room is not available to join', () => {
         const gameId = '1';
         const roomAvailability = { gameId, isAvailableToJoin: false, hostId: 'abc123' };
-        component.handleCreateUndoCreation(gameId);
+        component['handleCreateUndoCreation'](gameId);
         oneVsOneRoomsAvailabilityByRoomIdMock.next(roomAvailability);
         expect(dialogRef.close).toHaveBeenCalled();
     });
 
     it('handleGameCardDelete should not close the dialog when the deleted game ID does not match the current game ID', () => {
-        component.handleGameCardDelete();
+        component['handleGameCardDelete']();
         deletedGameIdMock.next('456');
         expect(dialogRef.close).not.toHaveBeenCalled();
     });
@@ -99,7 +100,7 @@ describe('PlayerNameDialogBoxComponent', () => {
     it('should return null when data is not set', async () => {
         component['data'] = undefined as unknown as { gameId: 'test' };
         const control = new FormControl();
-        const result = await component.validatePlayerName(control);
+        const result = await component['validatePlayerName'](control);
         expect(result).toBeNull();
     });
 
@@ -108,7 +109,7 @@ describe('PlayerNameDialogBoxComponent', () => {
         roomManagerServiceSpy.isPlayerNameIsAlreadyTaken.and.returnValue(void 0);
         playerNameAvailabilityMock.next({ gameId: 'game-123', isNameAvailable: true });
 
-        const result = await component.validatePlayerName(new FormControl(''));
+        const result = await component['validatePlayerName'](new FormControl(''));
         expect(result).toBeNull();
     });
 
@@ -117,7 +118,7 @@ describe('PlayerNameDialogBoxComponent', () => {
         roomManagerServiceSpy.isPlayerNameIsAlreadyTaken.and.returnValue(void 0);
         playerNameAvailabilityMock.next({ gameId: 'game-123', isNameAvailable: false });
 
-        const result = await component.validatePlayerName(new FormControl(''));
+        const result = await component['validatePlayerName'](new FormControl(''));
         expect(result).toEqual({ nameTaken: true });
     });
 
@@ -128,7 +129,7 @@ describe('PlayerNameDialogBoxComponent', () => {
         playerNameAvailabilityMock.next({ gameId: 'game-123', isNameAvailable: false });
 
         control.setValue('player-1');
-        await component.validatePlayerName(control);
+        await component['validatePlayerName'](control);
         expect(roomManagerServiceSpy.isPlayerNameIsAlreadyTaken).toHaveBeenCalled();
     });
 });
