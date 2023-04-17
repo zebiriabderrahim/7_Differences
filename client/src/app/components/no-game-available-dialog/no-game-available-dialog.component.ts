@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-    selector: 'app-no-game-availible-dialog',
-    templateUrl: './no-game-availible-dialog.component.html',
-    styleUrls: ['./no-game-availible-dialog.component.scss'],
+    selector: 'app-no-game-available-dialog',
+    templateUrl: './no-game-available-dialog.component.html',
+    styleUrls: ['./no-game-available-dialog.component.scss'],
 })
-export class NoGameAvailibleDialogComponent {
+export class NoGameAvailableDialogComponent {
     constructor(public router: Router) {}
 
     goToHome() {

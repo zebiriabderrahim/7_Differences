@@ -1,4 +1,5 @@
 import { GameService } from '@app/services/game/game.service';
+import { PADDING_TIME_N_DIGITS } from '@common/constants';
 import { HistoryEvents, PlayerStatus } from '@common/enums';
 import { GameHistory, GameRoom, PlayerInfo } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
@@ -67,8 +68,8 @@ export class HistoryService {
     }
 
     private getFormattedDate(date: Date): string {
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(PADDING_TIME_N_DIGITS, '0');
+        const day = date.getDate().toString().padStart(PADDING_TIME_N_DIGITS, '0');
         const year = date.getFullYear();
 
         return `${year}-${month}-${day}`;

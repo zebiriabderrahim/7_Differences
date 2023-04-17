@@ -47,7 +47,7 @@ describe('GameAreaService', () => {
     });
 
     it('should detect left click on screen and call saveCoord', () => {
-        const saveCoordSpy = spyOn(gameAreaService, 'saveCoord');
+        const saveCoordSpy = spyOn<any>(gameAreaService, 'saveCoord');
         expect(gameAreaService.detectLeftClick({ button: LEFT_BUTTON } as MouseEvent)).toBeTruthy();
         expect(saveCoordSpy).toHaveBeenCalled();
     });
@@ -55,7 +55,7 @@ describe('GameAreaService', () => {
     it('saveCoord should properly save mouse position', () => {
         const expectedMousePosition = { x: 15, y: 18 };
         const clickEvent: MouseEvent = { offsetX: 15, offsetY: 18 } as MouseEvent;
-        gameAreaService.saveCoord(clickEvent);
+        gameAreaService['saveCoord'](clickEvent);
         expect(gameAreaService['mousePosition']).toEqual(expectedMousePosition);
     });
 
@@ -121,7 +121,7 @@ describe('GameAreaService', () => {
         gameAreaService['originalContext'] = originalCanvas.getContext('2d')!;
         gameAreaService['modifiedContext'] = modifiedCanvas.getContext('2d')!;
         const putImageDataSpy = spyOn(gameAreaService['modifiedContext'], 'putImageData');
-        const flashCorrectPixelsSpy = spyOn(gameAreaService, 'flashCorrectPixels').and.callFake(() => {});
+        const flashPixelsSpy = spyOn(gameAreaService, 'flashPixels').and.callFake(() => {});
         gameAreaService['originalContext'].fillRect(0, 0, 3, 1);
         gameAreaService['modifiedContext'].createImageData(IMG_WIDTH, IMG_HEIGHT);
         const rectangleDifference = [
@@ -138,7 +138,7 @@ describe('GameAreaService', () => {
         gameAreaService['modifiedPixelData'] = gameAreaService['modifiedContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
         gameAreaService.replaceDifference(rectangleDifference);
         expect(putImageDataSpy).toHaveBeenCalled();
-        expect(flashCorrectPixelsSpy).toHaveBeenCalled();
+        expect(flashPixelsSpy).toHaveBeenCalled();
         expect(gameAreaService['modifiedContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT)).toEqual(
             gameAreaService['modifiedContext'].getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT),
         );
@@ -182,20 +182,17 @@ describe('GameAreaService', () => {
         expect(methodSpy).toHaveBeenCalled();
     });
 
-    it('flashCorrectPixels should get image data indexes and call flashPixels', () => {
-        spyOn(gameAreaService, 'putImageDataToContexts');
+    it('flashPixels should get image data indexes and call flashPixels', () => {
+        spyOn<any>(gameAreaService, 'putImageDataToContexts');
         const differenceCoord: Coordinate[] = [
             { x: 12, y: 15 },
             { x: 0, y: 0 },
             { x: 20, y: 100 },
             { x: 30, y: 0 },
         ];
-        const expectedIndexList: number[] = [38448, 0, 256080, 120];
-        const convert2DCoordToPixelIndexSpy = spyOn<any>(gameAreaService, 'convert2DCoordToPixelIndex').and.callThrough();
         const flashPixelsSpy = spyOn(gameAreaService, 'flashPixels').and.callFake(() => {});
-        gameAreaService.flashCorrectPixels(differenceCoord, undefined, false);
-        expect(convert2DCoordToPixelIndexSpy).toHaveBeenCalledWith(differenceCoord);
-        expect(flashPixelsSpy).toHaveBeenCalledWith(expectedIndexList, undefined, false);
+        gameAreaService.flashPixels(differenceCoord, undefined, false);
+        expect(flashPixelsSpy).toHaveBeenCalledWith(differenceCoord, undefined, false);
     });
 
     it('toggleCheatMode should enable cheat mode and start flashing red pixels', () => {
@@ -232,7 +229,7 @@ describe('GameAreaService', () => {
             { x: 3, y: 4 },
         ]);
         expect(gameAreaService['isCheatMode']).toBeFalse();
-        gameAreaService.clearFlashing();
+        gameAreaService['clearFlashing']();
     });
 
     it('flashPixels should flash the difference pixels on both canvas', async () => {
@@ -246,8 +243,8 @@ describe('GameAreaService', () => {
         gameAreaService['originalContextFrontLayer'] = originalCanvasFrontLayer.getContext('2d')!;
         const modifiedCanvasFrontLayer: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
         gameAreaService['modifiedContextFrontLayer'] = modifiedCanvasFrontLayer.getContext('2d')!;
-        const putImageDataToContextsSpy = spyOn(gameAreaService, 'putImageDataToContexts').and.callFake(() => {});
-        const clearFlashingSpy = spyOn(gameAreaService, 'clearFlashing').and.callFake(() => {});
+        const putImageDataToContextsSpy = spyOn<any>(gameAreaService, 'putImageDataToContexts').and.callFake(() => {});
+        const clearFlashingSpy = spyOn<any>(gameAreaService, 'clearFlashing').and.callFake(() => {});
         const ogInitialImageData = (gameAreaService['originalFrontPixelData'] = gameAreaService['originalContextFrontLayer'].createImageData(
             IMG_WIDTH,
             IMG_HEIGHT,
@@ -256,7 +253,7 @@ describe('GameAreaService', () => {
             IMG_WIDTH,
             IMG_HEIGHT,
         ));
-        gameAreaService.flashCorrectPixels(currentDifference);
+        gameAreaService.flashPixels(currentDifference);
         setInterval(() => {
             intervalCallback();
             setTimeout(() => {
@@ -282,7 +279,7 @@ describe('GameAreaService', () => {
         gameAreaService['modifiedContextFrontLayer'] = modifiedCanvasFrontLayer.getContext('2d')!;
         const ogFrontContextPutImageDataSpy = spyOn(gameAreaService['originalContextFrontLayer'], 'putImageData').and.callFake(() => {});
         const mdFrontContextPutImageDataSpy = spyOn(gameAreaService['modifiedContextFrontLayer'], 'putImageData').and.callFake(() => {});
-        gameAreaService.putImageDataToContexts();
+        gameAreaService['putImageDataToContexts']();
         expect(ogFrontContextPutImageDataSpy).toHaveBeenCalled();
         expect(mdFrontContextPutImageDataSpy).toHaveBeenCalled();
     });
@@ -294,7 +291,7 @@ describe('GameAreaService', () => {
         gameAreaService['modifiedContextFrontLayer'] = modifiedCanvasFrontLayer.getContext('2d')!;
         const ogFrontContextClearRectSpy = spyOn(gameAreaService['originalContextFrontLayer'], 'clearRect').and.callFake(() => {});
         const mdFrontContextClearRectSpy = spyOn(gameAreaService['modifiedContextFrontLayer'], 'clearRect').and.callFake(() => {});
-        gameAreaService.clearFlashing();
+        gameAreaService['clearFlashing']();
         expect(ogFrontContextClearRectSpy).toHaveBeenCalled();
         expect(mdFrontContextClearRectSpy).toHaveBeenCalled();
         expect(gameAreaService['clickDisabled']).toEqual(false);
