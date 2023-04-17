@@ -215,7 +215,7 @@ export class RoomManagerService {
             this.isLimitedCoopRoomAvailable.next(true);
         });
 
-        this.clientSocket.on(RoomEvents.NoGameAvailible, () => {
+        this.clientSocket.on(RoomEvents.NoGameAvailable, () => {
             this.hasNoGameAvailable.next(true);
         });
 
