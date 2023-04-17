@@ -70,7 +70,7 @@ export class HintService {
                 if (this.nAvailableHints === SECOND_TO_LAST_HINT_NUMBER) {
                     hintQuadrant = this.generateHintQuadrant(difference, hintQuadrant);
                 }
-                this.gameAreaService.flashCorrectPixels(this.generateHintSquare(hintQuadrant), flashingSpeed);
+                this.gameAreaService.flashPixels(this.generateHintSquare(hintQuadrant), flashingSpeed);
             }
             this.captureService.saveReplayEvent(ReplayActions.UseHint, difference);
             this.gameManager.requestHint();
@@ -123,7 +123,6 @@ export class HintService {
     private generateHintSquare(quadrant: Quadrant): Coordinate[] {
         const hintSquare: Coordinate[] = [];
         const { topCorner, bottomCorner } = quadrant;
-
         for (let i = bottomCorner.x; i < topCorner.x + HINT_SQUARE_PADDING; i++) {
             for (let j = bottomCorner.y; j < topCorner.y + HINT_SQUARE_PADDING; j++) {
                 const coordinate = { x: i, y: j };
@@ -132,7 +131,6 @@ export class HintService {
                 }
             }
         }
-
         return hintSquare;
     }
 

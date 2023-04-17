@@ -15,7 +15,7 @@ describe('GamePageDialogComponent', () => {
     const replayOpponentDifferenceFoundSubjectTest = new BehaviorSubject<number>(0);
 
     beforeEach(async () => {
-        replayServiceSpy = jasmine.createSpyObj('ReplayService', ['resetReplay'], {
+        replayServiceSpy = jasmine.createSpyObj('ReplayService', ['resetReplay', 'startReplay', 'restartTimer'], {
             replayTimer$: replayTimerSubjectTest,
             replayDifferenceFound$: replayDifferenceFoundSubjectTest,
             replayOpponentDifferenceFound$: replayOpponentDifferenceFoundSubjectTest,
@@ -52,28 +52,19 @@ describe('GamePageDialogComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    /* it('abandonGame should call classicService.abandonGame', () => {
+    it('abandonGame should call abandonGame on classicSystem', () => {
         component.abandonGame();
-        expect(classicServiceSpy.abandonGame).toHaveBeenCalled();
+        expect(gameManagerServiceSpy.abandonGame).toHaveBeenCalled();
     });
 
-    it('should display the correct header and message based on the action', () => {
-        component.data = { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ?' };
-        fixture.detectChanges();
+    it('should call resetReplay on replayService', () => {
+        component.leaveGame();
+        expect(replayServiceSpy.resetReplay).toHaveBeenCalled();
+    });
 
-        const abandonHeader = fixture.nativeElement.querySelector('h1');
-        const abandonMessage = fixture.nativeElement.querySelector('div p');
-
-        expect(abandonHeader.innerText).toBe('Confirmation');
-        expect(abandonMessage.innerText).toBe('Êtes-vous certain de vouloir abandonner la partie ?');
-
-        component.data = { action: 'endGame', message: 'Bravo! Vous aviez trouvé les différences' };
-        fixture.detectChanges();
-
-        const endHeader = fixture.nativeElement.querySelector('h1');
-        const endHessage = fixture.nativeElement.querySelector('div p');
-
-        expect(endHeader.innerText).toBe('Fin de la partie');
-        expect(endHessage.innerText).toBe('Bravo! Vous aviez trouvé les différences');
-    });*/
+    it('replay should call startReplay and restartTimer on replayService', () => {
+        component.replay();
+        expect(replayServiceSpy.startReplay).toHaveBeenCalled();
+        expect(replayServiceSpy.restartTimer).toHaveBeenCalled();
+    });
 });

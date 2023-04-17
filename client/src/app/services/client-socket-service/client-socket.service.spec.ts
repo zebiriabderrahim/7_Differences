@@ -34,6 +34,10 @@ export class SocketTestHelper {
             callback(params);
         }
     }
+
+    off(): void {
+        return;
+    }
 }
 
 describe('ClientSocketService', () => {
