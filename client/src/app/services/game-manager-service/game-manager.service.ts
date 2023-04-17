@@ -129,12 +129,13 @@ export class GameManagerService {
             this.replaceDifference(data.differencesData.currentDifference, isPlayerIdMatch);
             this.differencesFound.next(data.differencesData.differencesFound);
             this.checkStatus();
+            this.captureService.saveReplayEvent(ReplayActions.DifferenceFoundUpdate, data.differencesData.differencesFound);
         } else if (data.differencesData.currentDifference.length !== 0) {
             this.replaceDifference(data.differencesData.currentDifference, isPlayerIdMatch);
             this.opponentDifferencesFound.next(data.differencesData.differencesFound);
+            this.captureService.saveReplayEvent(ReplayActions.OpponentDifferencesFoundUpdate, data.differencesData.differencesFound);
         }
         this.differences = data.cheatDifferences;
-        this.captureService.saveReplayEvent(ReplayActions.DifferenceFoundUpdate, data.differencesData.differencesFound);
     }
 
     abandonGame(): void {
