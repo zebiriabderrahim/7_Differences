@@ -104,8 +104,9 @@ describe('ConfigDialogComponent', () => {
     });
 
     it('should call loadGameConstants when handleChanges is called if Reload is needed', () => {
-        const loadGameConstantsSpy = spyOn(component, 'loadGameConstants');
-        component.handleChanges();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- needed to spy on private method
+        const loadGameConstantsSpy = spyOn<any>(component, 'loadGameConstants');
+        component['handleChanges']();
         expect(loadGameConstantsSpy).toHaveBeenCalled();
     });
 

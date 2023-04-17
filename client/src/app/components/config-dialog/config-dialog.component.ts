@@ -51,29 +51,6 @@ export class ConfigDialogComponent implements OnInit, OnDestroy {
         });
     }
 
-    loadGameConstants() {
-        this.communicationSubscription = this.communicationService.loadConfigConstants().subscribe((configConstants) => {
-            this.configConstants = configConstants;
-            this.patchConfigForm();
-        });
-    }
-
-    handleChanges() {
-        this.isReloadNeededSubscription = this.roomManagerService.isReloadNeeded$.subscribe((isReloadNeeded) => {
-            if (isReloadNeeded) {
-                this.loadGameConstants();
-            }
-        });
-    }
-
-    patchConfigForm() {
-        this.configForm.patchValue({
-            countdownTime: this.configConstants.countdownTime,
-            penaltyTime: this.configConstants.penaltyTime,
-            bonusTime: this.configConstants.bonusTime,
-        });
-    }
-
     resetConfigForm() {
         this.configForm.reset({ countdownTime: DEFAULT_COUNTDOWN_VALUE, penaltyTime: DEFAULT_PENALTY_VALUE, bonusTime: DEFAULT_BONUS_VALUE });
     }
@@ -81,5 +58,28 @@ export class ConfigDialogComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.communicationSubscription?.unsubscribe();
         this.isReloadNeededSubscription?.unsubscribe();
+    }
+
+    private loadGameConstants() {
+        this.communicationSubscription = this.communicationService.loadConfigConstants().subscribe((configConstants) => {
+            this.configConstants = configConstants;
+            this.patchConfigForm();
+        });
+    }
+
+    private handleChanges() {
+        this.isReloadNeededSubscription = this.roomManagerService.isReloadNeeded$.subscribe((isReloadNeeded) => {
+            if (isReloadNeeded) {
+                this.loadGameConstants();
+            }
+        });
+    }
+
+    private patchConfigForm() {
+        this.configForm.patchValue({
+            countdownTime: this.configConstants.countdownTime,
+            penaltyTime: this.configConstants.penaltyTime,
+            bonusTime: this.configConstants.bonusTime,
+        });
     }
 }
