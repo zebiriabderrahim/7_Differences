@@ -226,10 +226,9 @@ export class ReplayService implements OnDestroy {
     private getNextInterval(): number {
         const nextActionIndex = this.currentReplayIndex + 1;
         this.isDifferenceFound = false;
-        if (nextActionIndex < this.replayEvents.length) {
-            return (this.replayEvents[nextActionIndex].timestamp - this.replayEvents[this.currentReplayIndex].timestamp) / this.replaySpeed;
-        }
-        return REPLAY_LIMITER;
+        return nextActionIndex < this.replayEvents.length
+            ? (this.replayEvents[nextActionIndex].timestamp - this.replayEvents[this.currentReplayIndex].timestamp) / this.replaySpeed
+            : REPLAY_LIMITER;
     }
 
     private replayGameStart(replayData: ReplayPayload): void {
