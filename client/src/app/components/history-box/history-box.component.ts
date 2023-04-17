@@ -21,18 +21,6 @@ export class HistoryBoxComponent implements OnInit, OnDestroy {
         this.handleHistoryUpdate();
     }
 
-    loadHistory(): void {
-        this.communicationService.loadGameHistory().subscribe((history: GameHistory[]) => {
-            this.gameHistory = history;
-        });
-    }
-
-    handleHistoryUpdate(): void {
-        this.isGameHistoryReloadNeededSubscription = this.roomManager.isGameHistoryReloadNeeded$.subscribe((isGameHistoryReloadNeeded: boolean) => {
-            if (isGameHistoryReloadNeeded) this.loadHistory();
-        });
-    }
-
     deleteAllGamesHistory(): void {
         this.communicationService.deleteAllGamesHistory().subscribe(() => {
             this.gameHistory = [];
@@ -42,5 +30,17 @@ export class HistoryBoxComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.isGameHistoryReloadNeededSubscription.unsubscribe();
+    }
+
+    private loadHistory(): void {
+        this.communicationService.loadGameHistory().subscribe((history: GameHistory[]) => {
+            this.gameHistory = history;
+        });
+    }
+
+    private handleHistoryUpdate(): void {
+        this.isGameHistoryReloadNeededSubscription = this.roomManager.isGameHistoryReloadNeeded$.subscribe((isGameHistoryReloadNeeded: boolean) => {
+            if (isGameHistoryReloadNeeded) this.loadHistory();
+        });
     }
 }
