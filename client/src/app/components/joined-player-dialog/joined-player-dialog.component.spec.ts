@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- needed to spy on private methods*/
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -71,20 +72,20 @@ describe('JoinedPlayerDialogComponent', () => {
     });
 
     it('should handle refused players when refuse player names are received', () => {
-        const countDownSpy = spyOn(component, 'countDownBeforeClosing');
-        component.handleRefusedPlayer();
+        const countDownSpy = spyOn<any>(component, 'countDownBeforeClosing');
+        component['handleRefusedPlayer']();
         roomManagerServiceSpy.getSocketId.and.callFake(() => 'refusedPlayerId');
         refusePlayerIdMock.next('refusedPlayerId');
         expect(countDownSpy).toHaveBeenCalled();
     });
 
     it('should start countdown and show message if player is refuse or if gameCard is delete', fakeAsync(() => {
-        component.countDownBeforeClosing('Test message');
+        component['countDownBeforeClosing']('Test message');
         expect(component.countdown).toBe(COUNTDOWN_TIME);
         interval(WAITING_TIME)
             .pipe(takeWhile(() => component.countdown > 0))
             .subscribe(() => {
-                component.countDownBeforeClosing('Test message');
+                component['countDownBeforeClosing']('Test message');
             });
         // Needed to not have periodic timer(s) still in the queue.
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
