@@ -23,7 +23,7 @@ describe('HintService', () => {
         gameManagerSpy = jasmine.createSpyObj('GameManagerService', ['requestHint'], {
             differences: [mockDifference],
         });
-        gameAreaServiceSpy = jasmine.createSpyObj('GameAreaService', ['flashCorrectPixels']);
+        gameAreaServiceSpy = jasmine.createSpyObj('GameAreaService', ['flashPixels']);
         differenceServiceSpy = jasmine.createSpyObj('DifferenceService', ['enlargeDifferences']);
         TestBed.configureTestingModule({
             providers: [

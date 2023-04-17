@@ -11,6 +11,7 @@ import {
 } from '@app/constants/constants';
 import { IMG_HEIGHT, IMG_WIDTH } from '@app/constants/image';
 import { GREEN_PIXEL, N_PIXEL_ATTRIBUTE, RED_PIXEL, YELLOW_PIXEL } from '@app/constants/pixels';
+import { SPEED_X1 } from '@app/constants/replay';
 import { ReplayActions } from '@app/enum/replay-actions';
 import { CaptureService } from '@app/services/capture-service/capture.service';
 import { Coordinate } from '@common/coordinate';
@@ -30,7 +31,7 @@ export class GameAreaService {
     private modifiedContextFrontLayer: CanvasRenderingContext2D;
     private clickDisabled: boolean;
     private isCheatMode: boolean;
-    private cheatModeInterval: number | undefined;
+    private cheatModeInterval: number;
 
     constructor(private readonly captureService: CaptureService) {
         this.mousePosition = { x: 0, y: 0 };
@@ -46,16 +47,11 @@ export class GameAreaService {
         this.modifiedFrontPixelData = this.modifiedContextFrontLayer.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
     }
 
-    saveCoord(event: MouseEvent): void {
-        this.mousePosition = { x: event.offsetX, y: event.offsetY };
-    }
-
     detectLeftClick(event: MouseEvent): boolean {
         return event.button === LEFT_BUTTON && !this.clickDisabled ? (this.saveCoord(event), true) : false;
     }
 
-    showError(isMainCanvas: boolean, errorCoordinate: Coordinate, replaySpeed?: number): void {
-        const speed = replaySpeed ? replaySpeed : 1;
+    showError(isMainCanvas: boolean, errorCoordinate: Coordinate, flashingSpeed: number = SPEED_X1): void {
         const frontContext: CanvasRenderingContext2D = isMainCanvas ? this.originalContextFrontLayer : this.modifiedContextFrontLayer;
         frontContext.fillStyle = 'red';
         this.clickDisabled = true;
@@ -64,11 +60,11 @@ export class GameAreaService {
         setTimeout(() => {
             frontContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
             this.clickDisabled = false;
-        }, WAITING_TIME / speed);
+        }, WAITING_TIME / flashingSpeed);
         this.captureService.saveReplayEvent(ReplayActions.ClickError, { isMainCanvas, pos: errorCoordinate });
     }
 
-    replaceDifference(differenceCoord: Coordinate[], replaySpeed?: number, isPaused: boolean = false): void {
+    replaceDifference(differenceCoord: Coordinate[], flashingSpeed: number = SPEED_X1, isPaused: boolean = false): void {
         const imageDataIndex = this.convert2DCoordToPixelIndex(differenceCoord);
         for (const index of imageDataIndex) {
             for (let i = 0; i < N_PIXEL_ATTRIBUTE; i++) {
@@ -78,21 +74,16 @@ export class GameAreaService {
         this.modifiedContext.putImageData(this.modifiedPixelData, 0, 0);
         this.resetCheatMode();
         this.captureService.saveReplayEvent(ReplayActions.ClickFound, differenceCoord);
-        this.flashCorrectPixels(differenceCoord, replaySpeed, isPaused);
+        this.flashPixels(differenceCoord, flashingSpeed, isPaused);
     }
 
-    flashCorrectPixels(differenceCoord: Coordinate[], replaySpeed?: number, isPaused: boolean = false): void {
+    flashPixels(differenceCoord: Coordinate[], flashingSpeed: number = SPEED_X1, isPaused: boolean = false): void {
         const imageDataIndexes = this.convert2DCoordToPixelIndex(differenceCoord);
-        this.flashPixels(imageDataIndexes, replaySpeed, isPaused);
-    }
-
-    flashPixels(imageDataIndexes: number[], replaySpeed?: number, isPaused: boolean = false): void {
-        const speed = replaySpeed ? replaySpeed : 1;
         const firstInterval = setInterval(() => {
             const secondInterval = setInterval(() => {
                 this.setPixelData(imageDataIndexes, this.modifiedFrontPixelData, this.originalFrontPixelData);
                 this.putImageDataToContexts();
-            }, GREEN_FLASH_TIME / speed);
+            }, GREEN_FLASH_TIME / flashingSpeed);
 
             const color = [YELLOW_PIXEL.red, YELLOW_PIXEL.green, YELLOW_PIXEL.blue, YELLOW_PIXEL.alpha];
             for (const index of imageDataIndexes) {
@@ -104,20 +95,19 @@ export class GameAreaService {
             setTimeout(() => {
                 clearInterval(secondInterval);
                 this.clearFlashing(isPaused);
-            }, FLASH_WAIT_TIME / speed);
-        }, YELLOW_FLASH_TIME / speed);
+            }, FLASH_WAIT_TIME / flashingSpeed);
+        }, YELLOW_FLASH_TIME / flashingSpeed);
 
         setTimeout(() => {
             clearInterval(firstInterval);
             this.clearFlashing(isPaused);
-        }, FLASH_WAIT_TIME / speed);
+        }, FLASH_WAIT_TIME / flashingSpeed);
     }
 
-    toggleCheatMode(startDifferences: Coordinate[], replaySpeed?: number): void {
-        const speed = replaySpeed ? replaySpeed : 1;
+    toggleCheatMode(startDifferences: Coordinate[], flashingSpeed: number = SPEED_X1): void {
         const imageDataIndexes: number[] = this.convert2DCoordToPixelIndex(startDifferences);
         if (!this.isCheatMode) {
-            this.cheatModeInterval = setInterval(() => {
+            this.cheatModeInterval = window.setInterval(() => {
                 const color = [RED_PIXEL.red, RED_PIXEL.green, RED_PIXEL.blue, RED_PIXEL.alpha];
                 for (const index of imageDataIndexes) {
                     this.modifiedFrontPixelData.data.set(color, index);
@@ -127,8 +117,8 @@ export class GameAreaService {
 
                 setTimeout(() => {
                     this.clearFlashing();
-                }, RED_FLASH_TIME / speed);
-            }, CHEAT_MODE_WAIT_TIME / speed) as unknown as number;
+                }, RED_FLASH_TIME / flashingSpeed);
+            }, CHEAT_MODE_WAIT_TIME / flashingSpeed);
             this.captureService.saveReplayEvent(ReplayActions.ActivateCheat, startDifferences);
         } else {
             this.captureService.saveReplayEvent(ReplayActions.DeactivateCheat, startDifferences);
@@ -136,35 +126,6 @@ export class GameAreaService {
             this.clearFlashing();
         }
         this.isCheatMode = !this.isCheatMode;
-    }
-
-    setPixelData(imageDataIndexes: number[], modifiedFrontPixelData: ImageData, originalFrontPixelData: ImageData): void {
-        for (const index of imageDataIndexes) {
-            modifiedFrontPixelData.data[index] = GREEN_PIXEL.red;
-            modifiedFrontPixelData.data[index + 1] = GREEN_PIXEL.green;
-            modifiedFrontPixelData.data[index + 2] = GREEN_PIXEL.blue;
-            modifiedFrontPixelData.data[index + 3] = GREEN_PIXEL.alpha;
-
-            originalFrontPixelData.data[index] = GREEN_PIXEL.red;
-            originalFrontPixelData.data[index + 1] = GREEN_PIXEL.green;
-            originalFrontPixelData.data[index + 2] = GREEN_PIXEL.blue;
-            originalFrontPixelData.data[index + 3] = GREEN_PIXEL.alpha;
-        }
-    }
-
-    putImageDataToContexts(): void {
-        this.modifiedContextFrontLayer?.putImageData(this.modifiedFrontPixelData, 0, 0);
-        this.originalContextFrontLayer?.putImageData(this.originalFrontPixelData, 0, 0);
-    }
-
-    clearFlashing(isPaused: boolean = false): void {
-        if (!isPaused) {
-            this.modifiedContextFrontLayer?.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-            this.originalContextFrontLayer?.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-            this.originalFrontPixelData = this.originalContextFrontLayer?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-            this.modifiedFrontPixelData = this.modifiedContextFrontLayer?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-            this.clickDisabled = false;
-        }
     }
 
     getOriginalContext(): CanvasRenderingContext2D {
@@ -206,6 +167,39 @@ export class GameAreaService {
     resetCheatMode(): void {
         this.isCheatMode = false;
         clearInterval(this.cheatModeInterval);
+    }
+
+    private clearFlashing(isPaused: boolean = false): void {
+        if (!isPaused) {
+            this.modifiedContextFrontLayer?.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+            this.originalContextFrontLayer?.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+            this.originalFrontPixelData = this.originalContextFrontLayer?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+            this.modifiedFrontPixelData = this.modifiedContextFrontLayer?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+            this.clickDisabled = false;
+        }
+    }
+
+    private putImageDataToContexts(): void {
+        this.modifiedContextFrontLayer?.putImageData(this.modifiedFrontPixelData, 0, 0);
+        this.originalContextFrontLayer?.putImageData(this.originalFrontPixelData, 0, 0);
+    }
+
+    private setPixelData(imageDataIndexes: number[], modifiedFrontPixelData: ImageData, originalFrontPixelData: ImageData): void {
+        for (const index of imageDataIndexes) {
+            modifiedFrontPixelData.data[index] = GREEN_PIXEL.red;
+            modifiedFrontPixelData.data[index + 1] = GREEN_PIXEL.green;
+            modifiedFrontPixelData.data[index + 2] = GREEN_PIXEL.blue;
+            modifiedFrontPixelData.data[index + 3] = GREEN_PIXEL.alpha;
+
+            originalFrontPixelData.data[index] = GREEN_PIXEL.red;
+            originalFrontPixelData.data[index + 1] = GREEN_PIXEL.green;
+            originalFrontPixelData.data[index + 2] = GREEN_PIXEL.blue;
+            originalFrontPixelData.data[index + 3] = GREEN_PIXEL.alpha;
+        }
+    }
+
+    private saveCoord(event: MouseEvent): void {
+        this.mousePosition = { x: event.offsetX, y: event.offsetY };
     }
 
     private convert2DCoordToPixelIndex(differenceCoord: Coordinate[]): number[] {

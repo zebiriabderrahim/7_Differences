@@ -19,7 +19,7 @@ export class ChatBoxComponent {
 
     onAdd(inputField: { value: string }): void {
         if (inputField.value) {
-            this.add.emit(inputField.value?.trim());
+            this.add.emit(inputField.value.trim());
             inputField.value = '';
         }
     }
