@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { DeleteResetConfirmationDialogComponent } from '@app/components/delete-reset-confirmation-dialog/delete-reset-confirmation-dialog.component';
 import { Actions } from '@app/enum/delete-reset-actions';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
 import { GameHistory } from '@common/game-interfaces';
 import { Subscription } from 'rxjs';
-import { DeleteResetConfirmationDialogComponent } from '../delete-reset-confirmation-dialog/delete-reset-confirmation-dialog.component';
 
 @Component({
     selector: 'app-history-box',
