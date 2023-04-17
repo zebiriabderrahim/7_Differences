@@ -41,7 +41,6 @@ export enum GameCardEvents {
     GamesHistoryDeleted = "GamesHistoryDeleted"
 }
 
-
 export enum HistoryEvents {
     EntryAdded = 'entryAdded',
     EntriesCleared = 'entriesCleared',

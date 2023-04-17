@@ -193,8 +193,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     }
 
     @SubscribeMessage(GameEvents.RequestHint)
-    requestHint(@ConnectedSocket() socket: Socket) {
-        this.roomsManagerService.addHintPenalty(socket, this.server);
+    async requestHint(@ConnectedSocket() socket: Socket) {
+        await this.roomsManagerService.addHintPenalty(socket, this.server);
     }
 
     afterInit() {

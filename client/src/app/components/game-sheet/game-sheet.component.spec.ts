@@ -6,11 +6,13 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameSheetComponent } from '@app/components/game-sheet/game-sheet.component';
 import { PlayerNameDialogBoxComponent } from '@app/components/player-name-dialog-box/player-name-dialog-box.component';
+import { Actions } from '@app/enum/delete-reset-actions';
 import { routes } from '@app/modules/app-routing.module';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
@@ -22,7 +24,6 @@ describe('GameSheetComponent', () => {
     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl', 'navigate']);
     let roomManagerServiceSpy: jasmine.SpyObj<RoomManagerService>;
     let roomIdSpy: Subject<string>;
-    // let communicationService: CommunicationService;
 
     beforeEach(async () => {
         roomIdSpy = new Subject<string>();
@@ -50,8 +51,15 @@ describe('GameSheetComponent', () => {
             },
         );
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule.withRoutes(routes), BrowserAnimationsModule, MatDialogModule, HttpClientTestingModule, MatFormFieldModule],
-            declarations: [GameSheetComponent],
+            imports: [
+                RouterTestingModule.withRoutes(routes),
+                BrowserAnimationsModule,
+                MatDialogModule,
+                HttpClientTestingModule,
+                MatFormFieldModule,
+                MatInputModule,
+            ],
+            declarations: [GameSheetComponent, PlayerNameDialogBoxComponent],
             providers: [
                 CommunicationService,
                 {
@@ -71,7 +79,6 @@ describe('GameSheetComponent', () => {
 
     beforeEach(() => {
         fixture = TestBed.createComponent(GameSheetComponent);
-        // communicationService = TestBed.inject(CommunicationService);
         component = fixture.componentInstance;
 
         component.game = {
@@ -109,19 +116,6 @@ describe('GameSheetComponent', () => {
         roomIdSpy.next(roomId);
         expect(routerSpy.navigate).toHaveBeenCalled();
     });
-
-    // it('should call deleteGameById method of communicationService and redirect to config page', () => {
-    //     const deleteGameByIdSpy = spyOn(communicationService, 'deleteGameById').and.returnValue(of());
-    //     component.deleteGameCard();
-    //     expect(deleteGameByIdSpy).toHaveBeenCalledWith(component.game._id);
-    // });
-
-    // it('should call deleteGameById method of communicationService and redirect to config page', () => {
-    //     spyOn(communicationService, 'deleteGameById').and.returnValue(of(void 0));
-    //     routerSpy.navigateByUrl.and.returnValue(Promise.resolve(true));
-    //     component.deleteGameCard();
-    //     expect(routerSpy.navigateByUrl).toHaveBeenCalled();
-    // });
 
     it('createSoloRoom should call openDialog ', () => {
         const openDialogSpy = spyOn(component, 'openDialog').and.returnValue({
@@ -166,6 +160,12 @@ describe('GameSheetComponent', () => {
         } as MatDialogRef<PlayerNameDialogBoxComponent, unknown>);
         component.openWaitingDialog('test');
         roomIdSpy.next('0');
+        expect(dialogSpy).toHaveBeenCalled();
+    });
+
+    it('openConfirmationDialog should open dialog with DeleteResetConfirmationDialog', () => {
+        const dialogSpy = spyOn(component['dialog'], 'open');
+        component.openConfirmationDialog(Actions.DeleteGame);
         expect(dialogSpy).toHaveBeenCalled();
     });
 
