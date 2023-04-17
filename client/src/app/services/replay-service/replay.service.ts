@@ -202,7 +202,7 @@ export class ReplayService implements OnDestroy {
         };
 
         const resume = () => {
-            if (timeoutId === null) {
+            if (!timeoutId) {
                 start(remainingTime);
             }
         };
