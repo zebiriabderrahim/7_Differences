@@ -120,12 +120,11 @@ export class GameSheetComponent implements OnDestroy, OnInit {
     }
 
     private openDialog() {
-        const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent, {
+        return this.dialog.open(PlayerNameDialogBoxComponent, {
             data: { gameId: this.game._id },
             disableClose: true,
             panelClass: 'dialog',
         });
-        return dialogRef;
     }
 
     private createSoloRoom(): void {
