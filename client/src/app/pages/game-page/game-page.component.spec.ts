@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any -- needed to spy on private methods */
 // Needed more lines for tests
 /* eslint-disable max-lines */
 // Needed for empty call Fakes
