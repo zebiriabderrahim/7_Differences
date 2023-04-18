@@ -19,6 +19,8 @@
     </div>
     <img id = "selection" src = "./assets/background/SelectionBackground.jpg" alt="background"/>
 </div>
+<p *ngIf = "!gameCarrousel.gameCards.length" id = "waiting-message">Il n'y a pas de jeux disponibles pour le moment</p>
+<img *ngIf = "!gameCarrousel.gameCards.length" id = "waiting" src = "./assets/raccoonWaiting.gif" alt = "waiting-image" />
 <div *ngIf="router.url === '/selection'" class="footerPreview">
     <div class="section">
         <img id = "wood" src = "./assets/icon/WoodPlank.png" alt="woodenPlank"/>

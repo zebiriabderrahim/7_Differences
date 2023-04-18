@@ -2,6 +2,8 @@
     <div class="content">
         <div class="contact-profile">
             <img src="assets/raccoonChatAvatarOther.png" alt="raccoonAvatar" />
+            <p *ngIf="!gameMode.includes('Solo')" class = "chat">Zone de clavardage</p>
+            <p *ngIf="gameMode.includes('Solo')" class = "chat">Zone d'informations</p>
         </div>
         <div class="messages">
             <ul>
