@@ -188,7 +188,7 @@ export class RoomsManagerService implements OnModuleInit {
             const localMessage =
                 room.clientGame.mode === GameModes.ClassicOneVsOne
                     ? await this.handleOneVsOneAbandon(player, room, server)
-                    : this.handleCoopAbandon(opponent, room, server);
+                    : this.handleCoopAbandon(player, room, server);
             server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
         } else {
             await this.historyService.closeEntry(room.roomId, server);
@@ -220,11 +220,12 @@ export class RoomsManagerService implements OnModuleInit {
         return this.messageManager.getLocalMessage(room.clientGame.mode, false, player.name);
     }
 
-    private handleCoopAbandon(opponent: Player, room: GameRoom, server: io.Server): ChatMessage {
+    private handleCoopAbandon(player: Player, room: GameRoom, server: io.Server): ChatMessage {
+        const opponent = this.getOpponent(room, player);
         server.to(opponent.playerId).emit(GameEvents.GameModeChanged);
         room.clientGame.mode = GameModes.LimitedSolo;
         this.updateRoom(room);
-        return this.messageManager.getQuitMessage(opponent.name);
+        return this.messageManager.getQuitMessage(player.name);
     }
 
     private addBonusTime(room: GameRoom): void {
@@ -264,7 +265,7 @@ export class RoomsManagerService implements OnModuleInit {
     }
 
     private async handleOneVsOneAbandon(player: Player, room: GameRoom, server: io.Server): Promise<ChatMessage> {
-        const opponent: Player = room.player1.playerId === player.playerId ? room.player2 : room.player1;
+        const opponent: Player = this.getOpponent(room, player);
         this.historyService.markPlayer(room.roomId, opponent?.name, PlayerStatus.Winner);
         room.endMessage = "L'adversaire a abandonné la partie!";
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
@@ -272,6 +273,10 @@ export class RoomsManagerService implements OnModuleInit {
         await this.historyService.closeEntry(room.roomId, server);
         this.deleteRoom(room.roomId);
         return this.messageManager.getQuitMessage(player.name);
+    }
+
+    private getOpponent(room: GameRoom, player: Player): Player {
+        return room.player1.playerId === player.playerId ? room.player2 : room.player1;
     }
 
     private buildClientGameVersion(game: Game): ClientSideGame {
