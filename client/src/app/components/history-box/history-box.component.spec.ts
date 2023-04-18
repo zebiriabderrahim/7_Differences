@@ -59,9 +59,9 @@ describe('HistoryBoxComponent', () => {
     });
 
     it('handleHistoryUpdate should call loadHistory when isGameHistoryReloadNeeded is true', () => {
-        component.handleHistoryUpdate();
+        component['handleHistoryUpdate']();
         mockIsReloadNeeded.next(true);
-        component.handleHistoryUpdate();
+        component['handleHistoryUpdate']();
         expect(communicationServiceSpy.loadGameHistory).toHaveBeenCalled();
     });
 });

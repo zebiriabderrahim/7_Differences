@@ -48,25 +48,6 @@ export class GameSheetComponent implements OnDestroy, OnInit {
             });
     }
 
-    openDialog() {
-        const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent, {
-            data: { gameId: this.game._id },
-            disableClose: true,
-            panelClass: 'dialog',
-        });
-        return dialogRef;
-    }
-
-    createSoloRoom(): void {
-        this.openDialog()
-            .afterClosed()
-            .pipe(filter((playerName) => !!playerName))
-            .subscribe((playerName) => {
-                const playerPayLoad = { gameId: this.game._id, playerName, gameMode: GameModes.ClassicSolo } as PlayerData;
-                this.roomManagerService.createSoloRoom(playerPayLoad);
-            });
-    }
-
     playSolo(): void {
         this.createSoloRoom();
         this.roomSoloIdSubscription = this.roomManagerService.roomSoloId$.pipe(filter((roomId) => !!roomId)).subscribe(() => {
@@ -105,21 +86,6 @@ export class GameSheetComponent implements OnDestroy, OnInit {
             });
     }
 
-    openWaitingDialog(playerName: string): void {
-        this.roomOneVsOneIdSubscription = this.roomManagerService.roomOneVsOneId$
-            .pipe(
-                filter((roomId) => !!roomId),
-                take(1),
-            )
-            .subscribe((roomId) => {
-                this.dialog.open(WaitingForPlayerToJoinComponent, {
-                    data: { roomId, player: playerName, gameId: this.game._id },
-                    disableClose: true,
-                    panelClass: 'dialog',
-                });
-            });
-    }
-
     isAvailableToJoin(): boolean {
         return this.isAvailable;
     }
@@ -136,5 +102,39 @@ export class GameSheetComponent implements OnDestroy, OnInit {
         this.roomSoloIdSubscription?.unsubscribe();
         this.roomAvailabilitySubscription?.unsubscribe();
         this.roomOneVsOneIdSubscription?.unsubscribe();
+    }
+
+    private openWaitingDialog(playerName: string): void {
+        this.roomOneVsOneIdSubscription = this.roomManagerService.roomOneVsOneId$
+            .pipe(
+                filter((roomId) => !!roomId),
+                take(1),
+            )
+            .subscribe((roomId) => {
+                this.dialog.open(WaitingForPlayerToJoinComponent, {
+                    data: { roomId, player: playerName, gameId: this.game._id },
+                    disableClose: true,
+                    panelClass: 'dialog',
+                });
+            });
+    }
+
+    private openDialog() {
+        const dialogRef = this.dialog.open(PlayerNameDialogBoxComponent, {
+            data: { gameId: this.game._id },
+            disableClose: true,
+            panelClass: 'dialog',
+        });
+        return dialogRef;
+    }
+
+    private createSoloRoom(): void {
+        this.openDialog()
+            .afterClosed()
+            .pipe(filter((playerName) => !!playerName))
+            .subscribe((playerName) => {
+                const playerPayLoad = { gameId: this.game._id, playerName, gameMode: GameModes.ClassicSolo } as PlayerData;
+                this.roomManagerService.createSoloRoom(playerPayLoad);
+            });
     }
 }

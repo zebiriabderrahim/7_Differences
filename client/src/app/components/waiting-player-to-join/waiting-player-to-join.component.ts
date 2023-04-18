@@ -43,14 +43,6 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         this.handleGameCardDelete();
     }
 
-    loadPlayerNamesList(): void {
-        this.playerNamesSubscription = this.roomManagerService.joinedPlayerNamesByGameId$
-            .pipe(filter((playerNamesList) => !!playerNamesList))
-            .subscribe((playerNamesList) => {
-                this.playerNames = playerNamesList;
-            });
-    }
-
     refusePlayer(playerName: string) {
         const playerPayLoad = { gameId: this.data.gameId, playerName } as PlayerData;
         this.roomManagerService.refusePlayer(playerPayLoad);
@@ -66,7 +58,21 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         else if (!this.data.player) this.roomManagerService.deleteCreatedCoopRoom(this.data.roomId);
     }
 
-    countDownBeforeClosing() {
+    ngOnDestroy(): void {
+        this.playerNamesSubscription?.unsubscribe();
+        this.countdownSubscription?.unsubscribe();
+        this.deletedGameIdSubscription?.unsubscribe();
+    }
+
+    private loadPlayerNamesList(): void {
+        this.playerNamesSubscription = this.roomManagerService.joinedPlayerNamesByGameId$
+            .pipe(filter((playerNamesList) => !!playerNamesList))
+            .subscribe((playerNamesList) => {
+                this.playerNames = playerNamesList;
+            });
+    }
+
+    private countDownBeforeClosing() {
         this.countdown = COUNTDOWN_TIME;
         const countdown$ = interval(WAITING_TIME).pipe(takeWhile(() => this.countdown > 0));
         const countdownObserver = {
@@ -81,17 +87,11 @@ export class WaitingForPlayerToJoinComponent implements OnInit, OnDestroy {
         this.countdownSubscription = countdown$.subscribe(countdownObserver);
     }
 
-    handleGameCardDelete() {
+    private handleGameCardDelete() {
         this.deletedGameIdSubscription = this.roomManagerService.deletedGameId$
             .pipe(filter((gameId) => gameId === this.data.gameId))
             .subscribe(() => {
                 this.countDownBeforeClosing();
             });
-    }
-
-    ngOnDestroy(): void {
-        this.playerNamesSubscription?.unsubscribe();
-        this.countdownSubscription?.unsubscribe();
-        this.deletedGameIdSubscription?.unsubscribe();
     }
 }
