@@ -21,7 +21,7 @@ describe('DeleteResetConfirmationDialogComponent', () => {
             'resetAllTopTimes',
             'allGamesDeleted',
             'resetTopTime',
-            'gameCardDeleted',
+            'notifyGameCardDeleted',
             'gamesHistoryDeleted',
         ]);
         communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['deleteAllGames', 'deleteGameById', 'deleteAllGamesHistory']);

@@ -39,7 +39,7 @@ describe('GameSheetComponent', () => {
                 'createOneVsOneRoom',
                 'createSoloRoom',
                 'updateWaitingPlayerNameList',
-                'gameCardDeleted',
+                'notifyGameCardDeleted',
             ],
             {
                 roomSoloId$: roomIdSpy,
