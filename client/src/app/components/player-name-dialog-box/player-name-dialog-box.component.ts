@@ -29,7 +29,6 @@ export class PlayerNameDialogBoxComponent implements OnInit, OnDestroy {
                     Validators.minLength(MIN_NAME_LENGTH),
                 ],
                 asyncValidators: [this.validatePlayerName.bind(this) as AsyncValidatorFn],
-                updateOn: 'blur',
             }),
         });
     }
