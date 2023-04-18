@@ -425,11 +425,9 @@ describe('GameManagerService', () => {
         const getSocketIdSpy = spyOn(service, 'getSocketId').and.callFake(() => {
             return mockDataDifference.playerId;
         });
-        // const replaceDifferenceSpy = spyOn(service, 'replaceDifference');
         service.manageSocket();
         const differencesFoundSpy = spyOn(service['differencesFound'], 'next');
         socketHelper.peerSideEmit(GameEvents.RemoveDifference, mockDataDifference);
-        // expect(replaceDifferenceSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.currentDifference);
         expect(differencesFoundSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.differencesFound);
         expect(checkStatusSpy).toHaveBeenCalled();
         expect(getSocketIdSpy).toHaveBeenCalled();
@@ -448,11 +446,9 @@ describe('GameManagerService', () => {
             return 'notMatchingSocketId';
         });
 
-        // const replaceDifferenceSpy = spyOn(service, 'replaceDifference');
         service.manageSocket();
         const differencesFoundSpy = spyOn(service['differencesFound'], 'next');
         socketHelper.peerSideEmit(GameEvents.RemoveDifference, mockDataDifference);
-        // expect(replaceDifferenceSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.currentDifference);
         expect(differencesFoundSpy).not.toHaveBeenCalledWith(mockDataDifference.differencesData.differencesFound);
         expect(checkStatusSpy).not.toHaveBeenCalled();
         expect(getSocketIdSpy).toHaveBeenCalled();
