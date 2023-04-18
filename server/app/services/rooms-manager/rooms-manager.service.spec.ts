@@ -527,14 +527,6 @@ describe('RoomsManagerService', () => {
         expect(service['handleCoopAbandon']).not.toBeCalled();
     });
 
-    // it('handleDisconnect() should call deleteRoom ', () => {
-    //     fakeRoom.player2 = undefined;
-    //     service['rooms'].set(fakeRoom.roomId, fakeRoom);
-    //     const deleteRoomSpy = jest.spyOn(service, 'deleteRoom');
-    //     service.handleSoloModesDisconnect(fakeRoom, server);
-    //     expect(deleteRoomSpy).toBeCalled();
-    // });
-
     it('handleGamePageRefresh() should emit on GamePageRefreshed event', () => {
         server.to.returns({
             emit: (event: string) => {
@@ -656,19 +648,6 @@ describe('RoomsManagerService', () => {
         expect(service['updateRoom']).toBeCalled();
         expect(service['countdownOver']).toBeCalled();
     });
-
-    // it('countdownOver should call deleteRoom,leaveRoom and emit on EndGame event', () => {
-    //     service['deleteRoom'] = jest.fn();
-    //     service['leaveRoom'] = jest.fn();
-    //     server.to.returns({
-    //         emit: (event: string) => {
-    //             expect(event).toEqual(GameEvents.EndGame);
-    //         },
-    //     } as BroadcastOperator<unknown, unknown>);
-    //     service['countdownOver'](fakeRoom, server);
-    //     expect(service['deleteRoom']).toBeCalled();
-    //     expect(service['leaveRoom']).toBeCalled();
-    // });
 
     it('generateRoomId should return a string of length 6', () => {
         const roomId = service['generateRoomId']();
