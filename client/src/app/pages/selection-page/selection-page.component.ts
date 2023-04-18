@@ -33,14 +33,6 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
         this.handleGameCardsUpdate();
     }
 
-    loadGameCarrousel() {
-        this.communicationService.loadGameCarrousel(this.index).subscribe((gameCarrousel) => {
-            if (gameCarrousel) {
-                this.gameCarrousel = gameCarrousel;
-            }
-        });
-    }
-
     nextCarrousel() {
         if (this.gameCarrousel.hasNext) {
             ++this.index;
@@ -55,17 +47,25 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
         }
     }
 
-    handleGameCardsUpdate() {
+    ngOnDestroy(): void {
+        this.reloadSubscription?.unsubscribe();
+        this.roomManagerService.removeAllListeners();
+    }
+
+    private loadGameCarrousel() {
+        this.communicationService.loadGameCarrousel(this.index).subscribe((gameCarrousel) => {
+            if (gameCarrousel) {
+                this.gameCarrousel = gameCarrousel;
+            }
+        });
+    }
+
+    private handleGameCardsUpdate() {
         this.reloadSubscription = this.roomManagerService.isReloadNeeded$.subscribe((isGameCardsNeedToBeReloaded) => {
             if (isGameCardsNeedToBeReloaded) {
                 this.index = 0;
                 this.loadGameCarrousel();
             }
         });
-    }
-
-    ngOnDestroy(): void {
-        this.reloadSubscription?.unsubscribe();
-        this.roomManagerService.removeAllListeners();
     }
 }
