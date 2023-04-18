@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Needed more lines for tests
 /* eslint-disable max-lines */
 // Needed for empty call Fakes
@@ -141,7 +142,7 @@ describe('GamePageComponent', () => {
     });
 
     it('differences() should return the gameManager.differences', () => {
-        expect(component.differences).toEqual(gameManagerService.differences);
+        expect(component['differences']).toEqual(gameManagerService.differences);
     });
 
     it('proximity() should return hintService.thirdHintProximity', () => {
@@ -164,28 +165,28 @@ describe('GamePageComponent', () => {
     });
 
     it('setUpReplay should set differencesFound', () => {
-        component.setUpReplay();
+        component['setUpReplay']();
         component.isReplayAvailable = true;
         replayDifferenceFoundSubjectTest.next(differencesFoundTest);
         expect(component.differencesFound).toEqual(differencesFoundTest);
     });
 
     it('setUpReplay should set opponentDifferencesFound', () => {
-        component.setUpReplay();
+        component['setUpReplay']();
         component.isReplayAvailable = true;
         replayOpponentDifferenceFoundSubjectTest.next(differencesFoundTest);
         expect(component.opponentDifferencesFound).toEqual(differencesFoundTest);
     });
 
     it('setUpReplay should set timer', () => {
-        component.setUpReplay();
+        component['setUpReplay']();
         component.isReplayAvailable = true;
         replayTimerSubjectTest.next(differencesFoundTest);
         expect(component.timer).toEqual(differencesFoundTest);
     });
 
     it('setUpReplay should set reset messages and differencesFound if timer is 0', () => {
-        component.setUpReplay();
+        component['setUpReplay']();
         component.isReplayAvailable = true;
         replayTimerSubjectTest.next(0);
         expect(component.messages).toEqual([]);
@@ -263,7 +264,7 @@ describe('GamePageComponent', () => {
 
     it('updateGameMode should set set gameMode to solo if changed', () => {
         component.game = clientSideGameTest;
-        component.updateGameMode();
+        component['updateGameMode']();
         isGameModeChangedTest.next(true);
         expect(component.game.mode).toEqual(GameModes.LimitedSolo);
     });
@@ -271,20 +272,20 @@ describe('GamePageComponent', () => {
     it('updateGameMode should call gameManager.startNextGame', () => {
         component.game = clientSideGameTest;
         component.game.mode = GameModes.LimitedSolo;
-        component.updateGameMode();
+        component['updateGameMode']();
         isFirstDifferencesFoundTest.next(true);
         expect(gameManagerServiceSpy.startNextGame).toHaveBeenCalled();
     });
 
     it('handlePageRefresh should router.navigate', () => {
         const routerNavigateSpy = spyOn(component['router'], 'navigate');
-        component.handlePageRefresh();
+        component['handlePageRefresh']();
         isGamePageRefreshedTest.next(true);
         expect(routerNavigateSpy).toHaveBeenCalled();
     });
 
     it('should call showEndGameDialog when receiving endMessage', () => {
-        const showEndGameDialogSpy = spyOn(component, 'showEndGameDialog').and.callFake(() => {});
+        const showEndGameDialogSpy = spyOn<any>(component, 'showEndGameDialog').and.callFake(() => {});
         component.ngAfterViewInit();
         endMessageTest.next(endGameMessageTest);
         expect(showEndGameDialogSpy).toHaveBeenCalled();
@@ -294,7 +295,7 @@ describe('GamePageComponent', () => {
         component.ngAfterViewInit();
         component.game = undefined as unknown as ClientSideGame;
         endMessageTest.next(endGameMessageTest);
-        component.showEndGameDialog('test');
+        component['showEndGameDialog']('test');
         expect(dialog.open).toHaveBeenCalled();
     });
 
@@ -342,7 +343,7 @@ describe('GamePageComponent', () => {
         const endingMessage = 'Bravo !';
         clientSideGameTest.mode = 'Classic';
         component.game = clientSideGameTest;
-        component.showEndGameDialog(endingMessage);
+        component['showEndGameDialog'](endingMessage);
         expect(dialog.open).toHaveBeenCalled();
     });
 
@@ -387,9 +388,9 @@ describe('GamePageComponent', () => {
     it('isLimitedMode should return true if the game mode is limited', () => {
         component.game = clientSideGameTest;
         component.game.mode = GameModes.LimitedSolo;
-        expect(component.isLimitedMode()).toBeTruthy();
+        expect(component['isLimitedMode']()).toBeTruthy();
         component.game.mode = GameModes.LimitedCoop;
-        expect(component.isLimitedMode()).toBeTruthy();
+        expect(component['isLimitedMode']()).toBeTruthy();
     });
 
     it('isMultiplayerMode should return true if the game mode is Classic1v1 or LimitedCoop', () => {
