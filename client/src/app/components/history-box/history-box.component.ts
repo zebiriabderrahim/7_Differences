@@ -13,7 +13,6 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./history-box.component.scss'],
 })
 export class HistoryBoxComponent implements OnInit, OnDestroy {
-    actions: typeof Actions;
     gameHistory: GameHistory[];
     private isGameHistoryReloadNeededSubscription: Subscription;
     constructor(
@@ -29,20 +28,6 @@ export class HistoryBoxComponent implements OnInit, OnDestroy {
         this.handleHistoryUpdate();
     }
 
-    loadHistory(): void {
-        this.communicationService.loadGameHistory().subscribe((history: GameHistory[]) => {
-            this.gameHistory = history;
-        });
-    }
-
-    handleHistoryUpdate(): void {
-        this.isGameHistoryReloadNeededSubscription = this.roomManagerService.isGameHistoryReloadNeeded$.subscribe(
-            (isGameHistoryReloadNeeded: boolean) => {
-                if (isGameHistoryReloadNeeded) this.loadHistory();
-            },
-        );
-    }
-
     openConfirmationDialog(): void {
         this.dialog.open(DeleteResetConfirmationDialogComponent, {
             data: { actions: Actions.DeleteHistory },
@@ -53,5 +38,19 @@ export class HistoryBoxComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.isGameHistoryReloadNeededSubscription.unsubscribe();
+    }
+
+    private loadHistory(): void {
+        this.communicationService.loadGameHistory().subscribe((history: GameHistory[]) => {
+            this.gameHistory = history;
+        });
+    }
+
+    private handleHistoryUpdate(): void {
+        this.isGameHistoryReloadNeededSubscription = this.roomManagerService.isGameHistoryReloadNeeded$.subscribe(
+            (isGameHistoryReloadNeeded: boolean) => {
+                if (isGameHistoryReloadNeeded) this.loadHistory();
+            },
+        );
     }
 }
