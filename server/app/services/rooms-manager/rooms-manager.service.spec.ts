@@ -7,7 +7,7 @@ import { HistoryService } from '@app/services/history/history.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { KEY_SIZE, MAX_BONUS_TIME_ALLOWED, NOT_FOUND } from '@common/constants';
 import { GameEvents, GameModes, MessageEvents } from '@common/enums';
-import { ClientSideGame, Coordinate, Differences, GameRoom } from '@common/game-interfaces';
+import { ChatMessage, ClientSideGame, Coordinate, Differences, GameRoom } from '@common/game-interfaces';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as fs from 'fs';
 import { SinonStubbedInstance, createStubInstance, stub } from 'sinon';
@@ -181,22 +181,33 @@ describe('RoomsManagerService', () => {
     });
 
     it('getRoomByPlayerId should return the room  (player2 case)', () => {
-        fakeRoom.player2.playerId = undefined;
+        fakeRoom.player2.playerId = '2';
         service['rooms'].set(fakeRoom.roomId, fakeRoom);
-        const findSpy = jest.spyOn(Array.prototype, 'find');
         const result = service.getRoomByPlayerId('2');
-        expect(result).toEqual(undefined);
-        expect(findSpy).toBeCalled();
+        expect(result).toEqual(fakeRoom);
     });
 
     it('getRoomByPlayerId should return the undefined ', () => {
+        fakeRoom.player2.playerId = undefined;
         service['rooms'].set(fakeRoom.roomId, fakeRoom);
         const findSpy = jest.spyOn(Array.prototype, 'find');
         const result = service.getRoomByPlayerId('df');
         expect(result).toEqual(undefined);
         expect(findSpy).toBeCalled();
     });
+
+    it('getRoomByPlayerId should return the undefined ', () => {
+        fakeRoom.player2 = undefined;
+        service['rooms'].set(fakeRoom.roomId, fakeRoom);
+        const findSpy = jest.spyOn(Array.prototype, 'find');
+        const result = service.getRoomByPlayerId('df');
+        expect(result).toEqual(undefined);
+        expect(findSpy).toBeCalled();
+    });
+
     it('getHostIdByGameId should return the host id', () => {
+        fakeRoom.clientGame.mode = GameModes.ClassicOneVsOne;
+        fakeRoom.player2 = undefined;
         service['rooms'].set(fakeRoom.roomId, fakeRoom);
         const result = service.getHostIdByGameId(fakeRoom.clientGame.id);
         expect(result).toEqual(fakeRoom.player1.playerId);
@@ -291,6 +302,22 @@ describe('RoomsManagerService', () => {
         expect(updateRoomSpy).not.toBeCalled();
     });
 
+    it('startGame() should not call join and updateRoom and emit on GameStarted event if the room does not exist', () => {
+        const fakeRoom2 = { ...fakeRoom };
+        fakeRoom2.player1.playerId = 'fakePlayerId';
+        Object.defineProperty(socket, 'id', {
+            value: 'id',
+        });
+        fakeRoom2.player2 = undefined;
+        const getRoomByPlayerIdSpy = jest.spyOn(service, 'getRoomByPlayerId').mockReturnValueOnce(fakeRoom2);
+        const updateRoomSpy = jest.spyOn(service, 'updateRoom');
+        service['handleGamePageRefresh'] = jest.fn();
+        service.startGame(socket, server);
+        expect(service['handleGamePageRefresh']).toBeCalled();
+        expect(getRoomByPlayerIdSpy).toBeCalled();
+        expect(updateRoomSpy).not.toBeCalled();
+    });
+
     it('loadNextGame() should call getRandomGame, buildClientGameVersion, structuredClone and updateRoom ', async () => {
         const getRandomGameSpy = jest.spyOn(gameService, 'getRandomGame').mockResolvedValueOnce(testGames[0]);
         jest.spyOn(fs, 'readFileSync').mockImplementationOnce(() => JSON.stringify(testGames[0]));
@@ -324,15 +351,11 @@ describe('RoomsManagerService', () => {
     });
 
     it('validateCoords() should call  differenceFound and emit on LocalMessage,RemoveDiff if the coordinates are correct', () => {
-        fakeRoom.originalDifferences = [
-            [
-                { x: 0, y: 0 },
-                { x: 3, y: 2 },
-            ],
-        ] as Coordinate[][];
+        Object.defineProperty(socket, 'id', {
+            value: fakeRoom.player1.playerId,
+        });
+        fakeRoom.originalDifferences = [[{ x: 0, y: 0 }], [{ x: 3, y: 2 }]] as Coordinate[][];
         service['rooms'].set(fakeRoom.roomId, fakeRoom);
-        Array.prototype.findIndex = jest.fn().mockImplementationOnce(() => 0);
-        Array.prototype.some = jest.fn().mockImplementationOnce(() => true);
         service['differenceFound'] = jest.fn();
         const getRoomIdFromSocketSpy = jest.spyOn(service, 'getRoomIdFromSocket').mockReturnValue(fakeRoom.roomId);
         server.to.returns({
@@ -344,7 +367,7 @@ describe('RoomsManagerService', () => {
                 }
             },
         } as BroadcastOperator<unknown, unknown>);
-        service.validateCoords(socket, { x: 0, y: 0 }, server);
+        service.validateCoords(socket, { x: 0, y: 0 } as Coordinate, server);
         expect(getRoomIdFromSocketSpy).toBeCalled();
         expect(service['differenceFound'] as jest.Mock).toBeCalled();
     });
@@ -527,13 +550,17 @@ describe('RoomsManagerService', () => {
         expect(service['handleCoopAbandon']).not.toBeCalled();
     });
 
-    // it('handleDisconnect() should call deleteRoom ', () => {
-    //     fakeRoom.player2 = undefined;
-    //     service['rooms'].set(fakeRoom.roomId, fakeRoom);
-    //     const deleteRoomSpy = jest.spyOn(service, 'deleteRoom');
-    //     service.handleSoloModesDisconnect(fakeRoom, server);
-    //     expect(deleteRoomSpy).toBeCalled();
-    // });
+    it('handleSoloModesDisconnect() should call deleteRoom ', async () => {
+        fakeRoom.player2 = undefined;
+        service['rooms'].set(fakeRoom.roomId, fakeRoom);
+        const markPlayerSpy = jest.spyOn(historyService, 'markPlayer');
+        const closeEntrySpy = jest.spyOn(historyService, 'closeEntry');
+        const deleteRoomSpy = jest.spyOn(service, 'deleteRoom');
+        await service.handleSoloModesDisconnect(fakeRoom, server);
+        expect(deleteRoomSpy).toBeCalled();
+        expect(markPlayerSpy).toBeCalled();
+        expect(closeEntrySpy).toBeCalled();
+    });
 
     it('handleGamePageRefresh() should emit on GamePageRefreshed event', () => {
         server.to.returns({
@@ -562,10 +589,48 @@ describe('RoomsManagerService', () => {
         expect(result).toBeDefined();
     });
 
+    it('getOpponent() should return the opponent of the player 1', () => {
+        const fakePlayer2 = { ...fakePlayer, playerId: 'testPlayer2' };
+        fakeRoom.player1 = fakePlayer;
+        fakeRoom.player2 = fakePlayer2;
+        const result = service['getOpponent'](fakeRoom, fakePlayer);
+        expect(result).toEqual(fakePlayer2);
+    });
+
+    it('getOpponent() should return the opponent of the player 2', () => {
+        const fakePlayer2 = { ...fakePlayer, playerId: 'testPlayer2' };
+        fakeRoom.player1 = fakePlayer;
+        fakeRoom.player2 = fakePlayer2;
+        const result = service['getOpponent'](fakeRoom, fakePlayer2);
+        expect(result).toEqual(fakePlayer);
+    });
+
     it('handleOneVsOneAbandon() should call abandonMessage and deleteRoom emit on EndGame event', async () => {
         service['deleteRoom'] = jest.fn();
         service['leaveRoom'] = jest.fn();
-        const markPlayerSpy = jest.spyOn(historyService, 'markPlayer');
+        service['getOpponent'] = jest.fn().mockReturnValue(undefined);
+        const getQuitMessageSpy = jest.spyOn(messageManager, 'getQuitMessage').mockReturnValue({} as ChatMessage);
+        const closeEntrySpy = jest.spyOn(historyService, 'closeEntry');
+        server.to.returns({
+            emit: (event: string) => {
+                if (event === GameEvents.EndGame) {
+                    expect(event).toEqual(GameEvents.EndGame);
+                } else if (event === MessageEvents.LocalMessage) {
+                    expect(event).toEqual(MessageEvents.LocalMessage);
+                }
+            },
+        } as BroadcastOperator<unknown, unknown>);
+        await service['handleOneVsOneAbandon'](undefined, fakeRoom, server);
+        expect(closeEntrySpy).toBeCalled();
+        expect(service['deleteRoom']).toBeCalled();
+        expect(service['leaveRoom']).toBeCalled();
+        expect(getQuitMessageSpy).toBeCalled();
+    });
+
+    it('handleOneVsOneAbandon() should call abandonMessage and deleteRoom emit on EndGame event', async () => {
+        service['deleteRoom'] = jest.fn();
+        service['leaveRoom'] = jest.fn();
+        const getQuitMessageSpy = jest.spyOn(messageManager, 'getQuitMessage').mockReturnValue({} as ChatMessage);
         const closeEntrySpy = jest.spyOn(historyService, 'closeEntry');
         server.to.returns({
             emit: (event: string) => {
@@ -577,13 +642,14 @@ describe('RoomsManagerService', () => {
             },
         } as BroadcastOperator<unknown, unknown>);
         await service['handleOneVsOneAbandon'](fakePlayer, fakeRoom, server);
-        expect(markPlayerSpy).toBeCalled();
         expect(closeEntrySpy).toBeCalled();
         expect(service['deleteRoom']).toBeCalled();
         expect(service['leaveRoom']).toBeCalled();
+        expect(getQuitMessageSpy).toBeCalled();
     });
 
     it('handleCoopAbandon() should call abandonMessage and deleteRoom emit on EndGame event', () => {
+        service['getOpponent'] = jest.fn().mockReturnValueOnce(fakePlayer);
         service['updateRoom'] = jest.fn();
         server.to.returns({
             emit: (event: string) => {
@@ -596,6 +662,7 @@ describe('RoomsManagerService', () => {
         } as BroadcastOperator<unknown, unknown>);
         service['handleCoopAbandon'](fakePlayer, fakeRoom, server);
         expect(service['updateRoom']).toBeCalled();
+        expect(service['getOpponent']).toBeCalled();
     });
 
     it('differenceFound() should call updateRoom,addBonusTime and getLocalMessage', () => {
@@ -657,18 +724,18 @@ describe('RoomsManagerService', () => {
         expect(service['countdownOver']).toBeCalled();
     });
 
-    // it('countdownOver should call deleteRoom,leaveRoom and emit on EndGame event', () => {
-    //     service['deleteRoom'] = jest.fn();
-    //     service['leaveRoom'] = jest.fn();
-    //     server.to.returns({
-    //         emit: (event: string) => {
-    //             expect(event).toEqual(GameEvents.EndGame);
-    //         },
-    //     } as BroadcastOperator<unknown, unknown>);
-    //     service['countdownOver'](fakeRoom, server);
-    //     expect(service['deleteRoom']).toBeCalled();
-    //     expect(service['leaveRoom']).toBeCalled();
-    // });
+    it('countdownOver should call deleteRoom,leaveRoom and emit on EndGame event', async () => {
+        service['deleteRoom'] = jest.fn();
+        service['leaveRoom'] = jest.fn();
+        server.to.returns({
+            emit: (event: string) => {
+                expect(event).toEqual(GameEvents.EndGame);
+            },
+        } as BroadcastOperator<unknown, unknown>);
+        await service['countdownOver'](fakeRoom, server);
+        expect(service['deleteRoom']).toBeCalled();
+        expect(service['leaveRoom']).toBeCalled();
+    });
 
     it('generateRoomId should return a string of length 6', () => {
         const roomId = service['generateRoomId']();
