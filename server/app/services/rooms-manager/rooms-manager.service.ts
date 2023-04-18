@@ -272,7 +272,7 @@ export class RoomsManagerService implements OnModuleInit {
         this.leaveRoom(room, server);
         await this.historyService.closeEntry(room.roomId, server);
         this.deleteRoom(room.roomId);
-        return this.messageManager.getQuitMessage(player.name);
+        return this.messageManager.getQuitMessage(player?.name);
     }
 
     private getOpponent(room: GameRoom, player: Player): Player {
