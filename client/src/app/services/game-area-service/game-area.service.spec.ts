@@ -60,7 +60,7 @@ describe('GameAreaService', () => {
     });
 
     it('should not detect left click if clicking is disabled', () => {
-        gameAreaService['clickDisabled'] = true;
+        gameAreaService['isClickDisabled'] = true;
         expect(gameAreaService.detectLeftClick({ button: LEFT_BUTTON } as MouseEvent)).toBeFalse();
     });
 
@@ -294,7 +294,7 @@ describe('GameAreaService', () => {
         gameAreaService['clearFlashing']();
         expect(ogFrontContextClearRectSpy).toHaveBeenCalled();
         expect(mdFrontContextClearRectSpy).toHaveBeenCalled();
-        expect(gameAreaService['clickDisabled']).toEqual(false);
+        expect(gameAreaService['isClickDisabled']).toEqual(false);
     });
 
     it('getOriginalContext should return originalContext', () => {
