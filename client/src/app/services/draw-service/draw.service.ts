@@ -107,10 +107,10 @@ export class DrawService {
         this.disableMouseDrag();
     }
 
-    setSquareMode(squareMode: boolean) {
+    setSquareMode(isSquareModeOn: boolean) {
         if (this.isMouseBeingDragged && this.isCurrentActionRectangle() && !this.isMouseOutOfCanvas) {
             this.drawRectangle();
-            this.isSquareModeOn = squareMode;
+            this.isSquareModeOn = isSquareModeOn;
         }
     }
 

@@ -29,13 +29,13 @@ export class GameAreaService {
     private modifiedContext: CanvasRenderingContext2D;
     private originalContextFrontLayer: CanvasRenderingContext2D;
     private modifiedContextFrontLayer: CanvasRenderingContext2D;
-    private clickDisabled: boolean;
+    private isClickDisabled: boolean;
     private isCheatMode: boolean;
     private cheatModeInterval: number;
 
     constructor(private readonly captureService: CaptureService) {
         this.mousePosition = { x: 0, y: 0 };
-        this.clickDisabled = false;
+        this.isClickDisabled = false;
         this.isCheatMode = false;
     }
 
@@ -48,18 +48,18 @@ export class GameAreaService {
     }
 
     detectLeftClick(event: MouseEvent): boolean {
-        return event.button === LEFT_BUTTON && !this.clickDisabled ? (this.saveCoord(event), true) : false;
+        return event.button === LEFT_BUTTON && !this.isClickDisabled ? (this.saveCoord(event), true) : false;
     }
 
     showError(isMainCanvas: boolean, errorCoordinate: Coordinate, flashingSpeed: number = SPEED_X1): void {
         const frontContext: CanvasRenderingContext2D = isMainCanvas ? this.originalContextFrontLayer : this.modifiedContextFrontLayer;
         frontContext.fillStyle = 'red';
-        this.clickDisabled = true;
+        this.isClickDisabled = true;
         frontContext.font = 'bold 30px sheriff';
         frontContext.fillText('ERREUR', errorCoordinate.x - X_CENTERING_DISTANCE, errorCoordinate.y);
         setTimeout(() => {
             frontContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
-            this.clickDisabled = false;
+            this.isClickDisabled = false;
         }, WAITING_TIME / flashingSpeed);
         this.captureService.saveReplayEvent(ReplayActions.ClickError, { isMainCanvas, pos: errorCoordinate });
     }
@@ -175,7 +175,7 @@ export class GameAreaService {
             this.originalContextFrontLayer?.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
             this.originalFrontPixelData = this.originalContextFrontLayer?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
             this.modifiedFrontPixelData = this.modifiedContextFrontLayer?.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-            this.clickDisabled = false;
+            this.isClickDisabled = false;
         }
     }
 
