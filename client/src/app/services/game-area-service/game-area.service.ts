@@ -55,7 +55,7 @@ export class GameAreaService {
         const frontContext: CanvasRenderingContext2D = isMainCanvas ? this.originalContextFrontLayer : this.modifiedContextFrontLayer;
         frontContext.fillStyle = 'red';
         this.clickDisabled = true;
-        frontContext.font = 'bold 30px sheriff';
+        frontContext.font = 'bold 30px Arial, Helvetica, sans-serif';
         frontContext.fillText('ERREUR', errorCoordinate.x - X_CENTERING_DISTANCE, errorCoordinate.y);
         setTimeout(() => {
             frontContext.clearRect(0, 0, IMG_WIDTH, IMG_HEIGHT);

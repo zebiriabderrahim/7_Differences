@@ -3,4 +3,5 @@ export enum Actions {
     DeleteAllGames = 'deleteAllGames',
     ResetTopTime = 'resetTopTime',
     ResetAllTopTimes = 'resetAllTopTimes',
+    DeleteHistory = 'deleteHistory',
 }

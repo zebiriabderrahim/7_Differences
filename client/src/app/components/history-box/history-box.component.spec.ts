@@ -1,6 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
@@ -14,19 +15,18 @@ describe('HistoryBoxComponent', () => {
     let communicationServiceSpy: jasmine.SpyObj<CommunicationService>;
     let roomManagerServiceSpy: jasmine.SpyObj<RoomManagerService>;
     let mockGameHistory: Subject<GameHistory[]>;
-    let mockDeleteAllGames: Subject<void>;
     let mockIsReloadNeeded: Subject<boolean>;
+    let matDialogSpy: jasmine.SpyObj<MatDialog>;
 
     beforeEach(async () => {
         mockGameHistory = new Subject<GameHistory[]>();
-        mockDeleteAllGames = new Subject<void>();
         mockIsReloadNeeded = new Subject<boolean>();
-        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['loadGameHistory', 'deleteAllGamesHistory']);
+        matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
+        communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['loadGameHistory']);
+        communicationServiceSpy.loadGameHistory.and.returnValue(mockGameHistory.asObservable());
         roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['gamesHistoryDeleted'], {
             isGameHistoryReloadNeeded$: mockIsReloadNeeded.asObservable(),
         });
-        communicationServiceSpy.loadGameHistory.and.returnValue(mockGameHistory.asObservable());
-        communicationServiceSpy.deleteAllGamesHistory.and.returnValue(mockDeleteAllGames.asObservable());
 
         await TestBed.configureTestingModule({
             imports: [HttpClientTestingModule, MatButtonToggleModule, MatIconModule],
@@ -34,6 +34,7 @@ describe('HistoryBoxComponent', () => {
             providers: [
                 { provide: CommunicationService, useValue: communicationServiceSpy },
                 { provide: RoomManagerService, useValue: roomManagerServiceSpy },
+                { provide: MatDialog, useValue: matDialogSpy },
             ],
         }).compileComponents();
 
@@ -51,17 +52,15 @@ describe('HistoryBoxComponent', () => {
         expect(communicationServiceSpy.loadGameHistory).toHaveBeenCalled();
     });
 
-    it('deleteAllGamesHistory should call roomManager.gamesHistoryDeleted', () => {
-        component.deleteAllGamesHistory();
-        mockDeleteAllGames.next();
-        component.deleteAllGamesHistory();
-        expect(roomManagerServiceSpy.gamesHistoryDeleted).toHaveBeenCalled();
-    });
-
     it('handleHistoryUpdate should call loadHistory when isGameHistoryReloadNeeded is true', () => {
         component.handleHistoryUpdate();
         mockIsReloadNeeded.next(true);
         component.handleHistoryUpdate();
         expect(communicationServiceSpy.loadGameHistory).toHaveBeenCalled();
+    });
+
+    it('openConfirmationDialog should call dialog.open', () => {
+        component.openConfirmationDialog();
+        expect(matDialogSpy.open).toHaveBeenCalled();
     });
 });

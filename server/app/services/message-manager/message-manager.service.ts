@@ -21,7 +21,7 @@ export class MessageManagerService {
             message:
                 this.getFormatTime() +
                 ` – ${newRecord.playerName} est maintenant ${SCORE_POSITION[newRecord.rank]}` +
-                ` dans les meilleurs temps du jeu ${newRecord.gameName} \\n en ${newRecord.gameMode}`,
+                ` dans les meilleurs temps du jeu ${newRecord.gameName} en ${newRecord.gameMode}`,
         };
         return localMessage;
     }
