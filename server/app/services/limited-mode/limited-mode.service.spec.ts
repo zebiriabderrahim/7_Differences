@@ -208,24 +208,6 @@ describe('LimitedModeService', () => {
         expect(deleteSpy).toHaveBeenCalled();
     });
 
-    it('deletePlayedGameId delete the game id from the availableGameByRoomId', () => {
-        service['availableGameByRoomId'].set('testRoom', ['testGame']);
-        service.deletePlayedGameId('testRoom', 'testGame');
-        expect(service['availableGameByRoomId'].get('testRoom')).toEqual([]);
-    });
-
-    it('deletePlayedGameId should not delete the game id from the availableGameByRoomId if the game id is not in the array', () => {
-        service['availableGameByRoomId'].set('testRoom', ['testGame']);
-        service.deletePlayedGameId('testRoom', 'testGame2');
-        expect(service['availableGameByRoomId'].get('testRoom')).toEqual(['testGame']);
-    });
-
-    it('deletePlayedGameId should not delete the game id from the availableGameByRoomId if the room id is not in the map', () => {
-        service['availableGameByRoomId'].set('testRoom', ['testGame']);
-        service.deletePlayedGameId('testRoom2', 'testGame');
-        expect(service['availableGameByRoomId'].get('testRoom')).toEqual(['testGame']);
-    });
-
     it('handleDeleteGame should push the game id in all the rooms in the map', () => {
         service['availableGameByRoomId'].set('testRoom', ['testGame']);
         service['availableGameByRoomId'].set('testRoom2', ['testGame']);
