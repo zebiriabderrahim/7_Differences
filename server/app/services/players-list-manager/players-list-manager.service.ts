@@ -90,6 +90,7 @@ export class PlayersListManagerService {
 
     async updateTopBestTime(room: GameRoom, playerName: string, server: io.Server): Promise<number> {
         const { clientGame, timer } = room;
+        if (!(await this.gameService.verifyIfGameExists(clientGame.name))) return;
         const topTimes = await this.gameService.getTopTimesGameById(clientGame.id, clientGame.mode);
         if (topTimes[MAX_TIMES_INDEX].time > timer) {
             const topTimeIndex = this.insertNewTopTime(playerName, timer, topTimes);
