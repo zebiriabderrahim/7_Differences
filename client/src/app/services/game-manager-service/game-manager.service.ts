@@ -28,6 +28,7 @@ export class GameManagerService {
     private isGameModeChanged: Subject<boolean>;
     private isGamePageRefreshed: Subject<boolean>;
 
+    // Service are needed to be used in this service
     // eslint-disable-next-line max-params
     constructor(
         private readonly clientSocket: ClientSocketService,

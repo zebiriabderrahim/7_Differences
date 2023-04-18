@@ -1,5 +1,3 @@
-/* eslint-disable max-params */
-// gateway needs to be injected all the services that it needs to use
 import { ClassicModeService } from '@app/services/classic-mode/classic-mode.service';
 import { LimitedModeService } from '@app/services/limited-mode/limited-mode.service';
 import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
@@ -31,6 +29,8 @@ import { DELAY_BEFORE_EMITTING_TIME } from './game.gateway.constants';
 @Injectable()
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
     @WebSocketServer() private server: Server;
+
+    // gateway needs to be injected all the services that it needs to use
     // eslint-disable-next-line max-params -- services are needed for the gateway
     constructor(
         private readonly logger: Logger,
