@@ -1,5 +1,4 @@
 import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
-import { NOT_FOUND } from '@common/constants';
 import { GameEvents, RoomEvents, GameModes } from '@common/enums';
 import { GameRoom, PlayerData } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
@@ -59,13 +58,6 @@ export class LimitedModeService {
 
     deleteAvailableGame(roomId: string): void {
         this.availableGameByRoomId.delete(roomId);
-    }
-
-    deletePlayedGameId(roomId: string, gameId: string): void {
-        const gameIds = this.availableGameByRoomId.get(roomId);
-        if (!gameIds) return;
-        const index = gameIds.indexOf(gameId);
-        if (index !== NOT_FOUND) gameIds.splice(index, 1);
     }
 
     handleDeleteGame(gameId: string): void {

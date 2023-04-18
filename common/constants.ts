@@ -1,4 +1,5 @@
 import { PlayerTime } from '@common/game-interfaces';
+import { GameModes } from './enums';
 
 export const DEFAULT_COUNTDOWN_VALUE = 30;
 export const DEFAULT_HINT_PENALTY = 5;
@@ -20,3 +21,10 @@ export const PADDING_TIME_N_DIGITS = 2;
 export const NOT_FOUND = -1;
 
 export const SCORE_POSITION = {1:'premier', 2: 'deuxième', 3: 'troisième'};
+
+export const DEFAULT_GAME_MODES = {
+    [GameModes.ClassicSolo]: { isCountdown: false },
+    [GameModes.ClassicOneVsOne]: { isCountdown: false, requiresPlayer2: true },
+    [GameModes.LimitedSolo]: { isCountdown: true },
+    [GameModes.LimitedCoop]: { isCountdown: true, requiresPlayer2: true },
+};

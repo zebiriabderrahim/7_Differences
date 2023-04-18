@@ -4,7 +4,7 @@ import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
 import { HistoryService } from '@app/services/history/history.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
-import { CHARACTERS, KEY_SIZE, MAX_BONUS_TIME_ALLOWED, NOT_FOUND } from '@common/constants';
+import { CHARACTERS, DEFAULT_GAME_MODES, KEY_SIZE, MAX_BONUS_TIME_ALLOWED, NOT_FOUND } from '@common/constants';
 import { GameEvents, GameModes, MessageEvents, PlayerStatus } from '@common/enums';
 import {
     ChatMessage,
@@ -33,12 +33,7 @@ export class RoomsManagerService implements OnModuleInit {
         private readonly historyService: HistoryService,
     ) {
         this.rooms = new Map<string, GameRoom>();
-        this.modeTimerMap = {
-            [GameModes.ClassicSolo]: { isCountdown: false },
-            [GameModes.ClassicOneVsOne]: { isCountdown: false, requiresPlayer2: true },
-            [GameModes.LimitedSolo]: { isCountdown: true },
-            [GameModes.LimitedCoop]: { isCountdown: true, requiresPlayer2: true },
-        };
+        this.modeTimerMap = DEFAULT_GAME_MODES;
     }
 
     async onModuleInit() {
