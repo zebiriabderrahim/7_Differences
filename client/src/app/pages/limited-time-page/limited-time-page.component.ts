@@ -20,12 +20,10 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
     private roomIdSubscription: Subscription;
     private isLimitedCoopRoomAvailableSubscription: Subscription;
     private playerName: string;
-    private isLimitedCoopRoomAvailable: boolean;
     private isStartingGame: boolean;
     constructor(public router: Router, private readonly roomManagerService: RoomManagerService, private readonly dialog: MatDialog) {
         this.gameModes = GameModes;
         this.isStartingGame = false;
-        this.isLimitedCoopRoomAvailable = false;
         this.roomManagerService.handleRoomEvents();
         this.openDialog();
     }
@@ -65,7 +63,7 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
         this.roomIdSubscription = this.roomManagerService.roomLimitedId$.pipe(filter((roomId) => !!roomId)).subscribe((roomId) => {
             if (gameMode === GameModes.LimitedSolo) {
                 this.router.navigate(['/game']);
-            } else if (gameMode === GameModes.LimitedCoop && !this.isLimitedCoopRoomAvailable) {
+            } else if (gameMode === GameModes.LimitedCoop) {
                 this.openWaitingDialog(roomId);
                 this.isStartingGame = false;
             }
