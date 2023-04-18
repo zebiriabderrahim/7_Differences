@@ -8,12 +8,14 @@ import { ReplayService } from '@app/services/replay-service/replay.service';
     styleUrls: ['./game-page-dialog.component.scss'],
 })
 export class GamePageDialogComponent {
-    isReplayPaused: boolean = false;
+    isReplayPaused: boolean;
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: { action: string; message: string; isReplayMode: boolean },
         private readonly gameManager: GameManagerService,
         private readonly replayService: ReplayService,
-    ) {}
+    ) {
+        this.isReplayPaused = false;
+    }
 
     abandonGame(): void {
         this.gameManager.abandonGame();

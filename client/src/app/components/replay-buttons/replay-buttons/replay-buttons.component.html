@@ -4,7 +4,7 @@
     <button mat-button [disabled]="!isReplaying()" *ngIf="!isReplayPaused" (click)="pause()"><mat-icon>pause_circle_filled</mat-icon></button>
     <button mat-button [disabled]="!isReplaying()" *ngIf="isReplayPaused" (click)="resume()"><mat-icon>play_circle_filled</mat-icon></button>
     <mat-radio-group [(ngModel)]="replaySpeed">
-      <mat-radio-button mat-button *ngFor="let replaySpeed of replaySpeeds" [value]="replaySpeed" (click)="speed(replaySpeed)">x{{replaySpeed}}</mat-radio-button>
+      <mat-radio-button mat-button *ngFor="let replaySpeed of replaySpeeds" [value]="replaySpeed" (click)="setSpeed(replaySpeed)">x{{replaySpeed}}</mat-radio-button>
     </mat-radio-group>
 </div>
 
