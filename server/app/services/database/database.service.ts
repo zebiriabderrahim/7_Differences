@@ -48,23 +48,39 @@ export class DatabaseService implements OnModuleInit {
 
     async getTopTimesGameById(gameId: string, gameMode: string): Promise<PlayerTime[]> {
         const mode = gameMode === GameModes.ClassicSolo ? 'soloTopTime' : 'oneVsOneTopTime';
-        const topTimes = await this.gameCardModel
-            .findById(gameId)
-            .sort({ [mode]: -1 })
-            .exec();
-        return topTimes[mode];
+        try {
+            const topTimes = await this.gameCardModel
+                .findById(gameId)
+                .sort({ [mode]: -1 })
+                .exec();
+            return topTimes[mode];
+        } catch (error) {
+            return Promise.reject(`Failed to get top times: ${error}`);
+        }
     }
     async getGameById(id: string): Promise<Game> {
-        return await this.gameModel.findById(id, '-__v').exec();
+        try {
+            return await this.gameModel.findById(id, '-__v').exec();
+        } catch (error) {
+            return Promise.reject(`Failed to get game: ${error}`);
+        }
     }
 
     async getGameConstants(): Promise<GameConstants> {
-        await this.populateDbWithGameConstants();
-        return await this.gameConstantsModel.findOne().select('-__v -_id').exec();
+        try {
+            await this.populateDbWithGameConstants();
+            return await this.gameConstantsModel.findOne().select('-__v -_id').exec();
+        } catch (error) {
+            return Promise.reject(`Failed to get game constants: ${error}`);
+        }
     }
 
     async verifyIfGameExists(gameName: string): Promise<boolean> {
-        return Boolean(await this.gameModel.exists({ name: gameName }));
+        try {
+            return Boolean(await this.gameModel.exists({ name: gameName }));
+        } catch (error) {
+            return Promise.reject(`Failed to verify if game exists: ${error}`);
+        }
     }
 
     saveFiles(newGame: CreateGameDto): void {
