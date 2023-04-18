@@ -1,5 +1,3 @@
-// Id comes from database to allow _id
-/* eslint-disable no-underscore-dangle */
 import { AfterViewInit, Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService } from '@app/services/communication-service/communication.service';

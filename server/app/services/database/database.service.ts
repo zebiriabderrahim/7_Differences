@@ -1,5 +1,3 @@
-// Services are needed for the dialog and dialog needs to talk to the parent component
-/* eslint-disable max-params */
 // Id comes from database to allow _id
 /* eslint-disable no-underscore-dangle */
 import { Game, GameDocument } from '@app/model/database/game';
@@ -25,6 +23,8 @@ export class DatabaseService implements OnModuleInit {
         bonusTime: DEFAULT_BONUS_TIME,
     };
     private gameIds: string[];
+    // Services are needed for the dialog and dialog needs to talk to the parent component
+    // eslint-disable-next-line max-params
     constructor(
         @InjectModel(Game.name) private readonly gameModel: Model<GameDocument>,
         @InjectModel(GameCard.name) private readonly gameCardModel: Model<GameCardDocument>,
