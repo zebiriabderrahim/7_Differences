@@ -48,8 +48,7 @@ export class RoomsManagerService implements OnModuleInit {
     async createRoom(playerPayLoad: PlayerData): Promise<GameRoom> {
         const game = !playerPayLoad.gameId ? await this.gameService.getRandomGame([]) : await this.gameService.getGameById(playerPayLoad.gameId);
         if (!game) return;
-        const room = this.buildGameRoom(game, playerPayLoad);
-        return room;
+        return this.buildGameRoom(game, playerPayLoad);
     }
 
     async getGameConstants(): Promise<void> {
