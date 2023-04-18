@@ -262,6 +262,7 @@ describe('PlayersListManagerService', () => {
     it('updateTopBestTime should call updateTopTimesGameById, getTopTimesGameById of gameService and emit RequestReload', async () => {
         const updateTopTimesGameByIdSpy = jest.spyOn(gameService, 'updateTopTimesGameById');
         const getTopTimesGameByIdSpy = jest.spyOn(gameService, 'getTopTimesGameById').mockResolvedValueOnce(defaultBestTimes);
+        const verifyIfGameExistsSpy = jest.spyOn(gameService, 'verifyIfGameExists').mockResolvedValueOnce(true);
         service['insertNewTopTime'] = jest.fn();
         service['sendNewTopTimeMessage'] = jest.fn();
         await service.updateTopBestTime(fakeRoom, fakePlayer.name, server);
@@ -269,8 +270,24 @@ describe('PlayersListManagerService', () => {
         expect(getTopTimesGameByIdSpy).toHaveBeenCalled();
         expect(service['insertNewTopTime']).toHaveBeenCalled();
         expect(service['sendNewTopTimeMessage']).toHaveBeenCalled();
+        expect(verifyIfGameExistsSpy).toHaveBeenCalled();
         assert.calledOnce(server.emit);
         assert.calledWith(server.emit, GameCardEvents.RequestReload);
+    });
+
+    it('updateTopBestTime should not call updateTopTimesGameById, getTopTimesGameById of gameService if the game does not exist', async () => {
+        const updateTopTimesGameByIdSpy = jest.spyOn(gameService, 'updateTopTimesGameById');
+        const getTopTimesGameByIdSpy = jest.spyOn(gameService, 'getTopTimesGameById').mockResolvedValueOnce(defaultBestTimes);
+        const verifyIfGameExistsSpy = jest.spyOn(gameService, 'verifyIfGameExists').mockResolvedValueOnce(false);
+        service['insertNewTopTime'] = jest.fn();
+        service['sendNewTopTimeMessage'] = jest.fn();
+        await service.updateTopBestTime(fakeRoom, fakePlayer.name, server);
+        expect(updateTopTimesGameByIdSpy).not.toHaveBeenCalled();
+        expect(getTopTimesGameByIdSpy).not.toHaveBeenCalled();
+        expect(service['insertNewTopTime']).not.toHaveBeenCalled();
+        expect(service['sendNewTopTimeMessage']).not.toHaveBeenCalled();
+        expect(verifyIfGameExistsSpy).toHaveBeenCalled();
+        assert.notCalled(server.emit);
     });
 
     it('cancelJoiningByPlayerName should call getPlayerIdByPlayerName emit PlayerRefused and UndoRoomCreation events', () => {
