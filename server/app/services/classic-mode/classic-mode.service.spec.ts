@@ -7,7 +7,6 @@
 // for id test
 /* eslint-disable no-underscore-dangle */
 // import { Game } from '@app/model/database/game';
-import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
 import { HistoryService } from '@app/services/history/history.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
@@ -40,21 +39,6 @@ describe('ClassicModeService', () => {
         differencesCount: 1,
         mode: '',
     };
-    const differenceData: Differences = {
-        currentDifference: [],
-        differencesFound: 0,
-    };
-    const testGames: Game[] = [
-        {
-            _id: '1',
-            name: 'test',
-            isHard: true,
-            originalImage: 'test',
-            modifiedImage: 'test',
-            nDifference: 1,
-            differences: 'test',
-        },
-    ];
 
     const fakeDiff: Differences = {
         currentDifference: [],
@@ -75,12 +59,6 @@ describe('ClassicModeService', () => {
         player1: fakePlayer,
         player2: fakePlayer,
         gameConstants: {} as GameConfigConst,
-    };
-
-    const fakePlayer2: Player = {
-        playerId: 'testPlayer2',
-        name: 'testPlayer2',
-        differenceData: { currentDifference: [], differencesFound: 1 },
     };
 
     const fakeData = { gameId: 'fakeRoomId', playerName: 'fakePlayerName' } as PlayerData;
