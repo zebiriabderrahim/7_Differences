@@ -24,7 +24,7 @@
     height: 100%;
     background-color: white;
     z-index: 1;
-    opacity: 0; 
+    opacity: 0;
     line-height: 30px;
 }
 
@@ -43,12 +43,12 @@
 
 .button-container img {
     position: absolute;
-    bottom:100px;
+    bottom: 100px;
     left: 210px;
     width: 50%;
     height: 50%;
     transition: all 0.3s ease;
-  }
+}
 
 .button-container .centered-reset {
     position: absolute;
@@ -78,12 +78,12 @@
 
 .button-container img {
     position: absolute;
-    bottom:100px;
+    bottom: 100px;
     left: 210px;
     width: 50%;
     height: 50%;
     transition: all 0.3s ease;
-  }
+}
 
 .button-container .centered-reset {
     position: absolute;
@@ -120,25 +120,25 @@
 .game-constants {
     max-width: 540px;
     position: absolute;
-    left: 26%;
+    right: 2%;
     bottom: 25%;
 }
 
 .game-creation {
     position: absolute;
-    left: 2%;
+    right: 29%;
     bottom: 25%;
 }
 
 .game-reinitialization {
     position: absolute;
-    left: 26%;
+    right: 2%;
     bottom: 10%;
 }
 
 .game-deletion {
     position: absolute;
-    left: 2%;
+    right: 29%;
     bottom: 10%;
 }
 
@@ -189,9 +189,9 @@
     width: 500px;
     color: white;
     font-family: 'Troika', sans-serif;
-  }
+}
 
-  .button-container .centered-delete {
+.button-container .centered-delete {
     position: absolute;
     font-size: 50px;
     top: 50%;
@@ -202,10 +202,21 @@
     color: white;
     font-family: 'Troika', sans-serif;
     line-height: 50px;
-  }
+}
 
-  app-history-box {
+#history-title {
     position: absolute;
-    right: 5%;
+    font-size: 50px;
+    color: white;
+    font-family: 'Troika', sans-serif;
+    left: 11%;
+    bottom: 39%;
+    z-index: 2;
+    -webkit-text-stroke: 2px black;
+}
+
+app-history-box {
+    position: absolute;
+    left: 5%;
     bottom: 0%;
-  }
+}

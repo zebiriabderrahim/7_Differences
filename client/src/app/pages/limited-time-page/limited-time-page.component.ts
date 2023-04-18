@@ -89,7 +89,7 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
 
     handleNoGameAvailable() {
         this.hasNoGameAvailableSubscription = this.roomManagerService.hasNoGameAvailable$.subscribe((hasNoGameAvailable) => {
-            if (hasNoGameAvailable) this.dialog.open(NoGameAvailableDialogComponent, { disableClose: true });
+            if (hasNoGameAvailable) this.dialog.open(NoGameAvailableDialogComponent, { disableClose: true, panelClass: 'dialog' });
         });
     }
 
