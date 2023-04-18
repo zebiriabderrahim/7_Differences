@@ -103,7 +103,7 @@ describe('DatabaseService', () => {
         date: '2020-01-01T00:00:00.000Z',
     };
 
-    const DELAY_BEFORE_CLOSING_CONNECTION = 30;
+    const DELAY_BEFORE_CLOSING_CONNECTION = 50;
 
     beforeEach(async () => {
         mongoServer = await MongoMemoryServer.create();
@@ -186,12 +186,26 @@ describe('DatabaseService', () => {
         expect(JSON.stringify(game)).toEqual(JSON.stringify(testGames1));
     });
 
+    it('getGameById() should fail if mongo query failed ', async () => {
+        jest.spyOn(gameModel, 'findById').mockImplementation(() => {
+            throw new Error('Mock MongoDB error');
+        });
+        await expect(dataBaseService.getGameById('1')).rejects.toBeTruthy();
+    });
+
     it('getTopTimesGameById should return the top times of the game as expected (soloTopTime case) ', async () => {
         const id = (await gameModel.create(newGameInDB))._id.toString();
         testGameCards[0]._id = id;
         await gameCardModel.create(testGameCards[0]);
         const topTime = await dataBaseService.getTopTimesGameById(id, GameModes.ClassicSolo);
         expect(JSON.stringify(topTime)).toEqual(JSON.stringify(testGameCards[0].soloTopTime));
+    });
+
+    it('getTopTimesGameById should should fail if mongo query failed ', async () => {
+        jest.spyOn(gameCardModel, 'findOne').mockImplementation(() => {
+            throw new Error('Mock MongoDB error');
+        });
+        await expect(dataBaseService.getTopTimesGameById('1', GameModes.ClassicSolo)).rejects.toBeTruthy();
     });
 
     it('getTopTimesGameById should return the top times of the game as expected (oneVsOneTopTime case)', async () => {
@@ -209,12 +223,26 @@ describe('DatabaseService', () => {
         expect(findOneId).toBeCalled();
     });
 
+    it('getGameConstants() should fail if mongo query failed ', async () => {
+        jest.spyOn(gameConstantsModel, 'findOne').mockImplementation(() => {
+            throw new Error('Mock MongoDB error');
+        });
+        await expect(dataBaseService.getGameConstants()).rejects.toBeTruthy();
+    });
+
     it('verifyIfGameExists() should return true if the game exists', async () => {
         await gameModel.create(newGameInDB);
         const existsSpy = jest.spyOn(gameModel, 'exists');
         const result = await dataBaseService.verifyIfGameExists('test');
         expect(existsSpy).toBeCalledWith({ name: newGameInDB.name });
         expect(result).toBe(true);
+    });
+
+    it('verifyIfGameExists() should should fail if mongo query failed ', async () => {
+        jest.spyOn(gameModel, 'exists').mockImplementation(() => {
+            throw new Error('Mock MongoDB error');
+        });
+        await expect(dataBaseService.verifyIfGameExists('test')).rejects.toBeTruthy();
     });
 
     it('saveFiles()should store the game bmp and json if the game isnt stored yet', async () => {
