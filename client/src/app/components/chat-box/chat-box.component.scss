@@ -1,3 +1,4 @@
+@import url('https://fonts.cdnfonts.com/css/troika-2');
 #chat-box {
   display: flex;
   position: relative;
@@ -113,8 +114,9 @@
 #chat-box .content .messages ul li.Common p {
   display: inline-block;
   color: rgb(224, 19, 19);
-  font-weight: bold;
   overflow-wrap: break-word;
+  font-weight: bold;
+  font-size: 18px;
 }
 
 #chat-box .content .messages ul li.Global p {
@@ -122,6 +124,7 @@
   color: rgb(8, 109, 11);
   font-weight: bold;
   overflow-wrap: break-word;
+  font-size: 18px;
 }
 
 #chat-box .content .messages ul li.Global {
@@ -195,6 +198,11 @@
   outline: none;
 }
 
+.chat {
+  font-family: 'Troika', sans-serif;
+  font-size: 30px;
+  -webkit-text-stroke: 2px black;
+}
 
 
 
