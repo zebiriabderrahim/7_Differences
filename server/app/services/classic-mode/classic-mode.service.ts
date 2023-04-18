@@ -117,10 +117,16 @@ export class ClassicModeService {
         } else if (room && room.timer !== 0 && !joinable) {
             await this.roomsManagerService.abandonGame(socket, server);
         } else if (!createdGameId) {
-            this.deleteOneVsOneAvailability(socket, server);
+            this.handleDisconnectBeforeCreated(socket, server);
         } else {
-            this.handleDisconnectBeforeCreated(createdGameId, socket, server);
+            this.handleGuestDisconnect(createdGameId, socket, server);
         }
+    }
+
+    private handleDisconnectBeforeCreated(socket: io.Socket, server: io.Server): void {
+        const gameId = this.getGameIdByHostId(socket.id);
+        this.deleteOneVsOneAvailability(socket, server);
+        this.playersListManagerService.deleteJoinedPlayersByGameId(gameId);
     }
 
     private handleDisconnectBeforeStarted(room: GameRoom, socket: io.Socket, server: io.Server): void {
@@ -129,7 +135,7 @@ export class ClassicModeService {
         this.roomsManagerService.deleteRoom(room.roomId);
     }
 
-    private handleDisconnectBeforeCreated(createdGameId: string, socket: io.Socket, server: io.Server): void {
+    private handleGuestDisconnect(createdGameId: string, socket: io.Socket, server: io.Server): void {
         const hostId = this.roomsManagerService.getHostIdByGameId(createdGameId);
         this.playersListManagerService.deleteJoinedPlayerByPlayerId(socket.id, createdGameId);
         this.playersListManagerService.getWaitingPlayerNameList(hostId, createdGameId, server);
