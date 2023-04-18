@@ -43,7 +43,7 @@ describe('ReplayButtonsComponent', () => {
         const onInitSpy = spyOn(component, 'ngOnInit');
         component.ngOnInit();
         expect(onInitSpy).toHaveBeenCalled();
-        expect(component.selectedSpeed).toEqual('x1');
+        expect(component.replaySpeed).toEqual(1);
     });
 
     it('replay() should start the replay and disable the button for one second', () => {
@@ -86,18 +86,8 @@ describe('ReplayButtonsComponent', () => {
         expect(replayServiceSpy.isReplaying).toBeTruthy();
     });
 
-    it('upSpeedX1() should call speedX1', () => {
-        component.speedX1();
-        expect(replayServiceSpy.upSpeed).toHaveBeenCalled();
-    });
-
-    it('upSpeedX2() should call speedX2', () => {
-        component.speedX2();
-        expect(replayServiceSpy.upSpeed).toHaveBeenCalled();
-    });
-
-    it('upSpeedX4() should call speedX4', () => {
-        component.speedX4();
+    it('setSpeed() should call upSpeed', () => {
+        component.setSpeed(1);
         expect(replayServiceSpy.upSpeed).toHaveBeenCalled();
     });
 
