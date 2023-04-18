@@ -34,7 +34,6 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     messages: ChatMessage[];
     player: string;
     players: Players;
-    showThirdHintHelp: boolean;
     hintsAssets: string[];
     isReplayAvailable: boolean;
     gameMode: typeof GameModes;
