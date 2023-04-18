@@ -199,7 +199,7 @@ describe('RoomManagerService', () => {
 
     it('gameCardCreated should call clientSocket.send with GameCardCreated', () => {
         const sendSpy = spyOn(socketServiceMock, 'send');
-        service.gameCardDeleted(mockGameId);
+        service.notifyGameCardDeleted(mockGameId);
         expect(sendSpy).toHaveBeenCalledWith(GameCardEvents.GameCardDeleted, mockGameId);
     });
 

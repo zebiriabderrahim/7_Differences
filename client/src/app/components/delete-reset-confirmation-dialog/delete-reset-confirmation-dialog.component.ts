@@ -37,7 +37,7 @@ export class DeleteResetConfirmationDialogComponent {
 
     deleteGameCard() {
         this.communicationService.deleteGameById(this.data.gameId).subscribe(() => {
-            this.roomManagerService.gameCardDeleted(this.data.gameId);
+            this.roomManagerService.notifyGameCardDeleted(this.data.gameId);
         });
     }
 
