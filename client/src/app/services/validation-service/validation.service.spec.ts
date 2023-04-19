@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- needed to spy on private methods*/
 import { TestBed } from '@angular/core/testing';
 import { IMG_HEIGHT, IMG_TYPE, IMG_WIDTH } from '@app/constants/image';
 import { ValidationService } from './validation.service';
@@ -34,7 +35,7 @@ describe('ValidationService', () => {
     });
 
     it('isImageValid should return false if the image size is not valid', async () => {
-        spyOn(service, 'isImageSizeValid').and.returnValue(Promise.resolve(false));
+        spyOn<any>(service, 'isImageSizeValid').and.returnValue(Promise.resolve(false));
         const result = await service.isImageValid(testFile);
         expect(result).toBeFalse();
     });
@@ -45,7 +46,7 @@ describe('ValidationService', () => {
             return mockImage;
         });
         const file = new File([''], 'filename', { type: IMG_TYPE });
-        expect(await service.isImageSizeValid(file)).toBeTruthy();
+        expect(await service['isImageSizeValid'](file)).toBeTruthy();
     });
 
     it('isImageSizeValid should return false when given the wrong image size', async () => {
@@ -54,6 +55,6 @@ describe('ValidationService', () => {
             return mockImage;
         });
         const file = new File([''], 'filename', { type: IMG_TYPE });
-        expect(await service.isImageSizeValid(file)).toBeFalsy();
+        expect(await service['isImageSizeValid'](file)).toBeFalsy();
     });
 });
