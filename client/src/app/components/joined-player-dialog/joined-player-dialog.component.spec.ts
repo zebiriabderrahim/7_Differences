@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { COUNTDOWN_TIME, WAITING_TIME } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { AcceptedPlayer, WaitingPlayerNameList } from '@common/game-interfaces';
+import { AcceptedPlayer, RoomAvailability, WaitingPlayerNameList } from '@common/game-interfaces';
 import { BehaviorSubject, interval, of, takeWhile } from 'rxjs';
 import { JoinedPlayerDialogComponent } from './joined-player-dialog.component';
 
@@ -15,12 +15,19 @@ describe('JoinedPlayerDialogComponent', () => {
     let joinedPlayerNamesMock: BehaviorSubject<WaitingPlayerNameList>;
     let acceptPlayerNamesMock: BehaviorSubject<AcceptedPlayer>;
     let dialogRefSpy: jasmine.SpyObj<MatDialogRef<JoinedPlayerDialogComponent>>;
+    let roomAvailabilityMock: BehaviorSubject<RoomAvailability>;
     let deletedGameIdMock: BehaviorSubject<string>;
     let refusePlayerIdMock: BehaviorSubject<string>;
     let routerSpy: jasmine.SpyObj<Router>;
 
     beforeEach(async () => {
         deletedGameIdMock = new BehaviorSubject<string>('idMock');
+        roomAvailabilityMock = new BehaviorSubject<RoomAvailability>({
+            gameId: 'test-room-id',
+            isAvailableToJoin: false,
+            hostId: 'hostId',
+        });
+
         joinedPlayerNamesMock = new BehaviorSubject<WaitingPlayerNameList>({
             gameId: 'test-game-id',
             playerNamesList: ['Alice', 'Bob', 'Charlie'],
@@ -37,6 +44,7 @@ describe('JoinedPlayerDialogComponent', () => {
         roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['cancelJoining', 'getSocketId'], {
             joinedPlayerNamesByGameId$: joinedPlayerNamesMock,
             acceptedPlayerByRoom$: acceptPlayerNamesMock,
+            oneVsOneRoomsAvailabilityByRoomId$: roomAvailabilityMock,
             deletedGameId$: deletedGameIdMock,
             refusedPlayerId$: refusePlayerIdMock,
             roomId$: of('roomId'),
@@ -63,6 +71,21 @@ describe('JoinedPlayerDialogComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('handleCreateUndoCreation should call countDownBeforeClosing', () => {
+        const countDownSpy = spyOn(component, 'countDownBeforeClosing');
+        component['data'] = { gameId: 'test-game-id', player: 'Alice' };
+        component.handleCreateUndoCreation();
+        component.handleCreateUndoCreation();
+        const mockAvailability: RoomAvailability = {
+            gameId: 'test-game-id',
+            isAvailableToJoin: false,
+            hostId: 'hostId',
+        };
+        roomAvailabilityMock.next(mockAvailability);
+        roomAvailabilityMock.next({} as unknown as RoomAvailability);
+        expect(countDownSpy).toHaveBeenCalled();
     });
 
     it('should call roomManagerService.cancelJoining with correct arguments', () => {

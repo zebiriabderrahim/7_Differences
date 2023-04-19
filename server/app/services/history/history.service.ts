@@ -1,7 +1,7 @@
 import { GameService } from '@app/services/game/game.service';
 import { PADDING_TIME_N_DIGITS } from '@common/constants';
 import { HistoryEvents, PlayerStatus } from '@common/enums';
-import { GameHistory, GameRoom, PlayerInfo } from '@common/game-interfaces';
+import { GameHistory, GameRoom } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as io from 'socket.io';
 
@@ -14,6 +14,7 @@ export class HistoryService {
     }
 
     createEntry(room: GameRoom) {
+        if (this.pendingGames.has(room.roomId)) return;
         const date = new Date();
         const gameHistory: GameHistory = {
             date: this.getFormattedDate(date),
@@ -48,21 +49,14 @@ export class HistoryService {
     markPlayer(roomId: string, playerName: string, status: PlayerStatus) {
         const gameHistory = this.pendingGames.get(roomId);
         if (!gameHistory) return;
-        let playerInfoToChange: PlayerInfo;
-        if (gameHistory.player1.name === playerName) {
-            playerInfoToChange = gameHistory.player1;
-        } else if (gameHistory.player2 && gameHistory.player2.name === playerName) {
-            playerInfoToChange = gameHistory.player2;
-        }
-        if (playerInfoToChange) {
-            switch (status) {
-                case PlayerStatus.Winner:
-                    playerInfoToChange.isWinner = true;
-                    break;
-                case PlayerStatus.Quitter:
-                    playerInfoToChange.isQuitter = true;
-                    break;
-            }
+        const playerInfoToChange = gameHistory.player2.name === playerName ? gameHistory.player2 : gameHistory.player1;
+        switch (status) {
+            case PlayerStatus.Winner:
+                playerInfoToChange.isWinner = true;
+                break;
+            case PlayerStatus.Quitter:
+                playerInfoToChange.isQuitter = true;
+                break;
         }
         this.pendingGames.set(roomId, gameHistory);
     }
