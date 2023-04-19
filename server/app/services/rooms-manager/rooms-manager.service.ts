@@ -86,10 +86,6 @@ export class RoomsManagerService implements OnModuleInit {
         this.rooms.delete(roomId);
     }
 
-    isMultiplayerGame(clientGame: ClientSideGame): boolean {
-        return clientGame.mode === GameModes.ClassicOneVsOne || clientGame.mode === GameModes.LimitedCoop;
-    }
-
     startGame(socket: io.Socket, server: io.Server): void {
         const room = this.getRoomByPlayerId(socket.id);
         if (!room || ![room.player1.playerId, room.player2?.playerId].includes(socket.id)) {
@@ -159,10 +155,6 @@ export class RoomsManagerService implements OnModuleInit {
             this.rooms.set(room.roomId, room);
             server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
         }
-    }
-
-    isLimitedModeGame(clientGame: ClientSideGame): boolean {
-        return clientGame.mode === GameModes.LimitedSolo || clientGame.mode === GameModes.LimitedCoop;
     }
 
     leaveRoom(room: GameRoom, server: io.Server): void {
@@ -301,5 +293,13 @@ export class RoomsManagerService implements OnModuleInit {
         };
         room.clientGame.mode = playerPayLoad.gameMode;
         return room;
+    }
+
+    private isMultiplayerGame(clientGame: ClientSideGame): boolean {
+        return clientGame.mode === GameModes.ClassicOneVsOne || clientGame.mode === GameModes.LimitedCoop;
+    }
+
+    private isLimitedModeGame(clientGame: ClientSideGame): boolean {
+        return clientGame.mode === GameModes.LimitedSolo || clientGame.mode === GameModes.LimitedCoop;
     }
 }

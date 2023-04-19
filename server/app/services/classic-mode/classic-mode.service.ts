@@ -100,13 +100,6 @@ export class ClassicModeService {
         server.to(acceptedPlayer.playerId).emit(PlayerEvents.PlayerAccepted, true);
     }
 
-    getGameIdByHostId(playerId: string): string {
-        return Array.from(this.roomAvailability.keys()).find((gameId) => {
-            const roomAvailability = this.roomAvailability.get(gameId);
-            return roomAvailability.hostId === playerId;
-        });
-    }
-
     async handleSocketDisconnect(socket: io.Socket, server: io.Server): Promise<void> {
         const room = this.roomsManagerService.getRoomByPlayerId(socket.id);
         const createdGameId = this.playersListManagerService.getGameIdByPlayerId(socket.id);
@@ -147,5 +140,12 @@ export class ClassicModeService {
         classicRoom.player1.playerId = socket.id;
         this.roomsManagerService.updateRoom(classicRoom);
         return classicRoom.roomId;
+    }
+
+    private getGameIdByHostId(playerId: string): string {
+        return Array.from(this.roomAvailability.keys()).find((gameId) => {
+            const roomAvailability = this.roomAvailability.get(gameId);
+            return roomAvailability.hostId === playerId;
+        });
     }
 }
