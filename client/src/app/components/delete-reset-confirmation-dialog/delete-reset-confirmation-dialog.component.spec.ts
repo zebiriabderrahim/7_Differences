@@ -18,11 +18,11 @@ describe('DeleteResetConfirmationDialogComponent', () => {
     beforeEach(async () => {
         mockDeleteAllGames = new Subject<void>();
         roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', [
-            'resetAllTopTimes',
-            'allGamesDeleted',
-            'resetTopTime',
+            'notifyResetAllTopTimes',
+            'notifyAllGamesDeleted',
+            'notifyResetTopTime',
             'notifyGameCardDeleted',
-            'gamesHistoryDeleted',
+            'notifyGamesHistoryDeleted',
         ]);
         communicationServiceSpy = jasmine.createSpyObj('CommunicationService', ['deleteAllGames', 'deleteGameById', 'deleteAllGamesHistory']);
         communicationServiceSpy.deleteAllGamesHistory.and.returnValue(mockDeleteAllGames.asObservable());
@@ -49,20 +49,20 @@ describe('DeleteResetConfirmationDialogComponent', () => {
 
     it('resetAllTopTimes should call resetAllTopTimes on roomManagerService', () => {
         component.resetAllTopTimes();
-        expect(roomManagerServiceSpy.resetAllTopTimes).toHaveBeenCalled();
+        expect(roomManagerServiceSpy.notifyResetAllTopTimes).toHaveBeenCalled();
     });
 
     it('should call communicationService.deleteAllGames and roomManagerService.allGamesDeleted() when deleteAllGames() is called', () => {
         communicationServiceSpy.deleteAllGames.and.returnValue(of(void 0));
         component.deleteAllGames();
         expect(communicationServiceSpy.deleteAllGames).toHaveBeenCalled();
-        expect(roomManagerServiceSpy.allGamesDeleted).toHaveBeenCalled();
+        expect(roomManagerServiceSpy.notifyAllGamesDeleted).toHaveBeenCalled();
     });
 
     it('resetTopTime should call resetTopTime with the correct gameId', () => {
         component.data = { actions: Actions.DeleteGame, gameId };
         component.resetTopTime();
-        expect(roomManagerServiceSpy.resetTopTime).toHaveBeenCalledWith(gameId);
+        expect(roomManagerServiceSpy.notifyResetTopTime).toHaveBeenCalledWith(gameId);
     });
 
     it('deleteGameCard should call communicationService.deleteGameById with the correct gameId', () => {
@@ -76,6 +76,6 @@ describe('DeleteResetConfirmationDialogComponent', () => {
         component.deleteAllGamesHistory();
         mockDeleteAllGames.next();
         component.deleteAllGamesHistory();
-        expect(roomManagerServiceSpy.gamesHistoryDeleted).toHaveBeenCalled();
+        expect(roomManagerServiceSpy.notifyGamesHistoryDeleted).toHaveBeenCalled();
     });
 });
