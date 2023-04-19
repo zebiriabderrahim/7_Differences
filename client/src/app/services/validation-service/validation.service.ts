@@ -9,7 +9,7 @@ export class ValidationService {
         return file.type === IMG_TYPE && (await this.isImageSizeValid(file)) && file.size === VALID_BMP_SIZE;
     }
 
-    async isImageSizeValid(file: File): Promise<boolean> {
+    private async isImageSizeValid(file: File): Promise<boolean> {
         const image = await createImageBitmap(file);
         return image.width === IMG_WIDTH && image.height === IMG_HEIGHT;
     }

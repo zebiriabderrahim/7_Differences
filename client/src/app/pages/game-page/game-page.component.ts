@@ -13,7 +13,7 @@ import { HintService } from '@app/services/hint-service/hint.service';
 import { ImageService } from '@app/services/image-service/image.service';
 import { ReplayService } from '@app/services/replay-service/replay.service';
 import { Coordinate } from '@common/coordinate';
-import { GameModes, MessageTag } from '@common/enums';
+import { GameModes, GamePageEvent, MessageTag } from '@common/enums';
 import { ChatMessage, ClientSideGame, Players } from '@common/game-interfaces';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -106,7 +106,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     }
     showAbandonDialog(): void {
         this.matDialog.open(GamePageDialogComponent, {
-            data: { action: 'abandon', message: 'Êtes-vous certain de vouloir abandonner la partie ? ' },
+            data: { action: GamePageEvent.Abandon, message: 'Êtes-vous certain de vouloir abandonner la partie ? ' },
             disableClose: true,
             panelClass: 'dialog',
         });
@@ -150,7 +150,7 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
 
     private showEndGameDialog(endingMessage: string): void {
         this.matDialog.open(GamePageDialogComponent, {
-            data: { action: 'endGame', message: endingMessage, isReplayMode: this.game?.mode.includes('Classic') },
+            data: { action: GamePageEvent.EndGame, message: endingMessage, isReplayMode: this.game?.mode.includes('Classic') },
             disableClose: true,
             panelClass: 'dialog',
         });
