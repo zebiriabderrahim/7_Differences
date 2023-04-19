@@ -4,7 +4,7 @@ import { Game } from '@app/model/database/game';
 import { GameService } from '@app/services/game/game.service';
 import { HistoryService } from '@app/services/history/history.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
-import { CHARACTERS, KEY_SIZE, MAX_BONUS_TIME_ALLOWED, NOT_FOUND } from '@common/constants';
+import { CHARACTERS, DEFAULT_GAME_MODES, KEY_SIZE, MAX_BONUS_TIME_ALLOWED, NOT_FOUND } from '@common/constants';
 import { GameEvents, GameModes, MessageEvents, PlayerStatus } from '@common/enums';
 import {
     ChatMessage,
@@ -33,12 +33,7 @@ export class RoomsManagerService implements OnModuleInit {
         private readonly historyService: HistoryService,
     ) {
         this.rooms = new Map<string, GameRoom>();
-        this.modeTimerMap = {
-            [GameModes.ClassicSolo]: { isCountdown: false },
-            [GameModes.ClassicOneVsOne]: { isCountdown: false, requiresPlayer2: true },
-            [GameModes.LimitedSolo]: { isCountdown: true },
-            [GameModes.LimitedCoop]: { isCountdown: true, requiresPlayer2: true },
-        };
+        this.modeTimerMap = DEFAULT_GAME_MODES;
     }
 
     async onModuleInit() {
@@ -188,7 +183,7 @@ export class RoomsManagerService implements OnModuleInit {
             const localMessage =
                 room.clientGame.mode === GameModes.ClassicOneVsOne
                     ? await this.handleOneVsOneAbandon(player, room, server)
-                    : this.handleCoopAbandon(opponent, room, server);
+                    : this.handleCoopAbandon(player, room, server);
             server.to(room.roomId).emit(MessageEvents.LocalMessage, localMessage);
         } else {
             await this.historyService.closeEntry(room.roomId, server);
@@ -220,11 +215,12 @@ export class RoomsManagerService implements OnModuleInit {
         return this.messageManager.getLocalMessage(room.clientGame.mode, false, player.name);
     }
 
-    private handleCoopAbandon(opponent: Player, room: GameRoom, server: io.Server): ChatMessage {
+    private handleCoopAbandon(player: Player, room: GameRoom, server: io.Server): ChatMessage {
+        const opponent = this.getOpponent(room, player);
         server.to(opponent.playerId).emit(GameEvents.GameModeChanged);
         room.clientGame.mode = GameModes.LimitedSolo;
         this.updateRoom(room);
-        return this.messageManager.getQuitMessage(opponent.name);
+        return this.messageManager.getQuitMessage(player.name);
     }
 
     private addBonusTime(room: GameRoom): void {
@@ -264,14 +260,18 @@ export class RoomsManagerService implements OnModuleInit {
     }
 
     private async handleOneVsOneAbandon(player: Player, room: GameRoom, server: io.Server): Promise<ChatMessage> {
-        const opponent: Player = room.player1.playerId === player.playerId ? room.player2 : room.player1;
+        const opponent: Player = this.getOpponent(room, player);
         this.historyService.markPlayer(room.roomId, opponent?.name, PlayerStatus.Winner);
         room.endMessage = "L'adversaire a abandonné la partie!";
         server.to(room.roomId).emit(GameEvents.EndGame, room.endMessage);
         this.leaveRoom(room, server);
         await this.historyService.closeEntry(room.roomId, server);
         this.deleteRoom(room.roomId);
-        return this.messageManager.getQuitMessage(player.name);
+        return this.messageManager.getQuitMessage(player?.name);
+    }
+
+    private getOpponent(room: GameRoom, player: Player): Player {
+        return room.player1.playerId === player.playerId ? room.player2 : room.player1;
     }
 
     private buildClientGameVersion(game: Game): ClientSideGame {

@@ -37,13 +37,10 @@ export enum GameCardEvents {
     AllGamesDeleted = 'AllGamesDeleted',
     GameDeleted = 'GameDeleted',
     GameConstantsUpdated = 'GameConstantsUpdated',
-    GetGameCards = 'GetGameCards',
     GamesHistoryDeleted = "GamesHistoryDeleted"
 }
 
 export enum HistoryEvents {
-    EntryAdded = 'entryAdded',
-    EntriesCleared = 'entriesCleared',
     RequestReload = "RequestReload"
 }
 
