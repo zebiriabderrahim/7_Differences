@@ -1,29 +1,29 @@
-    <p class = "abandon" *ngIf="data.action === 'abandon'">{{ data.message }}</p>
-    <div class = "button1" *ngIf="data.action === 'abandon'">
+    <p class = "abandon" *ngIf="data.action === 'Abandon'">{{ data.message }}</p>
+    <div class = "button1" *ngIf="data.action === 'Abandon'">
         <div class="button-container">
-            <button class = "yesButton" mat-button *ngIf="data.action === 'abandon'" mat-dialog-close (click)="abandonGame()" routerLink="/home"></button>
+            <button class = "yesButton" mat-button *ngIf="data.action === 'Abandon'" mat-dialog-close (click)="abandonGame()" routerLink="/home"></button>
             <img src="./assets/icon/PlayButton.png" alt="abandonButton">
             <div class="centered-yes">Oui</div>
         </div>
     </div>
-    <div class = "button2" *ngIf="data.action === 'abandon'">
+    <div class = "button2" *ngIf="data.action === 'Abandon'">
         <div class="button-container">
-        <button class = "noButton" mat-button *ngIf="data.action === 'abandon'" mat-dialog-close></button>
+        <button class = "noButton" mat-button *ngIf="data.action === 'Abandon'" mat-dialog-close></button>
             <img src="./assets/icon/CreateButton.png" alt="notAbandonButton" >
             <div class="centered-no">Non</div>
         </div>
     </div>
-    <p class = "ending" *ngIf="data.action === 'endGame'">{{ data.message }}</p>
-    <div class = "button1" *ngIf="data.action === 'endGame'">
+    <p class = "ending" *ngIf="data.action === 'EndGame'">{{ data.message }}</p>
+    <div class = "button1" *ngIf="data.action === 'EndGame'">
         <div class="button-container">
-            <button class = "yesButton" mat-button *ngIf="data.action === 'endGame'" mat-dialog-close (click)="leaveGame()" routerLink="/home"></button>
+            <button class = "yesButton" mat-button *ngIf="data.action === 'EndGame'" mat-dialog-close (click)="leaveGame()" routerLink="/home"></button>
             <img src="./assets/icon/PlayButton.png" alt="returnToMenuButton">
             <div class="centered-yes">Accueil</div>
         </div>
     </div>
-    <div class = "button2" *ngIf="data.action === 'endGame' && data.isReplayMode">
+    <div class = "button2" *ngIf="data.action === 'EndGame' && data.isReplayMode">
         <div class="button-container">
-        <button class = "noButton" mat-button *ngIf="data.action === 'endGame'" mat-dialog-close (click)="replay()"></button>
+        <button class = "noButton" mat-button *ngIf="data.action === 'EndGame'" mat-dialog-close (click)="replay()"></button>
             <img class = 'replayButton' src="./assets/icon/Replay.png" alt="replayButton">
             <div class="centered-no">Reprise vidéo</div>
         </div>
