@@ -17,7 +17,7 @@ export const DEFAULT_BEST_TIMES: PlayerTime[] = [
 export const KEY_SIZE = 36;
 export const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 export const MAX_TIMES_INDEX = 2;
-export const PADDING_TIME_N_DIGITS = 2;
+export const PADDING_N_DIGITS = 2;
 export const NOT_FOUND = -1;
 
 export const SCORE_POSITION = {1:'premier', 2: 'deuxième', 3: 'troisième'};

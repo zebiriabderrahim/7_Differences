@@ -1,5 +1,5 @@
 import { GameService } from '@app/services/game/game.service';
-import { PADDING_TIME_N_DIGITS } from '@common/constants';
+import { PADDING_N_DIGITS } from '@common/constants';
 import { HistoryEvents, PlayerStatus } from '@common/enums';
 import { GameHistory, GameRoom } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
@@ -49,7 +49,7 @@ export class HistoryService {
     markPlayer(roomId: string, playerName: string, status: PlayerStatus) {
         const gameHistory = this.pendingGames.get(roomId);
         if (!gameHistory) return;
-        const playerInfoToChange = gameHistory.player2.name === playerName ? gameHistory.player2 : gameHistory.player1;
+        const playerInfoToChange = gameHistory.player2 && gameHistory.player2.name === playerName ? gameHistory.player2 : gameHistory.player1;
         switch (status) {
             case PlayerStatus.Winner:
                 playerInfoToChange.isWinner = true;
@@ -62,14 +62,22 @@ export class HistoryService {
     }
 
     private getFormattedDate(date: Date): string {
-        const month = (date.getMonth() + 1).toString().padStart(PADDING_TIME_N_DIGITS, '0');
-        const day = date.getDate().toString().padStart(PADDING_TIME_N_DIGITS, '0');
+        const month = this.padValue(date.getMonth() + 1);
+        const day = this.padValue(date.getDate());
         const year = date.getFullYear();
 
         return `${year}-${month}-${day}`;
     }
 
     private getFormattedTime(date: Date): string {
-        return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+        const hours = this.padValue(date.getHours());
+        const minutes = this.padValue(date.getMinutes());
+        const seconds = this.padValue(date.getSeconds());
+
+        return `${hours}:${minutes}:${seconds}`;
+    }
+
+    private padValue(value: number): string {
+        return value.toString().padStart(PADDING_N_DIGITS, '0');
     }
 }
