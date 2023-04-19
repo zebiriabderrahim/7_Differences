@@ -40,7 +40,7 @@ describe('HintService', () => {
     });
 
     it('differences should return the differences from the gameManager', () => {
-        expect(service.differences).toEqual(gameManagerSpy.differences);
+        expect(service['differences']).toEqual(gameManagerSpy.differences);
     });
 
     it('deactivateThirdHint should deactivate the third hint', () => {

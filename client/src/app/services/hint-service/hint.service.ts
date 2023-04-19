@@ -40,7 +40,7 @@ export class HintService {
         this.resetHints();
     }
 
-    get differences(): Coordinate[][] {
+    private get differences(): Coordinate[][] {
         return this.gameManager.differences;
     }
 
