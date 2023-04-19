@@ -166,7 +166,7 @@ describe('LimitedModeService', () => {
             },
         } as BroadcastOperator<unknown, unknown>);
 
-        service.joinLimitedCoopRoom(socket, fakePlayerPayload, server);
+        service['joinLimitedCoopRoom'](socket, fakePlayerPayload, server);
 
         expect(getCreatedCoopRoomSpy).toHaveBeenCalled();
         expect(updateRoomSpy).toHaveBeenCalled();
@@ -176,7 +176,7 @@ describe('LimitedModeService', () => {
         const getCreatedCoopRoomSpy = jest.spyOn(roomsManagerService, 'getCreatedCoopRoom').mockReturnValueOnce(undefined);
         const updateRoomSpy = jest.spyOn(roomsManagerService, 'updateRoom');
 
-        service.joinLimitedCoopRoom(socket, fakePlayerPayload, server);
+        service['joinLimitedCoopRoom'](socket, fakePlayerPayload, server);
 
         expect(getCreatedCoopRoomSpy).toHaveBeenCalled();
         expect(updateRoomSpy).not.toHaveBeenCalled();
@@ -184,12 +184,12 @@ describe('LimitedModeService', () => {
 
     it('checkIfAnyCoopRoomExists should call getCreatedCoopRoom and joinLimitedCoopRoom if room exists', () => {
         const getCreatedCoopRoomSpy = jest.spyOn(roomsManagerService, 'getCreatedCoopRoom').mockReturnValueOnce(fakeRoom);
-        const joinLimitedCoopRoomSpy = jest.spyOn(service, 'joinLimitedCoopRoom');
+        service['joinLimitedCoopRoom'] = jest.fn();
 
         service.checkIfAnyCoopRoomExists(socket, fakePlayerPayload, server);
 
         expect(getCreatedCoopRoomSpy).toHaveBeenCalled();
-        expect(joinLimitedCoopRoomSpy).toHaveBeenCalled();
+        expect(service['joinLimitedCoopRoom']).toHaveBeenCalled();
     });
 
     it('checkIfAnyCoopRoomExists should call getCreatedCoopRoom and createLimitedRoom if room does not exist', () => {

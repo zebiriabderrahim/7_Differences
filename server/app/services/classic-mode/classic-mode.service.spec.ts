@@ -165,25 +165,25 @@ describe('ClassicModeService', () => {
     });
 
     it('deleteOneVsOneAvailability() should emit on RoomOneVsOneAvailable and call getGameIdByHostId', () => {
-        const getGameIdByHostIdSpy = jest.spyOn(service, 'getGameIdByHostId').mockReturnValue(fakeRoom.clientGame.id);
+        service['getGameIdByHostId'] = jest.fn().mockReturnValue(fakeRoom.clientGame.id);
         server.to.returns({
             emit: (events: string) => {
                 expect(events).toBe(RoomEvents.RoomOneVsOneAvailable);
             },
         } as BroadcastOperator<unknown, unknown>);
         service.deleteOneVsOneAvailability(socket, server);
-        expect(getGameIdByHostIdSpy).toBeCalled();
+        expect(service['getGameIdByHostId']).toBeCalled();
     });
 
     it('deleteOneVsOneAvailability() should not emit on RoomOneVsOneAvailable and call getGameIdByHostId (gameId undefined)', () => {
-        const getGameIdByHostIdSpy = jest.spyOn(service, 'getGameIdByHostId').mockReturnValue(undefined);
+        service['getGameIdByHostId'] = jest.fn().mockReturnValue(undefined);
         server.to.returns({
             emit: (events: string) => {
                 expect(events).not.toBe(RoomEvents.RoomOneVsOneAvailable);
             },
         } as BroadcastOperator<unknown, unknown>);
         service.deleteOneVsOneAvailability(socket, server);
-        expect(getGameIdByHostIdSpy).toBeCalled();
+        expect(service['getGameIdByHostId']).toBeCalled();
     });
 
     it('checkStatus should call getRoomIdFromSocket and getRoomById', async () => {
@@ -325,7 +325,7 @@ describe('ClassicModeService', () => {
 
     it('getGameIdByHostId should return the game id ', () => {
         service['roomAvailability'].set(fakeRoom.roomId, { gameId: fakeRoom.roomId, isAvailableToJoin: true, hostId: fakePlayer.playerId });
-        const result = service.getGameIdByHostId(fakePlayer.playerId);
+        const result = service['getGameIdByHostId'](fakePlayer.playerId);
         expect(result).toBe(fakeRoom.roomId);
     });
 
