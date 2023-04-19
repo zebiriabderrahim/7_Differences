@@ -1,10 +1,9 @@
-/* eslint-disable no-unused-vars */
 // Needed more lines for tests
 /* eslint-disable max-lines */
 // needed to spy on private functions
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// Needed to mock functions
 /* eslint-disable @typescript-eslint/no-empty-function */
-// Need to mock functions
 import { TestBed, fakeAsync, flush } from '@angular/core/testing';
 import { WAITING_TIME } from '@app/constants/constants';
 import { REPLAY_LIMITER, SPEED_X1, SPEED_X2, SPEED_X4 } from '@app/constants/replay';
@@ -262,7 +261,7 @@ describe('ReplayService', () => {
             data: [] as Coordinate[],
             timestamp: 0,
         };
-        service.addReplayEvent();
+        service['addReplayEvent']();
         replayEventsSubjectStub.next(replayEvent);
         expect(pushSpy).toHaveBeenCalled();
     });
