@@ -185,12 +185,6 @@ describe('RoomManagerService', () => {
         expect(sendSpy).toHaveBeenCalledWith(RoomEvents.CheckIfAnyCoopRoomExists, mockPlayerData);
     });
 
-    it('disconnect should call clientSocket.disconnect', () => {
-        const disconnectSpy = spyOn(socketServiceMock, 'disconnect');
-        service.disconnect();
-        expect(disconnectSpy).toHaveBeenCalled();
-    });
-
     it('gameCardCreated should call clientSocket.send with GameCardCreated', () => {
         const sendSpy = spyOn(socketServiceMock, 'send');
         service.gameCardCreated();
@@ -243,12 +237,6 @@ describe('RoomManagerService', () => {
         const roomIdSpy = spyOn(service['roomSoloId'], 'next');
         socketHelper.peerSideEmit(RoomEvents.RoomSoloCreated, mockGameId);
         expect(roomIdSpy).toHaveBeenCalledOnceWith(mockGameId);
-    });
-
-    it('should call the clientSocket connect method when connect is called', () => {
-        const connectSpy = spyOn(socketServiceMock, 'connect');
-        service.connect();
-        expect(connectSpy).toHaveBeenCalled();
     });
 
     it('should call joinedPlayerNames.next when GameEvents.WaitingPlayerNameListUpdated is received', () => {
