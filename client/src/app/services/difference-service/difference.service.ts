@@ -17,10 +17,6 @@ export class DifferenceService {
         this.resetAttributes();
     }
 
-    getDifferences(): Coordinate[] {
-        return this.differences;
-    }
-
     getNumberOfDifferences(): number {
         return this.differencePackages.length;
     }
