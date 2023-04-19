@@ -313,22 +313,6 @@ describe('GameAreaService', () => {
         expect(returnedContext).toEqual(context);
     });
 
-    it('getOriginalFrontContext should return originalContextFrontLayer', () => {
-        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
-        const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
-        gameAreaService['originalContextFrontLayer'] = context;
-        const returnedContext = gameAreaService.getOriginalFrontContext();
-        expect(returnedContext).toEqual(context);
-    });
-
-    it('getModifiedFrontContext should return modifiedContextFrontLayer', () => {
-        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
-        const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
-        gameAreaService['modifiedContextFrontLayer'] = context;
-        const returnedContext = gameAreaService.getModifiedFrontContext();
-        expect(returnedContext).toEqual(context);
-    });
-
     it('getMousePosition should return mousePosition', () => {
         gameAreaService['mousePosition'] = { x: 15, y: 150 };
         const returnedMousePosition = gameAreaService.getMousePosition();

@@ -132,10 +132,6 @@ export class GameAreaService {
         return this.originalContext;
     }
 
-    getOriginalFrontContext(): CanvasRenderingContext2D {
-        return this.originalContextFrontLayer;
-    }
-
     setOriginalContext(context: CanvasRenderingContext2D): void {
         this.originalContext = context;
     }
@@ -146,10 +142,6 @@ export class GameAreaService {
 
     getModifiedContext(): CanvasRenderingContext2D {
         return this.modifiedContext;
-    }
-
-    getModifiedFrontContext(): CanvasRenderingContext2D {
-        return this.modifiedContextFrontLayer;
     }
 
     setModifiedContext(context: CanvasRenderingContext2D): void {
