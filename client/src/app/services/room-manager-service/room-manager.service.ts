@@ -174,16 +174,8 @@ export class RoomManagerService {
         this.clientSocket.send(GameCardEvents.GamesHistoryDeleted);
     }
 
-    connect(): void {
-        this.clientSocket.connect();
-    }
-
     getSocketId(): string {
         return this.clientSocket.socket.id;
-    }
-
-    disconnect(): void {
-        this.clientSocket.disconnect();
     }
 
     removeAllListeners() {
