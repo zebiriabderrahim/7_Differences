@@ -41,15 +41,6 @@ export class LimitedModeService {
         this.roomsManagerService.startGame(socket, server);
     }
 
-    joinLimitedCoopRoom(socket: io.Socket, playerPayLoad: PlayerData, server: io.Server): void {
-        const room = this.roomsManagerService.getCreatedCoopRoom();
-        if (!room) return;
-        socket.join(room.roomId);
-        room.player2 = { name: playerPayLoad.playerName, playerId: socket.id, differenceData: room.player1.differenceData };
-        this.roomsManagerService.updateRoom(room);
-        server.to(room.roomId).emit(RoomEvents.LimitedCoopRoomJoined);
-    }
-
     checkIfAnyCoopRoomExists(socket: io.Socket, playerPayLoad: PlayerData, server: io.Server) {
         const room = this.roomsManagerService.getCreatedCoopRoom();
         if (room) this.joinLimitedCoopRoom(socket, playerPayLoad, server);
@@ -66,6 +57,15 @@ export class LimitedModeService {
 
     handleDeleteAllGames(): void {
         this.availableGameByRoomId.clear();
+    }
+
+    private joinLimitedCoopRoom(socket: io.Socket, playerPayLoad: PlayerData, server: io.Server): void {
+        const room = this.roomsManagerService.getCreatedCoopRoom();
+        if (!room) return;
+        socket.join(room.roomId);
+        room.player2 = { name: playerPayLoad.playerName, playerId: socket.id, differenceData: room.player1.differenceData };
+        this.roomsManagerService.updateRoom(room);
+        server.to(room.roomId).emit(RoomEvents.LimitedCoopRoomJoined);
     }
 
     private getGameIds(roomId: string): string[] {
