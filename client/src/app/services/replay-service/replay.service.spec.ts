@@ -262,7 +262,7 @@ describe('ReplayService', () => {
             data: [] as Coordinate[],
             timestamp: 0,
         };
-        service.addReplayEvent();
+        service['addReplayEvent']();
         replayEventsSubjectStub.next(replayEvent);
         expect(pushSpy).toHaveBeenCalled();
     });
