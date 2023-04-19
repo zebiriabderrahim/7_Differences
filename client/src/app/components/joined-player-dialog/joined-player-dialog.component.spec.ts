@@ -75,10 +75,10 @@ describe('JoinedPlayerDialogComponent', () => {
     });
 
     it('handleCreateUndoCreation should call countDownBeforeClosing', () => {
-        const countDownSpy = spyOn(component, 'countDownBeforeClosing');
+        const countDownSpy = spyOn<any>(component, 'countDownBeforeClosing');
         component['data'] = { gameId: 'test-game-id', player: 'Alice' };
-        component.handleCreateUndoCreation();
-        component.handleCreateUndoCreation();
+        component['handleCreateUndoCreation']();
+        component['handleCreateUndoCreation']();
         const mockAvailability: RoomAvailability = {
             gameId: 'test-game-id',
             isAvailableToJoin: false,
