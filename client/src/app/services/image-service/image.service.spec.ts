@@ -36,6 +36,7 @@ describe('ImageService', () => {
 
     beforeEach(() => {
         timerCallback = jasmine.createSpy('timerCallback');
+        jasmine.clock().uninstall();
         jasmine.clock().install();
     });
 

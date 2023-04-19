@@ -31,7 +31,7 @@ export class PlayersListManagerService {
         this.cancelJoiningByPlayerName(playerPayLoad.playerName, playerPayLoad.gameId, server);
     }
 
-    getAcceptPlayer(gameId: string, playerName: string, server: io.Server): Player {
+    getAcceptPlayer(gameId: string, server: io.Server): Player {
         const acceptedPlayer = this.joinedPlayersByGameId.get(gameId)?.[0];
         if (!acceptedPlayer) return;
         this.cancelAllJoining(gameId, server);
@@ -66,10 +66,10 @@ export class PlayersListManagerService {
     }
 
     deleteJoinedPlayerByPlayerId(playerId: string, gameId: string) {
-        const playerNames = this.joinedPlayersByGameId?.get(gameId);
+        const playerNames = this.joinedPlayersByGameId.get(gameId);
+        if (!playerNames) return;
         const playerIndex = playerNames.findIndex((player) => player.playerId === playerId);
-        if (playerIndex === NOT_FOUND) return;
-        playerNames.splice(playerIndex, 1);
+        if (playerIndex !== NOT_FOUND) playerNames.splice(playerIndex, 1);
         this.joinedPlayersByGameId.set(gameId, playerNames);
     }
 
@@ -89,6 +89,7 @@ export class PlayersListManagerService {
 
     async updateTopBestTime(room: GameRoom, playerName: string, server: io.Server): Promise<number> {
         const { clientGame, timer } = room;
+        if (!(await this.gameService.verifyIfGameExists(clientGame.name))) return;
         const topTimes = await this.gameService.getTopTimesGameById(clientGame.id, clientGame.mode);
         if (topTimes[MAX_TIMES_INDEX].time > timer) {
             const topTimeIndex = this.insertNewTopTime(playerName, timer, topTimes);

@@ -16,6 +16,7 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
     private countdownSubscription: Subscription;
     private acceptedPlayerSubscription: Subscription;
     private deletedGameIdSubscription: Subscription;
+    private roomAvailabilitySubscription: Subscription;
 
     // Services are needed for the dialog and dialog needs to talk to the parent component
     // eslint-disable-next-line max-params
@@ -30,6 +31,7 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
         this.handleRefusedPlayer();
         this.handleAcceptedPlayer();
         this.handleGameCardDelete();
+        this.handleCreateUndoCreation();
     }
 
     cancelJoining() {
@@ -40,6 +42,7 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
         this.countdownSubscription?.unsubscribe();
         this.acceptedPlayerSubscription?.unsubscribe();
         this.deletedGameIdSubscription?.unsubscribe();
+        this.roomAvailabilitySubscription?.unsubscribe();
     }
 
     private handleRefusedPlayer() {
@@ -76,5 +79,13 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
         this.deletedGameIdSubscription = this.roomManagerService.deletedGameId$.subscribe(() => {
             this.countDownBeforeClosing('La fiche de jeu a été supprimée');
         });
+    }
+
+    private handleCreateUndoCreation() {
+        this.roomAvailabilitySubscription = this.roomManagerService.oneVsOneRoomsAvailabilityByRoomId$
+            .pipe(filter((roomAvailability) => roomAvailability.gameId === this.data.gameId && !roomAvailability.isAvailableToJoin))
+            .subscribe(() => {
+                this.countDownBeforeClosing('Vous avez été refusé');
+            });
     }
 }

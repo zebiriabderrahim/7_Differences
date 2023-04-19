@@ -119,7 +119,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 
     @SubscribeMessage(PlayerEvents.AcceptPlayer)
     acceptPlayer(@ConnectedSocket() socket: Socket, @MessageBody() data: { gameId: string; roomId: string; playerName: string }) {
-        const acceptedPlayer = this.playersListManagerService.getAcceptPlayer(data.gameId, data.playerName, this.server);
+        const acceptedPlayer = this.playersListManagerService.getAcceptPlayer(data.gameId, this.server);
         this.classicModeService.acceptPlayer(acceptedPlayer, data.roomId, this.server);
         this.classicModeService.updateRoomOneVsOneAvailability(socket.id, data.gameId, this.server);
         this.playersListManagerService.deleteJoinedPlayersByGameId(data.gameId);
