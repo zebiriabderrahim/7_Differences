@@ -19,11 +19,7 @@ describe('ConfigDialogComponent', () => {
 
     beforeEach(async () => {
         isReloadNeeded = new BehaviorSubject<boolean>(true);
-        roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['gameConstantsUpdated'], {
-            isReloadNeeded$: isReloadNeeded,
-        });
-        isReloadNeeded = new BehaviorSubject<boolean>(true);
-        roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['gameConstantsUpdated'], {
+        roomManagerServiceSpy = jasmine.createSpyObj('RoomManagerService', ['notifyGameConstantsUpdated'], {
             isReloadNeeded$: isReloadNeeded,
         });
         await TestBed.configureTestingModule({
@@ -88,7 +84,7 @@ describe('ConfigDialogComponent', () => {
         component.saveGameConstants();
 
         expect(component['communicationService'].updateGameConstants).toHaveBeenCalledWith(component.configConstants);
-        expect(component['roomManagerService'].gameConstantsUpdated).toHaveBeenCalled();
+        expect(component['roomManagerService'].notifyGameConstantsUpdated).toHaveBeenCalled();
     });
 
     it('resetConfigForm should reset the config form and update the game constants', () => {

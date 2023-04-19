@@ -20,18 +20,18 @@ export class DeleteResetConfirmationDialogComponent {
     }
 
     resetAllTopTimes() {
-        this.roomManagerService.resetAllTopTimes();
+        this.roomManagerService.notifyResetAllTopTimes();
     }
 
     deleteAllGames() {
         this.communicationService.deleteAllGames().subscribe(() => {
-            this.roomManagerService.allGamesDeleted();
+            this.roomManagerService.notifyAllGamesDeleted();
         });
     }
 
     deleteAllGamesHistory(): void {
         this.communicationService.deleteAllGamesHistory().subscribe(() => {
-            this.roomManagerService.gamesHistoryDeleted();
+            this.roomManagerService.notifyGamesHistoryDeleted();
         });
     }
 
@@ -42,6 +42,6 @@ export class DeleteResetConfirmationDialogComponent {
     }
 
     resetTopTime() {
-        this.roomManagerService.resetTopTime(this.data.gameId);
+        this.roomManagerService.notifyResetTopTime(this.data.gameId);
     }
 }
