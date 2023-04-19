@@ -1,4 +1,4 @@
-// needed to spyOn private function
+// needed to spy on private methods
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TestBed } from '@angular/core/testing';
 import { LAST_HINT_NUMBER, SECOND_TO_LAST_HINT_NUMBER } from '@app/constants/hint';
