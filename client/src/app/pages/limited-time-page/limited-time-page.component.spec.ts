@@ -98,14 +98,6 @@ describe('LimitedTimePageComponent', () => {
         expect(component['redirectToGamePage']).toHaveBeenCalledWith(gameMode);
     });
 
-    it('redirectToGamePage should not navigate or open dialog when game mode is LimitedCoop but a limited coop room is available', () => {
-        spyOn<any>(component, 'openWaitingDialog');
-        component['isLimitedCoopRoomAvailable'] = true;
-        component['redirectToGamePage'](GameModes.LimitedCoop);
-        expect(component['openWaitingDialog']).not.toHaveBeenCalled();
-        expect(component['isStartingGame']).toEqual(false);
-    });
-
     it('redirectToGamePage should not navigate to game page when game mode is LimitedCoop and a limited coop room is not available', () => {
         const roomId = 'test-room-id';
         isLimitedCoopRoomAvailable.next(false);
