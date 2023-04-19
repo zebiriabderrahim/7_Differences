@@ -161,11 +161,6 @@ export class DatabaseService implements OnModuleInit {
         }
     }
 
-    async rebuildGameCarousel(): Promise<void> {
-        const gameCardsList: GameCard[] = await this.gameCardModel.find().exec();
-        this.gameListManager.buildGameCarousel(gameCardsList);
-    }
-
     async updateGameConstants(gameConstantsDto: GameConstantsDto): Promise<void> {
         try {
             await this.gameConstantsModel.replaceOne({}, gameConstantsDto).exec();
@@ -243,5 +238,10 @@ export class DatabaseService implements OnModuleInit {
         } catch (error) {
             return Promise.reject(`Failed to get all game ids --> ${error}`);
         }
+    }
+
+    private async rebuildGameCarousel(): Promise<void> {
+        const gameCardsList: GameCard[] = await this.gameCardModel.find().exec();
+        this.gameListManager.buildGameCarousel(gameCardsList);
     }
 }
