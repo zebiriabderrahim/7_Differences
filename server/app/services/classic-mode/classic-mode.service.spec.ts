@@ -354,7 +354,6 @@ describe('ClassicModeService', () => {
         fakeRoom.player1 = fakePlayer;
         fakeRoom.player2 = undefined;
         const getGameIdByPlayerIdSpy = jest.spyOn(roomsManagerService, 'getRoomByPlayerId').mockReturnValue(fakeRoom);
-        const abandonGameSpy = jest.spyOn(roomsManagerService, 'abandonGame');
         const deleteOneVsOneAvailabilitySpy = jest.spyOn(service, 'deleteOneVsOneAvailability');
         const getSpy = jest.spyOn(service['roomAvailability'], 'get').mockReturnValue({
             gameId: fakeRoom.clientGame.id,
