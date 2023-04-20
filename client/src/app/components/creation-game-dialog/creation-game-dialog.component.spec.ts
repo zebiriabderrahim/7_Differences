@@ -178,7 +178,7 @@ describe('CreationGameDialogComponent', () => {
         control.value = 'nonExistentGameName';
         communicationServiceSpy.verifyIfGameExists.and.returnValue(of(false));
 
-        component.validateGameName(control).subscribe((result) => {
+        component['validateGameName'](control).subscribe((result) => {
             expect(result).toBe(null);
         });
     });
@@ -188,7 +188,7 @@ describe('CreationGameDialogComponent', () => {
         control.value = 'ExistentGameName';
         communicationServiceSpy.verifyIfGameExists.and.returnValue(of(true));
 
-        component.validateGameName(control).subscribe((result) => {
+        component['validateGameName'](control).subscribe((result) => {
             expect(result).toEqual({ gameExists: true });
         });
     });

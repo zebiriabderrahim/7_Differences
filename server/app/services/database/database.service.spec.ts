@@ -293,7 +293,7 @@ describe('DatabaseService', () => {
         const deleteGameAssetsByNameSpy = jest.spyOn(dataBaseService, 'deleteGameAssetsByName').mockImplementation(() => {
             return;
         });
-        const rebuildGameCarouselSpy = jest.spyOn(dataBaseService, 'rebuildGameCarousel');
+        dataBaseService['rebuildGameCarousel'] = jest.fn();
         gameCardModel.find().exec = jest.fn().mockResolvedValue(testGameCards);
         const id = (await gameModel.create(newGameInDB))._id.toString();
         testGameCards[0]._id = id;
@@ -303,7 +303,7 @@ describe('DatabaseService', () => {
         expect(findByIdAndDeleteGameSpy).toBeCalledWith(id);
         expect(findByIdAndDeleteGameCardSpy).toBeCalledWith(id);
         expect(deleteGameAssetsByNameSpy).toBeCalledWith(testGameDto.name);
-        expect(rebuildGameCarouselSpy).toBeCalled();
+        expect(dataBaseService['rebuildGameCarousel']).toBeCalled();
     });
 
     it('deleteGame() should fail if mongo query failed', async () => {
@@ -341,13 +341,13 @@ describe('DatabaseService', () => {
 
     it('updateTopTimesGameById() should update the top times of the game as expected (soloTopTime cas)', async () => {
         const id = (await gameModel.create(newGameInDB))._id.toString();
-        const rebuildGameCarouselSpy = jest.spyOn(dataBaseService, 'rebuildGameCarousel');
+        dataBaseService['rebuildGameCarousel'] = jest.fn();
         testGameCards[0]._id = id;
         await gameCardModel.create(testGameCards[0]);
         await dataBaseService.updateTopTimesGameById(id, GameModes.ClassicSolo, defaultBestTimes2);
         const topTime = await dataBaseService.getTopTimesGameById(id, GameModes.ClassicSolo);
         expect(JSON.stringify(topTime)).toEqual(JSON.stringify(defaultBestTimes2));
-        expect(rebuildGameCarouselSpy).toBeCalled();
+        expect(dataBaseService['rebuildGameCarousel']).toBeCalled();
     });
 
     it('updateTopTimesGameById() should fail if mongo query failed', async () => {
@@ -356,18 +356,18 @@ describe('DatabaseService', () => {
     });
     it('updateTopTimesGameById() should update the top times of the game as expected (oneVsOneTopTime cas)', async () => {
         const id = (await gameModel.create(newGameInDB))._id.toString();
-        const rebuildGameCarouselSpy = jest.spyOn(dataBaseService, 'rebuildGameCarousel');
+        dataBaseService['rebuildGameCarousel'] = jest.fn();
         testGameCards[0]._id = id;
         await gameCardModel.create(testGameCards[0]);
         await dataBaseService.updateTopTimesGameById(id, GameModes.ClassicOneVsOne, defaultBestTimes2);
         const topTime = await dataBaseService.getTopTimesGameById(id, GameModes.ClassicOneVsOne);
         expect(JSON.stringify(topTime)).toEqual(JSON.stringify(defaultBestTimes2));
-        expect(rebuildGameCarouselSpy).toBeCalled();
+        expect(dataBaseService['rebuildGameCarousel']).toBeCalled();
     });
 
     it('rebuildGameCarousel() should rebuild the game carousel', async () => {
         const rebuildGameCarouselSpy = jest.spyOn(listsManagerService, 'buildGameCarousel');
-        await dataBaseService.rebuildGameCarousel();
+        await dataBaseService['rebuildGameCarousel']();
         expect(rebuildGameCarouselSpy).toBeCalled();
     });
 
@@ -403,14 +403,14 @@ describe('DatabaseService', () => {
 
     it('resetTopTimesGameById should reset the top times of the game', async () => {
         const id = (await gameModel.create(newGameInDB))._id.toString();
-        const rebuildGameCarouselSpy = jest.spyOn(dataBaseService, 'rebuildGameCarousel');
+        dataBaseService['rebuildGameCarousel'] = jest.fn();
         testGameCards[0]._id = id;
         await gameCardModel.create(testGameCards[0]);
         await dataBaseService.updateTopTimesGameById(id, GameModes.ClassicSolo, defaultBestTimes2);
         await dataBaseService.resetTopTimesGameById(id);
         const topTime = await dataBaseService.getTopTimesGameById(id, GameModes.ClassicSolo);
         expect(JSON.stringify(topTime)).toEqual(JSON.stringify(defaultBestTimes));
-        expect(rebuildGameCarouselSpy).toBeCalledTimes(2);
+        expect(dataBaseService['rebuildGameCarousel']).toBeCalledTimes(2);
     });
 
     it('resetTopTimesGameById should fail if mongo query failed', async () => {
@@ -420,14 +420,14 @@ describe('DatabaseService', () => {
 
     it('resetAllTopTimes should reset all the top times of the games', async () => {
         const id = (await gameModel.create(newGameInDB))._id.toString();
-        const rebuildGameCarouselSpy = jest.spyOn(dataBaseService, 'rebuildGameCarousel');
+        dataBaseService['rebuildGameCarousel'] = jest.fn();
         testGameCards[0]._id = id;
         await gameCardModel.create(testGameCards[0]);
         await dataBaseService.updateTopTimesGameById(id, GameModes.ClassicSolo, defaultBestTimes2);
         await dataBaseService.resetAllTopTimes();
         const topTime = await dataBaseService.getTopTimesGameById(id, GameModes.ClassicSolo);
         expect(JSON.stringify(topTime)).toEqual(JSON.stringify(defaultBestTimes));
-        expect(rebuildGameCarouselSpy).toBeCalledTimes(2);
+        expect(dataBaseService['rebuildGameCarousel']).toBeCalledTimes(2);
     });
 
     it('resetAllTopTimes should fail if mongo query failed', async () => {

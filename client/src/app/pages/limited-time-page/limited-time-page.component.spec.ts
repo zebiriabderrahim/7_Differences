@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- needed to spy on private methods*/
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -72,35 +73,35 @@ describe('LimitedTimePageComponent', () => {
     });
 
     it('playLimited should return early if game is already starting', () => {
-        spyOn(component, 'redirectToGamePage');
+        spyOn<any>(component, 'redirectToGamePage');
         component['isStartingGame'] = true;
         const gameMode = GameModes.LimitedSolo;
         component.playLimited(gameMode);
         expect(roomManagerServiceSpy.createLimitedRoom).not.toHaveBeenCalled();
         expect(roomManagerServiceSpy.checkIfAnyCoopRoomExists).not.toHaveBeenCalled();
-        expect(component.redirectToGamePage).not.toHaveBeenCalled();
+        expect(component['redirectToGamePage']).not.toHaveBeenCalled();
     });
 
     it('playLimited should call createLimitedRoom and redirectToGamePage for LimitedSolo game mode', () => {
-        spyOn(component, 'redirectToGamePage');
+        spyOn<any>(component, 'redirectToGamePage');
         const gameMode = GameModes.LimitedSolo;
         component.playLimited(gameMode);
         expect(component['isStartingGame']).toBe(true);
-        expect(component.redirectToGamePage).toHaveBeenCalledWith(gameMode);
+        expect(component['redirectToGamePage']).toHaveBeenCalledWith(gameMode);
     });
 
     it('playLimited should call checkIfAnyCoopRoomExists and redirectToGamePage for LimitedCoop game mode', () => {
-        spyOn(component, 'redirectToGamePage');
+        spyOn<any>(component, 'redirectToGamePage');
         const gameMode = GameModes.LimitedCoop;
         component.playLimited(gameMode);
         expect(component['isStartingGame']).toBe(true);
-        expect(component.redirectToGamePage).toHaveBeenCalledWith(gameMode);
+        expect(component['redirectToGamePage']).toHaveBeenCalledWith(gameMode);
     });
 
     it('redirectToGamePage should not navigate to game page when game mode is LimitedCoop and a limited coop room is not available', () => {
         const roomId = 'test-room-id';
         isLimitedCoopRoomAvailable.next(false);
-        component.redirectToGamePage(GameModes.LimitedCoop);
+        component['redirectToGamePage'](GameModes.LimitedCoop);
         createdRoomId.next(roomId);
         expect(component['isStartingGame']).toEqual(false);
     });
@@ -108,7 +109,7 @@ describe('LimitedTimePageComponent', () => {
     it('redirectToGamePage should  navigate to game page when game mode is LimitedCoop and a limited coop room is  available', () => {
         const roomId = 'test-room-id';
         const gameMode = GameModes.LimitedSolo;
-        component.redirectToGamePage(gameMode);
+        component['redirectToGamePage'](gameMode);
         isLimitedCoopRoomAvailable.next(true);
         createdRoomId.next(roomId);
         expect(component['isStartingGame']).toEqual(false);
@@ -117,17 +118,17 @@ describe('LimitedTimePageComponent', () => {
     it('openWaitingDialog should open dialog', () => {
         const mockRoomId = 'test-room-id';
         const dialogOpenSpy = spyOn(component['dialog'], 'open').and.callThrough();
-        component.openWaitingDialog(mockRoomId);
+        component['openWaitingDialog'](mockRoomId);
         expect(dialogOpenSpy).toHaveBeenCalled();
     });
 
     it('openDialog should open dialog and subscribe player', () => {
-        component.openDialog();
+        component['openDialog']();
         playerName.next('Alice');
         const dialogSpy = spyOn(component['dialog'], 'open').and.returnValue({
             afterClosed: () => of('test'),
         } as MatDialogRef<PlayerNameDialogBoxComponent, unknown>);
-        component.openDialog();
+        component['openDialog']();
 
         expect(dialogSpy).toHaveBeenCalledWith(PlayerNameDialogBoxComponent, {
             disableClose: true,
@@ -149,7 +150,7 @@ describe('LimitedTimePageComponent', () => {
 
     it('should unsubscribe roomIdSubscription when redirectToGamePage is called', () => {
         component['roomIdSubscription'] = new BehaviorSubject<string>('test-room-id').asObservable().subscribe();
-        component.redirectToGamePage(GameModes.LimitedSolo);
+        component['redirectToGamePage'](GameModes.LimitedSolo);
         expect(component['roomIdSubscription']).toBeDefined();
     });
 });

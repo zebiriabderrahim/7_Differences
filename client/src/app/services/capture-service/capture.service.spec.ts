@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-
 import { ReplayActions } from '@app/enum/replay-actions';
 import { ReplayEvent, ReplayPayload } from '@app/interfaces/replay-actions';
 import { CaptureService } from './capture.service';

@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { WAITING_TIME } from '@app/constants/constants';
-import { SPEED_X1, SPEED_X2, SPEED_X4 } from '@app/constants/replay';
+import { REPLAY_SPEEDS, SPEED_X1 } from '@app/constants/replay';
 import { ReplayService } from '@app/services/replay-service/replay.service';
 
 @Component({
@@ -10,13 +10,18 @@ import { ReplayService } from '@app/services/replay-service/replay.service';
 })
 export class ReplayButtonsComponent implements OnInit, OnDestroy {
     @Input() isReplayAvailable: boolean;
-    isReplayButtonDisabled = false;
-    isReplayPaused = false;
-    selectedSpeed: string;
-    constructor(private readonly replayService: ReplayService) {}
+    isReplayButtonDisabled: boolean;
+    isReplayPaused: boolean;
+    replaySpeeds: number[];
+    replaySpeed: number;
+    constructor(private readonly replayService: ReplayService) {
+        this.isReplayAvailable = false;
+        this.isReplayPaused = false;
+        this.replaySpeeds = REPLAY_SPEEDS;
+    }
 
     ngOnInit() {
-        this.selectedSpeed = 'x1';
+        this.replaySpeed = SPEED_X1;
     }
 
     replay(isMidReplay: boolean) {
@@ -51,16 +56,8 @@ export class ReplayButtonsComponent implements OnInit, OnDestroy {
         return this.replayService.isReplaying;
     }
 
-    speedX1() {
-        this.replayService.upSpeed(SPEED_X1);
-    }
-
-    speedX2() {
-        this.replayService.upSpeed(SPEED_X2);
-    }
-
-    speedX4() {
-        this.replayService.upSpeed(SPEED_X4);
+    setSpeed(speed: number) {
+        this.replayService.upSpeed(speed);
     }
 
     ngOnDestroy() {

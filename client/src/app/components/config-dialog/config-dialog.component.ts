@@ -47,30 +47,7 @@ export class ConfigDialogComponent implements OnInit, OnDestroy {
     saveGameConstants() {
         this.configConstants = this.configForm.value.valueOf();
         this.communicationService.updateGameConstants(this.configConstants).subscribe(() => {
-            this.roomManagerService.gameConstantsUpdated();
-        });
-    }
-
-    loadGameConstants() {
-        this.communicationSubscription = this.communicationService.loadConfigConstants().subscribe((configConstants) => {
-            this.configConstants = configConstants;
-            this.patchConfigForm();
-        });
-    }
-
-    handleChanges() {
-        this.isReloadNeededSubscription = this.roomManagerService.isReloadNeeded$.subscribe((isReloadNeeded) => {
-            if (isReloadNeeded) {
-                this.loadGameConstants();
-            }
-        });
-    }
-
-    patchConfigForm() {
-        this.configForm.patchValue({
-            countdownTime: this.configConstants.countdownTime,
-            penaltyTime: this.configConstants.penaltyTime,
-            bonusTime: this.configConstants.bonusTime,
+            this.roomManagerService.notifyGameConstantsUpdated();
         });
     }
 
@@ -81,5 +58,28 @@ export class ConfigDialogComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.communicationSubscription?.unsubscribe();
         this.isReloadNeededSubscription?.unsubscribe();
+    }
+
+    private loadGameConstants() {
+        this.communicationSubscription = this.communicationService.loadConfigConstants().subscribe((configConstants) => {
+            this.configConstants = configConstants;
+            this.patchConfigForm();
+        });
+    }
+
+    private handleChanges() {
+        this.isReloadNeededSubscription = this.roomManagerService.isReloadNeeded$.subscribe((isReloadNeeded) => {
+            if (isReloadNeeded) {
+                this.loadGameConstants();
+            }
+        });
+    }
+
+    private patchConfigForm() {
+        this.configForm.patchValue({
+            countdownTime: this.configConstants.countdownTime,
+            penaltyTime: this.configConstants.penaltyTime,
+            bonusTime: this.configConstants.bonusTime,
+        });
     }
 }

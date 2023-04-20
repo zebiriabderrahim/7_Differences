@@ -114,7 +114,7 @@ export class ReplayService implements OnDestroy {
         this.replayEventsSubjectSubscription?.unsubscribe();
     }
 
-    addReplayEvent(): void {
+    private addReplayEvent(): void {
         this.replayEventsSubjectSubscription = this.captureService.replayEventsSubject$.subscribe((replayEvent: ReplayEvent) => {
             if (!this.isReplaying) this.replayEvents.push(replayEvent);
         });

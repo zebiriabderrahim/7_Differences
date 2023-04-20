@@ -48,7 +48,7 @@ export class PlayerNameDialogBoxComponent implements OnInit, OnDestroy {
         }
     }
 
-    handleCreateUndoCreation(gameId: string) {
+    private handleCreateUndoCreation(gameId: string) {
         this.roomAvailabilitySubscription = this.roomManagerService.oneVsOneRoomsAvailabilityByRoomId$
             .pipe(filter((roomAvailability) => roomAvailability.gameId === gameId && !roomAvailability.isAvailableToJoin))
             .subscribe(() => {
@@ -56,7 +56,7 @@ export class PlayerNameDialogBoxComponent implements OnInit, OnDestroy {
             });
     }
 
-    handleGameCardDelete() {
+    private handleGameCardDelete() {
         this.roomManagerService.deletedGameId$.subscribe((gameId) => {
             if (gameId === this.data.gameId) {
                 this.dialogRef.close();
@@ -64,7 +64,7 @@ export class PlayerNameDialogBoxComponent implements OnInit, OnDestroy {
         });
     }
 
-    async validatePlayerName(control: FormControl): Promise<{ [key: string]: unknown } | null> {
+    private async validatePlayerName(control: FormControl): Promise<{ [key: string]: unknown } | null> {
         if (!this.data) return null;
         const playerPayLoad = { gameId: this.data.gameId, playerName: control.value } as PlayerData;
         this.roomManagerService.isPlayerNameIsAlreadyTaken(playerPayLoad);

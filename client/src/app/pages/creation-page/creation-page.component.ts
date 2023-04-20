@@ -81,7 +81,7 @@ export class CreationPageComponent implements AfterViewInit {
                 if (game) {
                     this.communicationService.postGame(game).subscribe(() => {
                         this.router.navigate(['/config']);
-                        this.roomManagerService.gameCardCreated();
+                        this.roomManagerService.notifyGameCardCreated();
                     });
                 }
             });

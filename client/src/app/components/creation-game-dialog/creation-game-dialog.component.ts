@@ -70,7 +70,7 @@ export class CreationGameDialogComponent implements OnInit {
         }
     }
 
-    validateGameName(control: AbstractControl): Observable<{ [key: string]: unknown } | null> {
+    private validateGameName(control: AbstractControl): Observable<{ [key: string]: unknown } | null> {
         const name = control.value;
         return this.communicationService.verifyIfGameExists(name).pipe(map((gameExists) => (gameExists ? { gameExists: true } : null)));
     }

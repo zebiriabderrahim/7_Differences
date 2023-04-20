@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- needed to spy on private methods*/
 // Needed for functions mock
 /* eslint-disable @typescript-eslint/no-empty-function */
 // Id comes from database to allow _id
@@ -38,7 +39,7 @@ describe('GameSheetComponent', () => {
                 'createOneVsOneRoom',
                 'createSoloRoom',
                 'updateWaitingPlayerNameList',
-                'gameCardDeleted',
+                'notifyGameCardDeleted',
             ],
             {
                 roomSoloId$: roomIdSpy,
@@ -100,7 +101,7 @@ describe('GameSheetComponent', () => {
         const dialogSpy = spyOn(component['dialog'], 'open').and.returnValue({
             afterClosed: () => of('test'),
         } as MatDialogRef<PlayerNameDialogBoxComponent, unknown>);
-        component.openDialog();
+        component['openDialog']();
 
         expect(dialogSpy).toHaveBeenCalledWith(PlayerNameDialogBoxComponent, {
             data: { gameId: component.game._id },
@@ -118,10 +119,10 @@ describe('GameSheetComponent', () => {
     });
 
     it('createSoloRoom should call openDialog ', () => {
-        const openDialogSpy = spyOn(component, 'openDialog').and.returnValue({
+        const openDialogSpy = spyOn<any>(component, 'openDialog').and.returnValue({
             afterClosed: () => of('test'),
         } as MatDialogRef<PlayerNameDialogBoxComponent, unknown>);
-        component.createSoloRoom();
+        component['createSoloRoom']();
         expect(openDialogSpy).toHaveBeenCalled();
     });
 
@@ -129,7 +130,7 @@ describe('GameSheetComponent', () => {
         roomManagerServiceSpy.updateRoomOneVsOneAvailability.and.callFake(() => {
             component.game._id = '0';
         });
-        const openDialogSpy = spyOn(component, 'openDialog').and.returnValue({
+        const openDialogSpy = spyOn<any>(component, 'openDialog').and.returnValue({
             afterClosed: () => of('test'),
         } as MatDialogRef<PlayerNameDialogBoxComponent, unknown>);
         component.createOneVsOne();
@@ -137,7 +138,7 @@ describe('GameSheetComponent', () => {
     });
 
     it('createOneVsOne should call updateRoomOneVsOneAvailability if a player unsubscribe a game', () => {
-        spyOn(component, 'openDialog').and.returnValue({
+        spyOn<any>(component, 'openDialog').and.returnValue({
             afterClosed: () => of(''),
         } as MatDialogRef<PlayerNameDialogBoxComponent, unknown>);
         component.createOneVsOne();
@@ -145,7 +146,7 @@ describe('GameSheetComponent', () => {
     });
 
     it('joinOneVsOne should call updateWaitingPlayerNameList if a player2 subscribe a game', () => {
-        spyOn(component, 'openDialog').and.returnValue({
+        spyOn<any>(component, 'openDialog').and.returnValue({
             afterClosed: () => of('Alice'),
         } as MatDialogRef<PlayerNameDialogBoxComponent, unknown>);
         component.joinOneVsOne();
@@ -155,10 +156,10 @@ describe('GameSheetComponent', () => {
     it('openWaitingDialog should open dialog if a player2 waiting to join a game', () => {
         const dialogSpy = spyOn(component['dialog'], 'open');
         roomIdSpy.next('0');
-        spyOn(component, 'openDialog').and.returnValue({
+        spyOn<any>(component, 'openDialog').and.returnValue({
             afterClosed: () => of('test'),
         } as MatDialogRef<PlayerNameDialogBoxComponent, unknown>);
-        component.openWaitingDialog('test');
+        component['openWaitingDialog']('test');
         roomIdSpy.next('0');
         expect(dialogSpy).toHaveBeenCalled();
     });
