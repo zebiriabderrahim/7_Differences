@@ -5,7 +5,7 @@ import { GameService } from '@app/services/game/game.service';
 import { HistoryService } from '@app/services/history/history.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { CHARACTERS, DEFAULT_GAME_MODES, KEY_SIZE, MAX_BONUS_TIME_ALLOWED, NOT_FOUND } from '@common/constants';
-import { GameEvents, GameModes, MessageEvents, PlayerStatus } from '@common/enums';
+import { GameEvents, GameModes, MessageEvents, MessageTag, PlayerStatus } from '@common/enums';
 import {
     ChatMessage,
     ClientSideGame,
@@ -147,12 +147,13 @@ export class RoomsManagerService implements OnModuleInit {
         let penaltyTime = gameConstants.penaltyTime;
 
         if (this.isLimitedModeGame(clientGame)) penaltyTime = -penaltyTime;
-
         if (timer + penaltyTime < 0) {
             await this.countdownOver(room, server);
         } else {
+            const hintMessage = this.messageManager.createMessage(MessageTag.Common, 'Indice utilisé');
             room.timer += penaltyTime;
             this.rooms.set(room.roomId, room);
+            server.to(room.roomId).emit(MessageEvents.LocalMessage, hintMessage);
             server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
         }
     }

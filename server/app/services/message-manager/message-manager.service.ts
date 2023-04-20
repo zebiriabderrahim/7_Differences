@@ -24,7 +24,7 @@ export class MessageManagerService {
         return this.createMessage(MessageTag.Common, content);
     }
 
-    private createMessage(tag: MessageTag, content: string): ChatMessage {
+    createMessage(tag: MessageTag, content: string): ChatMessage {
         const date: Date = new Date();
         const time = `${date.getHours()} : ${date.getMinutes()} : ${date.getSeconds()}`;
         const message = time + ' - ' + content;
