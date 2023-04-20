@@ -28,12 +28,18 @@ import { CanvasMiddleButtonsComponent } from './components/canvas-middle-buttons
 import { CanvasTopButtonsComponent } from './components/canvas-top-buttons/canvas-top-buttons.component';
 import { CanvasUnderButtonsComponent } from './components/canvas-under-buttons/canvas-under-buttons.component';
 import { ChatBoxComponent } from './components/chat-box/chat-box.component';
+import { ConfigDialogComponent } from './components/config-dialog/config-dialog.component';
+import { DeleteResetConfirmationDialogComponent } from './components/delete-reset-confirmation-dialog/delete-reset-confirmation-dialog.component';
 import { GamePageDialogComponent } from './components/game-page-dialog/game-page-dialog.component';
+import { HistoryBoxComponent } from './components/history-box/history-box.component';
 import { ImageCanvasComponent } from './components/image-canvas/image-canvas.component';
 import { JoinedPlayerDialogComponent } from './components/joined-player-dialog/joined-player-dialog.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
+import { NoGameAvailableDialogComponent } from './components/no-game-available-dialog/no-game-available-dialog.component';
+import { ReplayButtonsComponent } from './components/replay-buttons/replay-buttons/replay-buttons.component';
 import { WaitingForPlayerToJoinComponent } from './components/waiting-player-to-join/waiting-player-to-join.component';
 import { ConfigPageComponent } from './pages/config-page/config-page.component';
+import { LimitedTimePageComponent } from './pages/limited-time-page/limited-time-page.component';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -61,6 +67,12 @@ import { ConfigPageComponent } from './pages/config-page/config-page.component';
         NavBarComponent,
         ChatBoxComponent,
         CanvasMiddleButtonsComponent,
+        ReplayButtonsComponent,
+        DeleteResetConfirmationDialogComponent,
+        LimitedTimePageComponent,
+        ConfigDialogComponent,
+        NoGameAvailableDialogComponent,
+        HistoryBoxComponent,
     ],
     imports: [
         AppMaterialModule,

@@ -1,6 +1,10 @@
 import { ClassicModeService } from '@app/services/classic-mode/classic-mode.service';
+import { LimitedModeService } from '@app/services/limited-mode/limited-mode.service';
+import { PlayersListManagerService } from '@app/services/players-list-manager/players-list-manager.service';
+import { RoomsManagerService } from '@app/services/rooms-manager/rooms-manager.service';
 import { Coordinate } from '@common/coordinate';
-import { AcceptedPlayer, ChatMessage, GameEvents, GameModes, MessageEvents, WaitingPlayerNameList } from '@common/game-interfaces';
+import { GameCardEvents, GameEvents, MessageEvents, PlayerEvents, RoomEvents } from '@common/enums';
+import { ChatMessage, PlayerData } from '@common/game-interfaces';
 import { Injectable, Logger } from '@nestjs/common';
 import {
     ConnectedSocket,
@@ -26,132 +30,176 @@ import { DELAY_BEFORE_EMITTING_TIME } from './game.gateway.constants';
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
     @WebSocketServer() private server: Server;
 
-    constructor(private readonly logger: Logger, private readonly classicModeService: ClassicModeService) {}
-
-    @SubscribeMessage(GameEvents.CreateSoloGame)
-    async createSoloGame(@ConnectedSocket() socket: Socket, @MessageBody('playerName') playerName: string, @MessageBody('gameId') gameId: string) {
-        const room = await this.classicModeService.createRoom(playerName, gameId);
-        if (room) {
-            room.clientGame.mode = GameModes.ClassicSolo;
-            room.player1.playerId = socket.id;
-            this.classicModeService.saveRoom(room);
-            this.server.to(socket.id).emit(GameEvents.RoomSoloCreated, room.roomId);
-        }
-    }
+    // gateway needs to be injected all the services that it needs to use
+    // eslint-disable-next-line max-params -- services are needed for the gateway
+    constructor(
+        private readonly logger: Logger,
+        private readonly classicModeService: ClassicModeService,
+        private readonly playersListManagerService: PlayersListManagerService,
+        private readonly roomsManagerService: RoomsManagerService,
+        private readonly limitedModeService: LimitedModeService,
+    ) {}
 
     @SubscribeMessage(GameEvents.StartGameByRoomId)
-    startGame(@ConnectedSocket() socket: Socket, @MessageBody('roomId') roomId: string, @MessageBody('playerName') playerName: string) {
-        const room = this.classicModeService.getRoomByRoomId(roomId);
-        if (!room) return;
-        socket.join(roomId);
-        if (room.player1.name === playerName) {
-            room.player1.playerId = socket.id;
-        } else if (room.clientGame.mode === GameModes.ClassicOneVsOne) {
-            room.player2.playerId = socket.id;
-        }
-        this.classicModeService.saveRoom(room);
-        this.server.to(roomId).emit(GameEvents.GameStarted, {
-            clientGame: room.clientGame,
-            players: { player1: room.player1, player2: room.player2 },
-            cheatDifferences: room.originalDifferences.flat(),
-        });
+    startGame(@ConnectedSocket() socket: Socket) {
+        this.roomsManagerService.startGame(socket, this.server);
     }
 
-    @SubscribeMessage(GameEvents.CreateOneVsOneRoom)
-    async createOneVsOneRoom(@ConnectedSocket() socket: Socket, @MessageBody('gameId') gameId: string) {
-        const oneVsOneRoom = await this.classicModeService.createOneVsOneRoom(gameId);
-        if (oneVsOneRoom) {
-            oneVsOneRoom.player1.playerId = socket.id;
-            this.classicModeService.saveRoom(oneVsOneRoom);
-            this.server.to(socket.id).emit(GameEvents.RoomOneVsOneCreated, oneVsOneRoom.roomId);
-        }
+    @SubscribeMessage(RoomEvents.CreateClassicSoloRoom)
+    async createSoloRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: PlayerData) {
+        await this.classicModeService.createSoloRoom(socket, playerPayLoad, this.server);
     }
 
-    @SubscribeMessage(GameEvents.RemoveDiff)
+    @SubscribeMessage(RoomEvents.CreateOneVsOneRoom)
+    async createOneVsOneRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: PlayerData) {
+        await this.classicModeService.createOneVsOneRoom(socket, playerPayLoad, this.server);
+    }
+
+    @SubscribeMessage(RoomEvents.CreateLimitedRoom)
+    async createLimitedRoom(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: PlayerData) {
+        await this.limitedModeService.createLimitedRoom(socket, playerPayLoad, this.server);
+    }
+
+    @SubscribeMessage(GameEvents.StartNextGame)
+    async startNextGame(@ConnectedSocket() socket: Socket) {
+        await this.limitedModeService.startNextGame(socket, this.server);
+    }
+
+    @SubscribeMessage(GameEvents.RemoveDifference)
     validateCoords(@ConnectedSocket() socket: Socket, @MessageBody() coords: Coordinate) {
-        this.classicModeService.verifyCoords(socket, coords, this.server);
+        this.roomsManagerService.validateCoords(socket, coords, this.server);
     }
 
     @SubscribeMessage(GameEvents.CheckStatus)
-    checkStatus(@ConnectedSocket() socket: Socket) {
-        this.classicModeService.endGame(socket, this.server);
+    async checkStatus(@ConnectedSocket() socket: Socket) {
+        await this.classicModeService.checkStatus(socket, this.server);
     }
 
-    @SubscribeMessage(GameEvents.UpdateRoomOneVsOneAvailability)
-    updateRoomOneVsOneAvailability(@MessageBody() gameId: string) {
-        this.classicModeService.updateRoomOneVsOneAvailability(gameId, this.server);
+    @SubscribeMessage(RoomEvents.UpdateRoomOneVsOneAvailability)
+    updateRoomOneVsOneAvailability(@ConnectedSocket() socket: Socket, @MessageBody() gameId: string) {
+        this.classicModeService.updateRoomOneVsOneAvailability(socket.id, gameId, this.server);
     }
 
-    @SubscribeMessage(GameEvents.CheckRoomOneVsOneAvailability)
-    checkRoomOneVsOneAvailability(@MessageBody() gameId: string) {
-        this.classicModeService.checkRoomOneVsOneAvailability(gameId, this.server);
+    @SubscribeMessage(RoomEvents.CheckRoomOneVsOneAvailability)
+    checkRoomOneVsOneAvailability(@ConnectedSocket() socket: Socket, @MessageBody() gameId: string) {
+        this.classicModeService.checkRoomOneVsOneAvailability(socket.id, gameId, this.server);
     }
 
-    @SubscribeMessage(GameEvents.DeleteCreatedOneVsOneRoom)
-    deleteCreatedOneVsOneRoom(@MessageBody() gameId: string) {
-        this.classicModeService.deleteOneVsOneRoomAvailability(gameId, this.server);
-        this.classicModeService.cancelAllJoining(gameId, this.server);
-        this.server.emit(GameEvents.UndoCreation, gameId);
+    @SubscribeMessage(RoomEvents.DeleteCreatedOneVsOneRoom)
+    deleteCreatedOneVsOneRoom(@ConnectedSocket() socket: Socket, @MessageBody() roomId: string) {
+        const room = this.roomsManagerService.getRoomById(roomId);
+        if (!room) return;
+        this.playersListManagerService.cancelAllJoining(room.clientGame.id, this.server);
+        this.classicModeService.deleteCreatedRoom(socket.id, roomId, this.server);
+    }
+    @SubscribeMessage(RoomEvents.DeleteCreatedCoopRoom)
+    deleteCreatedCoopRoom(@ConnectedSocket() socket: Socket, @MessageBody() roomId: string) {
+        this.roomsManagerService.deleteRoom(roomId);
+        this.limitedModeService.deleteAvailableGame(roomId);
+        socket.leave(roomId);
     }
 
-    @SubscribeMessage(GameEvents.UpdateWaitingPlayerNameList)
-    updateWaitingPlayerNameList(@ConnectedSocket() socket: Socket, @MessageBody() data: { gameId: string; playerName: string }) {
-        this.classicModeService.updateWaitingPlayerNameList(data.gameId, data.playerName, socket);
-        const playerNamesList = this.classicModeService.getWaitingPlayerNameList(data.gameId);
-        const waitingPlayerNameList: WaitingPlayerNameList = {
-            gameId: data.gameId,
-            playerNamesList,
-        };
-        this.server.emit(GameEvents.UpdateWaitingPlayerNameList, waitingPlayerNameList);
+    @SubscribeMessage(PlayerEvents.GetJoinedPlayerNames)
+    getJoinedPlayerNames(@ConnectedSocket() socket: Socket, @MessageBody() gameId: string) {
+        this.playersListManagerService.getWaitingPlayerNameList(socket.id, gameId, this.server);
     }
 
-    @SubscribeMessage(GameEvents.RefusePlayer)
-    refusePlayer(@MessageBody() data: { gameId: string; playerName: string }) {
-        this.classicModeService.refusePlayer(data.gameId, data.playerName, this.server);
+    @SubscribeMessage(PlayerEvents.UpdateWaitingPlayerNameList)
+    updateWaitingPlayerNameList(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: PlayerData) {
+        this.playersListManagerService.updateWaitingPlayerNameList(playerPayLoad, socket);
+        const hostId = this.roomsManagerService.getHostIdByGameId(playerPayLoad.gameId);
+        this.playersListManagerService.getWaitingPlayerNameList(hostId, playerPayLoad.gameId, this.server);
     }
 
-    @SubscribeMessage(GameEvents.AcceptPlayer)
-    acceptPlayer(@MessageBody() data: { gameId: string; roomId: string; playerNameCreator: string }) {
-        const acceptedPlayerName = this.classicModeService.acceptPlayer(data.gameId, data.roomId, data.playerNameCreator);
-        this.classicModeService.updateRoomOneVsOneAvailability(data.gameId, this.server);
-        const acceptedPlayerInRoom: AcceptedPlayer = {
-            gameId: data.gameId,
-            roomId: data.roomId,
-            playerName: acceptedPlayerName,
-        };
-        this.server.emit(GameEvents.PlayerAccepted, acceptedPlayerInRoom);
-        this.server.emit(GameEvents.UndoCreation, data.gameId);
+    @SubscribeMessage(PlayerEvents.RefusePlayer)
+    refusePlayer(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: PlayerData) {
+        this.playersListManagerService.refusePlayer(playerPayLoad, this.server);
+        this.playersListManagerService.getWaitingPlayerNameList(socket.id, playerPayLoad.gameId, this.server);
     }
 
-    @SubscribeMessage(GameEvents.CheckIfPlayerNameIsAvailable)
-    checkIfPlayerNameIsAvailable(@MessageBody() data: { gameId: string; playerName: string }) {
-        this.classicModeService.checkIfPlayerNameIsAvailable(data.gameId, data.playerName, this.server);
+    @SubscribeMessage(PlayerEvents.AcceptPlayer)
+    acceptPlayer(@ConnectedSocket() socket: Socket, @MessageBody() data: { gameId: string; roomId: string; playerName: string }) {
+        const acceptedPlayer = this.playersListManagerService.getAcceptPlayer(data.gameId, this.server);
+        this.classicModeService.acceptPlayer(acceptedPlayer, data.roomId, this.server);
+        this.classicModeService.updateRoomOneVsOneAvailability(socket.id, data.gameId, this.server);
+        this.playersListManagerService.deleteJoinedPlayersByGameId(data.gameId);
     }
 
-    @SubscribeMessage(GameEvents.CancelJoining)
-    cancelJoining(@MessageBody() data: { roomId: string; playerName: string }) {
-        this.classicModeService.cancelJoining(data.roomId, data.playerName, this.server);
+    @SubscribeMessage(PlayerEvents.CheckIfPlayerNameIsAvailable)
+    checkIfPlayerNameIsAvailable(@MessageBody() playerPayLoad: PlayerData) {
+        this.playersListManagerService.checkIfPlayerNameIsAvailable(playerPayLoad, this.server);
+    }
+
+    @SubscribeMessage(PlayerEvents.CancelJoining)
+    cancelJoining(@ConnectedSocket() socket: Socket, @MessageBody() gameId: string) {
+        this.playersListManagerService.cancelJoiningByPlayerId(socket.id, gameId);
+        const hostId = this.roomsManagerService.getHostIdByGameId(gameId);
+        this.playersListManagerService.getWaitingPlayerNameList(hostId, gameId, this.server);
     }
 
     @SubscribeMessage(GameEvents.AbandonGame)
-    abandonGame(@ConnectedSocket() socket) {
-        this.classicModeService.abandonGame(socket, this.server);
+    async abandonGame(@ConnectedSocket() socket: Socket) {
+        await this.roomsManagerService.abandonGame(socket, this.server);
+    }
+
+    @SubscribeMessage(RoomEvents.CheckIfAnyCoopRoomExists)
+    checkIfAnyCoopRoomExists(@ConnectedSocket() socket: Socket, @MessageBody() playerPayLoad: PlayerData) {
+        this.limitedModeService.checkIfAnyCoopRoomExists(socket, playerPayLoad, this.server);
     }
 
     @SubscribeMessage(MessageEvents.LocalMessage)
     sendMessage(@ConnectedSocket() socket: Socket, @MessageBody() data: ChatMessage) {
-        const roomId = this.classicModeService.getRoomIdFromSocket(socket);
+        const roomId = this.roomsManagerService.getRoomIdFromSocket(socket);
         socket.broadcast.to(roomId).emit(MessageEvents.LocalMessage, data);
     }
-    @SubscribeMessage(GameEvents.DeleteGameCard)
+
+    @SubscribeMessage(GameCardEvents.GameCardDeleted)
     gameCardDeleted(@MessageBody() gameId: string) {
-        this.server.emit(GameEvents.GameCardDeleted, gameId);
-        this.server.emit(GameEvents.UndoCreation, gameId);
+        this.server.emit(GameCardEvents.RequestReload);
+        this.server.emit(GameCardEvents.GameDeleted, gameId);
+        this.limitedModeService.handleDeleteGame(gameId);
+    }
+
+    @SubscribeMessage(GameCardEvents.GameCardCreated)
+    gameCardCreated() {
+        this.server.emit(GameCardEvents.RequestReload);
+    }
+
+    @SubscribeMessage(GameCardEvents.ResetTopTime)
+    resetTopTime(@MessageBody() gameId: string) {
+        this.playersListManagerService.resetTopTime(gameId, this.server);
+    }
+
+    @SubscribeMessage(GameCardEvents.AllGamesDeleted)
+    allGamesDeleted() {
+        this.server.emit(GameCardEvents.RequestReload);
+        this.limitedModeService.handleDeleteAllGames();
+    }
+
+    @SubscribeMessage(GameCardEvents.ResetAllTopTimes)
+    resetAllTopTime() {
+        this.playersListManagerService.resetAllTopTime(this.server);
+    }
+
+    @SubscribeMessage(GameCardEvents.GameConstantsUpdated)
+    async gameConstantsUpdated() {
+        this.server.emit(GameCardEvents.RequestReload);
+        await this.roomsManagerService.getGameConstants();
+    }
+
+    @SubscribeMessage(GameCardEvents.GamesHistoryDeleted)
+    gamesHistoryDeleted() {
+        this.server.emit(GameCardEvents.RequestReload);
+    }
+
+    @SubscribeMessage(GameEvents.RequestHint)
+    async requestHint(@ConnectedSocket() socket: Socket) {
+        await this.roomsManagerService.addHintPenalty(socket, this.server);
     }
 
     afterInit() {
         setInterval(() => {
-            this.updateTimers();
+            this.roomsManagerService.updateTimers(this.server);
         }, DELAY_BEFORE_EMITTING_TIME);
     }
 
@@ -159,16 +207,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         this.logger.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
     }
 
-    handleDisconnect(@ConnectedSocket() socket: Socket) {
+    async handleDisconnect(@ConnectedSocket() socket: Socket) {
         this.logger.log(`Déconnexion par l'utilisateur avec id : ${socket.id}`);
-        this.classicModeService.handleSocketDisconnect(socket, this.server);
-    }
-
-    updateTimers() {
-        for (const roomId of this.classicModeService['rooms'].keys()) {
-            const room = this.classicModeService.getRoomByRoomId(roomId);
-            if ((room.player2 && room.clientGame.mode === GameModes.ClassicOneVsOne) || room.clientGame.mode === GameModes.ClassicSolo)
-                this.classicModeService.updateTimer(roomId, this.server);
-        }
+        await this.classicModeService.handleSocketDisconnect(socket, this.server);
     }
 }

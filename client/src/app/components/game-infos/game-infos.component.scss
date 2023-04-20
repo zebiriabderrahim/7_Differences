@@ -1,7 +1,14 @@
+@import url('https://fonts.cdnfonts.com/css/troika-2');
 #gameInfos{
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     gap: 30px;
+}
+
+p {
+    font-size: 26px;
+    font-family: 'Troika', sans-serif;
+    -webkit-text-stroke: 1px black;
 }

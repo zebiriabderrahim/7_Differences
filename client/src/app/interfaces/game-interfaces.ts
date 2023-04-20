@@ -1,5 +1,4 @@
 import { Coordinate } from '@common/coordinate';
-import { PlayerTime } from '@common/game-interfaces';
 
 export interface GameDetails {
     name: string;
@@ -8,19 +7,6 @@ export interface GameDetails {
     nDifference: number;
     differences: Coordinate[][];
     isHard: boolean;
-}
-
-export interface Game {
-    id: number;
-    name: string;
-    difficultyLevel: boolean;
-    original: string;
-    modified: string;
-    soloTopTime: PlayerTime[];
-    oneVsOneTopTime: PlayerTime[];
-    differencesCount: number;
-    thumbnail: string;
-    hintList: string[];
 }
 
 export interface CanvasMeasurements {

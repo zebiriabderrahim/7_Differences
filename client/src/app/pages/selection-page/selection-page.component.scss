@@ -1,65 +1,95 @@
+@import url('https://fonts.cdnfonts.com/css/troika-2');
 * {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Troika', sans-serif;
+    font-size: 20px;
 }
+
+*:not(#selection) {
+    z-index: 1;
+}
+
 .selectionComponent {
-    background-color: rgb(170, 170, 170);
+    background-color: (#67a28b);
+    z-index: 1;
 }
 
 .header {
     display: flex;
     flex-direction: row;
-    background-color: rgb(213, 213, 213);
+    background-color: (#67a28b);
     justify-content: center;
     padding: 10px;
+    z-index: 1;
+    font-size: 30px;
+    -webkit-text-stroke: 2px black;
 }
 
 h1 {
     margin: auto;
     padding-left: 500px;
     text-align: center;
+    font-family: 'Troika', sans-serif;
+    color: white;
+    font-size: 40px;
 }
 
-.game-selection {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: stretch;
-    align-items: space-between;
-    text-align: center;
-    margin-left: 10px;
+h2 {
+    font-size: 40px;
+    font-family: 'Troika', sans-serif;
 }
 
-.game-selection > * {
-    flex: 1 40%;
+#nav-bar {
+    font-family: 'Troika', sans-serif;
 }
 
-.buttonContainer {
-    text-align: center;
+.button {
+    z-index: 999;
 }
 
-.previous_button {
-    position: static;
-    left: 40%;
-    padding: 10px;
-    margin: 10px;
-    font-size: 20px;
-    min-width: 150px;
+.gameCarrouselContainer {
+    position: relative;
 }
 
-.next_button {
-    position: static;
-    right: 40%;
-    padding: 10px;
-    margin: 10px;
-    font-size: 20px;
-    min-width: 150px;
+.gameCarrousel {
+    margin-left: 80px;
+    margin-right: 80px;
+}
+
+#previous_button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+    min-width: 100px;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+#previous_button:hover {
+    cursor: pointer;
+    filter: drop-shadow(10px 10px 10px black);
+}
+
+#next_button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 0;
+    min-width: 100px;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+#next_button:hover {
+    cursor: pointer;
+    filter: drop-shadow(10px 10px 10px black);
 }
 
 .menu_button {
     font-size: 20px;
     width: 600px;
     height: 100px;
+    z-index: 1;
 }
 
 .track {
@@ -69,14 +99,14 @@ h1 {
 
 .footerPreview {
     color: white;
-    position: relative;
-    height: 35%;
-    padding-top: 50px;
-    padding-bottom: 30px;
+    position: absolute;
+    height: 40%;
+    width: 95%;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-    background-color: rgb(60, 60, 60);
+    top: 50%;
+    left: 1%;
 }
 
 .section {
@@ -91,9 +121,9 @@ h1 {
     height: 150px;
     border-radius: 60%;
     margin: 0 auto;
-    border-style: double;
+    background-color: white;
     border-width: 5px;
-    border-color: darkslategrey;
+    border-color: rgb(0, 0, 0);
 }
 
 .footer {
@@ -103,16 +133,18 @@ h1 {
     right: 0;
     padding: 2rem;
     background: rgb(23, 15, 46);
-    color: white;
     font-weight: 500;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 0.2rem;
+    z-index: 1;
+    font-family: 'Troika', sans-serif;
 }
 
 .buttonCreate {
-    margin-top: 10px;
+    margin-top: 20px;
+    z-index: 1;
 }
 
 .buttonCreate a {
@@ -128,6 +160,7 @@ h1 {
     overflow: hidden;
     font-weight: 400px;
     transition: 0.5s;
+    z-index: 1;
 }
 
 .buttonCreate:hover a {
@@ -151,11 +184,52 @@ h1 {
     content: '';
     position: absolute;
     left: 50%;
-    transform: translatex(-50%);
+    transform: translateX(-50%);
     top: -5px;
     width: 30px;
     height: 10px;
     border-radius: 10px;
     transition: 0.5s;
     transition-delay: 0.5;
+}
+
+#selection {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#wood {
+    left: 200px;
+    position: absolute;
+    width: 80%;
+}
+
+p {
+    -webkit-text-stroke: 1px black;
+}
+
+#waiting-message{
+    position:absolute;
+    justify-content: center;
+    z-index: 2;
+    left: 32%;
+    top: 47.5%;
+    font-size: 35px;
+    font-family: 'Troika', sans-serif;
+    color:white;
+    -webkit-text-stroke: 3px black;
+}
+
+#waiting {
+    position:absolute;
+    z-index: 2;
+    left: 38.5%;
+    top: 16%;
+    width: 15%;
+    height: 26%;
 }

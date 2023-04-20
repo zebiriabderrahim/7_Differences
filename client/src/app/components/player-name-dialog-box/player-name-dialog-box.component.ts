@@ -1,17 +1,19 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { AsyncValidatorFn, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MAX_NAME_LENGTH, MIN_NAME_LENGTH } from '@app/constants/constants';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { filter, firstValueFrom } from 'rxjs';
+import { PlayerData } from '@common/game-interfaces';
+import { Subscription, filter, firstValueFrom } from 'rxjs';
 
 @Component({
     selector: 'app-player-name-dialog-box',
     templateUrl: './player-name-dialog-box.component.html',
     styleUrls: ['./player-name-dialog-box.component.scss'],
 })
-export class PlayerNameDialogBoxComponent implements OnInit {
+export class PlayerNameDialogBoxComponent implements OnInit, OnDestroy {
     playerNameForm: FormGroup;
+    private roomAvailabilitySubscription: Subscription;
 
     constructor(
         private dialogRef: MatDialogRef<PlayerNameDialogBoxComponent>,
@@ -27,13 +29,17 @@ export class PlayerNameDialogBoxComponent implements OnInit {
                     Validators.minLength(MIN_NAME_LENGTH),
                 ],
                 asyncValidators: [this.validatePlayerName.bind(this) as AsyncValidatorFn],
-                updateOn: 'blur',
             }),
         });
     }
+    ngOnDestroy(): void {
+        this.roomAvailabilitySubscription?.unsubscribe();
+    }
 
     ngOnInit(): void {
+        if (!this.data) return;
         this.handleCreateUndoCreation(this.data.gameId);
+        this.handleGameCardDelete();
     }
 
     submitForm() {
@@ -42,21 +48,29 @@ export class PlayerNameDialogBoxComponent implements OnInit {
         }
     }
 
-    handleCreateUndoCreation(gameId: string) {
-        this.roomManagerService.gameIdOfRoomToBeDeleted$.pipe(filter((id) => id === gameId)).subscribe(() => {
-            this.dialogRef.close();
+    private handleCreateUndoCreation(gameId: string) {
+        this.roomAvailabilitySubscription = this.roomManagerService.oneVsOneRoomsAvailabilityByRoomId$
+            .pipe(filter((roomAvailability) => roomAvailability.gameId === gameId && !roomAvailability.isAvailableToJoin))
+            .subscribe(() => {
+                this.dialogRef.close();
+            });
+    }
+
+    private handleGameCardDelete() {
+        this.roomManagerService.deletedGameId$.subscribe((gameId) => {
+            if (gameId === this.data.gameId) {
+                this.dialogRef.close();
+            }
         });
     }
 
-    async validatePlayerName(control: FormControl): Promise<{ [key: string]: unknown } | null> {
-        this.roomManagerService.isPlayerNameIsAlreadyTaken(this.data.gameId, control.value);
-        const isNameTaken = await firstValueFrom(this.roomManagerService.isNameTaken$, {
+    private async validatePlayerName(control: FormControl): Promise<{ [key: string]: unknown } | null> {
+        if (!this.data) return null;
+        const playerPayLoad = { gameId: this.data.gameId, playerName: control.value } as PlayerData;
+        this.roomManagerService.isPlayerNameIsAlreadyTaken(playerPayLoad);
+        const isNameTaken = await firstValueFrom(this.roomManagerService.playerNameAvailability$, {
             defaultValue: { gameId: this.data.gameId, isNameAvailable: true },
         });
-        if (isNameTaken.gameId === this.data.gameId && !isNameTaken.isNameAvailable) {
-            return { nameTaken: true };
-        } else {
-            return null;
-        }
+        return isNameTaken.gameId === this.data.gameId && !isNameTaken.isNameAvailable ? { nameTaken: true } : null;
     }
 }

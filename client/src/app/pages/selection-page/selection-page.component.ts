@@ -1,10 +1,9 @@
-// Id comes from database to allow _id
-/* eslint-disable no-underscore-dangle */
 import { AfterViewInit, Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommunicationService } from '@app/services/communication-service/communication.service';
 import { RoomManagerService } from '@app/services/room-manager-service/room-manager.service';
-import { CarouselPaginator, GameCard } from '@common/game-interfaces';
+import { CarouselPaginator } from '@common/game-interfaces';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-selection-page',
@@ -14,9 +13,9 @@ import { CarouselPaginator, GameCard } from '@common/game-interfaces';
 export class SelectionPageComponent implements AfterViewInit, OnDestroy {
     gameCarrousel: CarouselPaginator;
     readonly homeRoute: string;
-    readonly selectionRoute: string;
     readonly configRoute: string;
     private index: number;
+    private reloadSubscription: Subscription;
     constructor(
         private readonly communicationService: CommunicationService,
         public router: Router,
@@ -24,7 +23,6 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
     ) {
         this.gameCarrousel = { hasNext: false, hasPrevious: false, gameCards: [] };
         this.homeRoute = '/home';
-        this.selectionRoute = '/selection';
         this.configRoute = '/config';
         this.index = 0;
         this.roomManagerService.handleRoomEvents();
@@ -32,44 +30,42 @@ export class SelectionPageComponent implements AfterViewInit, OnDestroy {
 
     ngAfterViewInit(): void {
         this.loadGameCarrousel();
-    }
-
-    loadGameCarrousel() {
-        this.communicationService.loadGameCarrousel(this.index).subscribe((gameCarrousel) => {
-            if (gameCarrousel) {
-                this.gameCarrousel = gameCarrousel;
-                this.handleGameCardDelete(this.gameCarrousel.gameCards);
-            }
-        });
-    }
-
-    handleGameCardDelete(gameCards: GameCard[]) {
-        this.roomManagerService.deletedGameId$.subscribe((gameId) => {
-            this.gameCarrousel.gameCards = gameCards.filter((gameCard) => gameCard._id !== gameId);
-        });
+        this.handleGameCardsUpdate();
     }
 
     nextCarrousel() {
         if (this.gameCarrousel.hasNext) {
-            this.communicationService.loadGameCarrousel(++this.index).subscribe((gameCarrousel) => {
-                if (gameCarrousel) {
-                    this.gameCarrousel = gameCarrousel;
-                }
-            });
+            ++this.index;
+            this.loadGameCarrousel();
         }
     }
 
     previousCarrousel() {
         if (this.gameCarrousel.hasPrevious) {
-            this.communicationService.loadGameCarrousel(--this.index).subscribe((gameCarrousel) => {
-                if (gameCarrousel) {
-                    this.gameCarrousel = gameCarrousel;
-                }
-            });
+            --this.index;
+            this.loadGameCarrousel();
         }
     }
 
     ngOnDestroy(): void {
-        this.roomManagerService.disconnect();
+        this.reloadSubscription?.unsubscribe();
+        this.roomManagerService.removeAllListeners();
+    }
+
+    private loadGameCarrousel() {
+        this.communicationService.loadGameCarrousel(this.index).subscribe((gameCarrousel) => {
+            if (gameCarrousel) {
+                this.gameCarrousel = gameCarrousel;
+            }
+        });
+    }
+
+    private handleGameCardsUpdate() {
+        this.reloadSubscription = this.roomManagerService.isReloadNeeded$.subscribe((isGameCardsNeedToBeReloaded) => {
+            if (isGameCardsNeedToBeReloaded) {
+                this.index = 0;
+                this.loadGameCarrousel();
+            }
+        });
     }
 }

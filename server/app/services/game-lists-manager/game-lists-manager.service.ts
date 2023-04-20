@@ -1,14 +1,18 @@
 // Id comes from database to allow _id
 /* eslint-disable no-underscore-dangle */
 import { Game } from '@app/model/database/game';
-import { GAME_CARROUSEL_SIZE, DEFAULT_BEST_TIMES } from '@common/constants';
+import { DEFAULT_BEST_TIMES, GAME_CARROUSEL_SIZE } from '@common/constants';
 import { CarouselPaginator, GameCard } from '@common/game-interfaces';
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 
 @Injectable()
 export class GameListsManagerService {
-    private carouselGames: CarouselPaginator[] = [];
+    private carouselGames: CarouselPaginator[];
+
+    constructor() {
+        this.carouselGames = [];
+    }
 
     buildGameCardFromGame(game: Game): GameCard {
         const gameCard: GameCard = {

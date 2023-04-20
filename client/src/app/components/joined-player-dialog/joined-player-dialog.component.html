@@ -1,5 +1,19 @@
-<div mat-dialog-actions>
-    <h1 *ngIf="!refusedMessage">En attente d'etre accepté...</h1>
-    <h1 *ngIf="refusedMessage"> {{refusedMessage}}</h1> 
-    <button mat-button mat-dialog-close (click)="cancelJoining()">Annuler</button>
+<p id = "waiting" *ngIf="!refusedMessage">En attente d'etre accepté</p>
+<img class = "loading" *ngIf="!refusedMessage" src = "./assets/raccoonLoadingScreen.gif" alt="loadingGif"/>
+<p id = "waiting2" *ngIf="refusedMessage"> {{refusedMessage}}</p> 
+<div *ngIf="!refusedMessage" class = "button1">
+    <div class="button-container">
+        <button class = "cancel" mat-button  mat-dialog-close (click)="cancelJoining()"></button>
+        <img src="./assets/icon/CreateButton.png" alt="cancelButton">
+        <div class="centered-yes">Annuler</div>
+    </div>
 </div>
+<div *ngIf="refusedMessage" class = "button2">
+    <div class="button-container">
+        <button class = "cancel" mat-button  mat-dialog-close (click)="cancelJoining()"></button>
+        <img src="./assets/icon/CreateButton.png" alt="cancelButton">
+        <div class="centered-yes">Annuler</div>
+    </div>
+</div>
+<img *ngIf="!refusedMessage" src="./assets/gameSheet.png" class="dialog-image2" alt="popup">
+<img *ngIf="refusedMessage" src="./assets/gameSheet.png" class="dialog-image" alt="popup">

@@ -159,6 +159,14 @@ describe('CreationPageComponent', () => {
         expect(validateDifferencesSpy).toHaveBeenCalled();
     });
 
+    it('should call validateDifferences method on click', () => {
+        const validateButton = fixture.debugElement.query(By.css("button[name='validateButton']")).nativeElement;
+        const validateDifferencesSpy = spyOn(component, 'validateDifferences');
+        validateButton.click();
+        fixture.detectChanges();
+        expect(validateDifferencesSpy).toHaveBeenCalled();
+    });
+
     it('validateDifferences should open dialog', () => {
         const data = 42;
         const game = { id: 1, name: 'testGame' };

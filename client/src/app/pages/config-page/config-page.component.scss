@@ -1,8 +1,105 @@
+@import url('https://fonts.cdnfonts.com/css/troika-2');
+
 .create_button {
     font-size: 20px;
-    width: 500px;
-    height: 90px;
+    width: 100%;
+    height: 100%;
     background-color: white;
+    z-index: 1;
+    opacity: 0;
+}
+
+.reset_button {
+    font-size: 20px;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    z-index: 1;
+    opacity: 0;
+}
+
+.delete_button {
+    font-size: 20px;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    z-index: 1;
+    opacity: 0;
+    line-height: 30px;
+}
+
+.button-container:hover img {
+    filter: drop-shadow(10px 10px 10px black);
+}
+
+.config_button {
+    font-size: 150px;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    z-index: 1;
+    opacity: 0;
+}
+
+.button-container img {
+    position: absolute;
+    bottom: 100px;
+    left: 210px;
+    width: 50%;
+    height: 50%;
+    transition: all 0.3s ease;
+}
+
+.button-container .centered-reset {
+    position: absolute;
+    font-size: 45px;
+    top: 50%;
+    left: 47.5%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 400px;
+    line-height: normal;
+    color: white;
+    font-family: 'Troika', sans-serif;
+}
+
+.button-container:hover img {
+    filter: drop-shadow(10px 10px 10px black);
+}
+
+.config_button {
+    font-size: 150px;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    z-index: 1;
+    opacity: 0;
+}
+
+.button-container img {
+    position: absolute;
+    bottom: 100px;
+    left: 210px;
+    width: 50%;
+    height: 50%;
+    transition: all 0.3s ease;
+}
+
+.button-container .centered-reset {
+    position: absolute;
+    font-size: 45px;
+    top: 50%;
+    left: 47.5%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 400px;
+    line-height: normal;
+    color: white;
+    font-family: 'Troika', sans-serif;
+}
+
+.button-container:hover img {
+    filter: drop-shadow(10px 10px 10px black);
 }
 
 .menu_button {
@@ -21,14 +118,28 @@
 }
 
 .game-constants {
-    display: inline-block;
-    margin-left: 6%;
-    margin-right: 6%;
-    float: none;
+    max-width: 540px;
+    position: absolute;
+    right: 2%;
+    bottom: 25%;
 }
 
-.game-constants {
-    width: 80%;
+.game-creation {
+    position: absolute;
+    right: 29%;
+    bottom: 25%;
+}
+
+.game-reinitialization {
+    position: absolute;
+    right: 2%;
+    bottom: 10%;
+}
+
+.game-deletion {
+    position: absolute;
+    right: 29%;
+    bottom: 10%;
 }
 
 .game-constants * * {
@@ -38,4 +149,74 @@
 
 .upper-list-game {
     background-color: rgb(255, 255, 255);
+}
+
+.button-container {
+    position: relative;
+    width: 500px;
+    height: 150px;
+    margin-right: 40px;
+}
+
+.button-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.button-container .centered-create {
+    position: absolute;
+    font-size: 50px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 450px;
+    color: white;
+    font-family: 'Troika', sans-serif;
+}
+
+.button-container .centered-reset {
+    position: absolute;
+    font-size: 45px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 500px;
+    color: white;
+    font-family: 'Troika', sans-serif;
+}
+
+.button-container .centered-delete {
+    position: absolute;
+    font-size: 50px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 500px;
+    color: white;
+    font-family: 'Troika', sans-serif;
+    line-height: 50px;
+}
+
+#history-title {
+    position: absolute;
+    font-size: 50px;
+    color: white;
+    font-family: 'Troika', sans-serif;
+    left: 11%;
+    bottom: 39%;
+    z-index: 2;
+    -webkit-text-stroke: 2px black;
+}
+
+app-history-box {
+    position: absolute;
+    left: 5%;
+    bottom: 0%;
 }

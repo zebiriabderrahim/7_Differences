@@ -1,34 +1,32 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CommunicationService } from '@app/services/communication-service/communication.service';
-import { GameConfigConst } from '@common/game-interfaces';
-import { Subscription } from 'rxjs';
+import { Component } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { ConfigDialogComponent } from '@app/components/config-dialog/config-dialog.component';
+import { DeleteResetConfirmationDialogComponent } from '@app/components/delete-reset-confirmation-dialog/delete-reset-confirmation-dialog.component';
+import { Actions } from '@app/enum/delete-reset-actions';
 
 @Component({
     selector: 'app-config-page',
     templateUrl: './config-page.component.html',
     styleUrls: ['./config-page.component.scss'],
 })
-export class ConfigPageComponent implements OnInit, OnDestroy {
+export class ConfigPageComponent {
+    actions: typeof Actions;
     readonly createRoute: string;
-    readonly homeRoute: string;
-    configConstants: GameConfigConst;
-    private communicationSubscription: Subscription;
 
-    constructor(private readonly communicationService: CommunicationService) {
-        this.configConstants = { countdownTime: 0, penaltyTime: 0, bonusTime: 0 };
-        this.homeRoute = '/home';
+    constructor(private readonly dialog: MatDialog) {
         this.createRoute = '/create';
+        this.actions = Actions;
     }
 
-    ngOnInit() {
-        this.communicationSubscription = this.communicationService.loadConfigConstants().subscribe((res) => {
-            this.configConstants.countdownTime = res.countdownTime;
-            this.configConstants.penaltyTime = res.penaltyTime;
-            this.configConstants.bonusTime = res.bonusTime;
+    openConfirmationDialog(action: Actions) {
+        this.dialog.open(DeleteResetConfirmationDialogComponent, {
+            data: { actions: action },
+            disableClose: true,
+            panelClass: 'dialog',
         });
     }
 
-    ngOnDestroy() {
-        this.communicationSubscription.unsubscribe();
+    openConfigDialog() {
+        this.dialog.open(ConfigDialogComponent, new MatDialogConfig());
     }
 }

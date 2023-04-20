@@ -1,9 +1,9 @@
-<h1 mat-dialog-title>Bonjour</h1>
-<div mat-dialog-content>
-    <p>Veuillez entrer un nom valide</p>
+<p class = "title">Veuillez entrer un nom valide</p>
+
+<div class = "input">
     <form [formGroup]="playerNameForm" (ngSubmit)="submitForm()">
         <mat-form-field>
-            <input matInput type="text" placeholder="Entrer votre nom" formControlName="name" />
+            <input class = "inputText" matInput type="text" placeholder="Entrer votre nom" formControlName="name" />
             <mat-error *ngIf="playerNameForm.controls.name.errors?.required" [ngClass]="'error'">Le nom ne peut être vide !</mat-error>
             <mat-error *ngIf="playerNameForm.controls.name.errors?.pattern" [ngClass]="'error'">Le nom ne peut contenir d'espaces !</mat-error>
             <mat-error *ngIf="playerNameForm.controls.name.errors?.minlength" [ngClass]="'error'">Le nom doit contenir au moins 3 caractères !</mat-error>
@@ -11,6 +11,8 @@
             <mat-error *ngIf="playerNameForm.controls.name.errors?.nameTaken" [ngClass]="'error'">Ce nom est déjà pris !</mat-error>
         </mat-form-field>
         <button mat-raised-button type="submit" [disabled]="playerNameForm.invalid">Ok</button>
-        <button mat-button mat-dialog-close type="button">Non merci</button>
+        <button mat-button mat-dialog-close type="button">Retour</button>
     </form>
+    <span class="count">{{playerNameForm.controls.name.value.length || 0}} / 10</span>
 </div>
+<img src="./assets/icon/woodenPopUp.png" class="dialog-image" alt="popup">
