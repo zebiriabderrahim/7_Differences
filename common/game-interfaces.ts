@@ -1,8 +1,24 @@
 import { Coordinate } from '@common/coordinate';
+import { GameModes, MessageTag } from '@common/enums';
 
 export interface Players {
     player1: Player;
     player2?: Player;
+}
+
+export interface GameHistory {
+    date: string,
+    startingHour: string,
+    duration: number,
+    gameMode: string,
+    player1: PlayerInfo,
+    player2?: PlayerInfo,
+}
+
+export interface PlayerInfo {
+    name: string;
+    isWinner: boolean;
+    isQuitter: boolean;
 }
 
 export interface ClientSideGame {
@@ -41,20 +57,27 @@ export interface PlayerTime {
     time: number;
 }
 
-export interface ClassicPlayRoom {
+export interface GameRoom {
     roomId: string;
     clientGame: ClientSideGame;
     endMessage: string;
     timer: number;
     originalDifferences: Coordinate[][];
+    gameConstants: GameConfigConst;
     player2?: Player;
-    player1?: Player;
+    player1: Player;
 }
 
 export interface Player {
     playerId?: string;
     name: string;
-    diffData: Differences;
+    differenceData: Differences;
+}
+
+export interface PlayerData {
+    playerName: string;
+    gameId: string;
+    gameMode: GameModes;
 }
 
 export interface Differences {
@@ -65,6 +88,7 @@ export interface Differences {
 export interface RoomAvailability {
     gameId: string;
     isAvailableToJoin: boolean;
+    hostId: string;
 }
 
 export interface PlayerNameAvailability {
@@ -83,61 +107,21 @@ export interface WaitingPlayerNameList {
     playerNamesList: string[];
 }
 
-
-
-
-export enum GameEvents {
-    ValidateCoords = 'validateCoords',
-    CheckStatus = 'checkStatus',
-    CreateSoloGame = 'createSoloGame',
-    RoomOneVsOneCreated = 'roomOneVsOneCreated',
-    EndGame = 'endGame',
-    TimerStarted = 'timerStarted',
-    RemoveDiff = 'removeDiff',
-    RoomOneVsOneAvailable = 'RoomOneVsOneAvailable',
-    StartGameByRoomId = 'CreateOneVsOneGame',
-    CheckRoomOneVsOneAvailability = 'CheckRoomOneVsOneAvailability',
-    UpdateRoomOneVsOneAvailability = 'UpdateRoomOneVsOneAvailability',
-    DeleteCreatedOneVsOneRoom = 'DeleteCreatedOneVsOneRoom',
-    UpdateWaitingPlayerNameList = 'UpdateWaitingPlayerNameList',
-    RefusePlayer = 'RefusePlayer',
-    CheckIfPlayerNameIsAvailable = 'CheckIfPlayerNameIsAvailable',
-    PlayerNameTaken = 'PlayerNameTaken',
-    CancelJoining = 'CancelJoining',
-    AcceptPlayer = 'AcceptPlayer',
-    CreateOneVsOneRoom = 'CreateOneVsOneRoom',
-    OneVsOneRoomDeleted = 'OneVsOneRoomDeleted',
-    PlayerAccepted = 'PlayerAccepted',
-    GameStarted = 'OneVsOneStarted',
-    RoomSoloCreated = 'RoomSoloCreated',
-    AbandonGame = 'AbandonGame',
-    JoinOneVsOneGame = 'JoinOneVsOneGame',
-    GetGameCards = 'GetGameCards',
-    UndoCreation = 'UndoCreation',
-    Disconnect = 'Disconnect',
-    DeleteGameCard = 'DeleteGameCard',
-    GameCardDeleted = 'GameCardDeleted',
-}
-
-export enum GameModes {
-    ClassicSolo = 'Classic->Solo',
-    ClassicOneVsOne = 'Classic->OneVsOne',
-}
-
-export enum MessageEvents {
-    LocalMessage = 'LocalMessage',
-    GlobalMessage = 'GlobalMessage',
-}
-
-export enum MessageTag {
-    sent = 'sent',
-    received = 'received',
-    common = 'common',
-}
-
 export interface ChatMessage {
     tag: MessageTag;
     message: string;
+}
+
+export interface NewRecord {
+    gameName: string;
+    playerName: string;
+    rank: number;
+    gameMode: string;
+}
+
+export interface TimerMode {
+    isCountdown: boolean;
+    requiresPlayer2?: boolean;
 }
 
 export enum GameCardActions {
@@ -145,3 +129,4 @@ export enum GameCardActions {
     Join = 'join',
 }
 export { Coordinate };
+

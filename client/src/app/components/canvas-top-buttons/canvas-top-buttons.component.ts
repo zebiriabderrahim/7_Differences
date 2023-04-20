@@ -1,8 +1,6 @@
-import { AfterViewInit, Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { COLORS, DEFAULT_COLOR, DEFAULT_WIDTH, DRAW_VALUES } from '@app/constants/drawing';
 import { CanvasAction } from '@app/enum/canvas-action';
-import { CanvasPosition } from '@app/enum/canvas-position';
-import { CanvasOperation } from '@app/interfaces/canvas-operation';
 import { DrawService } from '@app/services/draw-service/draw.service';
 
 @Component({
@@ -10,9 +8,7 @@ import { DrawService } from '@app/services/draw-service/draw.service';
     templateUrl: './canvas-top-buttons.component.html',
     styleUrls: ['./canvas-top-buttons.component.scss'],
 })
-export class CanvasTopButtonsComponent implements AfterViewInit {
-    @Input() position: CanvasPosition;
-    operationDetails: CanvasOperation;
+export class CanvasTopButtonsComponent {
     selectedCanvasAction: CanvasAction;
     isColorSelected: boolean;
     canvasAction: typeof CanvasAction;
@@ -28,18 +24,9 @@ export class CanvasTopButtonsComponent implements AfterViewInit {
         this.canvasAction = CanvasAction;
         this.selectedCanvasAction = CanvasAction.Pencil;
         this.drawValues = DRAW_VALUES;
-        this.drawColor = DEFAULT_COLOR;
         this.colors = COLORS;
-        this.isColorSelected = false;
-    }
-
-    ngAfterViewInit(): void {
-        this.pencilDiameter = DEFAULT_WIDTH;
-        this.eraserLength = DEFAULT_WIDTH;
-        this.canvasAction = CanvasAction;
-        this.selectedCanvasAction = CanvasAction.Pencil;
         this.setCanvasAction(this.selectedCanvasAction);
-        this.setDrawingColor(this.drawColor);
+        this.setDrawingColor(DEFAULT_COLOR);
         this.setPencilWidth(this.pencilDiameter);
         this.setEraserLength(this.eraserLength);
     }

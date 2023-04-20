@@ -1,0 +1,70 @@
+<div *ngIf="data.actions === actions.DeleteAllGames">
+    <p class = "delete-question">Êtes-vous sûr de vouloir supprimer tous les jeux ?</p>
+</div>
+<div *ngIf="data.actions === actions.DeleteGame">
+    <p class = "delete-question">Êtes-vous sûr de vouloir supprimer le jeu ?</p>
+</div>
+<div *ngIf="data.actions === actions.ResetAllTopTimes">
+    <p class = "reset-question">Êtes-vous sûr de vouloir réinitialiser tous les meilleurs temps ?</p>
+</div>
+<div *ngIf="data.actions === actions.ResetTopTime">
+    <p class = "reset-question">Êtes-vous sûr de vouloir réinitialiser le meilleur temps ?</p>
+</div>
+
+<div *ngIf="data.actions === actions.DeleteHistory">
+    <p class = "history-question">Êtes-vous sûr de vouloir supprimer l'historique?</p>
+</div>
+
+<div class = "button1" *ngIf="data.actions === actions.DeleteAllGames">
+    <div class="button-container">
+        <button class = "yesButton" mat-button  mat-dialog-close (click)="deleteAllGames()"></button>
+        <img src="./assets/icon/PlayButton.png" alt="yesButton">
+        <div class="centered-yes">Oui</div>
+    </div>
+</div>
+
+<div class = "button1" *ngIf="data.actions === actions.DeleteGame">
+    <div class="button-container">
+        <button class = "yesButton" mat-button  mat-dialog-close (click)="deleteGameCard()"></button>
+        <img src="./assets/icon/PlayButton.png" alt="yesButton">
+        <div class="centered-yes">Oui</div>
+    </div>
+</div>
+
+<div class = "button1" *ngIf="data.actions === actions.ResetAllTopTimes">
+    <div class="button-container">
+        <button class = "yesButton" mat-button  mat-dialog-close (click)="resetAllTopTimes()"></button>
+        <img src="./assets/icon/PlayButton.png" alt="yesButton">
+        <div class="centered-yes">Oui</div>
+    </div>
+</div>
+
+<div class = "button1" *ngIf="data.actions === actions.ResetTopTime">
+    <div class="button-container">
+        <button class = "yesButton" mat-button  mat-dialog-close (click)="resetTopTime()"></button>
+        <img src="./assets/icon/PlayButton.png" alt="yesButton">
+        <div class="centered-yes">Oui</div>
+    </div>
+</div>
+
+<div class = "button1" *ngIf="data.actions === actions.DeleteHistory">
+    <div class="button-container">
+        <button class = "yesButton" mat-button  mat-dialog-close (click) ="deleteAllGamesHistory()"></button>
+        <img src="./assets/icon/PlayButton.png" alt="yesButton">
+        <div class="centered-yes">Oui</div>
+    </div>
+</div>
+
+<div class = "button2">
+    <div class="button-container">
+    <button class = "noButton" mat-button  mat-dialog-close></button>
+        <img src="./assets/icon/CreateButton.png" alt="noButton" >
+        <div class="centered-no">Non</div>
+    </div>
+</div>
+<img src="./assets/icon/woodenPopUp.png" class="dialog-image" alt="popup">
+
+
+
+
+

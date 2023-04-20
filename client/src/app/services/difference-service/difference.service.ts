@@ -17,10 +17,6 @@ export class DifferenceService {
         this.resetAttributes();
     }
 
-    getDifferences(): Coordinate[] {
-        return this.differences;
-    }
-
     getNumberOfDifferences(): number {
         return this.differencePackages.length;
     }
@@ -68,6 +64,32 @@ export class DifferenceService {
         return this.differences;
     }
 
+    enlargeDifferences(differenceCoordinates: Coordinate[], radius: number): Coordinate[] {
+        const enlargedDifferenceCoordinates: Coordinate[] = [];
+        for (const coordinate of differenceCoordinates) {
+            for (let i = -radius; i <= radius; i++) {
+                for (let j = -radius; j <= radius; j++) {
+                    const largerCoordinate: Coordinate = { x: coordinate.x + i, y: coordinate.y + j };
+                    const distance = Math.sqrt(i * i + j * j);
+                    if (
+                        distance <= radius &&
+                        this.isCoordinateValid(largerCoordinate) &&
+                        !this.visitedCoordinates[largerCoordinate.x][largerCoordinate.y]
+                    ) {
+                        enlargedDifferenceCoordinates.push(largerCoordinate);
+                        this.visitedCoordinates[largerCoordinate.x][largerCoordinate.y] = true;
+                        this.differenceMatrix[largerCoordinate.x][largerCoordinate.y] = true;
+                    }
+                }
+            }
+        }
+        return enlargedDifferenceCoordinates;
+    }
+
+    private createFalseMatrix(width: number, height: number): boolean[][] {
+        return new Array(width).fill(false).map(() => new Array(height).fill(false)) as boolean[][];
+    }
+
     private findAdjacentCoords(coord: Coordinate): Coordinate[] {
         const adjacentCoordinates: Coordinate[] = [
             { x: coord.x - 1, y: coord.y - 1 },
@@ -87,10 +109,6 @@ export class DifferenceService {
         this.differencePackages = [];
         this.visitedCoordinates = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
         this.differenceMatrix = this.createFalseMatrix(IMG_WIDTH, IMG_HEIGHT);
-    }
-
-    private createFalseMatrix(width: number, height: number): boolean[][] {
-        return new Array(width).fill(false).map(() => new Array(height).fill(false)) as boolean[][];
     }
 
     private isCoordinateValid(coordinate: Coordinate): boolean {
@@ -119,27 +137,5 @@ export class DifferenceService {
 
     private arePixelsDifferent(pixel1: Pixel, pixel2: Pixel): boolean {
         return !(pixel1.red === pixel2.red && pixel1.green === pixel2.green && pixel1.blue === pixel2.blue);
-    }
-
-    private enlargeDifferences(differenceCoordinates: Coordinate[], radius: number): Coordinate[] {
-        const enlargedDifferenceCoordinates: Coordinate[] = [];
-        for (const coordinate of differenceCoordinates) {
-            for (let i = -radius; i <= radius; i++) {
-                for (let j = -radius; j <= radius; j++) {
-                    const largerCoordinate: Coordinate = { x: coordinate.x + i, y: coordinate.y + j };
-                    const distance = Math.sqrt(i * i + j * j);
-                    if (
-                        distance <= radius &&
-                        this.isCoordinateValid(largerCoordinate) &&
-                        !this.visitedCoordinates[largerCoordinate.x][largerCoordinate.y]
-                    ) {
-                        enlargedDifferenceCoordinates.push(largerCoordinate);
-                        this.visitedCoordinates[largerCoordinate.x][largerCoordinate.y] = true;
-                        this.differenceMatrix[largerCoordinate.x][largerCoordinate.y] = true;
-                    }
-                }
-            }
-        }
-        return enlargedDifferenceCoordinates;
     }
 }

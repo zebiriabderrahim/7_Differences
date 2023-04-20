@@ -1,32 +1,52 @@
 <div *ngIf="game" class="gameSheet">
-    <h1 class="title">{{ game.name }}</h1>
     <div class="gameContainer">
+        <img *ngIf="game.difficultyLevel === true" class="background"  alt="background-image" src="./assets/background/gameSheetDifficile.png" />
+        <img *ngIf="game.difficultyLevel === false" class="background"  alt="background-image" src="./assets/background/gameSheetFacile.png" />
+        <h1 class="title">{{ game.name }}</h1>
         <img class="thumbnail" [src]="url" alt="track" />
         <div class="gameInfo">
-            <h2>Difficulté: {{ game.difficultyLevel ? ' Difficile' : ' Facile' }}</h2>
             <div class="ranking">
-                <div class="top three section">
+                <div class="topThree section">
                     <h3>Top Solo</h3>
-                    <div class="topSolo" *ngFor="let player of game.soloTopTime; index as i">
-                        <strong class="bestTime">&nbsp;{{ i + 1 }} </strong>
-                        &nbsp;<strong>{{ player.name }}</strong> {{ player.time }}
+                    <div class="topText Solo" *ngFor="let player of game.soloTopTime; index as i">
+                        <ng-container *ngIf="i === 0">
+                            <img class="gold" alt="gold" src="./assets/icon/gold.png" />
+                        </ng-container>
+                        <ng-container *ngIf="i === 1">
+                            <img class="argent" alt="argent" src="./assets/icon/argent.png" />
+                        </ng-container>
+                        <ng-container *ngIf="i === 2">
+                            <img class="bronze" alt="bronze" src="./assets/icon/bronze.png" />
+                        </ng-container>
+                        &nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;<strong>{{ player.name }}</strong>&nbsp;&nbsp; {{ player.time*1000|date:'mm:ss'}} &nbsp;&nbsp;
                     </div>
                 </div>
-                <div class="top three section">
+                <div class="topThree section">
                     <h3>Top 1 Vs 1</h3>
-                    <div *ngFor="let player of game.oneVsOneTopTime">
-                        <strong>{{ player.name }}</strong> {{ player.time }}
+                    <div class="topText OneVsOne" *ngFor="let player of game.oneVsOneTopTime">
+                        <strong>{{ player.name }}</strong> &nbsp;&nbsp; {{ player.time*1000|date:'mm:ss'}}
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="buttonSection">
-        <button mat-raised-button *ngIf="router.url === '/selection'" (click)="playSolo()">Jouer</button>
-        <button mat-raised-button *ngIf="router.url === '/config'" (click)="deleteGameCard()">Supprimer</button>
-        <button mat-raised-button *ngIf="router.url === '/selection'"
-        (click)="isAvailableToJoin()?joinOneVsOne():createOneVsOne()">{{isAvailableToJoin()?"Joindre":"Creer"}}
-        </button>
-        <button mat-raised-button *ngIf="router.url === '/config'">Réinitialiser</button>
+        <div class="buttonSection">
+            <div class="button-container">
+                <button mat-raised-button *ngIf="router.url === '/selection'" (click)="playSolo()">Jouer</button>
+                <button mat-raised-button *ngIf="router.url === '/config'" (click)="openConfirmationDialog(actions.DeleteGame)">Supprimer</button>
+                <img class="playButton" alt="button" src="./assets/icon/PlayButton.png"/>
+                <div class="playText" *ngIf="router.url === '/selection'">Jouer</div>
+                <div class="deleteText" *ngIf="router.url === '/config'">Supprimer</div>
+            </div>
+            <div class="button-container">
+                <button mat-raised-button *ngIf="router.url === '/selection'"
+                (click)="isAvailableToJoin()?joinOneVsOne():createOneVsOne()">{{isAvailableToJoin()?"Joindre":"Creer"}} </button>
+                <button mat-raised-button *ngIf="router.url === '/config'" (click)="openConfirmationDialog(actions.ResetTopTime)">Réinitialiser</button>
+                <img class="createButton" alt="button" src="./assets/icon/CreateButton.png"/>
+                <div class="createText" *ngIf="router.url === '/selection'">{{isAvailableToJoin()?"Joindre":"Creer"}} </div>
+                <div class="reinitializeText" *ngIf="router.url === '/config'">Réinitialiser</div>
+            </div>
+        </div>
     </div>
 </div>
+

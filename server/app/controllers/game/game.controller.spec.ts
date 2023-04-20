@@ -1,5 +1,6 @@
 import { Game } from '@app/model/database/game';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
+import { GameConstantsDto } from '@app/model/dto/game/game-constants.dto';
 import { GameService } from '@app/services/game/game.service';
 import { CarouselPaginator, GameConfigConst } from '@common/game-interfaces';
 import { HttpStatus } from '@nestjs/common';
@@ -7,6 +8,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'express';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { GameController } from './game.controller';
+import { GameHistory } from '@app/model/database/game-history';
+import { GameModes } from '@common/enums';
 
 describe('GameController', () => {
     let controller: GameController;
@@ -32,6 +35,15 @@ describe('GameController', () => {
         modifiedImage: 'test',
         nDifference: 1,
         differences: 'test',
+    };
+
+    const gameHistoryTest: GameHistory = {
+        gameMode: GameModes.ClassicOneVsOne,
+        player1: { name: 'John Doe', isWinner: true, isQuitter: false },
+        player2: { name: 'Jane Doe', isWinner: false, isQuitter: false },
+        duration: 100,
+        startingHour: '2020-01-01T00:00:00.000Z',
+        date: '2020-01-01T00:00:00.000Z',
     };
 
     beforeEach(async () => {
@@ -113,8 +125,8 @@ describe('GameController', () => {
         expect(gameService.getGameById.called).toBeTruthy();
     });
 
-    it('getConfigConstants() should call getConfigConstants() in gameService', () => {
-        gameService.getConfigConstants.returns(gameConfigConstTest);
+    it('getConfigConstants() should call getConfigConstants() in gameService', async () => {
+        gameService.getGameConstants.resolves(gameConfigConstTest);
         const res = {} as unknown as Response;
         res.status = (code) => {
             expect(code).toEqual(HttpStatus.OK);
@@ -125,12 +137,12 @@ describe('GameController', () => {
             return res;
         };
         res.send = () => res;
-        controller.getConfigConstants(res);
-        expect(gameService.getConfigConstants.calledOnce).toBeTruthy();
+        await controller.getGameConstants(res);
+        expect(gameService.getGameConstants.calledOnce).toBeTruthy();
     });
 
-    it('getConfigConstants() should return NOT_FOUND when service unable to fetch game ConfigConstants', () => {
-        gameService.getConfigConstants.throwsException();
+    it('getGameConstants() should return NOT_FOUND when service unable to fetch game GameConstants', async () => {
+        gameService.getGameConstants.rejects();
         const res = {} as unknown as Response;
         res.status = (code) => {
             expect(code).toEqual(HttpStatus.NOT_FOUND);
@@ -141,9 +153,8 @@ describe('GameController', () => {
             return res;
         };
         res.send = () => res;
-        controller.getConfigConstants(res);
-        expect(gameService.getConfigConstants).toThrow();
-        expect(gameService.getConfigConstants.called).toBeTruthy();
+        await controller.getGameConstants(res);
+        expect(gameService.getGameConstants.called).toBeTruthy();
     });
 
     it('addGame()should call addGame() in gameService', async () => {
@@ -207,5 +218,109 @@ describe('GameController', () => {
         await controller.deleteGameById('0', res);
         expect(gameService.deleteGameById).toThrow();
         expect(gameService.deleteGameById.called).toBeTruthy();
+    });
+
+    it('deleteAllGames() should call deleteAllGames() in gameService', async () => {
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.OK);
+            return res;
+        };
+        res.send = () => res;
+        await controller.deleteAllGames(res);
+        expect(gameService.deleteAllGames.calledOnce).toBeTruthy();
+    });
+
+    it('deleteAllGames() should return NOT_FOUND when service unable to delete all games', async () => {
+        gameService.deleteAllGames.throwsException();
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.NO_CONTENT);
+            return res;
+        };
+        res.send = () => res;
+        await controller.deleteAllGames(res);
+        expect(gameService.deleteAllGames).toThrow();
+        expect(gameService.deleteAllGames.called).toBeTruthy();
+    });
+
+    it('updateGameConstants() should call updateGameConstants() in gameService', async () => {
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.OK);
+            return res;
+        };
+        res.send = () => res;
+        await controller.updateGameConstants(new GameConstantsDto(), res);
+        expect(gameService.updateGameConstants.calledOnce).toBeTruthy();
+    });
+
+    it('updateGameConstants() should return NOT_FOUND when service unable to update game constants', async () => {
+        gameService.updateGameConstants.throwsException();
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.NO_CONTENT);
+            return res;
+        };
+        res.send = () => res;
+        await controller.updateGameConstants(new GameConstantsDto(), res);
+        expect(gameService.updateGameConstants).toThrow();
+        expect(gameService.updateGameConstants.called).toBeTruthy();
+    });
+
+    it('getGamesHistory should call getGamesHistory() in gameService', async () => {
+        gameService.getGamesHistory.resolves([gameHistoryTest]);
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.OK);
+            return res;
+        };
+        res.json = (gameHistory) => {
+            expect(gameHistory).toEqual([gameHistoryTest]);
+            return res;
+        };
+        res.send = () => res;
+        await controller.getGamesHistory(res);
+        expect(gameService.getGamesHistory.calledOnce).toBeTruthy();
+    });
+
+    it('getGamesHistory() should return NOT_FOUND when service unable to fetch game history', async () => {
+        gameService.getGamesHistory.rejects();
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.NOT_FOUND);
+            return res;
+        };
+        res.json = (gameHistory) => {
+            expect(gameHistory).toEqual(undefined);
+            return res;
+        };
+        res.send = () => res;
+        await controller.getGamesHistory(res);
+        expect(gameService.getGamesHistory.called).toBeTruthy();
+    });
+
+    it('deleteAllGamesHistory() should call deleteAllGamesHistory() in gameService', async () => {
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.OK);
+            return res;
+        };
+        res.send = () => res;
+        await controller.deleteAllGamesHistory(res);
+        expect(gameService.deleteAllGamesHistory.calledOnce).toBeTruthy();
+    });
+
+    it('deleteAllGamesHistory() should return NOT_FOUND when service unable to delete all games history', async () => {
+        gameService.deleteAllGamesHistory.throwsException();
+        const res = {} as unknown as Response;
+        res.status = (code) => {
+            expect(code).toEqual(HttpStatus.NO_CONTENT);
+            return res;
+        };
+        res.send = () => res;
+        await controller.deleteAllGamesHistory(res);
+        expect(gameService.deleteAllGamesHistory).toThrow();
+        expect(gameService.deleteAllGamesHistory.called).toBeTruthy();
     });
 });

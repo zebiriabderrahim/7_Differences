@@ -1,20 +1,22 @@
 <div id="chat-box">
     <div class="content">
         <div class="contact-profile">
-            <img src="assets/raccoonChatAvatarOther.png" alt="" />
+            <img src="assets/raccoonChatAvatarOther.png" alt="raccoonAvatar" />
+            <p *ngIf="!gameMode.includes('Solo')" class = "chat">Zone de clavardage</p>
+            <p *ngIf="gameMode.includes('Solo')" class = "chat">Zone d'informations</p>
         </div>
         <div class="messages">
             <ul>
                 <li [class]="messageItem.tag" *ngFor="let messageItem of messages">
-                    <img *ngIf="messageItem.tag === 'sent'" src="assets/raccoonChatAvatar.png" alt="" />
-                    <img *ngIf="messageItem.tag === 'received'" src="assets/raccoonChatAvatarOther.png" alt="" />
+                    <img *ngIf="messageItem.tag === 'Sent'" src="assets/raccoonChatAvatar.png" alt="raccoonAvatar" />
+                    <img *ngIf="messageItem.tag === 'Received'" src="assets/raccoonChatAvatarOther.png" alt="raccoonAvatar" />
                     <p>{{ messageItem.message }}</p>
                 </li>
             </ul>
         </div>
-        <div *ngIf="gameMode !== 'Classic->Solo'" class="message-input">
+        <div *ngIf="!gameMode.includes('Solo') && !isReplaying" class="message-input">
             <div class="wrap">
-                <input type="text" #inputText placeholder="Entrez un message" (keyup.enter)="onAdd(inputText)" maxlength="200" />
+                <input id = "input" type="text" #inputText placeholder="Entrez un message" (keyup.enter)="onAdd(inputText)" maxlength="200" />
                 <i class="fa fa-paperclip attachment" aria-hidden="true"></i>
                 <button mat-button class="submit" (click)="onAdd(inputText)">
                     <mat-icon class="small-icon">near_me</mat-icon>

@@ -2,33 +2,39 @@
     <div class="upper-list-game">
         <app-selection-page> </app-selection-page>
     </div>
-    <div class="under-game-list">
-        <mat-grid-list cols="2" rowHeight="300px">
-            <mat-grid-tile>
-                <div class="change-game">
-                    <button mat-raised-button [routerLink]="createRoute" class="create_button">Création de jeu</button>
-                </div>
-            </mat-grid-tile>
-            <mat-grid-tile
-                ><div class="game-constants">
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title> Constantes de jeu </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <ul>
-                            <p>
-                                Temps initial du compte à rebours : <strong>{{ configConstants.countdownTime }} secondes</strong>
-                            </p>
-                            <p>
-                                Temps de pénalité pour l’utilisation d’un indice : <strong>{{ configConstants.penaltyTime }} secondes</strong>
-                            </p>
-                            <p>
-                                Temps gagné avec la découverte d’une différence : <strong>{{ configConstants.bonusTime }} secondes</strong>
-                            </p>
-                        </ul>
-                    </mat-expansion-panel>
-                </div>
-            </mat-grid-tile>
-        </mat-grid-list>
+    <p id = "history-title">Historique de jeux</p>
+    <app-history-box></app-history-box>
+    <div class="game-creation">
+        <div class="button-container">
+            <button class="create_button" mat-button [routerLink]="createRoute">
+            </button>
+            <img src="./assets/icon/CreationPageButton.png" alt="createButton"/>
+            <div class="centered-create">Création de jeu</div>
+        </div>
     </div>
+
+    <div class="game-constants">
+        <div class="button-container">
+            <button mat-raised-button class="config_button" (click)="openConfigDialog()">Configurer les constantes de jeu</button>
+            <img src="./assets/icon/ConfigButton.png">
+            <div class="centered-reset">Configurer les constantes de jeu</div>
+        </div>
+    </div>   
+        
+    <div class="game-reinitialization">  
+        <div class="button-container">
+            <button mat-raised-button class="reset_button" (click)="openConfirmationDialog(actions.ResetAllTopTimes)"></button>
+            <img src="./assets/icon/ResetButton.png" alt="resetButton"/>
+            <div class="centered-reset">Réinitialiser les meilleurs temps</div>
+        </div>            
+    </div> 
+    
+    <div class="game-deletion">  
+        <div class="button-container">
+            <button mat-raised-button class="delete_button" (click)="openConfirmationDialog(actions.DeleteAllGames)"></button>
+            <img src="./assets/icon/DeleteAll.png" alt="deleteAll">
+            <div class="centered-delete">Supprimer tous les jeux</div>
+        </div>
+    </div>
+              
 </div>

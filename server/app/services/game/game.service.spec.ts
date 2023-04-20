@@ -1,15 +1,25 @@
 import { Game } from '@app/model/database/game';
 import { CreateGameDto } from '@app/model/dto/game/create-game.dto';
+import { GameConstantsDto } from '@app/model/dto/game/game-constants.dto';
 import { DatabaseService } from '@app/services/database/database.service';
-import { CarouselPaginator, GameConfigConst } from '@common/game-interfaces';
+import { GameModes } from '@common/enums';
+import { CarouselPaginator, PlayerTime } from '@common/game-interfaces';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { GameService } from './game.service';
+import { GameHistory } from '@app/model/database/game-history';
 
 describe('GameService', () => {
     let gameService: GameService;
     let databaseService: SinonStubbedInstance<DatabaseService>;
-    const gameConfigConstTest: GameConfigConst = {
+
+    const defaultBestTimes: PlayerTime[] = [
+        { name: 'John Doe', time: 100 },
+        { name: 'Jane Doe', time: 200 },
+        { name: 'the scream', time: 250 },
+    ];
+
+    const gameConfigConstTest: GameConstantsDto = {
         countdownTime: 300,
         penaltyTime: 250,
         bonusTime: 100,
@@ -31,6 +41,16 @@ describe('GameService', () => {
         nDifference: 1,
         differences: 'test',
     };
+
+    const gameHistoryTest: GameHistory = {
+        gameMode: GameModes.ClassicOneVsOne,
+        player1: { name: 'John Doe', isWinner: true, isQuitter: false },
+        player2: { name: 'Jane Doe', isWinner: false, isQuitter: false },
+        duration: 100,
+        startingHour: '2020-01-01T00:00:00.000Z',
+        date: '2020-01-01T00:00:00.000Z',
+    };
+
     beforeEach(async () => {
         databaseService = createStubInstance(DatabaseService);
         const module: TestingModule = await Test.createTestingModule({
@@ -44,16 +64,16 @@ describe('GameService', () => {
         expect(gameService).toBeDefined();
     });
 
-    it('getConfigConstants() should call getConfigConstants() and return gameConfigConstTest as expected', () => {
-        databaseService.getConfigConstants.returns(gameConfigConstTest);
-        expect(gameService.getConfigConstants()).toEqual(gameConfigConstTest);
-        expect(databaseService.getConfigConstants.calledOnce).toBe(true);
+    it('getGameConstants() should call getConfigConstants() and return GameConstants as expected', async () => {
+        databaseService.getGameConstants.resolves(gameConfigConstTest);
+        expect(await gameService.getGameConstants()).toEqual(gameConfigConstTest);
+        expect(databaseService.getGameConstants.calledOnce).toBe(true);
     });
 
-    it('getConfigConstants() should throw NotFoundException when getConfigConstants() in databaseService unable to found GameConfigConst ', () => {
-        databaseService.getConfigConstants.returns(undefined);
-        expect(() => gameService.getConfigConstants()).toThrowError();
-        expect(databaseService.getConfigConstants.calledOnce).toBe(true);
+    it('getGameConstants() should throw NotFoundException when getGameConstants() in databaseService unable to found GameConfigConst ', async () => {
+        databaseService.getGameConstants.resolves(undefined);
+        expect(databaseService.getGameConstants.calledOnce).toBe(false);
+        expect(async () => await gameService.getGameConstants()).rejects.toThrowError();
     });
     it('getGamesCarousel() should call getGamesCarousel() and return testCarousel as expected ', async () => {
         databaseService.getGamesCarrousel.resolves(testCarousel);
@@ -106,5 +126,88 @@ describe('GameService', () => {
         await gameService.deleteGameById('1');
         expect(databaseService.deleteGameById.calledOnce).toBe(true);
         expect(databaseService.deleteGameById.calledWith('1')).toBe(true);
+    });
+
+    it('deleteAllGames () should call deleteAllGames() ', async () => {
+        databaseService.deleteAllGames.resolves();
+        await gameService.deleteAllGames();
+        expect(databaseService.deleteAllGames.calledOnce).toBe(true);
+    });
+
+    it('getTopTimesGameById () should call with the right arg getTopTimesGameById() and return testGame as expected', async () => {
+        databaseService.getTopTimesGameById.resolves(defaultBestTimes);
+        expect(await gameService.getTopTimesGameById('1', GameModes.ClassicOneVsOne)).toEqual(defaultBestTimes);
+        expect(databaseService.getTopTimesGameById.calledOnce).toBe(true);
+        expect(databaseService.getTopTimesGameById.calledWith('1')).toBe(true);
+    });
+
+    it('getTopTimesGameById () should throw HttpException when getTopTimesGameById() in databaseService unable to found Game', async () => {
+        databaseService.getTopTimesGameById.resolves(undefined);
+        expect(async () => await gameService.getTopTimesGameById('0', GameModes.ClassicOneVsOne)).rejects.toThrowError();
+        expect(databaseService.getTopTimesGameById.calledOnce).toBe(true);
+    });
+
+    it('updateTopTimesGameById () should call with the right arg updateTopTimesGameById() ', async () => {
+        databaseService.updateTopTimesGameById.resolves();
+        await gameService.updateTopTimesGameById('1', GameModes.ClassicOneVsOne, [{} as PlayerTime]);
+        expect(databaseService.updateTopTimesGameById.calledOnce).toBe(true);
+        expect(databaseService.updateTopTimesGameById.calledWith('1', GameModes.ClassicOneVsOne, [{} as PlayerTime])).toBe(true);
+    });
+
+    it('updateGameConstants () should call with the right arg updateGameConstants() ', async () => {
+        databaseService.updateGameConstants.resolves();
+        await gameService.updateGameConstants(gameConfigConstTest);
+        expect(databaseService.updateGameConstants.calledOnce).toBe(true);
+        expect(databaseService.updateGameConstants.calledWith(gameConfigConstTest)).toBe(true);
+    });
+
+    it('resetTopTimesGameById () should call with the right arg resetTopTimesGameById() ', async () => {
+        databaseService.resetTopTimesGameById.resolves();
+        await gameService.resetTopTimesGameById('1');
+        expect(databaseService.resetTopTimesGameById.calledOnce).toBe(true);
+        expect(databaseService.resetTopTimesGameById.calledWith('1')).toBe(true);
+    });
+
+    it('resetAllTopTimes () should call with the right arg resetAllTopTimes() ', async () => {
+        databaseService.resetAllTopTimes.resolves();
+        await gameService.resetAllTopTimes();
+        expect(databaseService.resetAllTopTimes.calledOnce).toBe(true);
+    });
+
+    it('getRandomGame() should call getRandomGame() and return testGame as expected ', async () => {
+        databaseService.getRandomGame.resolves(testGame);
+        expect(await gameService.getRandomGame([])).toEqual(testGame);
+        expect(databaseService.getRandomGame.calledOnce).toBe(true);
+    });
+
+    it('getRandomGame() should call getRandomGame() and return null as expected', async () => {
+        databaseService.getRandomGame.resolves(null);
+        expect(await gameService.getRandomGame([])).toEqual(null);
+        expect(databaseService.getRandomGame.calledOnce).toBe(true);
+    });
+
+    it('getGamesHistory() should call getGamesHistory() and return testGame as expected ', async () => {
+        databaseService.getGamesHistory.resolves([gameHistoryTest]);
+        expect(await gameService.getGamesHistory()).toEqual([gameHistoryTest]);
+        expect(databaseService.getGamesHistory.calledOnce).toBe(true);
+    });
+
+    it('getGamesHistory() should throw NotFoundException when getGamesHistory() in databaseService unable to found Game', async () => {
+        databaseService.getGamesHistory.resolves(undefined);
+        expect(async () => await gameService.getGamesHistory()).rejects.toThrowError();
+        expect(databaseService.getGamesHistory.calledOnce).toBe(true);
+    });
+
+    it('saveGameHistory() should call saveGameHistory() ', async () => {
+        databaseService.saveGameHistory.resolves();
+        await gameService.saveGameHistory(gameHistoryTest);
+        expect(databaseService.saveGameHistory.calledOnce).toBe(true);
+        expect(databaseService.saveGameHistory.calledWith(gameHistoryTest)).toBe(true);
+    });
+
+    it('deleteAllGamesHistory() should call deleteAllGamesHistory() ', async () => {
+        databaseService.deleteAllGamesHistory.resolves();
+        await gameService.deleteAllGamesHistory();
+        expect(databaseService.deleteAllGamesHistory.calledOnce).toBe(true);
     });
 });

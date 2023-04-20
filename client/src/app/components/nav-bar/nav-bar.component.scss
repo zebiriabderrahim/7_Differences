@@ -6,6 +6,16 @@
     background-color: transparent;
 }
 
+ul a {
+    cursor: pointer;
+    color: white;
+    -webkit-text-stroke: 1px black;
+}
+
+li:hover{
+    transform: scale(1.15);
+}
+
 .navElement {
     margin: 0 10px;
     font-size: 1.1em;

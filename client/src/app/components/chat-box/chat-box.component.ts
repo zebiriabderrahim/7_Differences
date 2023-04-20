@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ChatMessage, GameModes } from '@common/game-interfaces';
+import { ChatMessage } from '@common/game-interfaces';
 
 @Component({
     selector: 'app-chat-box',
@@ -9,18 +9,17 @@ import { ChatMessage, GameModes } from '@common/game-interfaces';
 export class ChatBoxComponent {
     @Input() messages: ChatMessage[];
     @Input() gameMode: string;
-    @Output() add: EventEmitter<string>;
-    oneVsOneGameMode: string;
+    @Input() isReplaying: boolean;
+    @Output() private add: EventEmitter<string>;
 
     constructor() {
         this.messages = [];
-        this.oneVsOneGameMode = GameModes.ClassicOneVsOne;
         this.add = new EventEmitter<string>();
     }
 
     onAdd(inputField: { value: string }): void {
-        if (inputField.value !== '') {
-            this.add.emit(inputField.value?.trim());
+        if (inputField.value) {
+            this.add.emit(inputField.value.trim());
             inputField.value = '';
         }
     }

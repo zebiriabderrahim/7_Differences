@@ -1,6 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Game, GameDetails } from '@app/interfaces/game-interfaces';
+import { GameDetails } from '@app/interfaces/game-interfaces';
 import { CarouselPaginator, GameConfigConst } from '@common/game-interfaces';
 import { CommunicationService } from './communication.service';
 
@@ -8,7 +8,6 @@ describe('CommunicationService', () => {
     let serviceComponent: CommunicationService;
     let httpMock: HttpTestingController;
     let mockGameCarrousel: CarouselPaginator;
-    let game: Game;
     let gameConfig: GameConfigConst;
     let gameDetails: GameDetails;
 
@@ -54,26 +53,6 @@ describe('CommunicationService', () => {
         });
         const request = httpMock.expectOne(`${serviceComponent['gameUrl']}/carousel/0`);
         request.flush(mockGameCarrousel);
-    });
-
-    it('should GET a game by id when loadGameById is called', () => {
-        game = {
-            id: 0,
-            name: '',
-            difficultyLevel: true,
-            original: '',
-            modified: '',
-            soloTopTime: [],
-            oneVsOneTopTime: [],
-            differencesCount: 0,
-            thumbnail: '',
-            hintList: [''],
-        };
-        serviceComponent.loadGameById(0).subscribe((response) => {
-            expect(response).toEqual(game);
-        });
-        const request = httpMock.expectOne(`${serviceComponent['gameUrl']}/0`);
-        request.flush(game);
     });
 
     it('should send a POST request to the server when postGame is called', () => {
@@ -130,6 +109,28 @@ describe('CommunicationService', () => {
         });
 
         const req = httpMock.expectOne(`${serviceComponent['gameUrl']}/${gameId}`);
+        expect(req.request.method).toBe('DELETE');
+
+        req.flush(null);
+    });
+
+    it('should delete games when deleteAllGames is called', () => {
+        serviceComponent.deleteAllGames().subscribe(() => {
+            expect().nothing();
+        });
+
+        const req = httpMock.expectOne(`${serviceComponent['gameUrl']}`);
+        expect(req.request.method).toBe('DELETE');
+
+        req.flush(null);
+    });
+
+    it('should delete games history when deleteAllGamesHistory is called', () => {
+        serviceComponent.deleteAllGamesHistory().subscribe(() => {
+            expect().nothing();
+        });
+
+        const req = httpMock.expectOne(`${serviceComponent['gameUrl']}/history`);
         expect(req.request.method).toBe('DELETE');
 
         req.flush(null);
