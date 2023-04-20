@@ -27,12 +27,6 @@ describe('DifferenceService', () => {
         expect(service['differenceMatrix']).toEqual(service['createFalseMatrix'](IMG_WIDTH, IMG_HEIGHT));
     });
 
-    it('getDifferences should return the differences', () => {
-        const differences = [{ x: 300, y: 200 }];
-        service['differences'] = differences;
-        expect(service.getDifferences()).toEqual(differences);
-    });
-
     it('getNumberOfDifferences should return the number of differences', () => {
         const differencesPackages = [[{ x: 300, y: 200 }]];
         service['differencePackages'] = differencesPackages;

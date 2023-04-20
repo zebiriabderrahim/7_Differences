@@ -5,7 +5,7 @@ import { GameService } from '@app/services/game/game.service';
 import { HistoryService } from '@app/services/history/history.service';
 import { MessageManagerService } from '@app/services/message-manager/message-manager.service';
 import { CHARACTERS, DEFAULT_GAME_MODES, KEY_SIZE, MAX_BONUS_TIME_ALLOWED, NOT_FOUND } from '@common/constants';
-import { GameEvents, GameModes, MessageEvents, PlayerStatus } from '@common/enums';
+import { GameEvents, GameModes, MessageEvents, MessageTag, PlayerStatus } from '@common/enums';
 import {
     ChatMessage,
     ClientSideGame,
@@ -43,8 +43,7 @@ export class RoomsManagerService implements OnModuleInit {
     async createRoom(playerPayLoad: PlayerData): Promise<GameRoom> {
         const game = !playerPayLoad.gameId ? await this.gameService.getRandomGame([]) : await this.gameService.getGameById(playerPayLoad.gameId);
         if (!game) return;
-        const room = this.buildGameRoom(game, playerPayLoad);
-        return room;
+        return this.buildGameRoom(game, playerPayLoad);
     }
 
     async getGameConstants(): Promise<void> {
@@ -85,10 +84,6 @@ export class RoomsManagerService implements OnModuleInit {
 
     deleteRoom(roomId: string): void {
         this.rooms.delete(roomId);
-    }
-
-    isMultiplayerGame(clientGame: ClientSideGame): boolean {
-        return clientGame.mode === GameModes.ClassicOneVsOne || clientGame.mode === GameModes.LimitedCoop;
     }
 
     startGame(socket: io.Socket, server: io.Server): void {
@@ -152,18 +147,15 @@ export class RoomsManagerService implements OnModuleInit {
         let penaltyTime = gameConstants.penaltyTime;
 
         if (this.isLimitedModeGame(clientGame)) penaltyTime = -penaltyTime;
-
         if (timer + penaltyTime < 0) {
             await this.countdownOver(room, server);
         } else {
+            const hintMessage = this.messageManager.createMessage(MessageTag.Common, 'Indice utilisé');
             room.timer += penaltyTime;
             this.rooms.set(room.roomId, room);
+            server.to(room.roomId).emit(MessageEvents.LocalMessage, hintMessage);
             server.to(room.roomId).emit(GameEvents.TimerUpdate, room.timer);
         }
-    }
-
-    isLimitedModeGame(clientGame: ClientSideGame): boolean {
-        return clientGame.mode === GameModes.LimitedSolo || clientGame.mode === GameModes.LimitedCoop;
     }
 
     leaveRoom(room: GameRoom, server: io.Server): void {
@@ -302,5 +294,13 @@ export class RoomsManagerService implements OnModuleInit {
         };
         room.clientGame.mode = playerPayLoad.gameMode;
         return room;
+    }
+
+    private isMultiplayerGame(clientGame: ClientSideGame): boolean {
+        return clientGame.mode === GameModes.ClassicOneVsOne || clientGame.mode === GameModes.LimitedCoop;
+    }
+
+    private isLimitedModeGame(clientGame: ClientSideGame): boolean {
+        return clientGame.mode === GameModes.LimitedSolo || clientGame.mode === GameModes.LimitedCoop;
     }
 }

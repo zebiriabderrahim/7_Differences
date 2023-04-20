@@ -82,7 +82,7 @@
 }
 
 #chat-box .content .messages ul li img {
-  width: 22px;
+  width: 40px;
   border-radius: 50%;
   float: left;
 }
@@ -96,6 +96,7 @@
   max-width: 200px;
   line-height: 130%;
   overflow-wrap: break-word;
+  font-size: 25px;
   background-color: #1778f2;
 }
 
@@ -107,6 +108,7 @@
   border-radius: 20px;
   max-width: 200px;
   line-height: 130%;
+  font-size: 25px;
   overflow-wrap: break-word;
   background-color: white;
 }
@@ -116,7 +118,7 @@
   color: rgb(224, 19, 19);
   overflow-wrap: break-word;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 25px;
 }
 
 #chat-box .content .messages ul li.Global p {
@@ -124,7 +126,7 @@
   color: rgb(8, 109, 11);
   font-weight: bold;
   overflow-wrap: break-word;
-  font-size: 18px;
+  font-size: 25px;
 }
 
 #chat-box .content .messages ul li.Global {
@@ -202,6 +204,10 @@
   font-family: 'Troika', sans-serif;
   font-size: 30px;
   -webkit-text-stroke: 2px black;
+}
+
+#input {
+  font-size: 25px;
 }
 
 

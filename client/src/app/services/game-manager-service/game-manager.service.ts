@@ -28,6 +28,7 @@ export class GameManagerService {
     private isGameModeChanged: Subject<boolean>;
     private isGamePageRefreshed: Subject<boolean>;
 
+    // Service are needed to be used in this service
     // eslint-disable-next-line max-params
     constructor(
         private readonly clientSocket: ClientSocketService,
@@ -102,40 +103,8 @@ export class GameManagerService {
         this.clientSocket.send(GameEvents.StartNextGame);
     }
 
-    checkStatus(): void {
-        this.clientSocket.send(GameEvents.CheckStatus);
-    }
-
     requestVerification(coords: Coordinate): void {
         this.clientSocket.send(GameEvents.RemoveDifference, coords);
-    }
-
-    replaceDifference(differences: Coordinate[], isPlayerIdMatch: boolean): void {
-        const hasDifferences = differences.length > 0;
-        if (!hasDifferences) {
-            this.soundService.playErrorSound();
-            this.gameAreaService.showError(this.isLeftCanvas, this.gameAreaService.mousePosition);
-            return;
-        }
-        this.soundService.playCorrectSound();
-        this.gameAreaService.setAllData();
-        this.gameAreaService.replaceDifference(differences);
-        if (isPlayerIdMatch) this.isFirstDifferencesFound.next(true);
-    }
-
-    handleRemoveDifference(data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }): void {
-        const isPlayerIdMatch = data.playerId === this.getSocketId();
-        if (isPlayerIdMatch) {
-            this.replaceDifference(data.differencesData.currentDifference, isPlayerIdMatch);
-            this.differencesFound.next(data.differencesData.differencesFound);
-            this.checkStatus();
-            this.captureService.saveReplayEvent(ReplayActions.DifferenceFoundUpdate, data.differencesData.differencesFound);
-        } else if (data.differencesData.currentDifference.length !== 0) {
-            this.replaceDifference(data.differencesData.currentDifference, isPlayerIdMatch);
-            this.opponentDifferencesFound.next(data.differencesData.differencesFound);
-            this.captureService.saveReplayEvent(ReplayActions.OpponentDifferencesFoundUpdate, data.differencesData.differencesFound);
-        }
-        this.differences = data.cheatDifferences;
     }
 
     abandonGame(): void {
@@ -148,10 +117,6 @@ export class GameManagerService {
 
     setIsLeftCanvas(isLeft: boolean): void {
         this.isLeftCanvas = isLeft;
-    }
-
-    disconnect(): void {
-        this.clientSocket.disconnect();
     }
 
     sendMessage(textMessage: string): void {
@@ -205,5 +170,37 @@ export class GameManagerService {
         this.clientSocket.on(GameEvents.GamePageRefreshed, () => {
             this.isGamePageRefreshed.next(true);
         });
+    }
+
+    private checkStatus(): void {
+        this.clientSocket.send(GameEvents.CheckStatus);
+    }
+
+    private replaceDifference(differences: Coordinate[], isPlayerIdMatch: boolean): void {
+        const hasDifferences = differences.length > 0;
+        if (!hasDifferences) {
+            this.soundService.playErrorSound();
+            this.gameAreaService.showError(this.isLeftCanvas, this.gameAreaService.mousePosition);
+            return;
+        }
+        this.soundService.playCorrectSound();
+        this.gameAreaService.setAllData();
+        this.gameAreaService.replaceDifference(differences);
+        if (isPlayerIdMatch) this.isFirstDifferencesFound.next(true);
+    }
+
+    private handleRemoveDifference(data: { differencesData: Differences; playerId: string; cheatDifferences: Coordinate[][] }): void {
+        const isPlayerIdMatch = data.playerId === this.getSocketId();
+        if (isPlayerIdMatch) {
+            this.replaceDifference(data.differencesData.currentDifference, isPlayerIdMatch);
+            this.differencesFound.next(data.differencesData.differencesFound);
+            this.checkStatus();
+            this.captureService.saveReplayEvent(ReplayActions.DifferenceFoundUpdate, data.differencesData.differencesFound);
+        } else if (data.differencesData.currentDifference.length !== 0) {
+            this.replaceDifference(data.differencesData.currentDifference, isPlayerIdMatch);
+            this.opponentDifferencesFound.next(data.differencesData.differencesFound);
+            this.captureService.saveReplayEvent(ReplayActions.OpponentDifferencesFoundUpdate, data.differencesData.differencesFound);
+        }
+        this.differences = data.cheatDifferences;
     }
 }

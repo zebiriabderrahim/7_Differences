@@ -38,13 +38,20 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
         this.roomManagerService.cancelJoining(this.data.gameId);
     }
 
-    handleRefusedPlayer() {
+    ngOnDestroy(): void {
+        this.countdownSubscription?.unsubscribe();
+        this.acceptedPlayerSubscription?.unsubscribe();
+        this.deletedGameIdSubscription?.unsubscribe();
+        this.roomAvailabilitySubscription?.unsubscribe();
+    }
+
+    private handleRefusedPlayer() {
         this.roomManagerService.refusedPlayerId$.pipe(filter((playerId) => playerId === this.roomManagerService.getSocketId())).subscribe(() => {
             this.countDownBeforeClosing('Vous avez été refusé');
         });
     }
 
-    handleAcceptedPlayer() {
+    private handleAcceptedPlayer() {
         this.acceptedPlayerSubscription = this.roomManagerService.isPlayerAccepted$.subscribe((isPlayerAccepted) => {
             if (isPlayerAccepted) {
                 this.dialogRef.close();
@@ -53,7 +60,7 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
         });
     }
 
-    countDownBeforeClosing(message: string) {
+    private countDownBeforeClosing(message: string) {
         this.countdown = COUNTDOWN_TIME;
         const countdown$ = interval(WAITING_TIME).pipe(takeWhile(() => this.countdown > 0));
         const countdownObserver = {
@@ -68,24 +75,17 @@ export class JoinedPlayerDialogComponent implements OnInit, OnDestroy {
         this.countdownSubscription = countdown$.subscribe(countdownObserver);
     }
 
-    handleGameCardDelete() {
+    private handleGameCardDelete() {
         this.deletedGameIdSubscription = this.roomManagerService.deletedGameId$.subscribe(() => {
             this.countDownBeforeClosing('La fiche de jeu a été supprimée');
         });
     }
 
-    handleCreateUndoCreation() {
+    private handleCreateUndoCreation() {
         this.roomAvailabilitySubscription = this.roomManagerService.oneVsOneRoomsAvailabilityByRoomId$
             .pipe(filter((roomAvailability) => roomAvailability.gameId === this.data.gameId && !roomAvailability.isAvailableToJoin))
             .subscribe(() => {
                 this.countDownBeforeClosing('Vous avez été refusé');
             });
-    }
-
-    ngOnDestroy(): void {
-        this.countdownSubscription?.unsubscribe();
-        this.acceptedPlayerSubscription?.unsubscribe();
-        this.deletedGameIdSubscription?.unsubscribe();
-        this.roomAvailabilitySubscription?.unsubscribe();
     }
 }

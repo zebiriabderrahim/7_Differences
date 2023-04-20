@@ -29,6 +29,7 @@ export class HintService {
     isThirdHintActive: boolean;
     private thirdHintProximityMatrix: HintProximity[][];
 
+    // Service are needed to be used in this service
     // eslint-disable-next-line max-params
     constructor(
         private readonly gameManager: GameManagerService,
@@ -39,7 +40,7 @@ export class HintService {
         this.resetHints();
     }
 
-    get differences(): Coordinate[][] {
+    private get differences(): Coordinate[][] {
         return this.gameManager.differences;
     }
 

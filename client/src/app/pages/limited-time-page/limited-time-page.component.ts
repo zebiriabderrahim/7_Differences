@@ -27,22 +27,10 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
         this.roomManagerService.handleRoomEvents();
         this.openDialog();
     }
+
     ngOnInit(): void {
         this.handleJoinCoopRoom();
         this.handleNoGameAvailable();
-    }
-
-    openDialog() {
-        this.dialog
-            .open(PlayerNameDialogBoxComponent, { disableClose: true, panelClass: 'dialog' })
-            .afterClosed()
-            .subscribe((playerName) => {
-                if (playerName) {
-                    this.playerName = playerName;
-                } else {
-                    this.router.navigate(['/']);
-                }
-            });
     }
 
     playLimited(gameMode: GameModes) {
@@ -58,7 +46,27 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
         }
     }
 
-    redirectToGamePage(gameMode: GameModes) {
+    ngOnDestroy(): void {
+        this.roomIdSubscription?.unsubscribe();
+        this.isLimitedCoopRoomAvailableSubscription?.unsubscribe();
+        this.hasNoGameAvailableSubscription?.unsubscribe();
+        this.roomManagerService.removeAllListeners();
+    }
+
+    private openDialog() {
+        this.dialog
+            .open(PlayerNameDialogBoxComponent, { disableClose: true, panelClass: 'dialog' })
+            .afterClosed()
+            .subscribe((playerName) => {
+                if (playerName) {
+                    this.playerName = playerName;
+                } else {
+                    this.router.navigate(['/']);
+                }
+            });
+    }
+
+    private redirectToGamePage(gameMode: GameModes) {
         this.roomIdSubscription?.unsubscribe();
         this.roomIdSubscription = this.roomManagerService.roomLimitedId$.pipe(filter((roomId) => !!roomId)).subscribe((roomId) => {
             if (gameMode === GameModes.LimitedSolo) {
@@ -70,7 +78,7 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
         });
     }
 
-    openWaitingDialog(roomId: string) {
+    private openWaitingDialog(roomId: string) {
         this.dialog.open(WaitingForPlayerToJoinComponent, {
             data: { roomId, isLimited: true },
             disableClose: true,
@@ -78,7 +86,7 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
         });
     }
 
-    handleJoinCoopRoom() {
+    private handleJoinCoopRoom() {
         this.isLimitedCoopRoomAvailableSubscription = this.roomManagerService.isLimitedCoopRoomAvailable$
             .pipe(filter((isRoomAvailable) => isRoomAvailable))
             .subscribe(() => {
@@ -87,16 +95,9 @@ export class LimitedTimePageComponent implements OnDestroy, OnInit {
             });
     }
 
-    handleNoGameAvailable() {
+    private handleNoGameAvailable() {
         this.hasNoGameAvailableSubscription = this.roomManagerService.hasNoGameAvailable$.subscribe((hasNoGameAvailable) => {
             if (hasNoGameAvailable) this.dialog.open(NoGameAvailableDialogComponent, { disableClose: true, panelClass: 'dialog' });
         });
-    }
-
-    ngOnDestroy(): void {
-        this.roomIdSubscription?.unsubscribe();
-        this.isLimitedCoopRoomAvailableSubscription?.unsubscribe();
-        this.hasNoGameAvailableSubscription?.unsubscribe();
-        this.roomManagerService.removeAllListeners();
     }
 }

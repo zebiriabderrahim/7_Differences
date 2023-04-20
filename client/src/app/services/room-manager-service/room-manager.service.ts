@@ -146,44 +146,36 @@ export class RoomManagerService {
         this.clientSocket.send(RoomEvents.CheckIfAnyCoopRoomExists, playerPayLoad);
     }
 
-    gameCardCreated() {
+    notifyGameCardCreated() {
         this.clientSocket.send(GameCardEvents.GameCardCreated);
     }
 
-    gameCardDeleted(gameId: string) {
+    notifyGameCardDeleted(gameId: string) {
         this.clientSocket.send(GameCardEvents.GameCardDeleted, gameId);
     }
 
-    allGamesDeleted() {
+    notifyAllGamesDeleted() {
         this.clientSocket.send(GameCardEvents.AllGamesDeleted);
     }
 
-    resetTopTime(gameId: string) {
+    notifyResetTopTime(gameId: string) {
         this.clientSocket.send(GameCardEvents.ResetTopTime, gameId);
     }
 
-    resetAllTopTimes() {
+    notifyResetAllTopTimes() {
         this.clientSocket.send(GameCardEvents.ResetAllTopTimes);
     }
 
-    gameConstantsUpdated() {
+    notifyGameConstantsUpdated() {
         this.clientSocket.send(GameCardEvents.GameConstantsUpdated);
     }
 
-    gamesHistoryDeleted() {
+    notifyGamesHistoryDeleted() {
         this.clientSocket.send(GameCardEvents.GamesHistoryDeleted);
-    }
-
-    connect(): void {
-        this.clientSocket.connect();
     }
 
     getSocketId(): string {
         return this.clientSocket.socket.id;
-    }
-
-    disconnect(): void {
-        this.clientSocket.disconnect();
     }
 
     removeAllListeners() {

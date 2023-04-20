@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- needed to spy on private methods*/
 /* eslint-disable no-underscore-dangle */
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -79,11 +80,11 @@ describe('SelectionPageComponent', () => {
     });
 
     it('should reload game carousel if reload is needed', () => {
-        spyOn(component, 'loadGameCarrousel');
-        component.handleGameCardsUpdate();
+        spyOn<any>(component, 'loadGameCarrousel');
+        component['handleGameCardsUpdate']();
         fixture.detectChanges();
         expect(component['index']).toBe(0);
-        expect(component.loadGameCarrousel).toHaveBeenCalled();
+        expect(component['loadGameCarrousel']).toHaveBeenCalled();
     });
 
     it('should unsubscribe reloadSubscription when component is destroyed', () => {

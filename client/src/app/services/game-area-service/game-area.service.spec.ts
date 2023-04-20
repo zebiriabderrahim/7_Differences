@@ -60,7 +60,7 @@ describe('GameAreaService', () => {
     });
 
     it('should not detect left click if clicking is disabled', () => {
-        gameAreaService['clickDisabled'] = true;
+        gameAreaService['isClickDisabled'] = true;
         expect(gameAreaService.detectLeftClick({ button: LEFT_BUTTON } as MouseEvent)).toBeFalse();
     });
 
@@ -294,7 +294,7 @@ describe('GameAreaService', () => {
         gameAreaService['clearFlashing']();
         expect(ogFrontContextClearRectSpy).toHaveBeenCalled();
         expect(mdFrontContextClearRectSpy).toHaveBeenCalled();
-        expect(gameAreaService['clickDisabled']).toEqual(false);
+        expect(gameAreaService['isClickDisabled']).toEqual(false);
     });
 
     it('getOriginalContext should return originalContext', () => {
@@ -310,22 +310,6 @@ describe('GameAreaService', () => {
         const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
         gameAreaService['modifiedContext'] = context;
         const returnedContext = gameAreaService.getModifiedContext();
-        expect(returnedContext).toEqual(context);
-    });
-
-    it('getOriginalFrontContext should return originalContextFrontLayer', () => {
-        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
-        const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
-        gameAreaService['originalContextFrontLayer'] = context;
-        const returnedContext = gameAreaService.getOriginalFrontContext();
-        expect(returnedContext).toEqual(context);
-    });
-
-    it('getModifiedFrontContext should return modifiedContextFrontLayer', () => {
-        const canvas: HTMLCanvasElement = CanvasTestHelper.createCanvas(IMG_WIDTH, IMG_HEIGHT);
-        const context: CanvasRenderingContext2D = canvas.getContext('2d')!;
-        gameAreaService['modifiedContextFrontLayer'] = context;
-        const returnedContext = gameAreaService.getModifiedFrontContext();
         expect(returnedContext).toEqual(context);
     });
 

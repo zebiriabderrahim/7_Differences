@@ -185,51 +185,45 @@ describe('RoomManagerService', () => {
         expect(sendSpy).toHaveBeenCalledWith(RoomEvents.CheckIfAnyCoopRoomExists, mockPlayerData);
     });
 
-    it('disconnect should call clientSocket.disconnect', () => {
-        const disconnectSpy = spyOn(socketServiceMock, 'disconnect');
-        service.disconnect();
-        expect(disconnectSpy).toHaveBeenCalled();
-    });
-
     it('gameCardCreated should call clientSocket.send with GameCardCreated', () => {
         const sendSpy = spyOn(socketServiceMock, 'send');
-        service.gameCardCreated();
+        service.notifyGameCardCreated();
         expect(sendSpy).toHaveBeenCalledWith(GameCardEvents.GameCardCreated);
     });
 
     it('gameCardCreated should call clientSocket.send with GameCardCreated', () => {
         const sendSpy = spyOn(socketServiceMock, 'send');
-        service.gameCardDeleted(mockGameId);
+        service.notifyGameCardDeleted(mockGameId);
         expect(sendSpy).toHaveBeenCalledWith(GameCardEvents.GameCardDeleted, mockGameId);
     });
 
     it('allGamesDeleted should call clientSocket.send with AllGamesDeleted', () => {
         const sendSpy = spyOn(socketServiceMock, 'send');
-        service.allGamesDeleted();
+        service.notifyAllGamesDeleted();
         expect(sendSpy).toHaveBeenCalledWith(GameCardEvents.AllGamesDeleted);
     });
 
     it('resetTopTime should call clientSocket.send with ResetTopTime', () => {
         const sendSpy = spyOn(socketServiceMock, 'send');
-        service.resetTopTime(mockGameId);
+        service.notifyResetTopTime(mockGameId);
         expect(sendSpy).toHaveBeenCalledWith(GameCardEvents.ResetTopTime, mockGameId);
     });
 
     it('resetAllTopTimes should call clientSocket.send with ResetAllTopTimes', () => {
         const sendSpy = spyOn(socketServiceMock, 'send');
-        service.resetAllTopTimes();
+        service.notifyResetAllTopTimes();
         expect(sendSpy).toHaveBeenCalledWith(GameCardEvents.ResetAllTopTimes);
     });
 
     it('gameConstantsUpdated should call clientSocket.send with GameConstantsUpdated', () => {
         const sendSpy = spyOn(socketServiceMock, 'send');
-        service.gameConstantsUpdated();
+        service.notifyGameConstantsUpdated();
         expect(sendSpy).toHaveBeenCalledWith(GameCardEvents.GameConstantsUpdated);
     });
 
     it('gameHistoryDeleted should call clientSocket.send with GamesHistoryDeleted', () => {
         const sendSpy = spyOn(socketServiceMock, 'send');
-        service.gamesHistoryDeleted();
+        service.notifyGamesHistoryDeleted();
         expect(sendSpy).toHaveBeenCalledWith(GameCardEvents.GamesHistoryDeleted);
     });
 
@@ -243,12 +237,6 @@ describe('RoomManagerService', () => {
         const roomIdSpy = spyOn(service['roomSoloId'], 'next');
         socketHelper.peerSideEmit(RoomEvents.RoomSoloCreated, mockGameId);
         expect(roomIdSpy).toHaveBeenCalledOnceWith(mockGameId);
-    });
-
-    it('should call the clientSocket connect method when connect is called', () => {
-        const connectSpy = spyOn(socketServiceMock, 'connect');
-        service.connect();
-        expect(connectSpy).toHaveBeenCalled();
     });
 
     it('should call joinedPlayerNames.next when GameEvents.WaitingPlayerNameListUpdated is received', () => {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- needed to spy on private methods */
 // To not call setAllData from gameAreaService
 /* eslint-disable @typescript-eslint/no-empty-function */
 // Needed more lines for the tests
@@ -6,6 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
+import { CaptureService } from '@app/services/capture-service/capture.service';
 import { ClientSocketService } from '@app/services/client-socket-service/client-socket.service';
 import { SocketTestHelper } from '@app/services/client-socket-service/client-socket.service.spec';
 import { GameAreaService } from '@app/services/game-area-service/game-area.service';
@@ -14,7 +16,6 @@ import { Coordinate } from '@common/coordinate';
 import { GameEvents, MessageEvents, MessageTag } from '@common/enums';
 import { ChatMessage, Differences, GameRoom, Players } from '@common/game-interfaces';
 import { Subject, filter } from 'rxjs';
-import { CaptureService } from '@app/services/capture-service/capture.service';
 import { Socket } from 'socket.io-client';
 import { GameManagerService } from './game-manager.service';
 
@@ -345,7 +346,7 @@ describe('GameManagerService', () => {
     });
 
     it('replaceDifference should throw an error if Coordinate length is 0', () => {
-        service.replaceDifference([], true);
+        service['replaceDifference']([], true);
         expect(gameAreaService.showError).toHaveBeenCalled();
         expect(soundServiceSpy.playErrorSound).toHaveBeenCalled();
     });
@@ -356,19 +357,13 @@ describe('GameManagerService', () => {
         expect(service['isLeftCanvas']).toBeTruthy();
     });
 
-    it('disconnect should disconnect the socket', () => {
-        const disconnectSpy = spyOn(socketServiceMock, 'disconnect');
-        service.disconnect();
-        expect(disconnectSpy).toHaveBeenCalled();
-    });
-
     it('replaceDifference should modify coordinate if coordinate length is greater than 0', () => {
         const coordinate: Coordinate[] = [
             { x: 1, y: 1 },
             { x: 2, y: 2 },
         ];
         service['isLeftCanvas'] = true;
-        service.replaceDifference(coordinate, true);
+        service['replaceDifference'](coordinate, true);
         expect(gameAreaService.replaceDifference).toHaveBeenCalledWith(coordinate);
         expect(gameAreaService.showError).not.toHaveBeenCalled();
         expect(gameAreaService.setAllData).toHaveBeenCalled();
@@ -388,7 +383,7 @@ describe('GameManagerService', () => {
 
     it('should call clientSocket.send with GameEvents.CheckStatus', () => {
         socketServiceMock.send = jasmine.createSpy('send');
-        service.checkStatus();
+        service['checkStatus']();
         expect(socketServiceMock.send).toHaveBeenCalledWith(GameEvents.CheckStatus);
     });
 
@@ -412,7 +407,7 @@ describe('GameManagerService', () => {
     });
 
     it('manageSocket should update client game when RemoveDifference linked event is sent from server', () => {
-        const checkStatusSpy = spyOn(service, 'checkStatus');
+        const checkStatusSpy = spyOn<any>(service, 'checkStatus');
         service.manageSocket();
         const differencesFoundSpy = spyOn(service['differencesFound'], 'next');
         socketHelper.peerSideEmit(GameEvents.RemoveDifference, mockDataDifference);
@@ -421,15 +416,13 @@ describe('GameManagerService', () => {
     });
 
     it('manageSocket should update client game when RemoveDifference linked event is sent from server and matches socketId', () => {
-        const checkStatusSpy = spyOn(service, 'checkStatus');
+        const checkStatusSpy = spyOn<any>(service, 'checkStatus');
         const getSocketIdSpy = spyOn(service, 'getSocketId').and.callFake(() => {
             return mockDataDifference.playerId;
         });
-        // const replaceDifferenceSpy = spyOn(service, 'replaceDifference');
         service.manageSocket();
         const differencesFoundSpy = spyOn(service['differencesFound'], 'next');
         socketHelper.peerSideEmit(GameEvents.RemoveDifference, mockDataDifference);
-        // expect(replaceDifferenceSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.currentDifference);
         expect(differencesFoundSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.differencesFound);
         expect(checkStatusSpy).toHaveBeenCalled();
         expect(getSocketIdSpy).toHaveBeenCalled();
@@ -443,16 +436,14 @@ describe('GameManagerService', () => {
             },
             playerId: 'mockId',
         };
-        const checkStatusSpy = spyOn(service, 'checkStatus');
+        const checkStatusSpy = spyOn<any>(service, 'checkStatus');
         const getSocketIdSpy = spyOn(service, 'getSocketId').and.callFake(() => {
             return 'notMatchingSocketId';
         });
 
-        // const replaceDifferenceSpy = spyOn(service, 'replaceDifference');
         service.manageSocket();
         const differencesFoundSpy = spyOn(service['differencesFound'], 'next');
         socketHelper.peerSideEmit(GameEvents.RemoveDifference, mockDataDifference);
-        // expect(replaceDifferenceSpy).toHaveBeenCalledWith(mockDataDifference.differencesData.currentDifference);
         expect(differencesFoundSpy).not.toHaveBeenCalledWith(mockDataDifference.differencesData.differencesFound);
         expect(checkStatusSpy).not.toHaveBeenCalled();
         expect(getSocketIdSpy).toHaveBeenCalled();

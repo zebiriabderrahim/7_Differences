@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- needed to spy on private methods*/
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -75,7 +76,7 @@ describe('WaitingPlayerToJoinComponent', () => {
     });
 
     it('should call countDownBeforeClosing onInit', () => {
-        const countDownBeforeClosingSpy = spyOn(component, 'countDownBeforeClosing');
+        const countDownBeforeClosingSpy = spyOn<any>(component, 'countDownBeforeClosing');
         component.ngOnInit();
         deletedGameIdMock.next('test-game-id');
         expect(countDownBeforeClosingSpy).toHaveBeenCalled();
@@ -85,7 +86,7 @@ describe('WaitingPlayerToJoinComponent', () => {
         jasmine.clock().install();
         component['countdown'] = COUNTDOWN_TIME;
         component.ngOnInit();
-        component.countDownBeforeClosing();
+        component['countDownBeforeClosing']();
         deletedGameIdMock.next('test-game-id');
         expect(component['countdown']).toEqual(COUNTDOWN_TIME);
         jasmine.clock().tick(COUNTDOWN_TIME);
@@ -96,10 +97,10 @@ describe('WaitingPlayerToJoinComponent', () => {
         jasmine.clock().install();
         component['countdown'] = COUNTDOWN_TIME;
         component.ngOnInit();
-        component.countDownBeforeClosing();
+        component['countDownBeforeClosing']();
         deletedGameIdMock.next('test-game-id');
         jasmine.clock().tick(COUNTDOWN_TIME);
-        component.countDownBeforeClosing();
+        component['countDownBeforeClosing']();
         jasmine.clock().tick(COUNTDOWN_TIME);
         expect(dialogRefSpy.close).not.toHaveBeenCalled();
     });
@@ -107,17 +108,17 @@ describe('WaitingPlayerToJoinComponent', () => {
     it('countDownBeforeClosing should set countdown', () => {
         component['countdown'] = 1;
         component.ngOnInit();
-        component.countDownBeforeClosing();
+        component['countDownBeforeClosing']();
         deletedGameIdMock.next('test-game-id');
         jasmine.clock().install();
         jasmine.clock().tick(COUNTDOWN_TIME);
-        component.countDownBeforeClosing();
+        component['countDownBeforeClosing']();
         jasmine.clock().tick(COUNTDOWN_TIME);
         expect(dialogRefSpy.close).not.toHaveBeenCalled();
     });
 
     it('ngOnInit should call countDownBeforeClosing', fakeAsync(() => {
-        const countDownBeforeClosingSpy = spyOn(component, 'countDownBeforeClosing');
+        const countDownBeforeClosingSpy = spyOn<any>(component, 'countDownBeforeClosing');
 
         component.ngOnInit();
         deletedGameIdMock.next('test-game-id');

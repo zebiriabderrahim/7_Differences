@@ -88,3 +88,8 @@ export enum MessageTag {
     Common = 'Common',
     Global = 'Global',
 }
+
+export enum GamePageEvent {
+    EndGame = 'EndGame',
+    Abandon = 'Abandon',
+}

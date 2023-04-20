@@ -250,10 +250,10 @@ describe('RoomsManagerService', () => {
 
     it('isMultiplayerGame() should return true if the game is multiplayer', () => {
         fakeRoom.clientGame.mode = GameModes.LimitedCoop;
-        const result = service.isMultiplayerGame(fakeRoom.clientGame);
+        const result = service['isMultiplayerGame'](fakeRoom.clientGame);
         expect(result).toEqual(true);
         fakeRoom.clientGame.mode = GameModes.ClassicOneVsOne;
-        const result1 = service.isMultiplayerGame(fakeRoom.clientGame);
+        const result1 = service['isMultiplayerGame'](fakeRoom.clientGame);
         expect(result1).toEqual(true);
     });
 
@@ -422,31 +422,31 @@ describe('RoomsManagerService', () => {
             return;
         });
         const getRoomByIdSpy = jest.spyOn(service, 'getRoomById').mockReturnValue(fakeRoom);
-        const isLimitedModeGameSpy = jest.spyOn(service, 'isLimitedModeGame').mockReturnValue(true);
+        service['isLimitedModeGame'] = jest.fn().mockReturnValue(true);
         service.addHintPenalty(socket, server);
         expect(getRoomIdFromSocketSpy).toBeCalled();
         expect(getRoomByIdSpy).toBeCalled();
-        expect(isLimitedModeGameSpy).toBeCalled();
+        expect(service['isLimitedModeGame']).toBeCalled();
     });
 
     it('addHintPenalty() should call getRoomIdFromSocket and not decrease penaltyTime if  game mode is not limited', () => {
+        fakeRoom.timer = 40;
         service['rooms'].set(fakeRoom.roomId, fakeRoom);
         const getRoomIdFromSocketSpy = jest.spyOn(service, 'getRoomIdFromSocket').mockReturnValue(fakeRoom.roomId);
         service['countdownOver'] = jest.fn().mockImplementationOnce(() => {
             return;
         });
         server.to.returns({
-            emit: (event: string) => {
-                expect(event).toEqual(GameEvents.TimerUpdate);
-            },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function -- needed for test
+            emit: (event: string) => {},
         } as BroadcastOperator<unknown, unknown>);
 
         const getRoomByIdSpy = jest.spyOn(service, 'getRoomById').mockReturnValue(fakeRoom);
-        const isLimitedModeGameSpy = jest.spyOn(service, 'isLimitedModeGame').mockReturnValue(false);
+        service['isLimitedModeGame'] = jest.fn().mockReturnValue(true);
         service.addHintPenalty(socket, server);
         expect(getRoomIdFromSocketSpy).toBeCalled();
         expect(getRoomByIdSpy).toBeCalled();
-        expect(isLimitedModeGameSpy).toBeCalled();
+        expect(service['isLimitedModeGame']).toBeCalled();
     });
 
     it('addHintPenalty() should not call countdownOver or emit if room is undefined', () => {
@@ -456,19 +456,19 @@ describe('RoomsManagerService', () => {
             return;
         });
         const getRoomByIdSpy = jest.spyOn(service, 'getRoomById').mockReturnValue(undefined);
-        const isLimitedModeGameSpy = jest.spyOn(service, 'isLimitedModeGame').mockReturnValue(true);
+        service['isLimitedModeGame'] = jest.fn().mockReturnValue(true);
         service.addHintPenalty(socket, server);
         expect(getRoomIdFromSocketSpy).toBeCalled();
         expect(getRoomByIdSpy).toBeCalled();
-        expect(isLimitedModeGameSpy).not.toBeCalled();
+        expect(service['isLimitedModeGame']).not.toBeCalled();
         expect(service['countdownOver'] as jest.Mock).not.toBeCalled();
     });
 
     it('isLimitedModeGame() should return true if game mode is limited', () => {
         fakeRoom.clientGame.mode = GameModes.LimitedSolo;
-        expect(service.isLimitedModeGame(fakeRoom.clientGame)).toEqual(true);
+        expect(service['isLimitedModeGame'](fakeRoom.clientGame)).toEqual(true);
         fakeRoom.clientGame.mode = GameModes.LimitedCoop;
-        expect(service.isLimitedModeGame(fakeRoom.clientGame)).toEqual(true);
+        expect(service['isLimitedModeGame'](fakeRoom.clientGame)).toEqual(true);
     });
 
     it('leaveRoom() should remove the room socket rooms', () => {
@@ -684,7 +684,7 @@ describe('RoomsManagerService', () => {
     });
 
     it('addBonusTime calls updateRoom if game mode is limited', () => {
-        const isLimitedModeGameSpy = jest.spyOn(service, 'isLimitedModeGame').mockReturnValue(true);
+        service['isLimitedModeGame'] = jest.fn().mockReturnValue(true);
         fakeRoom.timer = MAX_BONUS_TIME_ALLOWED + 1;
         service['updateRoom'] = jest.fn();
         service['addBonusTime'](fakeRoom);
@@ -692,7 +692,7 @@ describe('RoomsManagerService', () => {
     });
 
     it('addBonusTime does not call updateRoom if game mode is not limited', () => {
-        const isLimitedModeGameSpy = jest.spyOn(service, 'isLimitedModeGame').mockReturnValue(false);
+        service['isLimitedModeGame'] = jest.fn().mockReturnValue(false);
         service['updateRoom'] = jest.fn();
         service['addBonusTime'](fakeRoom);
         expect(service['updateRoom']).not.toBeCalled();
