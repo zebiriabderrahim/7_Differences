@@ -11,7 +11,7 @@ export class MessageManagerService {
 
     getNewRecordMessage(newRecord: NewRecord): ChatMessage {
         const content =
-            `${newRecord.playerName} est maintenant ${SCORE_POSITION[newRecord.rank]}` +
+            `${newRecord.playerName} obtient la ${SCORE_POSITION[newRecord.rank]} place` +
             ` dans les meilleurs temps du jeu ${newRecord.gameName} en ${newRecord.gameMode}`;
         return this.createMessage(MessageTag.Global, content);
     }
