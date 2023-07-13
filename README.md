@@ -1,213 +1,114 @@
-# LOG2990 - Code de base
+# 7 Differences Game
 
-Code de base à utiliser pour démarrer le développement de votre projet.
-Le code contient 2 projets séparés :
+This is an online multiplayer game where players have to find the differences between two images. The game offers two distinct game modes: classic mode and cooperative mode. It was developed using the MANN stack (MongoDB, Angular, Node.js, and Nest.js).
 
--   client : le site Web fait avec le cadriciel(_framework_) **Angular**.
--   serveur : le serveur dynamique bâti avec la librairie **Express** ou **NestJs** ([selon votre choix](#choix-du-serveur)).
+## Classic Mode
+In classic mode, players compete against each other to find the differences between the two images . The player who finds the highest number of differences wins the game.
 
-# Commandes npm
+## Cooperative Mode
+In cooperative mode, players work together as a team to find all the differences between the two imagesas quickly as possible. They must collaborate and communicate effectively to successfully identify all the differences within the given time.
 
-Les commandes commençant par `npm` devront être exécutées dans les dossiers `client` et `server`. Les scripts non standard doivent être lancés en lançant `npm run myScript`.
+## Technologies Used
+The game utilizes the following technologies:
 
-## Installation des dépendances de l'application
+- **MongoDB**: Used as a database to store game data pointers, player scores, performances, and game configurations.
+- **Angular**: Used for the development of the game's frontend (client), providing an interactive and responsive experience for players.
+- **Node.js**: Used as the server-side runtime environment.
+- **Nest.js**: Based on Node.js and Express, Nest.js is used for the development of the dynamic game server, providing advanced architecture and route management features.
 
-1. Installer `npm`. `npm` vient avec `Node` que vous pouvez télécharger [ici](https://nodejs.org/en/download/)
+## Screenshots
+Here are some screenshots of the application:
+| **Home** | **config page** |
+|:-------------:|:-------------:|
+|![home](static/home.png) |![config](static/config.png)
+| **create page** | **game page**|
+|![create](static/create.png) | ![home](static/game.png)
 
-2. Lancer `npm ci` (Continuous Integration) pour installer les versions exactes des dépendances du projet. Ceci est possiblement seulement si le fichier `package-lock.json` existe. Ce fichier vous est fourni dans le code de départ.
 
-## Ajout de dépendances aux projets
 
-Vous pouvez ajouter d'autres dépendances aux deux projets avec la commande `npm install nomDependance`.
+# npm Commands
+Commands starting with `npm` should be executed in the `client` and `server` directories. Non-standard scripts should be run using `npm run myScript`.
 
-Pour ajouter une dépendance comme une dépendance de développement (ex : librairie de tests, types TS, etc.) ajoutez l'option `--save-dev` : `npm install nomDependance --save-dev`.
+## Application Dependencies Installation
+Install npm. npm comes with Node, which you can download [here](https://nodejs.org).
 
-Un ajout de dépendance modifiera les fichiers `package.json` et `package-lock.json`.
+Run `npm ci` (Continuous Integration) to install the exact versions of the project's dependencies. This is only possible if the `package-lock.json` file exists. This file is provided to you in the starter code.
 
-**Important** : assurez-vous d'ajouter ces modifications dans votre Git. N'installez jamais une dépendance du projet globalement.
+## Adding Dependencies to Projects
+You can add other dependencies to both projects using the `npm install dependencyName` command.
 
-# Client
+To add a dependency as a development dependency (e.g., testing library, TypeScript types), add the `--save-dev` option: `npm install dependencyName --save-dev`.
 
-## Développement local
+## Client
+### Local Development
+When the `npm start` command is run in the `client` directory, the following script (available in `package.json`) is executed: `ng serve --open`, which performs the following two steps:
 
-Lorsque la commande `npm start` est lancée dans le dossier _/client_, le script suivant (disponible dans `package.json`) est exécuté : `ng serve --open` qu exécute les 2 étapes suivantes :
+1. **Bundle Generation**: Translates TypeScript code and Angular syntax into standard JavaScript. At the end of this step, the following files are generated: `vendor.js`, `polyfills.js`, `main.js`, `runtime.js`, and `styles.css`. These files contain your application's code and the CSS of the different components.
 
-1. **Bundle generation** : Traduire le code TypeScript et la syntaxe Angular en JavaScript standard. À la fin de cette étape, vous verrez que les fichiers suivants sont générés : `vendor.js`,`polyfills.js`, `main.js`,`runtime.js` et `styles.css`. Ces fichiers continent le code de votre application ainsi que le CSS des différents Components.
+   **Note**: This is a development build, where file sizes are large, and the code is not minified. You can access your code through your browser's development tools and debug using breakpoints. A debugger configuration for VSCode is also available.
 
-    **Note** : ceci est un _build_ de développement : la taille des fichiers est très grande et le code n'est pas minifié. Vous pouvez accéder à votre code à travers les outils de développement de votre navigateur et déboguer avec des _breaking points_ par exemple. Une configuration de _debugger_ pour VSCode est également disponible. Voir la section _Debugger_ pour plus d'informations.
+2. **Development Server**: Launches a static web server on your machine to serve your web application. The server is accessible through `http://localhost:4200/` or `127.0.0.1:4200`. A web page with this address will open automatically.
 
-2. **Development Server** : un serveur web statique sera lancé sur votre machine pour pouvoir servir votre application web. Le serveur est lancé sur le port 4200 et est accessible à travers `http://localhost:4200/` ou `127.0.0.1:4200`. Une page web avec cette adresse s'ouvrira automatiquement.
+## Server
+### Local Development
+When the `npm start` command is run in the `server` directory, the following script (available in `package.json`) is executed: `nodemon`, which performs the following two steps similar to the client:
 
-    **Note** : le serveur de développement n'est accessible qu'à partir de votre propre machine. Vous pouvez le rendre disponible à tous en ajoutant `--host 0.0.0.0` dans la commande `npm start`. Le site sera donc accessible dans votre réseau local à partir de votre adresse IP suivie du port 4200. Par exemple : `132.207.5.35:4200`. Notez que le serveur de développement n'est pas fait pour un déploiement ouvert et vous recevrez un avertissement en le lançant.
+1. **Build**: Transpiles TypeScript code into JavaScript and copies the files to the `/out` directory.
 
-### Génération de composants du client
+   **Note**: Nodemon is a utility that watches for changes in your `*.ts` files and automatically restarts the server if you modify any of them. Modifying other files will require a manual server restart (interrupt the process and relaunch `npm start`).
 
-Pour créer de nouveaux composants, nous vous recommandons l'utilisation d'angular CLI. Il suffit d'exécuter `ng generate component component-name` pour créer un nouveau composant.
+2. **Deploy**: Launches the server using the `index.js` file. The server is accessible through `http://localhost:3000/` or `127.0.0.1:3000`. The site is also accessible on your local network using your IP address followed by port 3000. For example: `132.207.5.35:3000`. A debugger is also attached to the Node process. See the Debugger section for more information.
 
-Il est aussi possible de générer des directives, pipes, services, guards, interfaces, enums, modules, classes, avec cette commande `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Server Documentation
+The documentation for your server is available in OpenAPI format at the `/api/docs` route. You can access it by going to `<server_url>/api/docs` once the server is running.
 
-## Aide supplémentaire et documentation
+This page describes the different routes accessible on the server and provides a way to test them by sending requests to the server. Simply choose one of the routes and click the "Try it out" button to send the request with "Execute".
 
-Pour obtenir de l'aide supplémentaire sur Angular CLI, utilisez `ng help` ou [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+## Development Tools and Quality Assurance
 
-Pour la documentation d'Angular, vous pouvez la trouver [ici](https://angular.io/docs)
+### Unit Tests and Code Coverage
+Both projects come with unit tests and code coverage measurement tools. The tests are located in the `*.spec.ts` files in the source code of both projects. The client uses the Jasmine library, and the server uses Jest and Sinon.
 
-Pour obtenir de l'aide supplémentaire sur les tests avec Angular, utilisez [Angular Testing](https://angular.io/guide/testing)
+The commands to run the tests and generate code coverage reports are as follows. It is highly recommended to run them frequently to ensure your tests pass, and if any failures occur, address the issues raised by the tests.
 
-# Serveur
+-   Run `npm run test` to run the unit tests.
+-   Run `npm run coverage` to generate a code coverage report.
 
-## Choix du serveur
+A report will be generated in the console output.
+A detailed report will be generated in the `/coverage` directory as a web page. You can open the `index.html` file in your browser and navigate through the report. You will see the lines of code not covered by the tests.
 
-Vous avez le choix entre 2 manières et ensembles de technologies pour développer votre serveur. Le dossier `/server` contient un serveur utilisant _NodeJS_ et la librairie _Express_. Le dossier `/server-nestjs` contient un serveur utilisant le cadriciel de développement _NestJS_ qui se base sur _NodeJS_ et _Express_, mais est architecturalement très similaire à _Angular_.
+### Linter and Quality Rules
+Both projects come with a set of quality rules for code formatting and style. ESLint is a static analysis tool used to detect certain code smells.
 
-Vous devez choisir un des deux projets pour votre développement. Lisez bien la section `Choix de serveur à utiliser` dans le [README](./server-nestjs/README.md) du serveur _NestJS_ pour avoir plus de détails sur les actions à effectuer selon votre choix.
+The rules for the linter are available in the `eslintrc.json` file in each project's directory.
 
-## Développement local
+Note: A linter cannot catch all possible code smells. Be mindful of your code and use manual code reviews as much as possible.
 
-Lorsque la commande `npm start` est lancée dans le dossier _/server_, le script suivant (disponible dans `package.json`) est exécuté : `nodemon` qui effectue 2 étapes similaires au client :
+The linter can be run with the command `npm run lint`. The list of issues will be displayed in the console.
 
-1. **Build** : transpile le code TypeScript en JavaScript et copie les fichiers dans le répertoire `/out`.
+Note: It is recommended to run the linter frequently while writing code. Ideally, ensure there are no lint errors before committing to Git.
 
-    **Note** : L'outil `nodemon` est un utilitaire qui surveille pour des changements dans vos fichiers `*.ts` et relance automatiquement le serveur si vous modifiez un de ses fichiers. La modification d'un autre fichier nécessitera un relancement manuel du serveur (interrompre le processus et relancer `npm start`).
+### Debugger
+You can attach a debugger directly in VSCode for both projects. The `launch.json` file contains the configurations. Important: Before you can use the debugger on a project, it needs to be locally deployed using the `npm start` command.
 
-2. **Deploy** : lance le serveur à partir du fichier `index.js`. Le serveur est lancé sur le port 3000 et est accessible à travers `http://localhost:3000/` ou `127.0.0.1:3000`. Le site est aussi accessible dans votre réseau local à partir de votre adresse IP suivie du port 3000. Par exemple : `132.207.5.35:3000`. Un _debugger_ est également attaché au processus Node. Voir la section _Debugger_ pour plus d'information.
+To use the debugger, launch the configuration that corresponds to the target project. You can access the Run and Debug menu with the shortcut `CTRL+SHIFT+D` and choose the appropriate configuration.
 
-    **Note** : ceci est un serveur dynamique qui ne sert pas des pages HTML, mais répond à des requêtes HTTP. Pour savoir comment accéder à sa documentation et connaître plus sur son fonctionnement, consultez la section _Documentation du serveur_ dans ce document.
+For the web client, use `Launch Client With Debug`. This will open a new window on port 4200 of your machine.
 
-## Documentation du serveur
+For the dynamic server, use `Debug Server (Attach)`. This will connect to your running Node instance.
 
-La documentation de votre serveur est disponible en format OpenAPI sur la route suivante : `/api/docs`
-Pour y accéder, vous pouvez aller à `<url_serveur>/api/docs` une fois le serveur démarré.
+Once the debugger is launched, you can add breakpoints directly in your TypeScript code to assist with your development.
 
-Cette page décrit les différentes routes accessibles sur le serveur ainsi qu'une possibilité de les tester en envoyer des requêtes au serveur. Vous n'avez qu'à choisir une des routes et appuyer sur le bouton "Try it out" et lancer la requête avec "Execute".
+### Continuous Integration
+Both projects come with a Continuous Integration (CI) configuration for the GitLab platform.
 
-# Outils de développement et assurance qualité
+This configuration allows you to run a pipeline of validations on the project in 4 steps: `install`, `lint`, `build`, and `test`. If any of these steps fail, the pipeline is marked as failed, and a notification will be visible on GitLab. You can check the console output of the failed step for more details on the reason for the failure.
 
-## Tests unitaires et couverture de code
+The pipeline will be triggered by either committing to the master branch or creating a Merge Request (MR) between two branches. In the case of an MR, each new commit will trigger a new validation pipeline.
 
-Les deux projets viennent avec des tests unitaires et des outils de mesure de la couverture du code.
-Les tests se retrouvent dans les fichiers `*.spec.ts` dans le code source des deux projets. Le client utilise la librairie _Jasmine_ et le serveur utilise _Mocha_,_Chai_, _Sinon_ et _Supertest_.
+It is strongly recommended not to commit directly to the master branch but to always use branches. Also, avoid opening an MR before writing the code to be merged; instead, open it when you are ready to merge. This will prevent unnecessary pipeline runs with each new commit.
 
-Les commandes pour lancer les tests et la couverture du code sont les suivantes. Il est fortement recommandé de les exécuter souvent, s'assurer que vos tests n'échouent pas et, le cas échéant, corriger les problèmes soulevés par les tests.
+It is highly recommended not to accept an MR if its associated pipeline has failed. Address the issues raised by the CI to avoid merging inadequate code into your project.
 
--   Exécuter `npm run test` pour lancer les tests unitaires.
-
--   Exécuter `npm run coverage` pour générer un rapport de couverture de code.
-    -   Un rapport sera généré dans la sortie de la console.
-    -   Un rapport détaillé sera généré dans le répertoire `/coverage` sous la forme d'une page web. Vous pouvez ouvrir le fichier `index.html` dans votre navigateur et naviguer à travers le rapport. Vous verrez les lignes de code non couvertes par les tests.
-
-## Linter et règles d'assurance qualité
-
-Les deux projets viennent avec un ensemble de règles d'assurance qualité pour le code et son format. L'outil ESLint est un outil d'analyse statique qui permet de détecter certaines odeurs dans le code.
-
-Les règles pour le linter sont disponibles dans le fichier `eslintrc.json` dans le dossier de chaque projet.
-
-**Note** : un _linter_ ne peut pas prévenir toutes les odeurs de code possibles. Faites attention à votre code et utilisez des révisions manuelles par les pairs le plus possible.
-
-Le _linter_ peut être lancé avec la commande `npm run lint`. La liste de problèmes sera affichée directement dans votre console.
-
-**Note** : on vous recommande de lancer le _linter_ souvent lorsque vous écrivez du code. Idéalement, assurez-vous qu'il n'y a aucune erreur de lint avant de faire un _commit_ sur Git.
-
-## Debugger
-
-Il est possible d'attacher un _debugger_ directement dans VSCode pour les 2 projets. Le fichier `launch.json` contient les 2 configurations.
-**Important** : avant de pouvoir utiliser le _debugger_ sur un projet, il faut que celui-ci soit déployé localement avec la commande `npm start`.
-
-Pour utiliser le _debugger_, il faut lancer la configuration qui correspond au projet visé. Vous pouvez accéder au menu _Run and Debug_ avec le raccourci <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>+<kbd>D</kbd> et choisir la bonne configuration.
-
-Dans le cas du site Web, utilisez **Launch Client With Debug**. Ceci ouvrira une nouvelle fenêtre sur le port 4200 de votre machine.
-
-Pour le serveur dynamique, utilisez **Debug Server (Attach)**. Ceci se connectera à votre instance Node en cours.
-
-Une fois le _debugger_ lancé, vous pouvez ajouter des _breakpoints_ directement dans votre code Typescript pour vous aider avec votre développement.
-
-## Intégration continue
-
-Les 2 projets viennent avec une configuration d'intégration continue (_Continuous Integration_ ou _CI_) pour la plateforme GitLab.
-
-Cette configuration permet de lancer un pipeline de validations sur le projet en 4 étapes dans l'ordre suivant: _install_, _lint_, _build_ et _test_. Si une de ses étapes échoue, le pipeline est marqué comme échouée et une notification sera visible sur GitLab. Vous pouvez consulter la console de l'étape échouée pour plus de détails sur la raison de l'échec.
-
-Le pipeline sera lancé suite aux 2 actions suivantes : lors d'un commit sur la branche master ou dans le cas d'une Merge Request (MR) entre 2 branches. Dans le cas d'une MR, chaque nouveau commit lancera un nouveau pipeline de validation.
-
-On vous recommande **fortement** de ne pas faire des commit sur la branche master, mais de plutôt toujours passer par des branches. Également, évitez d'ouvrir une MR avant d'avoir écrit le code à fusionner, mais faites-la plutôt lorsque vous êtes prêts à faire la fusion. Ceci vous évitera de lancer des pipelines inutiles avec chaque nouveau commit.
-
-On vous recommande **fortement** de ne pas accepter une MR dont le pipeline associé a échoué. Réglez les problèmes soulevés par la _CI_ pour éviter de fusionner du code inadéquat au reste de votre projet.
-
-# Déploiement du projet
-
-Se référer au fichier [DEPLOYMENT.md](DEPLOYMENT.md) pour tout ce qui a rapport avec le déploiement.
-
-# Standards de programmations
-
-Cette section présente les différents standards de programmations qu'on vous recommande de respecter lors de la réalisation de ce projet et qui seront utilisés pour la correction de l'assurance qualité de votre projet.
-
-Référez-vous au fichier `eslintrc.json` pour les règles spécifiques.
-
-## Format
-
-Une ligne de code devrait normalement avoir entre 45 et 80 caractères.
-
-Une ligne de code ne devrait JAMAIS dépasser les 150 caractères.
-
-## Conventions de nommage et de langue
-
-Utilisez le ALL_CAPS pour les constantes.
-
-Utilisez le PascalCase pour les noms de types et les valeurs d'énumérations.
-
-Utilisez le camelCase pour les noms de fonctions, de propriétés et de variables.
-
-Utilisez le kebab-case pour les noms de balises des composants Angular.
-
-Évitez les abréviations dans les noms de variables ou de fonctions.
-
-Un tableau/liste/dictionnaire devrait avoir un nom indiquant qu'il contient plusieurs objets, par exemple "Letters".
-
-Évitez de mettre le type de l'objet dans le nom, par exemple on préfère "Items" à "ListOfItems" lorsqu'on déclare une liste.
-
-Un objet ne devrait pas avoir un nom qui porte à croire qu'il s'agit d'un tableau.
-
-Vous devez coder dans une langue et une seule. Nous vous recommandons d'écrire votre code en anglais, mais vous êtes libres de coder en français.
-
-## Autres standards recommandés
-
-N'utilisez jamais **var**. Utilisez **let** et **const**. Lorsque possible, préférez **const**.
-
-N'utilisez jamais **any**, que ce soit implicitement ou explicitement.
-
-Évitez le mot-clé function si possible, utilisez les fonctions anonymes: `() => {...}` lorsque possible.
-
-Déclarez tous les types de retour des fonctions qui ne retournent pas des primitives.
-
-Évitez les fonctions qui ont plus d'une responsabilité.
-
-N'utilisez pas de nombres magiques. Utilisez des constantes bien nommées.
-
-N'utilisez pas de chaînes de caractères magiques. Créez vos propres constantes avec des noms explicites.
-
-**Évitez la duplication de code.**
-
-Séparez votre code Typescript du CSS et du HTML. Générez vos component avec Angular CLI qui le fait pour vous.
-
-## Git et gestion des versions
-
-Gardez, le plus possible, une seule fonctionnalité par branche.
-
-Utilisez une branche commune de développement (nommée `dev` ou `develop`) dans laquelle vous intégrez vos modifications. Gardez vos branches de développement à jour avec la branche commune.
-
-Les branches doivent avoir une nomenclature standardisée. Voici des exemples :
-
--   Une branche de fonctionnalité devrait se nommer `feature/nom-du-feature`.
--   Une branche de correction de bogue devrait se nommer `hotfix/nom-du-bug`.
-
-Les messages de commit doivent être concis et significatifs. Ne mettez pas des messages trop longs ou trop courts. **On devrait être capable de comprendre ce que le commit fait avec le message seulement sans lire les changements**.
-
-Gardez le même courriel de _commiter_, peu importe l'ordinateur que vous utilisez. Il ne devrait donc pas y avoir plus de 6 contributeurs dans votre repo. Utilisez [.mailmap](https://git-scm.com/docs/gitmailmap) pour regrouper plusieurs courriels différents sous le même nom.
-
-Si vous n'êtes pas familiers avec Git et le fonctionnement des branches, nous vous recommandons fortement d'explorer [ce guide interactif](https://onlywei.github.io/explain-git-with-d3/).
-
-## Lectures suggérées
-
-[AntiPatterns](https://sourcemaking.com/antipatterns) (plus spécifiquement [Software Development AntiPatterns](https://sourcemaking.com/antipatterns/software-development-antipatterns))
-
-[Building your first Angular App](https://scrimba.com/g/gyourfirstangularapp)
+## Project Deployment
+Please refer to the `DEPLOYMENT.md` file for any deployment-related information.
