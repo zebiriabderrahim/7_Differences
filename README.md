@@ -59,6 +59,15 @@ When the `npm start` command is run in the `server` directory, the following scr
 
 2. **Deploy**: Launches the server using the `index.js` file. The server is accessible through `http://localhost:3000/` or `127.0.0.1:3000`. The site is also accessible on your local network using your IP address followed by port 3000. For example: `132.207.5.35:3000`. A debugger is also attached to the Node process. See the Debugger section for more information.
 
+**Note**: Please be advised that, in order to ensure the security and privacy of our MongoDB connection details, it is necessary for you to create your own `.env` file on the server where the application will be deployed.
+
+Please use the following format for your `.env` file:
+
+```plaintext
+DATABASE_CONNECTION_STRING=mongodb+srv://<username>:<password>@<hostname>/<dbname>
+PORT=3000
+```
+
 ### Server Documentation
 The documentation for your server is available in OpenAPI format at the `/api/docs` route. You can access it by going to `<server_url>/api/docs` once the server is running.
 
