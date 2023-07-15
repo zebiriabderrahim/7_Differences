@@ -1,12 +1,12 @@
 # 7 Differences Game
 
-This is an online multiplayer game where players have to find the differences between two images. The game offers two distinct game modes: classic mode and cooperative mode. It was developed using the MANN stack (MongoDB, Angular, Node.js, and Nest.js).
+This is an online multiplayer game where players have to find the differences between two images. The game offers two distinct game modes: classic mode and cooperative mode. It was developed using the MANN stack (MongoDB, Angular, Node.js and Nest.js).
 
 ## Classic Mode
-In classic mode, players compete against each other to find the differences between the two images . The player who finds the highest number of differences wins the game.
+In classic mode, players compete against each other to find the differences between the two images. The player who finds the highest number of differences wins the game.
 
 ## Cooperative Mode
-In cooperative mode, players work together as a team to find all the differences between the two imagesas quickly as possible. They must collaborate and communicate effectively to successfully identify all the differences within the given time.
+In cooperative mode, players work together as a team to find all the differences between the two images quickly as possible. They must collaborate and communicate effectively to successfully identify all the differences within the given time.
 
 ## Technologies Used
 The game utilizes the following technologies:
@@ -18,11 +18,11 @@ The game utilizes the following technologies:
 
 ## Screenshots
 Here are some screenshots of the application:
-| **Home** | **config page** |
+| **Home** | **Configuration page** |
 |:-------------:|:-------------:|
-|![home](static/home.png) |![config](static/config.png)
-| **create page** | **game page**|
-|![create](static/create.png) | ![home](static/game.png)
+|![Home](static/home.png) |![Configuration](static/config.png)
+| **Creation page** | **Game page**|
+|![Creation](static/create.png) | ![Home](static/game.png)
 
 
 
