@@ -20,9 +20,9 @@ The game utilizes the following technologies:
 Here are some screenshots of the application:
 | **Home** | **config page** |
 |:-------------:|:-------------:|
-|![home](static/home.png) |![config](static/config.png)
+|![Home](static/home.png) |![Configuration](static/config.png)
 | **create page** | **game page**|
-|![create](static/create.png) | ![home](static/game.png)
+|![Creation](static/create.png) | ![Home](static/game.png)
 
 
 
